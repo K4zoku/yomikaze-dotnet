@@ -1,0 +1,10 @@
+using Yomikaze.Domain.Common;
+
+namespace Yomikaze.Domain.Entities;
+
+public class Genre : BaseEntity<Snowflake>
+{
+    public string Name { get; set; } = default!;
+    public string? Description { get; set; }
+    public IList<Comic> Comics { get; private set; } = new List<Comic>();
+}
