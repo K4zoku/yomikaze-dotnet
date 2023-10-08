@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Yomikaze.Domain</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="Common\Snowflake.Operators.cs">
+        <DependentUpon>Snowflake.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Common\BaseAuditableEntity.cs">
+        <DependentUpon>BaseEntity.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Common\SnowflakeGenerator.cs">
+        <DependentUpon>Snowflake.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>
