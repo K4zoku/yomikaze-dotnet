@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "+A9x6rwtKc1Q1xDhVgn7xEqKV/r+4qWuEOu9NDYTNuqiFggw1SC8t10hCckTlCv4o1dkwyN3yWqV/GD6wr9EwA==",
+  "dgSpecHash": "9Tai8ondzNvZ+9lLNC6GmKQGMAnC2waOcfJXeZ/fI6rbU78jhbncV/DCmIIZgPRb6BeU5KLLy4S/nrw0qpxTWQ==",
   "success": true,
-  "projectFilePath": "C:\\Project\\prn_project\\yomikaze-dotnet\\Web\\Web.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\Kazoku\\CSharp Projects\\yomikaze-dotnet\\Web\\Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.22\\microsoft.netcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.22\\microsoft.windowsdesktop.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.22\\microsoft.aspnetcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.22\\microsoft.netcore.app.host.win-x64.6.0.22.nupkg.sha512"
+  ],
   "logs": []
 }

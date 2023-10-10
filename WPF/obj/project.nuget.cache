@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "xkRIXlPVGoPa9Z2GfIp6Ft69GZZkOWUfko+KalkDskIPkmgXUcY0OFvEATiIO6qIJ/+yMuaMQgBRrJE1krZFAg==",
+  "dgSpecHash": "T872X6vriS8l8iWN5eigNEkhjdM8vHbT1z+EsL0cghqihJoYSAuQg/d5wadLmD2mdujnLnedy1VhQHy81uzu9w==",
   "success": true,
-  "projectFilePath": "C:\\Project\\prn_project\\yomikaze-dotnet\\WPF\\WPF.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\Kazoku\\CSharp Projects\\yomikaze-dotnet\\WPF\\WPF.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.22\\microsoft.netcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.22\\microsoft.windowsdesktop.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.22\\microsoft.aspnetcore.app.ref.6.0.22.nupkg.sha512",
+    "C:\\Users\\Kazoku\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.22\\microsoft.netcore.app.host.win-x64.6.0.22.nupkg.sha512"
+  ],
   "logs": []
 }
