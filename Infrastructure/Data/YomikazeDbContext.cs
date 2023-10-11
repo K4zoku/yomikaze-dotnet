@@ -3,9 +3,9 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Infrastructure.Data;
 
-public class YomikazeDatabaseContext : DbContext
+public class YomikazeDbContext : DbContext
 {
-    private YomikazeDatabaseContext(DbContextOptions<YomikazeDatabaseContext> options) : base(options)
+    private YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options)
     {
     }
     
