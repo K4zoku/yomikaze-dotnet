@@ -2,7 +2,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Entities;
 
-public class Transaction : BaseAuditableEntity<Snowflake>
+public class Transaction : BaseAuditableEntity<long>
 {
     public User User { get; set; } = default!;
     public decimal Amount { get; set; }

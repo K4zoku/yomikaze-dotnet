@@ -8,15 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="Common\Snowflake.Operators.cs">
-        <DependentUpon>Snowflake.cs</DependentUpon>
-      </Compile>
       <Compile Update="Common\BaseAuditableEntity.cs">
         <DependentUpon>BaseEntity.cs</DependentUpon>
       </Compile>
-      <Compile Update="Common\SnowflakeGenerator.cs">
-        <DependentUpon>Snowflake.cs</DependentUpon>
-      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Constants\" />
     </ItemGroup>
 
 </Project>

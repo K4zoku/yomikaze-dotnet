@@ -2,7 +2,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Entities;
 
-public class Chapter : BaseAuditableEntity<Snowflake>
+public class Chapter : BaseAuditableEntity<long>
 {
     public int Index { get; set; }
     public string Title { get; set; } = default!;

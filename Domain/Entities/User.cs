@@ -2,7 +2,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Entities;
 
-public class User : BaseEntity<Snowflake>
+public class User : BaseEntity<long>
 {
     public string Username { get; set; } = default!;
     public string Email { get; set; } = default!;

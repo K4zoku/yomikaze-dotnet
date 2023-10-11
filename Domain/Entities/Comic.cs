@@ -2,7 +2,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Entities;
 
-public class Comic : BaseAuditableEntity<Snowflake>
+public class Comic : BaseAuditableEntity<long>
 {
     public string Name { get; set; } = default!;
     public IList<string> Aliases { get; private set; } = new List<string>();
