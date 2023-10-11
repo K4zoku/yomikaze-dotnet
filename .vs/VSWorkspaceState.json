@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Domain",
+    "\\Domain\\Common",
+    "\\Domain\\Constants",
+    "\\Domain\\Entities",
+    "\\Infrastructure",
+    "\\Infrastructure\\Data",
+    "\\Web",
+    "\\Web\\Views",
+    "\\Web\\Views\\Home"
+  ],
+  "SelectedNode": "\\Domain\\Entities\\Comic.cs",
+  "PreviewInSolutionExplorer": false
+}
