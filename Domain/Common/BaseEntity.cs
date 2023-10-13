@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Yomikaze.Domain.Common;
 
-public class BaseEntity<TId>
+public abstract class BaseEntity<TId>
 {
-    public TId Id { get; set; }
+    [Key]
+    public TId Id { get; set; } = default!;
     public bool IsDeleted { get; set; }
 }

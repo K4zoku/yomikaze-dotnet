@@ -3,7 +3,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Infrastructure.Data;
 
-public class BaseDao<TEntity, TId> : IBaseDao<TEntity, TId> where TEntity : BaseEntity<TId>
+public abstract class BaseDao<TEntity, TId> : IBaseDao<TEntity, TId> where TEntity : BaseEntity<TId>
 {
     
     protected DbContext DbContext { get; }

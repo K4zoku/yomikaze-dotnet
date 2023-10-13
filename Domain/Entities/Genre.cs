@@ -6,5 +6,5 @@ public class Genre : BaseEntity<long>
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
-    public IList<Comic> Comics { get; private set; } = new List<Comic>();
+    public ICollection<Comic> Comics { get; private set; } = new List<Comic>();
 }

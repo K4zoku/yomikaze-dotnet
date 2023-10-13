@@ -5,8 +5,9 @@ namespace Yomikaze.Infrastructure.Data;
 
 public class YomikazeDbContext : DbContext
 {
-    private YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options)
+    public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options)
     {
+        
     }
     
     public DbSet<Chapter> Chapters { get; set; } = default!;
@@ -15,5 +16,16 @@ public class YomikazeDbContext : DbContext
     public DbSet<History> Histories { get; set; } = default!;
     public DbSet<Transaction> Transactions { get; set; } = default!;
     public DbSet<User> Users { get; set; } = default!;
+    public DbSet<Page> Pages { get; set; } = default!;
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (optionsBuilder.IsConfigured) return;
+        optionsBuilder.UseInMemoryDatabase("Yomikaze");
+    }
     
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(YomikazeDbContext).Assembly);
+    }
 }

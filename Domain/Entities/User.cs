@@ -17,5 +17,5 @@ public class User : BaseEntity<long>
     public string? Banner { get; set; }
     public decimal Balance { get; set; }
     
-    public IList<Comic> Library { get; private set; } = new List<Comic>();
+    public ICollection<Comic> Library { get; private set; } = new List<Comic>();
 }
