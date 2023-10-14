@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "WPF\WPF.csproj", "{FA0B9588-DA69-4723-98C1-FD05034EF5C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{FA0B9588-DA69-4723-98C1-FD05034EF5C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA0B9588-DA69-4723-98C1-FD05034EF5C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA0B9588-DA69-4723-98C1-FD05034EF5C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{027E4279-4886-4407-85D0-E16F4A6FFAAF} = {86BF01BC-CC60-4D96-9796-E5C58FE72B59}
 		{FA0B9588-DA69-4723-98C1-FD05034EF5C2} = {86BF01BC-CC60-4D96-9796-E5C58FE72B59}
+		{1B9E69DC-0EB8-43DD-AFF6-9FC0BC43F9B7} = {86BF01BC-CC60-4D96-9796-E5C58FE72B59}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A103C08F-D4A1-4C73-93E4-9FF053433E59}
