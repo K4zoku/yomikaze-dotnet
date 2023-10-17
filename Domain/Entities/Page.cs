@@ -4,7 +4,7 @@ using Yomikaze.Domain.Common;
 namespace Yomikaze.Domain.Entities;
 
 [Table("Page")]
-public class Page : BaseEntity<long>
+public class Page : BaseEntity, IEntity
 {
     public int Index { get; set; }
     
@@ -12,7 +12,5 @@ public class Page : BaseEntity<long>
     
     public string Image { get; set; } = default!;
     
-    [ForeignKey(nameof(Chapter))]
-    public long ChapterId { get; set; }
-    public Chapter Chapter { get; set; } = default!;
+    public virtual Chapter Chapter { get; set; } = default!;
 }

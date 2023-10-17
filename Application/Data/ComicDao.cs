@@ -1,13 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Infrastructure.Data;
 
 namespace Yomikaze.Application.Data;
 
-public class ComicDao : BaseDao<Comic, long>
+public class ComicDao : BaseDao<Comic>
 {
-    protected ComicDao(DbContext dbContext) : base(dbContext)
-    {
-        
-    }
+    protected ComicDao(DbContext dbContext) : base(dbContext) { }
 }

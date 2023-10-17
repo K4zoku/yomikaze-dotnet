@@ -8,13 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="Common\BaseAuditableEntity.cs">
-        <DependentUpon>BaseEntity.cs</DependentUpon>
-      </Compile>
+      <Folder Include="Constants\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Constants\" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
     </ItemGroup>
 
 </Project>

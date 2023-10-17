@@ -1,12 +1,14 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Entities;
 
-public class History : BaseAuditableEntity<long>
+public class History : BaseEntity, IEntity
 {
-    public Chapter Chapter { get; set; } = default!;
-    public User User { get; set; } = default!;
+    public virtual Chapter Chapter { get; set; } = default!;
     
-    public new string CreatedBy => User.Username;
-    public new string LastModifiedBy => User.Username;
+    public virtual Profile Profile { get; set; } = default!;
+    
+    public DateTimeOffset ReadAt { get; set; }
+    
 }
