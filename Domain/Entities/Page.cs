@@ -8,7 +8,7 @@ public class Page : BaseEntity, IEntity
 {
     public int Index { get; set; }
     
-    public short Server { get; set; } = 0;
+    public short Server { get; set; }
     
     public string Image { get; set; } = default!;
     

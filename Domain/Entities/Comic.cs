@@ -11,8 +11,8 @@ public class Comic : BaseEntity, IEntity
     public DateTimeOffset? Published { get; set; }
     public DateTimeOffset? Ended { get; set; }
     
-    public virtual ICollection<string> Aliases { get; set; } = new List<string>();
-    public virtual ICollection<string> Authors { get; set; } = new List<string>();
+    public virtual ICollection<Alias> Aliases { get; set; } = new List<Alias>();
+    public virtual ICollection<Artist> Authors { get; set; } = new List<Artist>();
     public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 }
