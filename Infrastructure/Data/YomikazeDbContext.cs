@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Entities.Identity;
+using Yomikaze.Domain.Database.Entities;
+using Yomikaze.Domain.Database.Entities.Identity;
 
 namespace Yomikaze.Infrastructure.Data;
 

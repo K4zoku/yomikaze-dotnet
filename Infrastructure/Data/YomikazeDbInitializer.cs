@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
-using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Database.Entities;
 
 namespace Yomikaze.Infrastructure.Data;
 

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
 
-namespace Yomikaze.Domain.Entities;
+namespace Yomikaze.Domain.Database.Entities;
 
 [Table("Page")]
 public class Page : BaseEntity, IEntity

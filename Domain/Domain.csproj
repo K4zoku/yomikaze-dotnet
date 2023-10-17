@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <Folder Include="Constants\" />
+      <Folder Include="Database\" />
     </ItemGroup>
 
     <ItemGroup>

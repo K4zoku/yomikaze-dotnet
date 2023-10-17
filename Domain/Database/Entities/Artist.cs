@@ -1,6 +1,6 @@
 ﻿using Yomikaze.Domain.Common;
 
-namespace Yomikaze.Domain.Entities;
+namespace Yomikaze.Domain.Database.Entities;
 
 public class Artist : BaseEntity, IEntity
 {

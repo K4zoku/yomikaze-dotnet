@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
 
-namespace Yomikaze.Domain.Entities;
+namespace Yomikaze.Domain.Database.Entities;
 
 public class Chapter : BaseEntity, IEntity
 {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
 
-namespace Yomikaze.Domain.Entities.Identity;
+namespace Yomikaze.Domain.Database.Entities.Identity;
 
 [PrimaryKey(nameof(Id))]
 public class YomikazeUser : IdentityUser<long>, IEntity

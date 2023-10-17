@@ -1,7 +1,7 @@
 using Yomikaze.Domain.Common;
-using Yomikaze.Domain.Entities.Identity;
+using Yomikaze.Domain.Database.Entities.Identity;
 
-namespace Yomikaze.Domain.Entities;
+namespace Yomikaze.Domain.Database.Entities;
 
 public class HistoryRecord : BaseEntity, IEntity
 {
