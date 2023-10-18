@@ -24,7 +24,6 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, IdentityRole<lo
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (optionsBuilder.IsConfigured) return;
-        // optionsBuilder.UseLazyLoadingProxies();
         optionsBuilder.UseSqlServer("Server=127.0.0.1;Trusted_Connection=True;TrustServerCertificate=True;Database=Yomikaze");
     }
     
