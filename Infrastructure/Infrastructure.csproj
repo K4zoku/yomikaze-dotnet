@@ -28,4 +28,10 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Data\DefaultGenres.cs">
+        <DependentUpon>YomikazeDbInitializer.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
