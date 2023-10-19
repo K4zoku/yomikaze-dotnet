@@ -12,14 +12,16 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, IdentityRole<lo
     public YomikazeDbContext() { }
     
     public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options) { }
-    
-    public DbSet<Chapter> Chapters { get; set; } = default!;
-    public DbSet<Comic> Comics { get; set; } = default!;
-    public DbSet<Genre> Genres { get; set; } = default!;
-    public DbSet<HistoryRecord> Histories { get; set; } = default!;
-    public DbSet<Page> Pages { get; set; } = default!;
+
     public DbSet<Alias> Aliases { get; set; } = default!;
     public DbSet<Artist> Artists { get; set; } = default!;
+    public DbSet<Chapter> Chapters { get; set; } = default!;
+    public DbSet<Comic> Comics { get; set; } = default!;
+    public DbSet<Comment> Comments { get; set; } = default!;
+    public DbSet<Genre> Genres { get; set; } = default!;
+    public DbSet<HistoryRecord> Histories { get; set; } = default!;
+    public DbSet<Notification> Notifications { get; set; } = default!;
+    public DbSet<Page> Pages { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

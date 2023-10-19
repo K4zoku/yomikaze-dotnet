@@ -308,6 +308,44 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.ToTable("Comics");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ComicId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long?>("ReplyToId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComicId");
+
+                    b.HasIndex("ReplyToId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Genre", b =>
                 {
                     b.Property<long>("Id")
@@ -438,6 +476,38 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Notification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Page", b =>
@@ -582,6 +652,31 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .HasForeignKey("YomikazeUserId");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comment", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Comic", "Comic")
+                        .WithMany()
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Comment", "ReplyTo")
+                        .WithMany("Replies")
+                        .HasForeignKey("ReplyToId");
+
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comic");
+
+                    b.Navigation("ReplyTo");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.HistoryRecord", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Database.Entities.Chapter", "Chapter")
@@ -597,6 +692,17 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Chapter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Notification", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -622,6 +728,11 @@ namespace Yomikaze.Infrastructure.Data.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comic", b =>
                 {
                     b.Navigation("Chapters");
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", b =>
