@@ -1,6 +1,6 @@
 ﻿namespace Yomikaze.WebAPI.Models;
 
-public class AuthModel : ResponseModel
+public class SignInResponse : Response
 {
     public string? Token { get; set; }
 }

@@ -1,70 +1,71 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
+using Yomikaze.WebAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var services = builder.Services;
+var configuration = builder.Configuration;
 
 // Add database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<YomikazeDbContext>(options =>
-{
-    options.UseSqlServer(connectionString);
-});
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+services.AddDbContext<YomikazeDbContext>(options => options.UseSqlServer(connectionString, server => server.EnableRetryOnFailure()));
 
-builder.Services.AddIdentity<YomikazeUser, IdentityRole<long>>(options =>
+services.AddIdentity<YomikazeUser, YomikazeRole>(options =>
     {
-        options.Password.RequireDigit = true;
-        options.Password.RequiredLength = 6;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireLowercase = true;
-
         options.User.RequireUniqueEmail = true;
         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 
-        options.Lockout.AllowedForNewUsers = true;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        options.Lockout.MaxFailedAccessAttempts = 5;
-        options.Tokens.AuthenticatorIssuer = "Yomikaze";
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
     })
     .AddEntityFrameworkStores<YomikazeDbContext>()
     .AddDefaultTokenProviders();
 
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes( builder.Configuration["Jwt:Key"] ?? "Yomikaze"));
+JwtConfiguration jwt = configuration
+    .GetRequiredSection(JwtConfiguration.SectionName)
+    .Get<JwtConfiguration>() ?? throw new Exception("Could not read JWT Configuration");
 
-builder.Services.AddSingleton(key);
+services.AddSingleton(jwt);
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
-        
+
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            IssuerSigningKey = key,
+            ValidIssuer = jwt.Issuer,
+            ValidAudience = jwt.Audience,
+            RequireExpirationTime = false,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret))
         };
     });
 
-var app = builder.Build();
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
+var app = builder.Build();
+var env = app.Environment;
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (env.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -72,27 +73,28 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
-    
+app.UseAuthorization();
 
 app.MapControllers();
 
 // Initialize database
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var services = scope.ServiceProvider;
-    var dbContext = services.GetRequiredService<YomikazeDbContext>();
+    var scopedServices = scope.ServiceProvider;
+    var dbContext = scopedServices.GetRequiredService<YomikazeDbContext>();
     var dbInitializer = new YomikazeDbInitializer(dbContext);
     await dbInitializer.InitializeAsync();
-    var userManager = services.GetRequiredService<UserManager<YomikazeUser>>();
+
+    // Add default admin user
+    var userManager = scopedServices.GetRequiredService<UserManager<YomikazeUser>>();
     var user = await userManager.FindByNameAsync("admin");
     if (user == null)
     {
         user = new YomikazeUser
         {
             UserName = "admin",
-            Email = "admin@admin",
+            Email = "admin@localhost",
             Fullname = "Administrator"
         };
         await userManager.CreateAsync(user, "Admin@123");
