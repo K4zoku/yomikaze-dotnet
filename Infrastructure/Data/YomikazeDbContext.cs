@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Database.Entities;
@@ -6,11 +5,11 @@ using Yomikaze.Domain.Database.Entities.Identity;
 
 namespace Yomikaze.Infrastructure.Data;
 
-public class YomikazeDbContext : IdentityDbContext<YomikazeUser, IdentityRole<long>, long>
+public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, long>
 {
 
     public YomikazeDbContext() { }
-    
+
     public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options) { }
 
     public DbSet<Alias> Aliases { get; set; } = default!;
@@ -26,9 +25,9 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, IdentityRole<lo
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (optionsBuilder.IsConfigured) return;
-        optionsBuilder.UseSqlServer("Server=127.0.0.1;Trusted_Connection=True;TrustServerCertificate=True;Database=Yomikaze");
+        optionsBuilder.UseSqlServer("Server=.;Trusted_Connection=True;TrustServerCertificate=True;Database=Yomikaze");
     }
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
