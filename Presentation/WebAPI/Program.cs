@@ -6,6 +6,7 @@ using System.Text;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
 using Yomikaze.WebAPI.Helpers;
+using Yomikaze.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -61,6 +62,7 @@ services
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+services.AddSingleton(new ImageUploadService());
 
 var app = builder.Build();
 var env = app.Environment;
