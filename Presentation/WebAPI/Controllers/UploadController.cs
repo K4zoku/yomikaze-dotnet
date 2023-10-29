@@ -18,6 +18,7 @@ public class UploadController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> UploadImageAsync(IFormFile file)
     {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg") return BadRequest(new UploadResponse { Success = false, Message = "Invalid file type" });
         var path = await _imageUploadService.UploadImageAsync(file);
         var host = $"{Request.Scheme}://{Request.Host}";
         path = host + path;
