@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
+using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.WebAPI.Helpers;
 using Yomikaze.WebAPI.Models;
@@ -13,19 +12,16 @@ using Yomikaze.WebAPI.Models;
 namespace Yomikaze.WebAPI.Controllers;
 
 [ApiController]
-[Route($"API/V{Version}/[controller]")]
+[Route($"API/{Api.Version}/[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    public const string Version = "1";
     private UserManager<YomikazeUser> UserManager { get; }
-    private RoleManager<YomikazeRole> RoleManager { get; }
 
     private JwtConfiguration JwtConfiguration { get; }
 
-    public AuthenticationController(UserManager<YomikazeUser> userManager, RoleManager<YomikazeRole> roleManager, JwtConfiguration jwtConfiguration)
+    public AuthenticationController(UserManager<YomikazeUser> userManager, JwtConfiguration jwtConfiguration)
     {
         UserManager = userManager;
-        RoleManager = roleManager;
         JwtConfiguration = jwtConfiguration;
     }
 
@@ -139,19 +135,6 @@ public class AuthenticationController : ControllerBase
 
     }
 
-    [NonAction]
-    private JwtSecurityToken GetToken(IEnumerable<Claim> claims)
-    {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfiguration.Secret));
-        var token = new JwtSecurityToken(
-            issuer: JwtConfiguration.Issuer,
-            audience: JwtConfiguration.Audience,
-            claims: claims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
-        return token;
-    }
-
     [HttpGet]
     [Authorize]
     public IActionResult Get()
@@ -168,4 +151,15 @@ public class AuthenticationController : ControllerBase
         });
     }
 
+    [NonAction]
+    private JwtSecurityToken GetToken(IEnumerable<Claim> claims)
+    {
+        var token = new JwtSecurityToken(
+            issuer: JwtConfiguration.Issuer,
+            audience: JwtConfiguration.Audience,
+            signingCredentials: JwtConfiguration.SigningCredentials,
+            claims: claims
+        );
+        return token;
+    }
 }
