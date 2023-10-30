@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace Yomikaze.Infrastructure.Data.Migrations
+namespace Yomikaze.Infrastructure.Data.Migrations;
+
+/// <inheritdoc />
+public partial class AddYomikazeRole : Migration
 {
     /// <inheritdoc />
-    public partial class AddYomikazeRole : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

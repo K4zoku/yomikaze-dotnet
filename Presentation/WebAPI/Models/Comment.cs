@@ -1,7 +1,6 @@
-﻿namespace Yomikaze.WebAPI.Models
+﻿namespace Yomikaze.WebAPI.Models;
+
+public class Comment
 {
-    public class Comment
-    {
-        public string Content { get; set; } = default!;
-    }
+    public string Content { get; set; } = default!;
 }

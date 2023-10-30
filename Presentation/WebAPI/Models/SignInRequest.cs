@@ -1,7 +1,6 @@
-﻿namespace Yomikaze.WebAPI.Models
-{
-    public class SignInRequest : UsernamePasswordModel
-    {
+﻿namespace Yomikaze.WebAPI.Models;
 
-    }
+public class SignInRequest : UsernamePasswordModel
+{
+
 }
