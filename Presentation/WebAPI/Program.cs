@@ -66,7 +66,6 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddSingleton(new ImageUploadService());
-services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddScoped<IDao<Comic>, ComicDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();
 services.AddScoped<CommentService>();
