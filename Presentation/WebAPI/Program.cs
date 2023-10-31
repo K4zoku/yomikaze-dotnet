@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -9,10 +10,11 @@ using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
 using Yomikaze.WebAPI.Helpers;
+using Yomikaze.WebAPI.Models;
 using Yomikaze.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
+IServiceCollection services = builder.Services;
 var configuration = builder.Configuration;
 
 // Add database
@@ -62,9 +64,31 @@ services
         };
     });
 
-services.AddControllers();
+services
+    .AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = new Dictionary<string, string[]>();
+            foreach (var keyModelStatePair in context.ModelState)
+            {
+                var key = keyModelStatePair.Key;
+                var errorsToAdd = keyModelStatePair.Value.Errors
+                    .Select(error => string.IsNullOrEmpty(error.ErrorMessage) ? "The input was not valid." : error.ErrorMessage).ToArray();
+                errors.Add(key, errorsToAdd);
+            }
+            var problems = new ErrorResponse
+            {
+                Message = "Validation errors",
+                Errors = errors,
+            };
+            return new BadRequestObjectResult(problems);
+        };
+    });
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
 services.AddSingleton(new ImageUploadService());
 services.AddScoped<IDao<Comic>, ComicDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();

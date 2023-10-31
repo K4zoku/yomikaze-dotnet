@@ -1,6 +1,6 @@
 ﻿namespace Yomikaze.WebAPI.Models;
 
-public class CommentRequest : Comment
+public class CommentRequest : CommentModel
 {
     public long ComicId { get; set; }
 

@@ -23,15 +23,6 @@ public class ImagesController : ControllerBase
     [Route($"/API/{Api.Version}/Images/Upload")]
     public async Task<IActionResult> UploadImageAsync([FromForm] UploadImageRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new Response
-            {
-                Success = false,
-                Message = "Invalid request",
-                Data = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
-            });
-        }
         var path = await _imageUploadService.UploadImageAsync(request.File);
         var fileName = Path.GetFileName(path);
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;

@@ -27,21 +27,12 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("SignIn")]
-    public async Task<IActionResult> SignIn([FromBody] SignInRequest model)
+    public async Task<ActionResult<SignInResponse>> SignIn([FromBody] SignInRequest model)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new Response
-            {
-                Success = false,
-                Message = "Validation failed, please check input",
-                Data = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
-            });
-        }
         var user = await UserManager.FindByNameAsync(model.Username);
         if (user == null)
         {
-            return Unauthorized(new Response
+            return Unauthorized(new SignInResponse
             {
                 Success = false,
                 Message = "User not found"
@@ -50,7 +41,7 @@ public class AuthenticationController : ControllerBase
         var result = await UserManager.CheckPasswordAsync(user, model.Password);
         if (!result)
         {
-            return Unauthorized(new Response
+            return Unauthorized(new SignInResponse
             {
                 Success = false,
                 Message = "Password not match"
@@ -74,22 +65,12 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] SignUpRequest model)
+    public async Task<ActionResult<SignInResponse>> SignUp([FromBody] SignUpRequest model)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new Response
-            {
-                Success = false,
-                Message = "Validation failed, please check input",
-                Data = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
-            });
-        }
-
         var user = await UserManager.FindByNameAsync(model.Username) ?? await UserManager.FindByEmailAsync(model.Email);
         if (user != null)
         {
-            return BadRequest(new Response
+            return BadRequest(new SignInResponse
             {
                 Success = false,
                 Message = "Account is already exist"
@@ -98,7 +79,7 @@ public class AuthenticationController : ControllerBase
 
         if (!model.Password.Equals(model.ConfirmPassword))
         {
-            return BadRequest(new Response
+            return BadRequest(new SignInResponse
             {
                 Success = false,
                 Message = "Password and confirm password not match"
@@ -111,7 +92,7 @@ public class AuthenticationController : ControllerBase
         if (!result.Succeeded)
         {
             // return 500
-            return StatusCode(500, new Response
+            return StatusCode(500, new SignInResponse
             {
                 Success = false,
                 Message = "There was error while creating account",
@@ -137,7 +118,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public IActionResult Get()
+    public ActionResult<Response> Get()
     {
         return Ok(value: new Response
         {

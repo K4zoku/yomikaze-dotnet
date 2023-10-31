@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Yomikaze.WebAPI;
+namespace Yomikaze.WebAPI.Helpers;
 
 public static class UserHelpers
 {

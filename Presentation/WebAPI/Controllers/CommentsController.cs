@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
@@ -27,6 +28,7 @@ public class CommentsController : ControllerBase
 
     // create comment
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> CreateCommentAsync([FromBody] CommentRequest comment)
     {
         var comic = await _comicDao.GetAsync(comment.ComicId);
@@ -45,7 +47,7 @@ public class CommentsController : ControllerBase
 
     // get comment
     [HttpGet("{id}")]
-    public async Task<ActionResult<Yomikaze.Domain.Database.Entities.Comment>> GetCommentAsync(long id)
+    public async Task<ActionResult<Comment>> GetCommentAsync(long id)
     {
         var comment = await _commentService.GetCommentAsync(id);
         if (comment == null)
@@ -57,6 +59,7 @@ public class CommentsController : ControllerBase
 
     // update comment
     [HttpPatch("{id}")]
+    [Authorize]
     public async Task<ActionResult> UpdateCommentAsync([FromRoute] long id, [FromBody] string content)
     {
         var commentToUpdate = await _commentService.GetCommentAsync(id);
@@ -64,12 +67,12 @@ public class CommentsController : ControllerBase
         {
             return NotFound();
         }
-        var yomikazeUser = await _userManager.GetUserAsync(User);
-        if (yomikazeUser == null)
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null)
         {
             return NotFound();
         }
-        if (commentToUpdate.User != yomikazeUser)
+        if (commentToUpdate.User.Id != currentUser.Id)
         {
             return Unauthorized();
         }
@@ -92,12 +95,12 @@ public class CommentsController : ControllerBase
         {
             return NotFound();
         }
-        var yomikazeUser = await _userManager.GetUserAsync(User);
-        if (yomikazeUser == null)
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null)
         {
             return NotFound();
         }
-        if (commentToDelete.User != yomikazeUser)
+        if (commentToDelete.User.Id != currentUser.Id)
         {
             return Unauthorized();
         }
@@ -108,7 +111,7 @@ public class CommentsController : ControllerBase
     // get all comments
     [HttpGet]
     [Route($"/API/{Api.Version}/Comics/{{cid}}/[controller]")]
-    public async Task<ActionResult<IEnumerable<Yomikaze.Domain.Database.Entities.Comment>>> GetAllCommentsAsync([FromRoute] long cid)
+    public async Task<ActionResult<IEnumerable<Comment>>> GetAllCommentsAsync([FromRoute] long cid)
     {
         var comic = await _comicDao.GetAsync(cid);
         if (comic == null)
