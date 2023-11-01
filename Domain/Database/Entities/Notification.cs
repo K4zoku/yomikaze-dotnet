@@ -10,5 +10,5 @@ public class Notification : BaseEntity, IEntity
     public DateTimeOffset CreatedAt { get; set; }
     public bool IsRead { get; set; }
     
-    public virtual YomikazeUser User { get; set; } = default!;
+    public virtual User User { get; set; } = default!;
 }

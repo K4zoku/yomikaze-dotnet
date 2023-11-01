@@ -2,7 +2,8 @@
 using MimeKit;
 using System.Net;
 using Yomikaze.Domain.Constants;
-using Yomikaze.WebAPI.Models;
+using Yomikaze.WebAPI.Models.Request;
+using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 namespace Yomikaze.WebAPI.Controllers;
@@ -21,23 +22,17 @@ public class ImagesController : ControllerBase
 
     [HttpPost]
     [Route($"/API/{Api.Version}/Images/Upload")]
-    public async Task<IActionResult> UploadImageAsync([FromForm] UploadImageRequest request)
+    public async Task<ActionResult<ResponseModel<ImageUploadResponse>>> UploadImageAsync([FromForm] ImageUploadModel request)
     {
         var path = await _imageUploadService.UploadImageAsync(request.File);
         var fileName = Path.GetFileName(path);
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;
         var url = Url.Action(nameof(GetImage), controllerName, new { fileName }, Request.Scheme);
-        if (url == null) return StatusCode((int)HttpStatusCode.InternalServerError, new Response
-        {
-            Success = false,
-            Message = "Image uploaded successfully but failed to generate URL"
-        });
-        return Ok(new UploadResponse
-        {
-            Success = true,
-            Message = "Upload success",
-            Url = url
-        });
+        if (url == null) return StatusCode(
+                    (int)HttpStatusCode.InternalServerError,
+                    ResponseModel.CreateError("Image uploaded successfully but failed to generate URL")
+                );
+        return Ok(ResponseModel.CreateSuccess(new ImageUploadResponse { Url = url }));
     }
 
     [HttpGet]
@@ -49,7 +44,7 @@ public class ImagesController : ControllerBase
         if (!System.IO.File.Exists(filePath)) return NotFound();
         var file = System.IO.File.OpenRead(filePath);
         var mime = MimeTypes.GetMimeType(fileName);
-        if (mime == null || mime != "image/png" && mime != "image/jpeg") return NotFound();
+        if (mime == null || !Array.Exists(Api.AllowedImageTypes, t => t.Contains(mime))) return NotFound();
         return File(file, mime);
     }
 }

@@ -10,7 +10,7 @@ using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
 using Yomikaze.WebAPI.Helpers;
-using Yomikaze.WebAPI.Models;
+using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +21,7 @@ var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 services.AddDbContext<YomikazeDbContext>(options => options.UseSqlServer(connectionString, server => server.EnableRetryOnFailure()));
 
-services.AddIdentity<YomikazeUser, YomikazeRole>(options =>
+services.AddIdentity<User, IdentityRole<long>>(options =>
     {
         options.User.RequireUniqueEmail = true;
         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
@@ -70,19 +70,17 @@ services
     {
         options.InvalidModelStateResponseFactory = context =>
         {
-            var errors = new Dictionary<string, string[]>();
+            var errors = new Dictionary<string, IEnumerable<string>>();
             foreach (var keyModelStatePair in context.ModelState)
             {
                 var key = keyModelStatePair.Key;
-                var errorsToAdd = keyModelStatePair.Value.Errors
-                    .Select(error => string.IsNullOrEmpty(error.ErrorMessage) ? "The input was not valid." : error.ErrorMessage).ToArray();
-                errors.Add(key, errorsToAdd);
+                var errorsToAdd = from error in keyModelStatePair.Value.Errors
+                                  select string.IsNullOrEmpty(error.ErrorMessage)
+                                        ? "The value you entered is invalid"
+                                        : error.ErrorMessage;
+                errors.Add(key, errorsToAdd.ToArray());
             }
-            var problems = new ErrorResponse
-            {
-                Message = "Validation errors",
-                Errors = errors,
-            };
+            var problems = ResponseModel.CreateError("Validation errors", errors);
             return new BadRequestObjectResult(problems);
         };
     });
@@ -116,14 +114,14 @@ await using (var scope = app.Services.CreateAsyncScope())
     var scopedServices = scope.ServiceProvider;
     var dbContext = scopedServices.GetRequiredService<YomikazeDbContext>();
     var dbInitializer = new YomikazeDbInitializer(dbContext);
-    await dbInitializer.InitializeAsync();
+    dbInitializer.Initialize();
 
     // Add default admin user
-    var userManager = scopedServices.GetRequiredService<UserManager<YomikazeUser>>();
+    var userManager = scopedServices.GetRequiredService<UserManager<User>>();
     var user = await userManager.FindByNameAsync("admin");
-    if (user == null)
+    if (user is null)
     {
-        user = new YomikazeUser
+        user = new User
         {
             UserName = "admin",
             Email = "admin@localhost",

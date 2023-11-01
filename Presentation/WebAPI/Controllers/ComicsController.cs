@@ -16,6 +16,12 @@ public class ComicsController : ControllerBase
         _comicDao = comicDao;
     }
 
+    [HttpGet]
+    public async Task<ActionResult> GetComics()
+    {
+        return Ok(await _comicDao.GetAllAsync());
+    }
+
     // get comic
     [HttpGet("{id}")]
     public async Task<ActionResult<Comic>> GetComicAsync(long id)
@@ -29,7 +35,7 @@ public class ComicsController : ControllerBase
     }
 
     // get comic chapters
-    [HttpGet("{id}/chapters")]
+    [HttpGet("{id}/Chapters")]
     public async Task<ActionResult<IEnumerable<Chapter>>> GetComicChaptersAsync(long id)
     {
         var comic = await _comicDao.GetAsync(id);
@@ -41,8 +47,8 @@ public class ComicsController : ControllerBase
     }
 
     // get comic chapter
-    [HttpGet("{id}/chapters/{chapterId}")]
-    public async Task<ActionResult<Chapter>> GetComicChapterAsync(long id, long chapterId)
+    [HttpGet("{id}/Chapters/{chapterIndex}")]
+    public async Task<ActionResult<Chapter>> GetComicChapterAsync(long id, long chapterIndex)
     {
         var comic = await _comicDao.GetAsync(id);
         if (comic == null)
@@ -50,7 +56,7 @@ public class ComicsController : ControllerBase
             return NotFound();
         }
         var chapters = comic.Chapters.AsQueryable();
-        var chapter = chapters.FirstOrDefault(c => c.Id == chapterId);
+        var chapter = chapters.FirstOrDefault(c => c.Index == chapterIndex);
         if (chapter == null)
         {
             return NotFound();

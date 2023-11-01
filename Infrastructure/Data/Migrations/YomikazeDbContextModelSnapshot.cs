@@ -37,6 +37,36 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.ToTable("ComicGenre");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<long>", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("Roles", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
                 {
                     b.Property<int>("Id")
@@ -58,7 +88,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
@@ -82,7 +112,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
@@ -103,7 +133,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
@@ -118,7 +148,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
@@ -137,7 +167,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Chapter", b =>
@@ -204,12 +234,12 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("Published")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long?>("YomikazeUserId")
+                    b.Property<long?>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("YomikazeUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comics");
                 });
@@ -301,37 +331,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.ToTable("Histories");
                 });
 
-            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.YomikazeRole", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", b =>
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -411,7 +411,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Notification", b =>
@@ -491,7 +491,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<long>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -500,7 +500,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", null)
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -509,7 +509,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", null)
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -518,13 +518,13 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<long>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", null)
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -533,7 +533,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", null)
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -553,9 +553,9 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comic", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", null)
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
                         .WithMany("Library")
-                        .HasForeignKey("YomikazeUserId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comment", b =>
@@ -570,7 +570,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .WithMany("Replies")
                         .HasForeignKey("ReplyToId");
 
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", "User")
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -591,7 +591,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", "User")
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", "User")
                         .WithMany("History")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -604,7 +604,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Notification", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", "User")
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -641,7 +641,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.YomikazeUser", b =>
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Identity.User", b =>
                 {
                     b.Navigation("History");
 

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Yomikaze.Domain.Common;
+using System.Net;
 using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities;
-using Yomikaze.Domain.Database.Entities.Identity;
-using Yomikaze.WebAPI.Models;
+using Yomikaze.WebAPI.Models.Common;
+using Yomikaze.WebAPI.Models.Request;
+using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 namespace Yomikaze.WebAPI.Controllers;
@@ -16,119 +16,110 @@ public class CommentsController : ControllerBase
 {
     //service
     private readonly CommentService _commentService;
-    private readonly IDao<Comic> _comicDao;
-    private readonly UserManager<YomikazeUser> _userManager;
 
-    public CommentsController(CommentService commentService, IDao<Comic> comicDao, UserManager<YomikazeUser> userManager)
+    public CommentsController(CommentService commentService)
     {
         _commentService = commentService;
-        _comicDao = comicDao;
-        _userManager = userManager;
     }
 
     // create comment
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult> CreateCommentAsync([FromBody] CommentRequest comment)
+    public async Task<ActionResult<ResponseModel<CommentModel>>> CreateCommentAsync([FromBody] CommentRequestModel comment)
     {
-        var comic = await _comicDao.GetAsync(comment.ComicId);
-        if (comic == null)
+        try
         {
-            return NotFound();
+            var model = await _commentService.CreateCommentAsync(comment, User);
+            return Ok(ResponseModel.CreateSuccess("Comment successfully", model));
         }
-        var yomikazeUser = await _userManager.GetUserAsync(User);
-        if (yomikazeUser == null)
+        catch (ApiServiceException e)
         {
-            return NotFound();
+            return BadRequest(ResponseModel.CreateError(e.Message));
         }
-        var newComment = await _commentService.CreateCommentAsync(comic, yomikazeUser, comment.Content);
-        return Ok(new Response { Success = true, Message = "Comment successfully", Data = newComment });
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
     }
 
     // get comment
     [HttpGet("{id}")]
-    public async Task<ActionResult<Comment>> GetCommentAsync(long id)
+    public async Task<ActionResult<ResponseModel<CommentModel>>> GetCommentAsync(long id)
     {
-        var comment = await _commentService.GetCommentAsync(id);
-        if (comment == null)
+        try
         {
-            return NotFound();
+            var comment = await _commentService.GetCommentAsync(id);
+            return Ok(ResponseModel.CreateSuccess("Get comment successfully", comment));
         }
-        return comment;
+        catch (ApiServiceException e)
+        {
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
     }
 
     // update comment
     [HttpPatch("{id}")]
     [Authorize]
-    public async Task<ActionResult> UpdateCommentAsync([FromRoute] long id, [FromBody] string content)
+    public async Task<ActionResult<ResponseModel<CommentModel>>> UpdateCommentAsync([FromRoute] long id, [FromBody] string content)
     {
-        var commentToUpdate = await _commentService.GetCommentAsync(id);
-        if (commentToUpdate == null)
+        try
         {
-            return NotFound();
+            var model = new CommentRequestModel { Id = id, Content = content };
+            var comment = await _commentService.UpdateCommentAsync(model, User);
+            return Ok(ResponseModel.CreateSuccess("Update comment successfully", comment));
         }
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null)
+        catch (ApiServiceException e)
         {
-            return NotFound();
+            return BadRequest(ResponseModel.CreateError(e.Message));
         }
-        if (commentToUpdate.User.Id != currentUser.Id)
+        catch (Exception e)
         {
-            return Unauthorized();
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
         }
-        if (content == string.Empty)
-        {
-            // delete
-            var deletedComment = await _commentService.DeleteCommentAsync(commentToUpdate);
-            return Ok(new Response { Success = true, Message = "Delete comment successfully", Data = deletedComment });
-        }
-        var updatedComment = await _commentService.UpdateCommentAsync(commentToUpdate, content);
-        return Ok(new Response { Success = true, Message = "Edit comment successfully", Data = updatedComment });
     }
 
     // delete comment
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteCommentAsync(long id)
+    public async Task<ActionResult<ResponseModel>> DeleteCommentAsync(long id)
     {
-        var commentToDelete = await _commentService.GetCommentAsync(id);
-        if (commentToDelete == null)
+        try
         {
-            return NotFound();
+            var model = new CommentRequestModel { Id = id, Content = "" };
+            await _commentService.DeleteCommentAsync(model);
+            return Ok(ResponseModel.CreateSuccess("Delete comment successfully"));
         }
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null)
+        catch (ApiServiceException e)
         {
-            return NotFound();
+            return BadRequest(ResponseModel.CreateError(e.Message));
         }
-        if (commentToDelete.User.Id != currentUser.Id)
+        catch (Exception e)
         {
-            return Unauthorized();
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
         }
-        var deletedComment = await _commentService.DeleteCommentAsync(commentToDelete);
-        return Ok(new Response { Success = true, Message = "Comment successfully", Data = deletedComment });
     }
 
     // get all comments
     [HttpGet]
     [Route($"/API/{Api.Version}/Comics/{{cid}}/[controller]")]
-    public async Task<ActionResult<IEnumerable<Comment>>> GetAllCommentsAsync([FromRoute] long cid)
+    public async Task<ActionResult<ResponseModel<IEnumerable<Comment>>>> GetAllCommentsAsync([FromRoute(Name = "cid")] long comicId)
     {
-        var comic = await _comicDao.GetAsync(cid);
-        if (comic == null)
+        try
         {
-            return NotFound(new Response
-            {
-                Success = false,
-                Message = "Comic not found"
-            });
+            var comments = await _commentService.GetCommentsAsync(comicId);
+            return Ok(ResponseModel.CreateSuccess("Get all comments successfully", comments));
         }
-        var comments = await _commentService.GetCommentsAsync(comic);
-        return Ok(new Response
+        catch (ApiServiceException e)
         {
-            Success = true,
-            Message = "Get all comments successfully",
-            Data = comments
-        });
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
     }
 
 }

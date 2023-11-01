@@ -8,27 +8,37 @@ public sealed partial class YomikazeDbInitializer : DbInitializer<YomikazeDbCont
 {
     private bool genreSeeded = false;
     private bool comicSeeded = false;
+    private bool isInitialized = false;
 
     public YomikazeDbInitializer(YomikazeDbContext dbContext) : base(dbContext)
     {
-        genreSeeded = IsTableNotEmpty<Genre>();
-        comicSeeded = IsTableNotEmpty<Comic>();
     }
 
     protected override bool IsInitialized()
     {
+        if (!isInitialized)
+        {
+            genreSeeded = IsTableNotEmpty<Genre>();
+            comicSeeded = IsTableNotEmpty<Comic>();
+            isInitialized = true;
+        }
         return genreSeeded && comicSeeded;
     }
 
     protected override void Seed()
     {
         DbContext.Genres.AddRange(DefaultData.Genres);
+        DbContext.Comics.AddRange(DefaultData.Comics);
+        DbContext.Chapters.AddRange(DefaultData.Chapters);
+        DbContext.Pages.AddRange(DefaultData.Pages);
     }
 
     protected override async Task SeedAsync()
     {
-        if (!genreSeeded) await DbContext.Genres.AddRangeAsync(DefaultData.Genres);
-        if (!comicSeeded) await DbContext.Comics.AddRangeAsync(DefaultData.Comics);
+        await DbContext.Genres.AddRangeAsync(DefaultData.Genres);
+        await DbContext.Comics.AddRangeAsync(DefaultData.Comics);
+        await DbContext.Chapters.AddRangeAsync(DefaultData.Chapters);
+        await DbContext.Pages.AddRangeAsync(DefaultData.Pages);
     }
 
     protected override void Migrate()

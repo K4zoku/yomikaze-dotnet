@@ -11,7 +11,6 @@ public class ImageUploadService
 
         await using var stream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(stream);
-
         return "/images/" + fileName;
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Yomikaze.WebAPI.Helpers.Attributes;
 
-namespace Yomikaze.WebAPI.Models;
+namespace Yomikaze.WebAPI.Models.Request;
 
-public class UploadImageRequest
+public class ImageUploadModel
 {
     [Required]
     [DataType(DataType.Upload)]

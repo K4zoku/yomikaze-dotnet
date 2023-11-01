@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Database.Entities;
@@ -5,7 +6,7 @@ using Yomikaze.Domain.Database.Entities.Identity;
 
 namespace Yomikaze.Infrastructure.Data;
 
-public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, long>
+public class YomikazeDbContext : IdentityDbContext<User, IdentityRole<long>, long>
 {
 
     public YomikazeDbContext() { }
@@ -29,6 +30,13 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, l
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<User>().ToTable("Users");
+        builder.Entity<IdentityRole<long>>().ToTable("Roles");
+        builder.Entity<IdentityUserLogin<long>>().ToTable("UserLogins");
+        builder.Entity<IdentityUserClaim<long>>().ToTable("UserClaims");
+        builder.Entity<IdentityUserToken<long>>().ToTable("UserTokens");
+        builder.Entity<IdentityUserRole<long>>().ToTable("UserRoles");
+        builder.Entity<IdentityRoleClaim<long>>().ToTable("RoleClaims");
         builder.ApplyConfigurationsFromAssembly(typeof(YomikazeDbContext).Assembly);
     }
 }
