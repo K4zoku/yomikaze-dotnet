@@ -2,7 +2,7 @@
 
 namespace Yomikaze.WebAPI.Models;
 
-public class Response
+public class Response<T, E>
 {
     public virtual bool Success { get; set; }
 
@@ -10,5 +10,18 @@ public class Response
     public virtual string? Message { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual object? Data { get; set; }
+    public virtual T? Data { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public E Errors { get; set; } = default!;
+}
+
+public class Response : Response<object, IDictionary<string, string>>
+{
+
+}
+
+public class Response<T> : Response<T, IDictionary<string, string>>
+{
+
 }

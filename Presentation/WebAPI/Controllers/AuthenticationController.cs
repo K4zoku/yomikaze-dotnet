@@ -27,12 +27,12 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("SignIn")]
-    public async Task<ActionResult<SignInResponse>> SignIn([FromBody] SignInRequest model)
+    public async Task<ActionResult<AuthResponse>> SignIn([FromBody] SignInRequest model)
     {
         var user = await UserManager.FindByNameAsync(model.Username);
         if (user == null)
         {
-            return Unauthorized(new SignInResponse
+            return Unauthorized(new AuthResponse
             {
                 Success = false,
                 Message = "User not found"
@@ -41,7 +41,7 @@ public class AuthenticationController : ControllerBase
         var result = await UserManager.CheckPasswordAsync(user, model.Password);
         if (!result)
         {
-            return Unauthorized(new SignInResponse
+            return Unauthorized(new AuthResponse
             {
                 Success = false,
                 Message = "Password not match"
@@ -55,7 +55,7 @@ public class AuthenticationController : ControllerBase
             new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
         };
         var token = GetToken(claims).ToTokenString();
-        return Ok(new SignInResponse
+        return Ok(new AuthResponse
         {
             Token = token,
             Success = true,
@@ -65,12 +65,12 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("SignUp")]
-    public async Task<ActionResult<SignInResponse>> SignUp([FromBody] SignUpRequest model)
+    public async Task<ActionResult<AuthResponse>> SignUp([FromBody] SignUpRequest model)
     {
         var user = await UserManager.FindByNameAsync(model.Username) ?? await UserManager.FindByEmailAsync(model.Email);
         if (user != null)
         {
-            return BadRequest(new SignInResponse
+            return BadRequest(new AuthResponse
             {
                 Success = false,
                 Message = "Account is already exist"
@@ -79,7 +79,7 @@ public class AuthenticationController : ControllerBase
 
         if (!model.Password.Equals(model.ConfirmPassword))
         {
-            return BadRequest(new SignInResponse
+            return BadRequest(new AuthResponse
             {
                 Success = false,
                 Message = "Password and confirm password not match"
@@ -92,11 +92,11 @@ public class AuthenticationController : ControllerBase
         if (!result.Succeeded)
         {
             // return 500
-            return StatusCode(500, new SignInResponse
+            return StatusCode(500, new AuthResponse
             {
                 Success = false,
                 Message = "There was error while creating account",
-                Data = result.Errors.Select(e => e.Description)
+                Errors = result.Errors.ToDictionary(e => e.Code, e => e.Description)
             });
         }
 
@@ -104,14 +104,14 @@ public class AuthenticationController : ControllerBase
         {
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
         };
         var token = GetToken(claims).ToTokenString();
-        return Ok(new SignInResponse
+        return Ok(new AuthResponse
         {
             Token = token,
             Success = true,
-            Message = "Create account successful"
+            Message = "Authentication successful"
         });
 
     }
@@ -120,14 +120,14 @@ public class AuthenticationController : ControllerBase
     [Authorize]
     public ActionResult<Response> Get()
     {
-        return Ok(value: new Response
+        return Ok(new Response
         {
             Success = true,
             Message = "Authorized",
             Data = new
             {
                 Id = User.GetId(),
-                Claims = User.Claims.Select(c => new Dictionary<string, string> { { c.Type, c.Value } })
+                Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value)
             }
         });
     }

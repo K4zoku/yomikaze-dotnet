@@ -12,8 +12,6 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, l
 
     public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options) { }
 
-    public DbSet<Alias> Aliases { get; set; } = default!;
-    public DbSet<Artist> Artists { get; set; } = default!;
     public DbSet<Chapter> Chapters { get; set; } = default!;
     public DbSet<Comic> Comics { get; set; } = default!;
     public DbSet<Comment> Comments { get; set; } = default!;

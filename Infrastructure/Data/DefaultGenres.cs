@@ -2,7 +2,7 @@
 
 namespace Yomikaze.Infrastructure.Data;
 
-public sealed partial class  YomikazeDbInitializer
+public sealed partial class YomikazeDbInitializer
 {
     private static partial class DefaultData
     {
@@ -68,5 +68,5 @@ public sealed partial class  YomikazeDbInitializer
             },
             new() { Name = "Tragedy", Description = "A story that ends in a tragic or unhappy way." },
         };
-    } 
-} 
+    }
+}
