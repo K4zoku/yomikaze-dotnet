@@ -62,6 +62,6 @@ public class ComicsController : ControllerBase
         {
             return NotFound(ResponseModel.CreateError($"Could not found chapter '{chapterIndex}' in comic with id '{id}'"));
         }
-        return Ok(ResponseModel.CreateSuccess());
+        return Ok(ResponseModel.CreateSuccess(chapter));
     }
 }
