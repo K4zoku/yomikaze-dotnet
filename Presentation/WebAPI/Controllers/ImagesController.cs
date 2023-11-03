@@ -32,6 +32,8 @@ public class ImagesController : ControllerBase
                     (int)HttpStatusCode.InternalServerError,
                     ResponseModel.CreateError("Image uploaded successfully but failed to generate URL")
                 );
+        var Uri = new Uri(url);
+        url = Uri.PathAndQuery;
         return Ok(ResponseModel.CreateSuccess(new ImageUploadResponse { Url = url }));
     }
 

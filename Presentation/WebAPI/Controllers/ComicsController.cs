@@ -2,6 +2,7 @@
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities;
+using Yomikaze.WebAPI.Models.Response;
 
 namespace Yomikaze.WebAPI.Controllers;
 
@@ -19,48 +20,48 @@ public class ComicsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetComics()
     {
-        return Ok(await _comicDao.GetAllAsync());
+        return Ok(ResponseModel.CreateSuccess(await _comicDao.GetAllAsync()));
     }
 
     // get comic
     [HttpGet("{id}")]
-    public async Task<ActionResult<Comic>> GetComicAsync(long id)
+    public async Task<ActionResult<ResponseModel<Comic>>> GetComicAsync(long id)
     {
         var comic = await _comicDao.GetAsync(id);
         if (comic == null)
         {
-            return NotFound();
+            return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
         }
-        return comic;
+        return Ok(ResponseModel.CreateSuccess(comic));
     }
 
     // get comic chapters
     [HttpGet("{id}/Chapters")]
-    public async Task<ActionResult<IEnumerable<Chapter>>> GetComicChaptersAsync(long id)
+    public async Task<ActionResult<ResponseModel<IEnumerable<Chapter>>>> GetComicChaptersAsync(long id)
     {
         var comic = await _comicDao.GetAsync(id);
         if (comic == null)
         {
-            return NotFound();
+            return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
         }
-        return comic.Chapters.ToList();
+        return Ok(ResponseModel.CreateSuccess(comic.Chapters.AsEnumerable()));
     }
 
     // get comic chapter
     [HttpGet("{id}/Chapters/{chapterIndex}")]
-    public async Task<ActionResult<Chapter>> GetComicChapterAsync(long id, long chapterIndex)
+    public async Task<ActionResult<ResponseModel<Chapter>>> GetComicChapterAsync(long id, long chapterIndex)
     {
         var comic = await _comicDao.GetAsync(id);
         if (comic == null)
         {
-            return NotFound();
+            return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
         }
         var chapters = comic.Chapters.AsQueryable();
         var chapter = chapters.FirstOrDefault(c => c.Index == chapterIndex);
         if (chapter == null)
         {
-            return NotFound();
+            return NotFound(ResponseModel.CreateError($"Could not found chapter '{chapterIndex}' in comic with id '{id}'"));
         }
-        return chapter;
+        return Ok(ResponseModel.CreateSuccess());
     }
 }
