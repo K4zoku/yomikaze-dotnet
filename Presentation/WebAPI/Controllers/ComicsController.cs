@@ -20,9 +20,9 @@ public class ComicsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetComics()
+    public async Task<ActionResult<ResponseModel<ComicModel>>> GetComics()
     {
-        return Ok(ResponseModel.CreateSuccess(await _comicDao.GetAllAsync()));
+        return Ok(ResponseModel.CreateSuccess((await _comicDao.GetAllAsync()).Select(c => c.ToModel(false)).ToList()));
     }
 
     // get comic
@@ -34,7 +34,7 @@ public class ComicsController : ControllerBase
         {
             return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
         }
-        return Ok(ResponseModel.CreateSuccess(comic.ToModel()));
+        return Ok(ResponseModel.CreateSuccess(comic.ToModel(false)));
     }
 
     // get comic chapters
@@ -46,7 +46,7 @@ public class ComicsController : ControllerBase
         {
             return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
         }
-        var chapters = comic.Chapters.Select(c => c.ToModel());
+        var chapters = comic.Chapters.OrderBy(c => c.Index).Select(c => c.ToModel(false));
         return Ok(ResponseModel.CreateSuccess(chapters));
     }
 

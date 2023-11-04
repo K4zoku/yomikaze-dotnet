@@ -37,6 +37,13 @@ public static class ModelExtensions
         return (ChapterModel)chapter;
     }
 
+    public static ChapterModel ToModel(this Chapter chapter, bool includePages)
+    {
+        var chapterModel = (ChapterModel)chapter;
+        chapterModel.Pages = includePages ? chapter.Pages?.Select(ToModel).ToArray() : null;
+        return chapterModel;
+    }
+
     public static PageModel ToModel(this Page page)
     {
         return (PageModel)page;
@@ -45,5 +52,12 @@ public static class ModelExtensions
     public static ComicModel ToModel(this Comic comic)
     {
         return (ComicModel)comic;
+    }
+
+    public static ComicModel ToModel(this Comic comic, bool includeChapters)
+    {
+        var comicModel = (ComicModel)comic;
+        comicModel.Chapters = includeChapters ? comic.Chapters?.Select(ToModel).ToArray() : null;
+        return comicModel;
     }
 }

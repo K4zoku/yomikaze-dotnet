@@ -34,7 +34,7 @@ public class ComicDao : BaseDao<Comic>, IDao<Comic>
             .Where(entity => entity.Id.Equals(id))
             .Include(entity => entity.Genres)
             .Include(entity => entity.Chapters)
-            //.ThenInclude(entity => entity.Pages)
+            .ThenInclude(entity => entity.Pages)
             .FirstOrDefaultAsync();
     }
 
