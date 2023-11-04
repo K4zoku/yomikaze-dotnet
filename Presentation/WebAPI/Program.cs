@@ -87,11 +87,15 @@ services
     });
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddSingleton<YomikazeDbInitializer>();
-services.AddSingleton(new ImageUploadService());
+services.AddScoped<YomikazeDbInitializer>();
+
 services.AddScoped<IDao<Comic>, ComicDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();
+
+services.AddScoped<AuthenticationService>();
+services.AddSingleton<ImageUploadService>();
 services.AddScoped<CommentService>();
+
 
 services.AddSignalR();
 

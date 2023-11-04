@@ -21,6 +21,8 @@ public class YomikazeDbContext : IdentityDbContext<User, IdentityRole<long>, lon
     public virtual DbSet<Notification> Notifications { get; set; } = default!;
     public virtual DbSet<Page> Pages { get; set; } = default!;
 
+    public virtual DbSet<LibraryEntry> LibraryEntries { get; set; } = default!;
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (optionsBuilder.IsConfigured) return;

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities.Identity;
 
@@ -16,7 +15,6 @@ public class Comment : BaseEntity, IEntity
     public virtual Comment? ReplyTo { get; set; }
 
     [InverseProperty(nameof(Comment.ReplyTo))]
-    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual ICollection<Comment> Replies { get; set; } = new List<Comment>();
 
     public DateTimeOffset CreatedAt { get; set; }
