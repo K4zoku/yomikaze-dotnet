@@ -26,4 +26,24 @@ public static class ModelExtensions
             Replies = comment.Replies?.Select(ToModel).ToArray(),
         };
     }
+
+    public static GenreModel ToModel(this Genre genre)
+    {
+        return (GenreModel)genre;
+    }
+
+    public static ChapterModel ToModel(this Chapter chapter)
+    {
+        return (ChapterModel)chapter;
+    }
+
+    public static PageModel ToModel(this Page page)
+    {
+        return (PageModel)page;
+    }
+
+    public static ComicModel ToModel(this Comic comic)
+    {
+        return (ComicModel)comic;
+    }
 }

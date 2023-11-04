@@ -1,21 +1,25 @@
-﻿using Yomikaze.Domain.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities.Identity;
 
 namespace Yomikaze.Domain.Database.Entities;
 
-public class Comment : BaseEntity, IEntity 
+public class Comment : BaseEntity, IEntity
 {
     public string Content { get; set; } = default!;
-    
+
     public virtual User User { get; set; } = default!;
-    
+
     public virtual Comic Comic { get; set; } = default!;
-    
+
     public virtual Comment? ReplyTo { get; set; }
-    
+
+    [InverseProperty(nameof(Comment.ReplyTo))]
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual ICollection<Comment> Replies { get; set; } = new List<Comment>();
-    
+
     public DateTimeOffset CreatedAt { get; set; }
-    
+
     public DateTimeOffset? UpdatedAt { get; set; }
 }

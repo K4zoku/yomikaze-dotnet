@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Database.Entities;
@@ -13,6 +14,10 @@ public class Comic : BaseEntity, IEntity
 
     public virtual string? Aliases { get; set; } = default!;
     public virtual string? Authors { get; set; } = default!;
+
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
+
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Yomikaze.Application.Data.Access;
+using Yomikaze.Application.Data.Hubs;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
@@ -86,11 +87,13 @@ services
     });
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-
+services.AddSingleton<YomikazeDbInitializer>();
 services.AddSingleton(new ImageUploadService());
 services.AddScoped<IDao<Comic>, ComicDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();
 services.AddScoped<CommentService>();
+
+services.AddSignalR();
 
 var app = builder.Build();
 var env = app.Environment;
@@ -107,27 +110,32 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<YomikazeHub>("/hubs/yomikaze");
 // Initialize database
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var scopedServices = scope.ServiceProvider;
-    var dbContext = scopedServices.GetRequiredService<YomikazeDbContext>();
-    var dbInitializer = new YomikazeDbInitializer(dbContext);
+    var dbInitializer = scopedServices.GetRequiredService<YomikazeDbInitializer>();
     dbInitializer.Initialize();
 
     // Add default admin user
     var userManager = scopedServices.GetRequiredService<UserManager<User>>();
-    var user = await userManager.FindByNameAsync("admin");
-    if (user is null)
+    var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole<long>>>();
+    if (!roleManager.Roles.Any(r => r.Name == "Administrator"))
     {
-        user = new User
+        var role = new IdentityRole<long>("Administrator");
+        await roleManager.CreateAsync(role);
+    }
+    if (!userManager.Users.Any(u => u.UserName == "admin"))
+    {
+        var user = new User
         {
             UserName = "admin",
             Email = "admin@localhost",
             Fullname = "Administrator"
         };
         await userManager.CreateAsync(user, "Admin@123");
+        await userManager.AddToRoleAsync(user, "Administrator");
     }
 }
 
