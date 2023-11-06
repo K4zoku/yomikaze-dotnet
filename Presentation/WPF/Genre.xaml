@@ -1,0 +1,50 @@
+﻿<Window x:Class="Yomikaze.WPF.Genre"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yomikaze.WPF"
+        mc:Ignorable="d"
+        Background="DimGray"
+        Title="Genre" Height="220" Width="400">
+    <Grid>
+        <Grid HorizontalAlignment="Center">
+            <DockPanel VerticalAlignment="Top" Margin="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <!--Label & TextBox-->
+                    <StackPanel Orientation="Vertical"
+                         HorizontalAlignment="Left" Width="400">
+                        <!--<Label Name="lbList" Foreground="White" FontWeight="DemiBold" 
+                        FontSize="20" Content="List Comic"/>-->
+
+                        <Label Name="lbCreate" Foreground="White" FontWeight="DemiBold" 
+                         FontSize="18" Content="Create List of Comic"/>
+
+                        <Label Name="lbName" Foreground="White" Content="Name" />
+                        <TextBox Name="txtName"  HorizontalAlignment="Stretch"
+                        Height="25"
+                        Text="{Binding Path=Name, Mode=OneWay}"
+                        DataContext="{Binding ElementName=lvName,Path=SelectedItem}"/>
+                        <Label Name="lbDescription" Foreground="White" Content="Description"/>
+                        <TextBox Name="txtDescription" HorizontalAlignment="Stretch"
+                          Height="25"
+                          Text="{Binding Path=Description, Mode=OneWay}"
+                          DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}"/>
+
+                       
+                        <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center" Width="218">
+                            <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save"/>
+                            <Button x:Name="btnCancel" Margin="10" Width="80" Content="Cancel"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>

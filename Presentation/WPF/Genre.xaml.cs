@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Yomikaze.WPF
 {
     /// <summary>
-    /// Interaction logic for ListComic.xaml
+    /// Interaction logic for Genre.xaml
     /// </summary>
-    public partial class ListComic : Window
+    public partial class Genre : Window
     {
-        public ListComic()
+        public Genre()
         {
             InitializeComponent();
         }

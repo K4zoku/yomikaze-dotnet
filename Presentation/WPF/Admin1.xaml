@@ -1,4 +1,4 @@
-﻿<Window x:Class="Yomikaze.WPF.Admin"
+﻿<Window x:Class="Yomikaze.WPF.Admin1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,12 +6,11 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
-        Title="Admin" Height="450" Width="800">
+        Title="Admin_User" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="205"/>
         </Grid.ColumnDefinitions>
-        <!--main-->
         <StackPanel Margin="10,0,0,0">
             <!--UserName-->
             <!--<Image Source=""/>-->
@@ -19,7 +18,7 @@
                 <!--LeftMenu-->
                 <Border Width="40" Height="40" Background="White" CornerRadius="10">
                     <TextBlock Text="AD" FontSize="22" FontWeight="SemiBold" 
-                           TextAlignment="Center" VerticalAlignment="Center" Margin="3 0 0 2"/>
+                   TextAlignment="Center" VerticalAlignment="Center" Margin="3 0 0 2"/>
                 </Border>
                 <StackPanel Margin="10 0 0 0" VerticalAlignment="Center">
                     <TextBlock Text="Admin" FontSize="15" Margin="0 0 0 5" Foreground="White"/>
@@ -57,43 +56,6 @@
                 </StackPanel>
             </Button>
             <!--mainmenu-->
-
         </StackPanel>
-
-        <StackPanel Margin="228,65,-585,0" Height="269" VerticalAlignment="Top">
-            <ListView Grid.Row="2" Name="lvListComics" Width="Auto" Height="Auto">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Name" Width="42"
-                DisplayMemberBinding="{Binding Path=Name }"/>
-                        <GridViewColumn Header="Description" Width="100"
-                DisplayMemberBinding="{Binding Path=Description }"/>
-                        <GridViewColumn Header="Cover" Width="50"
-                DisplayMemberBinding="{Binding Path=Cover}"/>
-                        <GridViewColumn Header="Banner" Width="60"
-                DisplayMemberBinding="{Binding Path=Banner }"/>
-                        <GridViewColumn Header="Published" Width="70"
-                 DisplayMemberBinding="{Binding Path=Published}"/>
-                        <GridViewColumn Header="Ended" Width="50" 
-                DisplayMemberBinding="{Binding Path=Ended}"/>
-                        <GridViewColumn Header="Aliases" Width="60" 
-                DisplayMemberBinding="{Binding Path=Aliases}"/>
-                        <GridViewColumn Header="Author" Width="60" 
-                DisplayMemberBinding="{Binding Path=Author}"/>
-                        <GridViewColumn Header="Genre" Width="70" 
-                DisplayMemberBinding="{Binding Path=Genre}"/>
-                    </GridView>
-                </ListView.View>
-
-            </ListView>
-            <StackPanel Grid.Column="1" Margin="10 200 10 10" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
-                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btnCreate_Click" />
-                <Button Name="btnInsert" Margin="10" Width="60" Content="Insert" Click="btnInsert_Click" />
-                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click" />
-                <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="btnDelete_Click" />
-                <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search" Click="btnSearchLoad_Click"/>
-            </StackPanel>
-        </StackPanel>
-        
     </Grid>
 </Window>
