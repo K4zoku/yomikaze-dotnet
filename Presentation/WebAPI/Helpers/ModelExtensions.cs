@@ -8,12 +8,7 @@ public static class ModelExtensions
 {
     public static UserModel ToModel(this User user)
     {
-        return new UserModel(user);
-    }
-
-    public static UserModel ToModel(this User user, bool onlyId)
-    {
-        return onlyId ? new UserModel { Id = user.Id } : user.ToModel();
+        return (UserModel)user;
     }
 
     public static CommentModel ToModel(this Comment comment)
@@ -22,7 +17,7 @@ public static class ModelExtensions
         {
             Content = comment.Content,
             CreatedAt = comment.CreatedAt,
-            CreatedBy = comment.User.ToModel(true),
+            CreatedBy = new UserModel { Id = comment.UserId },
             Replies = comment.Replies?.Select(ToModel).ToArray(),
         };
     }

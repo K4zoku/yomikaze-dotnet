@@ -8,6 +8,8 @@ public class Comment : BaseEntity, IEntity
 {
     public string Content { get; set; } = default!;
 
+    [ForeignKey(nameof(User))]
+    public virtual long UserId { get; set; }
     public virtual User User { get; set; } = default!;
 
     public virtual Comic Comic { get; set; } = default!;

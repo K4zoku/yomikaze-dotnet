@@ -6,8 +6,14 @@ namespace Yomikaze.WebAPI.Models.Common;
 public class UserModel
 {
     public long Id { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Fullname { get; set; } = default!;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Email { get; set; } = default!;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Username { get; set; } = default!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -37,4 +43,6 @@ public class UserModel
         Bio = user.Bio;
         Birthday = user.Birthday;
     }
+
+    public static implicit operator UserModel(User user) => new(user);
 }
