@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Hubs;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
@@ -14,6 +15,8 @@ public class CommentDao : BaseDao<Comment>, IDao<Comment>
     {
         Hub = hub;
     }
+
+
 
     public override async Task AddAsync(Comment entity)
     {
@@ -33,5 +36,23 @@ public class CommentDao : BaseDao<Comment>, IDao<Comment>
         await Hub.Clients.All.SendAsync(nameof(Comment), "Updated", entity.Id);
         return result;
 
+    }
+
+    public override async Task<Comment?> GetAsync(long id)
+    {
+        return await DbSet
+            .Include(comment => comment.User)
+            .Include(comment => comment.Comic)
+            .Include(comment => comment.Replies)
+            .FirstOrDefaultAsync(entity => entity.Id.Equals(id));
+    }
+
+    public override async Task<IEnumerable<Comment>> GetAllAsync()
+    {
+        return await DbSet
+            .Include(comment => comment.User)
+            .Include(comment => comment.Comic)
+            .Include(comment => comment.Replies)
+            .ToListAsync();
     }
 }
