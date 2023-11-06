@@ -65,7 +65,6 @@ services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret))
         };
     });
-
 services
     .AddControllers()
     .ConfigureApiBehaviorOptions(options =>

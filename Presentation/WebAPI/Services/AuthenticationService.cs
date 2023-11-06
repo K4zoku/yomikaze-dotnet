@@ -27,7 +27,7 @@ public class AuthenticationService
         var passwordMatched = await UserManager.CheckPasswordAsync(user, model.Password);
         if (!passwordMatched) throw new ApiServiceException("Password does not match");
 
-        var token = GetToken(user).ToTokenString();
+        var token = (await GetToken(user)).ToTokenString();
         return new TokenModel(token);
     }
 
@@ -44,7 +44,7 @@ public class AuthenticationService
         };
 
         var result = await UserManager.CreateAsync(user, model.Password);
-        if (result.Succeeded) return new TokenModel(GetToken(user));
+        if (result.Succeeded) return new TokenModel(await GetToken(user));
 
         throw new ApiServiceException(result.Errors.Select(error => error.Description));
     }
@@ -61,14 +61,16 @@ public class AuthenticationService
         return token;
     }
 
-    private JwtSecurityToken GetToken(User user)
+    private async Task<JwtSecurityToken> GetToken(User user)
     {
-        var claims = new[]
+        var roles = (await UserManager.GetRolesAsync(user)).Select(r => new Claim(ClaimTypes.Role, r));
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString())
         };
+        claims.AddRange(roles);
         return GetToken(claims);
     }
 }

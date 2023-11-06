@@ -17,10 +17,10 @@ public class ComicModel
     public virtual string? Authors { get; set; } = default!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual ICollection<GenreModel> Genres { get; set; } = default!;
+    public virtual ICollection<GenreModel>? Genres { get; set; } = default!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual ICollection<ChapterModel> Chapters { get; set; } = default!;
+    public virtual ICollection<ChapterModel>? Chapters { get; set; } = default!;
 
     public static explicit operator ComicModel(Comic comic)
     {
