@@ -10,7 +10,11 @@ public class Comment : BaseEntity, IEntity
 
     [ForeignKey(nameof(User))]
     public virtual long UserId { get; set; }
+
     public virtual User User { get; set; } = default!;
+
+    [ForeignKey(nameof(Comic))]
+    public long ComicId { get; set; }
 
     public virtual Comic Comic { get; set; } = default!;
 

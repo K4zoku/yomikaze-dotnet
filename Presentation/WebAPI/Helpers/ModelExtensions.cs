@@ -55,4 +55,5 @@ public static class ModelExtensions
         comicModel.Chapters = includeChapters ? comic.Chapters?.Select(ToModel).ToArray() : null;
         return comicModel;
     }
+
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities;
@@ -13,10 +15,12 @@ namespace Yomikaze.WebAPI.Controllers;
 public class ComicsController : ControllerBase
 {
     private readonly IDao<Comic> _comicDao;
+    private readonly IDao<Genre> _genreDao;
 
-    public ComicsController(IDao<Comic> comicDao)
+    public ComicsController(IDao<Comic> comicDao, IDao<Genre> genreDao)
     {
         _comicDao = comicDao;
+        _genreDao = genreDao;
     }
 
     [HttpGet]
@@ -66,5 +70,51 @@ public class ComicsController : ControllerBase
             return NotFound(ResponseModel.CreateError($"Could not found chapter '{chapterIndex}' in comic with id '{id}'"));
         }
         return Ok(ResponseModel.CreateSuccess(chapter.ToModel()));
+    }
+
+    [HttpGet("Search/By-Genre/{genre}")]
+    public async Task<ResponseModel<IEnumerable<ComicModel>>> SearchByGenreAsync(string genre)
+    {
+        var comics = await _comicDao.QueryAsync();
+        IEnumerable<Comic> filtered;
+        if (long.TryParse(genre, out long id))
+        {
+            filtered = comics.Where(c => c.Genres.Any(g => g.Id == id) || c.Genres.Any(g => g.Name == genre));
+        }
+        else
+        {
+            filtered = comics.Where(c => c.Genres.Any(g => g.Name == genre));
+        }
+        return ResponseModel.CreateSuccess(filtered.Select(c => c.ToModel(false)));
+    }
+
+    [HttpGet("Search/By-Name/{name}")]
+    public async Task<ResponseModel<IEnumerable<ComicModel>>> SearchByNameAsync(string name)
+    {
+        var comics = await _comicDao.QueryAsync();
+        name = name.ToLower();
+        var filtered = await comics.Where(c => c.Name.ToLower().Contains(name)).ToListAsync();
+        return ResponseModel.CreateSuccess(filtered.Select(c => c.ToModel(false)));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrator")]
+    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicModel model)
+    {
+        var comic = new Comic
+        {
+            Name = model.Name,
+            Description = model.Description,
+            Cover = model.Cover,
+            Authors = model.Authors,
+            Aliases = model.Aliases,
+            Banner = model.Banner,
+            Published = model.Published,
+            Ended = model.Ended,
+            Genres = model.Genres.Select(genre => _genreDao.GetAsync(genre.Id).Result).ToList(),
+        };
+        await _comicDao.AddAsync(comic);
+        _comicDao.SaveChanges();
+        return ResponseModel.CreateSuccess(comic.ToModel());
     }
 }

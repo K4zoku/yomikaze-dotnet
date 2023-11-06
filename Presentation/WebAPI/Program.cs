@@ -118,6 +118,7 @@ services.AddScoped<YomikazeDbInitializer>();
 
 services.AddScoped<IDao<Comic>, ComicDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();
+services.AddScoped<IDao<Genre>, GenreDao>();
 
 services.AddScoped<AuthenticationService>();
 services.AddSingleton<ImageUploadService>();

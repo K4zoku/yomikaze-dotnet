@@ -4,6 +4,7 @@ using Yomikaze.Domain.Common;
 
 namespace Yomikaze.Domain.Database.Entities;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Genre : BaseEntity, IEntity
 {
     public string Name { get; set; } = default!;
