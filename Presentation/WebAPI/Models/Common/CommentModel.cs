@@ -9,7 +9,7 @@ public class CommentModel
     public DateTimeOffset CreatedAt { get; set; }
     public required UserModel CreatedBy { get; set; } = default!;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public DateTimeOffset UpdatedAt { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

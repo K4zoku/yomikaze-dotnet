@@ -47,12 +47,7 @@ public class CommentService
         };
         await _commentDao.AddAsync(comment);
         _commentDao.SaveChanges();
-        var model = new CommentModel
-        {
-            Content = comment.Content,
-            CreatedAt = comment.CreatedAt,
-            CreatedBy = user.ToModel(),
-        };
+        var model = comment.ToModel();
         return model;
     }
 
