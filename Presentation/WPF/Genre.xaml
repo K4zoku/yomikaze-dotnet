@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
-        Title="Genre" Height="220" Width="400">
+        Title="Genre" Height="234" Width="400">
     <Grid>
         <Grid HorizontalAlignment="Center">
             <DockPanel VerticalAlignment="Top" Margin="10">
@@ -19,26 +19,33 @@
                     </Grid.RowDefinitions>
                     <!--Label & TextBox-->
                     <StackPanel Orientation="Vertical"
-                         HorizontalAlignment="Left" Width="400">
+                         HorizontalAlignment="Left" Width="400" Margin="0,0,0,35">
                         <!--<Label Name="lbList" Foreground="White" FontWeight="DemiBold" 
                         FontSize="20" Content="List Comic"/>-->
 
                         <Label Name="lbCreate" Foreground="White" FontWeight="DemiBold" 
-                         FontSize="18" Content="Create List of Comic"/>
+                         FontSize="18" Content="Create List of Comic" Width="371"/>
 
-                        <Label Name="lbName" Foreground="White" Content="Name" />
+                        <Label Name="lbName" Foreground="White" Content="Name" Width="352" />
                         <TextBox Name="txtName"  HorizontalAlignment="Stretch"
                         Height="25"
                         Text="{Binding Path=Name, Mode=OneWay}"
-                        DataContext="{Binding ElementName=lvName,Path=SelectedItem}"/>
-                        <Label Name="lbDescription" Foreground="White" Content="Description"/>
+                        DataContext="{Binding ElementName=lvName,Path=SelectedItem}" RenderTransformOrigin="0.5,0.5" Width="355">
+                            <TextBox.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform AngleY="0.076"/>
+                                    <RotateTransform/>
+                                    <TranslateTransform Y="0.265"/>
+                                </TransformGroup>
+                            </TextBox.RenderTransform>
+                        </TextBox>
+                        <Label Name="lbDescription" Foreground="White" Content="Description" Width="354"/>
                         <TextBox Name="txtDescription" HorizontalAlignment="Stretch"
                           Height="25"
                           Text="{Binding Path=Description, Mode=OneWay}"
-                          DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}"/>
-
-                       
-                        <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center" Width="218">
+                          DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}" Width="357"/>
+                        <StackPanel Orientation="Horizontal" Width="218" Height="43">
                             <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save"/>
                             <Button x:Name="btnCancel" Margin="10" Width="80" Content="Cancel"/>
                         </StackPanel>

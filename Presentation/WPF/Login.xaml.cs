@@ -23,5 +23,12 @@ namespace Yomikaze.WPF
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Admin objAdmin= new Admin();
+            objAdmin.Show();
+            this.Close();
+        }
     }
 }

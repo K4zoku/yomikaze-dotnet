@@ -23,5 +23,32 @@ namespace Yomikaze.WPF
         {
             InitializeComponent();
         }
+
+        private void btnCreate_Click(object sender, RoutedEventArgs e)
+        {
+            Genre objGenre= new Genre();
+            objGenre.Show();
+            this.Close();
+        }
+
+        private void btnInsert_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnSearchLoad_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -6,13 +6,14 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
-        Title="Admin" Height="450" Width="800">
+        Title="Admin_ListComic" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="205"/>
+            <ColumnDefinition Width="28.94"/>
+            <ColumnDefinition Width="176.06"/>
         </Grid.ColumnDefinitions>
         <!--main-->
-        <StackPanel Margin="10,0,0,0">
+        <StackPanel Margin="10,0,0,0" Grid.ColumnSpan="2">
             <!--UserName-->
             <!--<Image Source=""/>-->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 35 0 0">
@@ -36,14 +37,14 @@
                 </StackPanel>
 
             </Button>
-            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" >
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_Genre_Click" >
                 <StackPanel Orientation="Horizontal" >
                     <!--icon-->
                     <TextBlock Text="Genre" Foreground="DimGray"/>
                     <!--<Image Source=""/>-->
                 </StackPanel>
             </Button>
-            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" >
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_User_Click" >
                 <StackPanel Orientation="Horizontal" >
                     <!--icon-->
                     <TextBlock Text="User" Foreground="DimGray"/>
@@ -60,7 +61,7 @@
 
         </StackPanel>
 
-        <StackPanel Margin="228,65,-585,0" Height="269" VerticalAlignment="Top">
+        <StackPanel Margin="199,65,-585,0" Height="269" VerticalAlignment="Top" Grid.Column="1">
             <ListView Grid.Row="2" Name="lvListComics" Width="Auto" Height="Auto">
                 <ListView.View>
                     <GridView>
@@ -88,12 +89,12 @@
             </ListView>
             <StackPanel Grid.Column="1" Margin="10 200 10 10" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
                 <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btnCreate_Click" />
-                <Button Name="btnInsert" Margin="10" Width="60" Content="Insert" Click="btnInsert_Click" />
-                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click" />
+                <Button Name="btnInsert" Margin="10" Width="60" Content="Insert" Click="btnInsert_Click"  />
+                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click"  />
                 <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="btnDelete_Click" />
                 <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search" Click="btnSearchLoad_Click"/>
             </StackPanel>
         </StackPanel>
-        
+
     </Grid>
 </Window>
