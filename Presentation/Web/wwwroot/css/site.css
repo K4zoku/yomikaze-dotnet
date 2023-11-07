@@ -16,3 +16,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+.nav-logo {
+    width: auto;
+    height: 3.5em;
+    flex-shrink: 0;
+    border-radius: 10px;
+}

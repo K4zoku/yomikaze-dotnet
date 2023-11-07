@@ -6,7 +6,22 @@
         xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Margin="10">
 
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30*" />
+                <ColumnDefinition Width="349*" />
+                <ColumnDefinition Width="30*" />
+            </Grid.ColumnDefinitions>
+            <Image Margin="12,12,16,71" Name="imgPhoto"
+    Stretch="Fill" Grid.Column="1" />
+            <Button Height="23" HorizontalAlignment="Left"
+    Margin="12,0,0,34" Name="btnLoad" VerticalAlignment="Bottom"
+    Width="75" Grid.Column="1" Click="btnLoad_Click">_Load</Button>
+            <Button Height="23" HorizontalAlignment="Left"
+ Name="btnUpload" VerticalAlignment="Bottom"
+Width="75" Grid.Column="1" Click="btnUpLoad_Click">_UpLoad</Button>
+        </Grid>
     </Grid>
 </Window>

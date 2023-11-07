@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Database.Entities;
@@ -5,22 +6,22 @@ using Yomikaze.Domain.Database.Entities.Identity;
 
 namespace Yomikaze.Infrastructure.Data;
 
-public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, long>
+public class YomikazeDbContext : IdentityDbContext<User, IdentityRole<long>, long>
 {
 
     public YomikazeDbContext() { }
 
     public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options) { }
 
-    public DbSet<Alias> Aliases { get; set; } = default!;
-    public DbSet<Artist> Artists { get; set; } = default!;
-    public DbSet<Chapter> Chapters { get; set; } = default!;
-    public DbSet<Comic> Comics { get; set; } = default!;
-    public DbSet<Comment> Comments { get; set; } = default!;
-    public DbSet<Genre> Genres { get; set; } = default!;
-    public DbSet<HistoryRecord> Histories { get; set; } = default!;
-    public DbSet<Notification> Notifications { get; set; } = default!;
-    public DbSet<Page> Pages { get; set; } = default!;
+    public virtual DbSet<Chapter> Chapters { get; set; } = default!;
+    public virtual DbSet<Comic> Comics { get; set; } = default!;
+    public virtual DbSet<Comment> Comments { get; set; } = default!;
+    public virtual DbSet<Genre> Genres { get; set; } = default!;
+    public virtual DbSet<HistoryRecord> Histories { get; set; } = default!;
+    public virtual DbSet<Notification> Notifications { get; set; } = default!;
+    public virtual DbSet<Page> Pages { get; set; } = default!;
+
+    public virtual DbSet<LibraryEntry> LibraryEntries { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,6 +32,13 @@ public class YomikazeDbContext : IdentityDbContext<YomikazeUser, YomikazeRole, l
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<User>().ToTable("Users");
+        builder.Entity<IdentityRole<long>>().ToTable("Roles");
+        builder.Entity<IdentityUserLogin<long>>().ToTable("UserLogins");
+        builder.Entity<IdentityUserClaim<long>>().ToTable("UserClaims");
+        builder.Entity<IdentityUserToken<long>>().ToTable("UserTokens");
+        builder.Entity<IdentityUserRole<long>>().ToTable("UserRoles");
+        builder.Entity<IdentityRoleClaim<long>>().ToTable("RoleClaims");
         builder.ApplyConfigurationsFromAssembly(typeof(YomikazeDbContext).Assembly);
     }
 }
