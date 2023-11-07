@@ -13,12 +13,12 @@ public class LibraryDao : BaseDao<LibraryEntry>, IDao<LibraryEntry>
 
     public override async Task<IEnumerable<LibraryEntry>> GetAllAsync()
     {
-        return await DbSet.Include(l => l.Comic).ToListAsync();
+        return await DbSet.Include(l => l.Comic).Include(l => l.User).ToListAsync();
     }
 
     public override async Task<LibraryEntry?> GetAsync(long id)
     {
-        return await DbSet.Include(l => l.Comic).FirstOrDefaultAsync(g => g.Id == id);
+        return await DbSet.Include(l => l.Comic).Include(l => l.User).FirstOrDefaultAsync(g => g.Id == id);
     }
 
 }

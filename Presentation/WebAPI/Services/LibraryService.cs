@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Yomikaze.Application.Data.Models;
 using Yomikaze.Application.Data.Models.Common;
 using Yomikaze.Domain.Common;
@@ -16,7 +17,7 @@ public class LibraryService
         _libraryDao = libraryDao;
     }
 
-    public async Task<LibraryEntryModel> AddToLibrary(long comicId, ClaimsPrincipal principal)
+    public async Task AddToLibrary(long comicId, ClaimsPrincipal principal)
     {
         var userId = principal.GetId();
         var entry = new LibraryEntry
@@ -26,14 +27,17 @@ public class LibraryService
         };
         await _libraryDao.AddAsync(entry);
         _libraryDao.SaveChanges();
-        return entry.ToModel();
     }
 
-    public async Task<IEnumerable<LibraryEntryModel>> GetLibrary(ClaimsPrincipal principal)
+    public async Task<IEnumerable<ComicModel>> GetLibrary(ClaimsPrincipal principal)
     {
         var userId = principal.GetId();
-        var library = await _libraryDao.FindAsync(l => l.UserId == userId);
-        return library.Select(l => l.ToModel());
+        var query = await _libraryDao.QueryAsync();
+        var library = await query.Where(l => l.UserId == userId)
+            .Include(l => l.User)
+            .Include(l => l.Comic)
+            .ToListAsync();
+        return library.Select(l => l.Comic.ToModel());
     }
 
     public async Task<bool> IsInLibrary(long comicId, ClaimsPrincipal principal)
@@ -48,7 +52,7 @@ public class LibraryService
         var userId = principal.GetId();
         var entry = (await _libraryDao.QueryAsync())
             .Where(l => l.UserId == userId && l.ComicId == comicId)
-            .FirstOrDefault() ?? throw new ApiServiceException("Comic not found in library!");
+            .FirstOrDefault() ?? throw new ApiServiceException("Comic is not in library");
         await _libraryDao.DeleteAsync(entry);
         _libraryDao.SaveChanges();
     }

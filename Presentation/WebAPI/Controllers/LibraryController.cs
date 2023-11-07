@@ -44,8 +44,8 @@ public class LibraryController : ControllerBase
     {
         try
         {
-            var entry = await _libraryService.AddToLibrary(comicId, User);
-            return Ok(ResponseModel.CreateSuccess("Add to library successfully", entry));
+            await _libraryService.AddToLibrary(comicId, User);
+            return Ok(ResponseModel.CreateSuccess("Add to library successfully"));
         }
         catch (ApiServiceException e)
         {
