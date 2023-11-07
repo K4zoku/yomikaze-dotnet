@@ -81,7 +81,8 @@ public class CommentService
     {
         var comic = await _comicDao.GetAsync(comicId) ?? throw new ApiServiceException("Comic not found");
         var comments = await _commentDao.FindAsync(c => c.Comic.Id == comic.Id);
-        return comments.Select(c => c.ToModel());
+        if (comments.Any()) return comments.Select(c => c.ToModel());
+        return Array.Empty<CommentModel>();
     }
 
 }

@@ -16,24 +16,22 @@ public class CommentDao : BaseDao<Comment>, IDao<Comment>
         Hub = hub;
     }
 
-
-
     public override async Task AddAsync(Comment entity)
     {
         await base.AddAsync(entity);
-        await Hub.Clients.All.SendAsync(nameof(Comment), "Added", entity.Id);
+        await Hub.Clients.All.SendAsync(nameof(Comment), "Added", entity);
     }
 
     public override async Task<Comment> DeleteAsync(Comment entity)
     {
         var result = await base.DeleteAsync(entity);
-        await Hub.Clients.All.SendAsync(nameof(Comment), "Deleted", entity.Id);
+        await Hub.Clients.All.SendAsync(nameof(Comment), "Deleted", entity);
         return result;
     }
     public override async Task<Comment> UpdateAsync(Comment entity)
     {
         var result = await base.UpdateAsync(entity);
-        await Hub.Clients.All.SendAsync(nameof(Comment), "Updated", entity.Id);
+        await Hub.Clients.All.SendAsync(nameof(Comment), "Updated", entity);
         return result;
 
     }

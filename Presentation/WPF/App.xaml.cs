@@ -9,7 +9,8 @@ namespace WPF;
 /// </summary>
 public partial class App : Application
 {
-    private IServiceProvider Services { get; }
+    public static IServiceProvider Services { get; private set; }
+
     public App()
     {
         var services = new ServiceCollection();
@@ -17,7 +18,7 @@ public partial class App : Application
         Services = services.BuildServiceProvider();
     }
 
-    private void ConfigureServices(IServiceCollection services)
+    private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<MainWindow>();
     }
