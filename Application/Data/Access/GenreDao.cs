@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Yomikaze.Application.Data.Hubs;
+﻿using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Infrastructure.Data;
@@ -9,11 +7,9 @@ namespace Yomikaze.Application.Data.Access;
 
 public class GenreDao : BaseDao<Genre>, IDao<Genre>
 {
-    private IHubContext<YomikazeHub> Hub { get; }
 
-    public GenreDao(YomikazeDbContext dbContext, IHubContext<YomikazeHub> hub) : base(dbContext)
+    public GenreDao(YomikazeDbContext dbContext) : base(dbContext)
     {
-        Hub = hub;
     }
 
     public override async Task<IEnumerable<Genre>> GetAllAsync()

@@ -57,4 +57,9 @@ public static class ModelExtensions
         return comicModel;
     }
 
+    public static LibraryEntryModel ToModel(this LibraryEntry libraryEntry)
+    {
+        return new LibraryEntryModel(libraryEntry);
+    }
+
 }

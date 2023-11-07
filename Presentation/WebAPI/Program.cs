@@ -59,7 +59,7 @@ services
     })
     .AddJwtBearer(options =>
     {
-        //options.RequireHttpsMetadata = false;
+        options.RequireHttpsMetadata = false;
         options.SaveToken = true;
 
         options.TokenValidationParameters = new TokenValidationParameters()
