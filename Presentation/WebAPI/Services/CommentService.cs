@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
-using Yomikaze.WebAPI.Helpers;
+using Yomikaze.WebAPI.Models;
 using Yomikaze.WebAPI.Models.Common;
 using Yomikaze.WebAPI.Models.Request;
 
@@ -80,9 +80,8 @@ public class CommentService
     public async Task<IEnumerable<CommentModel>> GetCommentsAsync(long comicId)
     {
         var comic = await _comicDao.GetAsync(comicId) ?? throw new ApiServiceException("Comic not found");
-        var comments = await _commentDao.FindAsync(c => c.Comic.Id == comic.Id);
-        if (comments.Any()) return comments.Select(c => c.ToModel());
-        return Array.Empty<CommentModel>();
+        var comments = await _commentDao.FindAsync(c => c.ComicId == comic.Id);
+        return comments.Select(c => c.ToModel());
     }
 
 }

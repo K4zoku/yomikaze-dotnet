@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 
-namespace Yomikaze.WebAPI.Helpers;
+namespace Yomikaze.Application.Helpers;
 
 public static class JwtExtensions
 {

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 using Yomikaze.Application.Data.Attributes;
 
-namespace Yomikaze.WebAPI.Models.Request;
+namespace Yomikaze.Application.Data.Models.Request;
 
 public class ImageUploadModel
 {

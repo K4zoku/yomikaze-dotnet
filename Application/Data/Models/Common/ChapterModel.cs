@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Yomikaze.Domain.Database.Entities;
 
-namespace Yomikaze.WebAPI.Models.Common;
+namespace Yomikaze.Application.Data.Models.Common;
 
 public class ChapterModel
 {

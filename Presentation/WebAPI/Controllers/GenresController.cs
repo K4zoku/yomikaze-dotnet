@@ -2,7 +2,7 @@
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities;
-using Yomikaze.WebAPI.Helpers;
+using Yomikaze.WebAPI.Models;
 using Yomikaze.WebAPI.Models.Common;
 using Yomikaze.WebAPI.Models.Response;
 

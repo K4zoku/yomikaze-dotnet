@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
-namespace Yomikaze.WebAPI.Helpers.Attributes;
+namespace Yomikaze.Application.Data.Attributes;
 
 public class AllowedContentTypesAttribute : ValidationAttribute
 {
@@ -16,7 +17,7 @@ public class AllowedContentTypesAttribute : ValidationAttribute
     public AllowedContentTypesAttribute(string[] types, StringComparison stringComparison)
     {
         _types = types;
-        this._stringComparison = stringComparison;
+        _stringComparison = stringComparison;
     }
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)

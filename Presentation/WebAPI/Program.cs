@@ -36,7 +36,14 @@ services.AddIdentity<User, IdentityRole<long>>(options =>
     })
     .AddEntityFrameworkStores<YomikazeDbContext>()
     .AddDefaultTokenProviders();
-
+services.AddCors(options => options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .SetIsOriginAllowed((host) => true)
+                   .AllowCredentials();
+        }));
 JwtConfiguration jwt = configuration
     .GetRequiredSection(JwtConfiguration.SectionName)
     .Get<JwtConfiguration>() ?? throw new Exception("Could not read JWT Configuration");
@@ -52,7 +59,7 @@ services
     })
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false;
+        //options.RequireHttpsMetadata = false;
         options.SaveToken = true;
 
         options.TokenValidationParameters = new TokenValidationParameters()
@@ -62,7 +69,7 @@ services
             ValidIssuer = jwt.Issuer,
             ValidAudience = jwt.Audience,
             RequireExpirationTime = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret)),
         };
     });
 services
@@ -134,8 +141,8 @@ if (env.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

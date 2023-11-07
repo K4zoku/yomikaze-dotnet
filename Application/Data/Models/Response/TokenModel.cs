@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Yomikaze.Application.Helpers;
 
-namespace Yomikaze.WebAPI.Models.Response;
+namespace Yomikaze.Application.Data.Models.Response;
 
 public class TokenModel
 {

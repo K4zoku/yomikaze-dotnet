@@ -1,8 +1,8 @@
-﻿using Yomikaze.Domain.Database.Entities;
+﻿using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
-using Yomikaze.WebAPI.Models.Common;
 
-namespace Yomikaze.WebAPI.Helpers;
+namespace Yomikaze.Application.Data.Models;
 
 public static class ModelExtensions
 {
@@ -15,6 +15,7 @@ public static class ModelExtensions
     {
         return new CommentModel
         {
+            Id = comment.Id,
             Content = comment.Content,
             CreatedAt = comment.CreatedAt,
             CreatedBy = new UserModel { Id = comment.UserId },

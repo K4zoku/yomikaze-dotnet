@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Hubs;
+using Yomikaze.Application.Data.Models;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Infrastructure.Data;
@@ -19,13 +20,13 @@ public class CommentDao : BaseDao<Comment>, IDao<Comment>
     public override async Task AddAsync(Comment entity)
     {
         await base.AddAsync(entity);
-        await Hub.Clients.All.SendAsync(nameof(Comment), "Added", entity);
+        await Hub.Clients.All.SendAsync(nameof(Comment), "Added", entity.ToModel());
     }
 
     public override async Task<Comment> DeleteAsync(Comment entity)
     {
         var result = await base.DeleteAsync(entity);
-        await Hub.Clients.All.SendAsync(nameof(Comment), "Deleted", entity);
+        await Hub.Clients.All.SendAsync(nameof(Comment), "Deleted", entity.ToModel());
         return result;
     }
     public override async Task<Comment> UpdateAsync(Comment entity)
