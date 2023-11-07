@@ -50,7 +50,7 @@
                     <!--<Image Source=""/>-->
                 </StackPanel>
             </Button>
-            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" >
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btnLogOut" >
                 <StackPanel Orientation="Horizontal">
                     <!--icon-->
                     <TextBlock Text="Log Out" Foreground="DimGray"/>

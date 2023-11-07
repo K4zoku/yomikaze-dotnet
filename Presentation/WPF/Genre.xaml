@@ -47,7 +47,7 @@
                           Text="{Binding Path=Description, Mode=OneWay}"
                           DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}" Width="357"/>
                         <StackPanel Orientation="Horizontal" Width="218" Height="43">
-                            <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save"/>
+                            <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save" Click="btnSave"/>
                             <Button x:Name="btnCancel" Margin="10" Width="80" Content="Cancel"/>
                         </StackPanel>
                     </StackPanel>

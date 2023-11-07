@@ -38,7 +38,15 @@ namespace Yomikaze.WPF
             this.Close();
         }
 
-        
+        private void bntLogOut(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You Log Out!");
+        }
+
+        private void BtnDelete(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You Delete!!!");
+        }
     }
     
 }

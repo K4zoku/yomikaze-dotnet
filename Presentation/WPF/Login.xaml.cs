@@ -26,6 +26,7 @@ namespace Yomikaze.WPF
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Sign In Successfully!");
             Admin objAdmin= new Admin();
             objAdmin.Show();
             this.Close();

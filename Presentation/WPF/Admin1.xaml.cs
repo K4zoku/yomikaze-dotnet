@@ -23,5 +23,10 @@ namespace Yomikaze.WPF
         {
             InitializeComponent();
         }
+
+        private void btnLogOut(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You Log Out!");
+        }
     }
 }

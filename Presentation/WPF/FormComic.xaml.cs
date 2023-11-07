@@ -24,5 +24,9 @@ namespace Yomikaze.WPF
             InitializeComponent();
         }
 
+        private void btnSave(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Save Successfully!");
+        }
     }
 }

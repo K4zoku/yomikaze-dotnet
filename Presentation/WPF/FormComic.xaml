@@ -75,7 +75,7 @@
                               DataContext="{Binding ElementName=lvGenre,Path=SelectedItem}"/>
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center" Width="218">
-                        <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save" />
+                        <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save" Click="btnSave" />
                         <Button x:Name="btnCancel" Margin="10" Width="80" Content="Cancel" />
                     </StackPanel>
                 </StackPanel>

@@ -29,5 +29,15 @@ namespace Yomikaze.WPF
             Genre objGenre = new Genre();
             objGenre.Show();
         }
+
+        private void btn_LogOut(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You Log Out!!!");
+        }
+
+        private void bntDelete(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You Delete!!!");
+        }
     }
 }
