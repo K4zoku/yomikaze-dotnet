@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Yomikaze.Application.Data.Models.Common;
 using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Constants;
@@ -22,31 +23,77 @@ public class LibraryController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseModel<IEnumerable<LibraryEntryModel>>>> GetLibrary()
     {
-        var library = await _libraryService.GetLibrary(User);
-        return Ok(ResponseModel.CreateSuccess("Get library successfully", library));
+        try
+        {
+            var library = await _libraryService.GetLibrary(User);
+            return Ok(ResponseModel.CreateSuccess("Get library successfully", library));
+        }
+        catch (ApiServiceException e)
+        {
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
     }
 
     [HttpPost]
     [Route("Add/{comicId}")]
     public async Task<ActionResult<ResponseModel<LibraryEntryModel>>> AddToLibrary(long comicId)
     {
-        var entry = await _libraryService.AddToLibrary(comicId, User);
-        return Ok(ResponseModel.CreateSuccess("Add to library successfully", entry));
+        try
+        {
+            var entry = await _libraryService.AddToLibrary(comicId, User);
+            return Ok(ResponseModel.CreateSuccess("Add to library successfully", entry));
+        }
+        catch (ApiServiceException e)
+        {
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
     }
 
     [HttpDelete]
     [Route("Remove/{comicId}")]
     public async Task<ActionResult<ResponseModel>> RemoveFromLibrary(long comicId)
     {
-        await _libraryService.RemoveFromLibrary(comicId, User);
-        return Ok(ResponseModel.CreateSuccess("Remove from library successfully"));
+        try
+        {
+            await _libraryService.RemoveFromLibrary(comicId, User);
+            return Ok(ResponseModel.CreateSuccess("Remove from library successfully"));
+        }
+        catch (ApiServiceException e)
+        {
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
+
     }
 
     [HttpGet]
     [Route("IsInLibrary/{comicId}")]
     public async Task<ActionResult<ResponseModel<bool>>> IsInLibrary(long comicId)
     {
-        var result = await _libraryService.IsInLibrary(comicId, User);
-        return Ok(ResponseModel.CreateSuccess(result));
+        try
+        {
+            var result = await _libraryService.IsInLibrary(comicId, User);
+            return Ok(ResponseModel.CreateSuccess(result));
+        }
+        catch (ApiServiceException e)
+        {
+            return BadRequest(ResponseModel.CreateError(e.Message));
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
+        }
+
     }
 }
