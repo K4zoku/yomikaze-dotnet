@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Yomikaze.Application.Data.Models;
+using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
 using Yomikaze.Domain.Database.Entities;
-using Yomikaze.WebAPI.Models;
-using Yomikaze.WebAPI.Models.Common;
-using Yomikaze.WebAPI.Models.Response;
 
 namespace Yomikaze.WebAPI.Controllers;
 

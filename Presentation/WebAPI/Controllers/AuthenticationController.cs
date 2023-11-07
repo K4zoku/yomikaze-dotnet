@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Yomikaze.Application.Data.Models.Request;
+using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Constants;
 using Yomikaze.WebAPI.Helpers;
-using Yomikaze.WebAPI.Models.Request;
-using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 namespace Yomikaze.WebAPI.Controllers;

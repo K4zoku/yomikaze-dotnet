@@ -2,11 +2,11 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Yomikaze.Application.Data.Models.Request;
+using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.WebAPI.Helpers;
-using Yomikaze.WebAPI.Models.Request;
-using Yomikaze.WebAPI.Models.Response;
 
 namespace Yomikaze.WebAPI.Services;
 

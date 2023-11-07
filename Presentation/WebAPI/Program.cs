@@ -7,12 +7,12 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Yomikaze.Application.Data.Access;
 using Yomikaze.Application.Data.Hubs;
+using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
 using Yomikaze.WebAPI.Helpers;
-using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);

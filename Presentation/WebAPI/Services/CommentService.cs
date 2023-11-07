@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Yomikaze.Application.Data.Models;
+using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Application.Data.Models.Request;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
-using Yomikaze.WebAPI.Models;
-using Yomikaze.WebAPI.Models.Common;
-using Yomikaze.WebAPI.Models.Request;
 
 namespace Yomikaze.WebAPI.Services;
 
