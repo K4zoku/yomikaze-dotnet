@@ -1,0 +1,85 @@
+﻿<Window x:Class="Yomikaze.WPF.FormComic"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yomikaze.WPF"
+        mc:Ignorable="d"
+        Title="ListComic" Height="590" Width="490"
+        Background="DimGray"
+        ResizeMode="NoResize">
+    <Grid HorizontalAlignment="Center">
+        <DockPanel VerticalAlignment="Top" Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!--Label & TextBox-->
+                <StackPanel Background="DimGray" Orientation="Vertical"
+                            HorizontalAlignment="Left" Width="400">
+                    <!--<Label Name="lbList" Foreground="White" FontWeight="DemiBold" 
+                           FontSize="20" Content="List Comic"/>-->
+                    
+                    <Label Name="lbCreate" Foreground="White" FontWeight="DemiBold" 
+                            FontSize="18" Content="Create List of Comic"/>
+
+                    <Label Name="lbName" Foreground="White" Content="Name" />
+                    <TextBox Name="txtName"  HorizontalAlignment="Stretch"
+                           Height="25"
+                           Text="{Binding Path=Name, Mode=OneWay}"
+                           DataContext="{Binding ElementName=lvName,Path=SelectedItem}"/>
+                    <Label Name="lbDescription" Foreground="White" Content="Description"/>
+                    <TextBox Name="txtDescription" HorizontalAlignment="Stretch"
+                             Height="25"
+                             Text="{Binding Path=Description, Mode=OneWay}"
+                             DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}"/>
+
+                    <Label Name="lbCover" Foreground="White" Content="Cover"/>
+                    <TextBox Name="txtCover" HorizontalAlignment="Stretch"
+                           Height="25"
+                             Text="{Binding Path=Cover, Mode=OneWay}"
+                             DataContext="{Binding ElementName=lvCover,Path=SelectedItem}"/>
+
+                    <Label Name="lbBanner" Foreground="White" Content="Banner"/>
+                    <TextBox Name="txtBanner" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Banner, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvBanner,Path=SelectedItem}"/>
+                    <Label Name="lbPublished" Foreground="White" Content="Published"/>
+                    <TextBox Name="txtPublished" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Published, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvPublished,Path=SelectedItem}"/>
+                    <Label Name="lbEnded" Foreground="White" Content="Ended"/>
+                    <TextBox Name="txtEnded" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Ended, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvEnded,Path=SelectedItem}"/>
+                    <Label Name="lbAliases" Foreground="White" Content="Aliases"/>
+                    <TextBox Name="txtAliases" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Aliases, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvAliases,Path=SelectedItem}"/>
+                    <Label Name="lbAuthor" Foreground="White" Content="Author"/>
+                    <TextBox Name="txtAuthor" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Author, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvAuthor,Path=SelectedItem}"/>
+                    <Label Name="lbGenre" Foreground="White" Content="Genre"/>
+                    <TextBox Name="txtGenre" HorizontalAlignment="Stretch"
+                            Height="25"
+                              Text="{Binding Path=Genre, Mode=OneWay}"
+                              DataContext="{Binding ElementName=lvGenre,Path=SelectedItem}"/>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center" Width="218">
+                        <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save" Click="btnSave" />
+                        <Button x:Name="btnCancel" Margin="10" Width="80" Content="Cancel" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

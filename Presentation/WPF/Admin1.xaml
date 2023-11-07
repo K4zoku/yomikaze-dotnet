@@ -1,0 +1,62 @@
+﻿<Window x:Class="Yomikaze.WPF.Admin1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yomikaze.WPF"
+        mc:Ignorable="d"
+        Background="DimGray"
+        ResizeMode="NoResize"
+        Title="Admin_User" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="205"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="10,0,0,0">
+            <!--UserName-->
+            <!--<Image Source=""/>-->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 35 0 0">
+                <!--LeftMenu-->
+                <Border Width="40" Height="40" Background="White" CornerRadius="10">
+                    <TextBlock Text="AD" FontSize="22" FontWeight="SemiBold" 
+                   TextAlignment="Center" VerticalAlignment="Center" Margin="3 0 0 2"/>
+                </Border>
+                <StackPanel Margin="10 0 0 0" VerticalAlignment="Center">
+                    <TextBlock Text="Admin" FontSize="15" Margin="0 0 0 5" Foreground="White"/>
+                    <TextBlock Text="???" FontSize="11" Margin="0 0 0 5" Foreground="White"/>
+                </StackPanel>
+            </StackPanel>
+            <Separator Height="1" Margin="20 30" Background="White"/>
+            <!--button-->
+            <Button Height="30">
+
+                <StackPanel Orientation="Horizontal">
+                    <!--icon-->
+                    <TextBlock Text="List Comic" Foreground="DimGray"/>
+                </StackPanel>
+
+            </Button>
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" >
+                <StackPanel Orientation="Horizontal" >
+                    <!--icon-->
+                    <TextBlock Text="Genre" Foreground="DimGray"/>
+                    <!--<Image Source=""/>-->
+                </StackPanel>
+            </Button>
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" >
+                <StackPanel Orientation="Horizontal" >
+                    <!--icon-->
+                    <TextBlock Text="User" Foreground="DimGray"/>
+                    <!--<Image Source=""/>-->
+                </StackPanel>
+            </Button>
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btnLogOut" >
+                <StackPanel Orientation="Horizontal">
+                    <!--icon-->
+                    <TextBlock Text="Log Out" Foreground="DimGray"/>
+                </StackPanel>
+            </Button>
+            <!--mainmenu-->
+        </StackPanel>
+    </Grid>
+</Window>

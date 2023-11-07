@@ -10,7 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="img\" />
   </ItemGroup>
 
 </Project>
