@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
+        ResizeMode="NoResize"
         Title="Admin_Genre" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -71,11 +72,10 @@
 
             </ListView>
             <StackPanel Grid.Column="1" Margin="10 200 10 10" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
-                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btnCreate_Click" />
-                <Button Name="btnInsert" Margin="10" Width="60" Content="Insert" Click="btnInsert_Click" />
-                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click" />
-                <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="btnDelete_Click" />
-                <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search" Click="btnSearchLoad_Click"/>
+                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btn_Create"/>
+                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update"/>
+                <Button Name="btnDelete" Margin="10" Width="60" Content="Delete"/>
+                <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search"/>
             </StackPanel>
         </StackPanel>
     </Grid>

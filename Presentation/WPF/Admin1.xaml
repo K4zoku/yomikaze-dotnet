@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
+        ResizeMode="NoResize"
         Title="Admin_User" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>

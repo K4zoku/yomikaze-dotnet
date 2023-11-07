@@ -29,22 +29,20 @@
             </StackPanel>
             <Separator Height="1" Margin="20 30" Background="White"/>
             <!--button-->
-            <Button Height="30">
-
+            <Button Height="30" >
                 <StackPanel Orientation="Horizontal">
                     <!--icon-->
                     <TextBlock Text="List Comic" Foreground="DimGray"/>
                 </StackPanel>
-
             </Button>
-            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_Genre_Click" >
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_Genre">
                 <StackPanel Orientation="Horizontal" >
                     <!--icon-->
                     <TextBlock Text="Genre" Foreground="DimGray"/>
                     <!--<Image Source=""/>-->
                 </StackPanel>
             </Button>
-            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_User_Click" >
+            <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_User">
                 <StackPanel Orientation="Horizontal" >
                     <!--icon-->
                     <TextBlock Text="User" Foreground="DimGray"/>
@@ -88,11 +86,10 @@
 
             </ListView>
             <StackPanel Grid.Column="1" Margin="10 200 10 10" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
-                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btnCreate_Click" />
-                <Button Name="btnInsert" Margin="10" Width="60" Content="Insert" Click="btnInsert_Click"  />
-                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click"  />
-                <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="btnDelete_Click" />
-                <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search" Click="btnSearchLoad_Click"/>
+                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" />
+                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update"  />
+                <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" />
+                <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search"/>
             </StackPanel>
         </StackPanel>
 

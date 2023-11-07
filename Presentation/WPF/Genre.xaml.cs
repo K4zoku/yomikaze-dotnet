@@ -23,5 +23,7 @@ namespace Yomikaze.WPF
         {
             InitializeComponent();
         }
+
+  
     }
 }
