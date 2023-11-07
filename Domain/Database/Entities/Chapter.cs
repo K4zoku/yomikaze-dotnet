@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Yomikaze.Domain.Common;
 
@@ -16,5 +17,6 @@ public class Chapter : BaseEntity, IEntity
     public virtual ICollection<HistoryRecord> Trackers { get; set; } = new List<HistoryRecord>();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual Comic Comic { get; set; } = default!;
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MimeKit;
 using System.Net;
+using Yomikaze.Application.Data.Models.Request;
+using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Constants;
-using Yomikaze.WebAPI.Models.Request;
-using Yomikaze.WebAPI.Models.Response;
 using Yomikaze.WebAPI.Services;
 
 namespace Yomikaze.WebAPI.Controllers;
@@ -32,6 +32,8 @@ public class ImagesController : ControllerBase
                     (int)HttpStatusCode.InternalServerError,
                     ResponseModel.CreateError("Image uploaded successfully but failed to generate URL")
                 );
+        var Uri = new Uri(url);
+        url = Uri.PathAndQuery;
         return Ok(ResponseModel.CreateSuccess(new ImageUploadResponse { Url = url }));
     }
 

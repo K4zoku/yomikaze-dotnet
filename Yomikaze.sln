@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{86BF01BC-CC60-4D96-9796-E5C58FE72B59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Presentation\Web\Web.csproj", "{CF50258F-1B5B-4CBA-856A-EC05F8A4FC2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Presentation\Web\Web.csproj", "{CF50258F-1B5B-4CBA-856A-EC05F8A4FC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "Presentation\WebAPI\WebAPI.csproj", "{D01BFBD8-0993-409E-A381-0F736DDC0E8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "Presentation\WebAPI\WebAPI.csproj", "{D01BFBD8-0993-409E-A381-0F736DDC0E8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "Presentation\WPF\WPF.csproj", "{490F9241-6BF1-42F6-A66D-76F8709D00F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF", "Presentation\WPF\WPF.csproj", "{490F9241-6BF1-42F6-A66D-76F8709D00F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

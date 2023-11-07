@@ -234,12 +234,7 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("Published")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long?>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Comics");
                 });
@@ -295,9 +290,12 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Genres");
                 });
@@ -315,9 +313,6 @@ namespace Yomikaze.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastRead")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("PageIndex")
-                        .HasColumnType("int");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -412,6 +407,32 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.LibraryEntry", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("Added")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long>("ComicId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LibraryEntries");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Notification", b =>
@@ -551,13 +572,6 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                     b.Navigation("Comic");
                 });
 
-            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comic", b =>
-                {
-                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", null)
-                        .WithMany("Library")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Yomikaze.Domain.Database.Entities.Comment", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Database.Entities.Comic", "Comic")
@@ -598,6 +612,25 @@ namespace Yomikaze.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Chapter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Database.Entities.LibraryEntry", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Comic", "Comic")
+                        .WithMany()
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Yomikaze.Domain.Database.Entities.Identity.User", "User")
+                        .WithMany("Library")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comic");
 
                     b.Navigation("User");
                 });

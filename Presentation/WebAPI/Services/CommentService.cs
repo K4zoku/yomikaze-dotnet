@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Yomikaze.Application.Data.Models;
+using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Application.Data.Models.Request;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
-using Yomikaze.WebAPI.Helpers;
-using Yomikaze.WebAPI.Models.Common;
-using Yomikaze.WebAPI.Models.Request;
 
 namespace Yomikaze.WebAPI.Services;
 
@@ -47,12 +47,7 @@ public class CommentService
         };
         await _commentDao.AddAsync(comment);
         _commentDao.SaveChanges();
-        var model = new CommentModel
-        {
-            Content = comment.Content,
-            CreatedAt = comment.CreatedAt,
-            CreatedBy = user.ToModel(),
-        };
+        var model = comment.ToModel();
         return model;
     }
 
@@ -85,7 +80,7 @@ public class CommentService
     public async Task<IEnumerable<CommentModel>> GetCommentsAsync(long comicId)
     {
         var comic = await _comicDao.GetAsync(comicId) ?? throw new ApiServiceException("Comic not found");
-        var comments = await _commentDao.FindAsync(c => c.Comic.Id == comic.Id);
+        var comments = await _commentDao.FindAsync(c => c.ComicId == comic.Id);
         return comments.Select(c => c.ToModel());
     }
 

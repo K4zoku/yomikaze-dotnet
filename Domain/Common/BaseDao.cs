@@ -79,6 +79,11 @@ public abstract class BaseDao<TEntity, TId> : IDao<TEntity, TId> where TEntity :
     {
         return Task.FromResult(DbSet.Where(predicate).Skip(page * size).Take(size).AsEnumerable());
     }
+
+    public virtual Task<IQueryable<TEntity>> QueryAsync()
+    {
+        return Task.FromResult(DbSet.AsQueryable());
+    }
 }
 
 public abstract class BaseDao<TEntity> : BaseDao<TEntity, long> where TEntity : class, IEntity

@@ -15,7 +15,7 @@ public class User : IdentityUser<long>, IEntity
 
     public DateTimeOffset Birthday { get; set; }
 
-    public virtual ICollection<Comic> Library { get; set; } = new List<Comic>();
+    public virtual ICollection<LibraryEntry> Library { get; set; } = new List<LibraryEntry>();
 
     public virtual ICollection<HistoryRecord> History { get; set; } = new List<HistoryRecord>();
 
