@@ -7,9 +7,13 @@
         mc:Ignorable="d"
         Title="ListComic" Height="590" Width="490"
         Background="DimGray"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid HorizontalAlignment="Center">
-        <DockPanel VerticalAlignment="Top" Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <DockPanel VerticalAlignment="Top" Margin="10,10,10,0" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -22,7 +26,7 @@
                             HorizontalAlignment="Left" Width="400">
                     <!--<Label Name="lbList" Foreground="White" FontWeight="DemiBold" 
                            FontSize="20" Content="List Comic"/>-->
-                    
+
                     <Label Name="lbCreate" Foreground="White" FontWeight="DemiBold" 
                             FontSize="18" Content="Create List of Comic"/>
 

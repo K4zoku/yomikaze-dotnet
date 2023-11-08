@@ -1,0 +1,33 @@
+﻿@model Yomikaze.Application.Data.Models.Common.CommentModel
+<div class="card w-100 rounded" id="comment-@Model.Id">
+    <div class="card-header">
+        <img src="/img/White Book Store Minimalist Logo.png" class="rounded-circle border border-light border-3 shadow-sm"
+             style="width: 3em; height: 3em; object-fit:cover;" alt="">
+        <span class="ms-2 fw-bold" id="comment-@Model.CreatedBy.Fullname">User Name</span>
+        <div class="dropdown float-end my-2">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    </div>
+    <div class="card-footer text-muted">
+        <button class="btn btn-outline-secondary btn-sm float-end">
+            <i class="fa-solid fa-reply"></i>
+            <span class="ms-2">Reply</span>
+        </button>
+    </div>
+</div>
+  </div>
+
+
+
+
