@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Background="DimGray"
         ResizeMode="NoResize"
-        Title="Genre" Height="234" Width="400">
+        Title="Genre" Height="234" Width="400" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid HorizontalAlignment="Center">
             <DockPanel VerticalAlignment="Top" Margin="10">

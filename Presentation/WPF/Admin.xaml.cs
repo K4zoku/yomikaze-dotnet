@@ -47,6 +47,14 @@ namespace Yomikaze.WPF
         {
             MessageBox.Show("You Delete!!!");
         }
+
+
+        private void btn_Create(object sender, RoutedEventArgs e)
+        {
+            FormComic objFormComic = new FormComic();
+            objFormComic.Show();
+            this.Close();
+        }
     }
     
 }

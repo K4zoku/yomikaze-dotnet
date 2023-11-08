@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         Background="DimGray"
-        Title="Admin_ListComic" Height="450" Width="800">
+        Title="Admin_ListComic" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="28.94"/>
@@ -86,7 +86,7 @@
 
             </ListView>
             <StackPanel Grid.Column="1" Margin="10 200 10 10" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
-                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" />
+                <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btn_Create" />
                 <Button Name="btnUpdate" Margin="10" Width="60" Content="Update"  />
                 <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="BtnDelete" />
                 <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search"/>
