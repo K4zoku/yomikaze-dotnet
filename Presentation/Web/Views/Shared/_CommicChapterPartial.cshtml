@@ -1,7 +1,7 @@
 ﻿@model Yomikaze.Application.Data.Models.Common.ComicModel
 <div id="commic-@Model.Id">
     <div>
-        <img class="w-100 rounded" @Model.Banner alt="">
+        <img class="w-100 rounded" src="@Model.Banner" alt="">
         <img style="width: 15em; height: 18em; object-fit: cover; z-index: 1; margin-top: -10em;" class="rounded img-fluid ms-3 me-3"
              @Model.Cover alt="logo">
         <span>@Model.Name</span>
