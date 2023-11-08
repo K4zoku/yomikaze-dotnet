@@ -5,18 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
-        Title="Login" Height="250" Width="300" ResizeMode="NoResize" Background="DimGray">
-    <Grid HorizontalAlignment="Center">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="0*"/>
-        </Grid.ColumnDefinitions>
-        <Label Content="SIGN IN" Foreground="White" FontSize="15" FontWeight="DemiBold" Background="DimGray" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Top" Height="31" Width="68"/>
-        <Label Content="User Name" Foreground="White" HorizontalAlignment="Center" Margin="45" VerticalAlignment="Top" Width="168" Height="26"/>
-        <TextBox HorizontalAlignment="Center"  Margin="0,76,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Height="25" RenderTransformOrigin="0.502,-0.134"/>
-        <Label Content="Password" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Width="168" Height="26" Margin="0,109,0,0"/>
-        <TextBox HorizontalAlignment="Center" Margin="0,135,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Height="25"/>
-        <Button Content="SIGN IN" FontWeight="DemiBold" Foreground="DimGray" HorizontalAlignment="Center" Margin="0,175,0,0" VerticalAlignment="Top" Width="86" Click="Button_Click"/>
-
-    </Grid>
+        Title="Login" Height="300" Width="300" ResizeMode="NoResize" Background="DimGray" WindowStartupLocation="CenterScreen">
+    <StackPanel Orientation="Vertical" Height="Auto" Margin="20" Width="230">
+        <TextBlock Margin="0,0,0,15" Text="SIGN IN" Foreground="White" FontSize="15" FontWeight="DemiBold" Background="DimGray" HorizontalAlignment="Center"/>
+        <StackPanel Margin="0,0,0,10">
+            <Label Content="User Name" Foreground="White" HorizontalAlignment="Center" Width="168" />
+            <TextBox Name="TxtUsername" HorizontalAlignment="Center" TextWrapping="Wrap" Text="admin" VerticalAlignment="Top" Margin="0,0,0,10" Width="168" Height="25" Padding="2,2,2,2"/>
+            <Label Content="Password" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Width="168" />
+            <PasswordBox Password="Admin@123" Name="TxtPassword" HorizontalAlignment="Center" VerticalAlignment="Top" Width="168" Height="25" Margin="0,0,0,10" Padding="2,2,2,2"/>
+        </StackPanel>
+        <Button Content="SIGN IN" FontWeight="DemiBold" Foreground="DimGray" HorizontalAlignment="Center" VerticalAlignment="Top" Width="86" Click="Button_Click" IsDefault="True"></Button>
+    </StackPanel>
 </Window>

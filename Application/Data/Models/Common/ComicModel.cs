@@ -6,7 +6,7 @@ namespace Yomikaze.Application.Data.Models.Common;
 public class ComicModel
 {
     public long Id { get; set; }
-    public required string Name { get; set; } = default!;
+    public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public string? Cover { get; set; }
     public string? Banner { get; set; }

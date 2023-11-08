@@ -94,6 +94,5 @@ public class LibraryController : ControllerBase
         {
             return StatusCode((int)HttpStatusCode.InternalServerError, ResponseModel.CreateError(e.Message));
         }
-
     }
 }

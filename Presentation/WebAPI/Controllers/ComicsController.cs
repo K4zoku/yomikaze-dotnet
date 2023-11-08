@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Models;
 using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Application.Data.Models.Request;
 using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Constants;
@@ -99,8 +100,21 @@ public class ComicsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Administrator")]
-    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicModel model)
+    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicRequestModel model)
     {
+        var genres = model.Genres.Split(",").Select(g => g.Trim()).ToList();
+        var existingGenres = await (await _genreDao.QueryAsync())
+            .Where(g => genres.Contains(g.Name))
+            .ToListAsync();
+        var newGenres = genres.Except(existingGenres.Select(g => g.Name)).ToList();
+        foreach (var genre in newGenres)
+        {
+            var genreEntity = new Genre { Name = genre };
+            await _genreDao.AddAsync(genreEntity);
+            existingGenres.Add(genreEntity);
+        }
+        _genreDao.SaveChanges();
+
         var comic = new Comic
         {
             Name = model.Name,
@@ -111,10 +125,18 @@ public class ComicsController : ControllerBase
             Banner = model.Banner,
             Published = model.Published,
             Ended = model.Ended,
-            Genres = model.Genres.Select(genre => _genreDao.GetAsync(genre.Id).Result).ToList(),
+            Genres = existingGenres,
         };
         await _comicDao.AddAsync(comic);
         _comicDao.SaveChanges();
         return ResponseModel.CreateSuccess(comic.ToModel());
     }
+
+    [HttpPost("{id}/Chapters/Add")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicRequestModel model)
+    {
+
+    }
+
 }

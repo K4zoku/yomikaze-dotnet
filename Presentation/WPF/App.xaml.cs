@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Windows;
+using Yomikaze.WPF;
 
 namespace WPF;
 
@@ -9,6 +11,8 @@ namespace WPF;
 /// </summary>
 public partial class App : Application
 {
+    public const string API_SERVER = "http://localhost:5179";
+
     public static IServiceProvider Services { get; private set; }
 
     public App()
@@ -20,12 +24,22 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<MainWindow>();
+        services.AddTransient<Login>();
+        services.AddTransient<ManageComics>();
+        services.AddTransient<Upload>();
+        services.AddTransient<FormComic>();
+        HttpClient httpClient = new()
+        {
+            BaseAddress = new Uri(API_SERVER)
+        };
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        services.AddSingleton(httpClient);
+        services.AddSingleton<YomikazeClient>();
     }
 
     private void OnStart(object sender, StartupEventArgs e)
     {
-        var mainWindow = Services.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+        var loginWindow = Services.GetRequiredService<Login>();
+        loginWindow.Show();
     }
 }

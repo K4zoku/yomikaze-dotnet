@@ -1,32 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Yomikaze.Application.Data.Models.Common;
 
-namespace Yomikaze.WPF
+namespace Yomikaze.WPF;
+
+/// <summary>
+/// Interaction logic for ListComic.xaml
+/// </summary>
+public partial class FormComic : Window
 {
-    /// <summary>
-    /// Interaction logic for ListComic.xaml
-    /// </summary>
-    public partial class FormComic : Window
+    private readonly YomikazeClient _client;
+    public FormComic(YomikazeClient client)
     {
-        public FormComic()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        _client = client;
+    }
 
-        private void btnSave(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Save Successfully!");
-        }
+    private void btnSave(object sender, RoutedEventArgs e)
+    {
+        if (!(DataContext is ComicModel model)) return;
+
+
     }
 }
