@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Background="DimGray"
         ResizeMode="NoResize"
-        Title="Admin_User" Height="450" Width="800">
+        Title="Admin_User" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="205"/>

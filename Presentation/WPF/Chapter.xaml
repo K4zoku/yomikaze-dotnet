@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Yomikaze.WPF"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Chapter" Height="450" Width="800">
+        Title="Chapter" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <ScrollViewer>
             <StackPanel>

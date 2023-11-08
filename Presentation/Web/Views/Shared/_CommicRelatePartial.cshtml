@@ -1,13 +1,11 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-<main>
+﻿@model Yomikaze.Application.Data.Models.Common.ComicModel
+<div id="commic-@Model.Id">
     <div>
-        <img class="w-100 rounded" src="/img/banner-test.jpg" alt="">
+        <img class="w-100 rounded" @Model.Banner alt="">
         <img style="width: 15em; height: 18em; object-fit: cover; z-index: 1; margin-top: -10em;" class="rounded img-fluid ms-3 me-3"
-             src="/img/White Book Store Minimalist Logo.png" alt="logo">
-        <span>doraemon</span>
-        <span>agirato</span>
+        @Model.Cover alt="logo">
+        <span>@Model.Name</span>
+        <span>@Model.Aliases</span>
     </div>
     <button type="button" class="btn btn-outline-warning me-3 mt-3 ">
         <i class="fa-solid fa-square-plus p-2"></i>
@@ -20,17 +18,12 @@
     </button>
     <div class="container">
         <p class="fs-4 mt-5">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-            been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-            electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
+            @Model.Description
         </p>
     </div>
     <div class="container">
         <div class="btn-group p-2" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-outline-warning btn-lg active ">Chapter</button>
+            <button type="button" class="btn btn-outline-warning btn-lg active">Chapter</button>
             <button type="button" class="btn btn-outline-warning btn-lg">Relate</button>
         </div>
     </div>
@@ -72,7 +65,7 @@
     <div class="container mt-3">
         <div class="card w-100 rounded">
             <div class="card-header">
-                <img src="~/img/White Book Store Minimalist Logo.png" class="rounded-circle border border-light border-3 shadow-sm" style="width: 3em; height: 3em; object-fit:cover;" alt="">
+                <img @Model.Cover class="rounded-circle border border-light border-3 shadow-sm" style="width: 3em; height: 3em; object-fit:cover;" alt="">
                 <span class="ms-2 fw-bold">User Name</span>
                 <div class="dropdown float-end my-2">
                     <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -86,7 +79,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <p class="card-text">@Model.Description</p>
             </div>
             <div class="card-footer text-muted">
                 <button class="btn btn-outline-secondary btn-sm float-end">
@@ -95,26 +88,6 @@
                 </button>
             </div>
         </div>
-        <div class="d-block ms-5">
-            <div class="card rounded mt-2">
-                <div class="card-header">
-                    <img src="/img/White Book Store Minimalist Logo.png" class="rounded-circle border border-light border-3 shadow-sm" style="width: 3em; height: 3em; object-fit:cover;" alt="">
-                    <span class="ms-2 fw-bold">User Name</span>
-                    <div class="dropdown float-end my-2">
-                        <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                </div>
-            </div>
-        </div>
     </div>
-</main>
+</div>
+
