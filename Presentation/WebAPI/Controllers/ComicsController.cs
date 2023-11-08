@@ -17,11 +17,15 @@ public class ComicsController : ControllerBase
 {
     private readonly IDao<Comic> _comicDao;
     private readonly IDao<Genre> _genreDao;
+    private readonly IDao<Chapter> _chapterDao;
+    private readonly IDao<Page> _pageDao;
 
-    public ComicsController(IDao<Comic> comicDao, IDao<Genre> genreDao)
+    public ComicsController(IDao<Comic> comicDao, IDao<Genre> genreDao, IDao<Page> pageDao, IDao<Chapter> chapterDao)
     {
         _comicDao = comicDao;
         _genreDao = genreDao;
+        _pageDao = pageDao;
+        _chapterDao = chapterDao;
     }
 
     [HttpGet]
@@ -100,7 +104,7 @@ public class ComicsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Administrator")]
-    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicRequestModel model)
+    public async Task<ActionResult<ResponseModel<ComicModel>>> Create([FromBody] ComicRequestModel model)
     {
         var genres = model.Genres.Split(",").Select(g => g.Trim()).ToList();
         var existingGenres = await (await _genreDao.QueryAsync())
@@ -129,14 +133,38 @@ public class ComicsController : ControllerBase
         };
         await _comicDao.AddAsync(comic);
         _comicDao.SaveChanges();
-        return ResponseModel.CreateSuccess(comic.ToModel());
+        return Ok(ResponseModel.CreateSuccess(comic.ToModel()));
     }
 
     [HttpPost("{id}/Chapters/Add")]
     [Authorize(Roles = "Administrator")]
-    public async Task<ResponseModel<ComicModel>> Create([FromBody] ComicRequestModel model)
+    public async Task<ActionResult<ResponseModel<ChapterModel>>> AddChapter([FromRoute] long id, [FromBody] ChapterRequestModel model)
     {
+        var comic = await _comicDao.GetAsync(id);
+        if (comic == null)
+        {
+            return NotFound(ResponseModel.CreateError($"Could not found comic with id '{id}'"));
+        }
+        var pages = model.Pages.Split("\n").Select(p => new Page { Image = p.Trim() }).ToList();
+        foreach (var page in pages)
+        {
+            await _pageDao.AddAsync(page);
+        }
 
+        var chapter = new Chapter
+        {
+            Title = model.Title,
+            Comic = comic,
+            Description = model.Description,
+            Available = DateTimeOffset.UtcNow,
+            Pages = pages,
+        };
+        await _chapterDao.AddAsync(chapter);
+        comic.Chapters.Add(chapter);
+        await _comicDao.UpdateAsync(comic);
+        _comicDao.SaveChanges();
+
+        return Ok(ResponseModel.CreateSuccess(chapter.ToModel()));
     }
 
 }

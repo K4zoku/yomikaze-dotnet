@@ -138,6 +138,7 @@ public partial class Upload : Window
     private void Button_Click_1(object sender, RoutedEventArgs e)
     {
         UploadProgressList.Items.Clear();
+        Results.Text = string.Empty;
     }
 
     private void Button_Click_2(object sender, RoutedEventArgs e)

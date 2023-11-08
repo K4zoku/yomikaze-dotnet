@@ -18,10 +18,10 @@ namespace Yomikaze.WPF;
 /// </summary>
 public partial class Login : Window
 {
-    private readonly ManageComics _adminWindow;
+    private readonly Upload _adminWindow;
     private readonly HttpClient _client;
 
-    public Login(ManageComics adminWindow, HttpClient client)
+    public Login(Upload adminWindow, HttpClient client)
     {
         InitializeComponent();
         _adminWindow = adminWindow;

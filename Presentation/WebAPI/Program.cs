@@ -123,6 +123,8 @@ services.AddSwaggerGen(opt =>
 services.AddScoped<YomikazeDbInitializer>();
 
 services.AddScoped<IDao<Comic>, ComicDao>();
+services.AddScoped<IDao<Chapter>, ChapterDao>();
+services.AddScoped<IDao<Page>, PageDao>();
 services.AddScoped<IDao<Comment>, CommentDao>();
 services.AddScoped<IDao<Genre>, GenreDao>();
 services.AddScoped<IDao<LibraryEntry>, LibraryDao>();
