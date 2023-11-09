@@ -1,21 +1,25 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Yomikaze.Application.Data.Models;
+using Yomikaze.Domain.Common;
+using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Web.Models;
 
 namespace Yomikaze.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly IDao<Comic> _comicDao;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(IDao<Comic> comicDao)
     {
-        _logger = logger;
+        _comicDao = comicDao;
     }
 
-    public IActionResult Index()
-    {
-        return View();
+    public async Task<IActionResult> Index()
+    {   
+        var comics = await _comicDao.GetAllAsync();
+        return View(comics.Select(comic => comic.ToModel()));
     }
 
     public IActionResult Category()

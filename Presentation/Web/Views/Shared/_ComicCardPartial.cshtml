@@ -1,0 +1,16 @@
+﻿@model Yomikaze.Application.Data.Models.Common.ComicModel
+
+<div class="col-sm-6 col-md-4 col-lg-3">
+<a asp-controller="ComicDetail" asp-action="Index" asp-route-id="@Model.Id" class="text-decoration-none">
+        <div class="card">
+            <div class="card-body">
+                <img src="http://localhost:5179@(Model.Cover)" class="w-100" alt="">
+                <a href="#" class="card-link text-dark text-decoration-none fw-bolder">@Model.Name</a>
+                <p>@Model.Authors</p>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+</a>
+</div>
+
+

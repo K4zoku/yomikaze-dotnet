@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Yomikaze.Application.Data.Access;
+using Yomikaze.Domain.Common;
+using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Domain.Database.Entities.Identity;
 using Yomikaze.Infrastructure.Data;
 
@@ -11,8 +14,17 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<YomikazeDbContext>();
 builder.Services.AddRazorPages();
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+var services = builder.Services;
+services.AddScoped<IDao<Comic>, ComicDao>();
+services.AddScoped<IDao<Chapter>, ChapterDao>();
+services.AddScoped<IDao<Page>, PageDao>();
+services.AddScoped<IDao<Comment>, CommentDao>();
+services.AddScoped<IDao<Genre>, GenreDao>();
+services.AddScoped<IDao<LibraryEntry>, LibraryDao>();
+services.AddSignalR();
 
 var app = builder.Build();
 
