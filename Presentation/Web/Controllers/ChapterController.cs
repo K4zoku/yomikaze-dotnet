@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Yomikaze.Application.Data.Models;
-using Yomikaze.Application.Data.Models.Common;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Database.Entities;
-using Yomikaze.Web.Models;
 
 namespace Yomikaze.Web.Controllers;
 
@@ -29,7 +26,11 @@ public class ChapterController : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> Index(int id)
     {
-        var chapter =  await _chapterDao.GetAsync(id);
+        var chapter = await _chapterDao.GetAsync(id);
+        if (chapter == null)
+        {
+            return NotFound();
+        }
         ViewBag.Chapters = chapter.Comic.Chapters.AsEnumerable();
         return View(chapter.ToModel());
     }
