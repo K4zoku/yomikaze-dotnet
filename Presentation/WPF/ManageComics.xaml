@@ -79,8 +79,8 @@
                 DisplayMemberBinding="{Binding Path=Ended}"/>
                         <GridViewColumn Header="Aliases" Width="60" 
                 DisplayMemberBinding="{Binding Path=Aliases}"/>
-                        <GridViewColumn Header="Author" Width="60" 
-                DisplayMemberBinding="{Binding Path=Author}"/>
+                        <GridViewColumn Header="Authors" Width="60" 
+                DisplayMemberBinding="{Binding Path=Authors}"/>
                     </GridView>
                 </ListView.View>
 
