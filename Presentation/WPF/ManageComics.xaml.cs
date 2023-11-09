@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using WPF;
@@ -13,10 +14,12 @@ namespace Yomikaze.WPF;
 public partial class ManageComics : Window
 {
     private readonly YomikazeClient _client;
-    public ManageComics(YomikazeClient client)
+    private readonly HttpClient _httpClient;
+    public ManageComics(YomikazeClient client, HttpClient httpClient)
     {
         InitializeComponent();
         _client = client;
+        _httpClient = httpClient;
     }
 
     private void btn_Genre(object sender, RoutedEventArgs e)
@@ -35,7 +38,10 @@ public partial class ManageComics : Window
 
     private void bntLogOut(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("You Log Out!");
+        _httpClient.DefaultRequestHeaders.Authorization = null;
+        var login = App.Services.GetRequiredService<Login>();
+        login.Show();
+        Close();
     }
 
     private void BtnDelete(object sender, RoutedEventArgs e)
