@@ -1,0 +1,41 @@
+﻿@using Yomikaze.Application.Data.Models.Common;
+@{
+    ViewData["Title"] = "Chapter Detail Page";
+}
+@model Yomikaze.Application.Data.Models.Common.ChapterModel
+
+<center id="chapter-@Model.Id">
+
+
+    <div id="chapter-@Model.Id">
+    <!-- List of pages of the chapter -->
+    <ul class="list-group mt-3">
+        @foreach (var p in Model.Pages)
+        {
+            <li class="list-group-item">
+                <!-- Display page content or properties here -->
+                    <img src="http://localhost:5179@(p.Image)" />
+            </li>
+        }
+    </ul>
+
+
+    <div class="btn-group btn-group-lg " role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-warning  mt-3"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-warning mt-3 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Chapter
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    @foreach (var c in (ViewBag.Chapters as IEnumerable<ChapterModel>) ?? Array.Empty<ChapterModel>())
+                    {
+                        <li><a class="dropdown-item" asp-route-id="@c.Id">@c.Title</a></li>
+                    }
+                    
+               
+            </ul>
+        </div>
+        <button type="button" class="btn btn-outline-warning mt-3 "><i class="fa-solid fa-angle-right"></i></button>
+    </div>
+</center>
+

@@ -7,9 +7,10 @@ using Yomikaze.Domain.Database.Entities;
 using Yomikaze.Web.Models;
 
 namespace Yomikaze.Web.Controllers;
+
 [Controller]
 [Route("[controller]")]
-public class ComicDetailController : Controller
+public class ChapterController : Controller
 {
 
     private readonly IDao<Comic> _comicDao;
@@ -17,7 +18,7 @@ public class ComicDetailController : Controller
     private readonly IDao<Chapter> _chapterDao;
     private readonly IDao<Page> _pageDao;
 
-    public ComicDetailController(IDao<Comic> comicDao, IDao<Genre> genreDao, IDao<Page> pageDao, IDao<Chapter> chapterDao)
+    public ChapterController(IDao<Comic> comicDao, IDao<Genre> genreDao, IDao<Page> pageDao, IDao<Chapter> chapterDao)
     {
         _comicDao = comicDao;
         _genreDao = genreDao;
@@ -28,9 +29,9 @@ public class ComicDetailController : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> Index(int id)
     {
-        var comic = await _comicDao.GetAsync(id);
-
-        return View(comic.ToModel());
+        var chapter =  await _chapterDao.GetAsync(id);
+        ViewBag.Chapters = chapter.Comic.Chapters.AsEnumerable();
+        return View(chapter.ToModel());
     }
 
     public IActionResult Relate()

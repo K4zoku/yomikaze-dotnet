@@ -3,6 +3,7 @@
 }
 @model Yomikaze.Application.Data.Models.Common.ComicModel
 
+
 <main>
     <div>
         <img class="w-100 rounded" src="http://localhost:5179@(Model.Banner)" alt="">
@@ -32,36 +33,12 @@
         </div>
     </div>
     <div class="container mt-3">
-        <a href="" class="text-decoration-none ">
-            <div class="p-3 mb-2  rounded-pill border border-secondary border-1 shadow-sm">
-                <span class="fw-bold text-dark me-4">Chapter 1</span>
-                <span class="text-muted ">Đây là chapter 1</span>
-                <span class="text-black-50 float-end">
-                    <i class="fa-regular fa-clock"></i>
-                    <span class="ms-2">10 hours ago</span>
-                </span>
-            </div>
-        </a>
-        <a href="" class="text-decoration-none ">
-            <div class="p-3 mb-2 rounded-pill border border-secondary border-1 shadow-sm">
-                <span class="fw-bold text-dark me-4">Chapter 1</span>
-                <span class="text-muted ">Đây là chapter 1</span>
-                <span class="text-black-50 float-end">
-                    <i class="fa-regular fa-clock"></i>
-                    <span class="ms-2">10 hours ago</span>
-                </span>
-            </div>
-        </a>
-        <a href="" class="text-decoration-none ">
-            <div class="p-3 mb-2 rounded-pill border border-secondary border-1 shadow-sm">
-                <span class="fw-bold text-dark me-4">Chapter 1</span>
-                <span class="text-muted ">Đây là chapter 1</span>
-                <span class="text-black-50 float-end">
-                    <i class="fa-regular fa-clock"></i>
-                    <span class="ms-2">10 hours ago</span>
-                </span>
-            </div>
-        </a>
+
+         @foreach (var chapter in Model.Chapters)
+        {
+            // use partial view
+            Html.RenderPartial("_ChapterCardPartial", chapter);
+        }
         <div class="d-grid gap-2 col-3 mx-auto">
             <button class="btn btn-warning btn-lg mb-4 mt-3">SHOW MORE</button>
         </div>
