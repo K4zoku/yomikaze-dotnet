@@ -13,9 +13,19 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <input asp-for="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="name_123" />
+                <label asp-for="Input.Username">Username</label>
+                <span asp-validation-for="Input.Username" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Fullname" class="form-control" autocomplete="name" aria-required="true" placeholder="Your Fullname" />
+                <label asp-for="Input.Fullname">Fullname</label>
+                <span asp-validation-for="Input.Fullname" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Birthday" class="form-control" autocomplete="name" aria-required="true" placeholder="Your Birthday" />
+                <label asp-for="Input.Birthday">Birthday</label>
+                <span asp-validation-for="Input.Birthday" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
