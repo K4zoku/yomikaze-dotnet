@@ -38,8 +38,8 @@
                       <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li> -->
                 </ul>
-                <form class="d-flex col-4 mx-auto">
-                    <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex col-4 mx-auto" asp-action="Search" asp-controller="Home">
+                    <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search" name="query">
                     <button class="btn btn-warning text-light" type="submit">Search</button>
                 </form>
             </div>

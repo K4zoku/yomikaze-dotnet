@@ -1,11 +1,11 @@
 ﻿@using Yomikaze.Application.Data.Models.Common;
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Library";
 }
 @model IEnumerable<ComicModel>
 <!-- card -->
 <div class="container mt-5 mb-5">
-    <h1>Comics <i class="fa-solid fa-chevron-right"></i></h1>
+    <h1>Library <i class="fa-solid fa-chevron-right"></i></h1>
     <div class="row">
         @foreach (var comic in Model)
         {
@@ -13,4 +13,4 @@
             Html.RenderPartial("_ComicCardPartial", comic);
         }
     </div>
-</div>
+</div

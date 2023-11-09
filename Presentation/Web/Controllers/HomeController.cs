@@ -17,7 +17,7 @@ public class HomeController : Controller
     }
 
     public async Task<IActionResult> Index()
-    {   
+    {
         var comics = await _comicDao.GetAllAsync();
         return View(comics.Select(comic => comic.ToModel()));
     }
@@ -30,6 +30,12 @@ public class HomeController : Controller
     public IActionResult History()
     {
         return View();
+    }
+
+    public async Task<IActionResult> Search(string query)
+    {
+        var comics = await _comicDao.GetAllAsync();
+        return View("Index", comics.Where(comic =>comic.Name.Contains(query,StringComparison.InvariantCultureIgnoreCase)).Select(comic => comic.ToModel()));
     }
 
 
