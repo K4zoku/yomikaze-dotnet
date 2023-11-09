@@ -1,4 +1,4 @@
-﻿<Window x:Class="Yomikaze.WPF.FormComic"
+﻿<Window x:Class="Yomikaze.WPF.ComicForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -33,50 +33,41 @@
                     <Label Name="lbName" Foreground="White" Content="Name" />
                     <TextBox Name="txtName"  HorizontalAlignment="Stretch"
                            Height="25"
-                           Text="{Binding Path=Name}"
-                           DataContext="{Binding ElementName=lvName,Path=SelectedItem}"/>
+                           Text="{Binding Path=Name}"/>
                     <Label Name="lbDescription" Foreground="White" Content="Description"/>
                     <TextBox Name="txtDescription" HorizontalAlignment="Stretch"
                              Height="25"
-                             Text="{Binding Path=Description}"
-                             DataContext="{Binding ElementName=lvDescription,Path=SelectedItem}"/>
+                             Text="{Binding Path=Description}"/>
 
                     <Label Name="lbCover" Foreground="White" Content="Cover"/>
                     <TextBox Name="txtCover" HorizontalAlignment="Stretch"
                            Height="25"
-                             Text="{Binding Path=Cover}"
-                             DataContext="{Binding ElementName=lvCover,Path=SelectedItem}"/>
+                             Text="{Binding Path=Cover}"/>
 
                     <Label Name="lbBanner" Foreground="White" Content="Banner"/>
                     <TextBox Name="txtBanner" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Banner}"
-                              DataContext="{Binding ElementName=lvBanner,Path=SelectedItem}"/>
+                              Text="{Binding Path=Banner}"/>
                     <Label Name="lbPublished" Foreground="White" Content="Published"/>
                     <TextBox Name="txtPublished" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Published}"
-                              DataContext="{Binding ElementName=lvPublished,Path=SelectedItem}"/>
+                              Text="{Binding Path=Published}"/>
                     <Label Name="lbEnded" Foreground="White" Content="Ended"/>
                     <TextBox Name="txtEnded" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Ended}"
-                              DataContext="{Binding ElementName=lvEnded,Path=SelectedItem}"/>
+                              Text="{Binding Path=Ended}"/>
                     <Label Name="lbAliases" Foreground="White" Content="Aliases"/>
                     <TextBox Name="txtAliases" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Aliases}"
-                              DataContext="{Binding ElementName=lvAliases,Path=SelectedItem}"/>
-                    <Label Name="lbAuthor" Foreground="White" Content="Author"/>
+                              Text="{Binding Path=Aliases}"/>
+                    <Label Name="lbAuthor" Foreground="White" Content="Authors"/>
                     <TextBox Name="txtAuthor" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Author}"
-                              DataContext="{Binding ElementName=lvAuthor,Path=SelectedItem}"/>
-                    <Label Name="lbGenre" Foreground="White" Content="Genre"/>
+                              Text="{Binding Path=Authors}"/>
+                    <Label Name="lbGenre" Foreground="White" Content="Genres"/>
                     <TextBox Name="txtGenre" HorizontalAlignment="Stretch"
                             Height="25"
-                              Text="{Binding Path=Genre}"
-                              DataContext="{Binding ElementName=lvGenre,Path=SelectedItem}"/>
+                              Text="{Binding Path=Genres}"/>
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center" Width="218">
                         <Button x:Name="btnCreate" Margin="10" Width="80" Content="Save" Click="btnSave" />

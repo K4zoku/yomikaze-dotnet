@@ -27,7 +27,7 @@ public partial class App : Application
         services.AddTransient<Login>();
         services.AddTransient<ManageComics>();
         services.AddTransient<Upload>();
-        services.AddTransient<FormComic>();
+        services.AddTransient<ComicForm>();
         HttpClient httpClient = new()
         {
             BaseAddress = new Uri(API_SERVER)

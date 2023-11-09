@@ -102,11 +102,11 @@ public class ComicsController : ControllerBase
         return ResponseModel.CreateSuccess(filtered.Select(c => c.ToModel(false)));
     }
 
-    [HttpPost]
+    [HttpPost("Create")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<ResponseModel<ComicModel>>> Create([FromBody] ComicRequestModel model)
     {
-        var genres = model.Genres.Split(",").Select(g => g.Trim()).ToList();
+        var genres = model.Genres?.Split(",").Select(g => g.Trim()).ToList() ?? new();
         var existingGenres = await (await _genreDao.QueryAsync())
             .Where(g => genres.Contains(g.Name))
             .ToListAsync();

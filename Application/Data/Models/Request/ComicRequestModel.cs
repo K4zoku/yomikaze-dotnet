@@ -10,5 +10,5 @@ public class ComicRequestModel
     public string? Aliases { get; set; }
     public string? Authors { get; set; }
 
-    public string Genres { get; set; } = default!;
+    public string? Genres { get; set; } = default!;
 }

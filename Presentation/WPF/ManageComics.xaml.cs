@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using WPF;
 using Yomikaze.Application.Data.Models.Common;
+using Yomikaze.Application.Data.Models.Request;
 
 namespace Yomikaze.WPF;
 
@@ -45,15 +46,13 @@ public partial class ManageComics : Window
     private async Task LoadData()
     {
         var comics = await _client.GetComics() ?? new();
-        lvListComics.ItemsSource = comics;
+        ListViewComics.ItemsSource = comics;
     }
 
     private async void btnCreate_Click(object sender, RoutedEventArgs e)
     {
-
-        var form = App.Services.GetRequiredService<FormComic>();
-        var comic = new ComicModel();
-        comic.Name = "TESt";
+        var form = App.Services.GetRequiredService<ComicForm>();
+        var comic = new ComicRequestModel();
         form.DataContext = comic;
         form.ShowDialog();
         await LoadData();
@@ -62,6 +61,24 @@ public partial class ManageComics : Window
     private async void Window_ContentRendered(object sender, System.EventArgs e)
     {
         await LoadData();
+    }
+
+    private async void btnUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        var form = App.Services.GetRequiredService<ComicForm>();
+        var item = ListViewComics.SelectedItem;
+        if (item is ComicModel comic)
+        {
+            form.DataContext = comic;
+            form.ShowDialog();
+            await LoadData();
+        }
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        var uploadForm = App.Services.GetRequiredService<Upload>();
+        uploadForm.Show();
     }
 }
 

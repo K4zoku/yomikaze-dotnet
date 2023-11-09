@@ -31,10 +31,10 @@
             </StackPanel>
             <Separator Height="1" Margin="20 30" Background="White"/>
             <!--button-->
-            <Button Height="30" >
+            <Button Height="30" Click="Button_Click" >
                 <StackPanel Orientation="Horizontal">
                     <!--icon-->
-                    <TextBlock Text="List Comic" Foreground="DimGray"/>
+                    <TextBlock Text="Upload Images" Foreground="DimGray"/>
                 </StackPanel>
             </Button>
             <Button Margin="0 20 0 0" RenderTransformOrigin="0.505,1.789" Height="30" Click="btn_Genre">
@@ -62,7 +62,7 @@
         </StackPanel>
 
         <StackPanel Margin="23,65,10,0" Height="269" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2">
-            <ListView Grid.Row="2" Name="lvListComics" Width="Auto" Height="225" MaxHeight="225">
+            <ListView Grid.Row="2" Name="ListViewComics" Width="Auto" Height="225" MaxHeight="225">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" Width="42"
@@ -87,7 +87,7 @@
             </ListView>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="400">
                 <Button Name="btnCreate" Margin="10" Width="50" Content="Create" Click="btnCreate_Click" />
-                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update"  />
+                <Button Name="btnUpdate" Margin="10" Width="60" Content="Update" Click="btnUpdate_Click"  />
                 <Button Name="btnDelete" Margin="10" Width="60" Content="Delete" Click="BtnDelete" />
                 <Button x:Name="btnSearchLoad" Margin="10" Width="60" Content="Search"/>
             </StackPanel>

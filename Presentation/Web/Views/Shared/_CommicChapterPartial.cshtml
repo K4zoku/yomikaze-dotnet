@@ -1,5 +1,5 @@
 ﻿@model Yomikaze.Application.Data.Models.Common.ComicModel
-<div id="commic-@Model.Id">
+<div id="comic-@Model.Id">
     <div>
         <img class="w-100 rounded" src="@Model.Banner" alt="">
         <img style="width: 15em; height: 18em; object-fit: cover; z-index: 1; margin-top: -10em;" class="rounded img-fluid ms-3 me-3"
@@ -65,7 +65,7 @@
     <div class="container mt-3">
         <div class="card w-100 rounded">
             <div class="card-header">
-                <img @Model.Cover class="rounded-circle border border-light border-3 shadow-sm" style="width: 3em; height: 3em; object-fit:cover;" alt="">
+                <img src="@Model.Cover" class="rounded-circle border border-light border-3 shadow-sm" style="width: 3em; height: 3em; object-fit:cover;" alt="">
                 <span class="ms-2 fw-bold">User Name</span>
                 <div class="dropdown float-end my-2">
                     <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
