@@ -2,14 +2,25 @@
 
 public class ImageUploadService
 {
+    private string StoragePath { get; }
+
+    public ImageUploadService()
+    {
+        StoragePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+    }
+    
+    public ImageUploadService(string storagePath)
+    {
+        StoragePath = storagePath;
+    }
+    
     public async Task<string> UploadImageAsync(IFormFile file)
     {
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-        var filePath = Path.Combine(dir, fileName);
+        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        if (!Directory.Exists(StoragePath)) Directory.CreateDirectory(StoragePath);
+        string filePath = Path.Combine(StoragePath, fileName);
 
-        await using var stream = new FileStream(filePath, FileMode.Create);
+        await using FileStream stream = new(filePath, FileMode.Create);
         await file.CopyToAsync(stream);
         return "/images/" + fileName;
     }

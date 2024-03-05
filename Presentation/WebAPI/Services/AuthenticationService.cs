@@ -20,6 +20,7 @@ public class AuthenticationService
     {
         UserManager = userManager;
         Jwt = jwtConfiguration;
+        
     }
 
     public async Task<TokenModel> SignIn(SignInModel model)
@@ -53,7 +54,7 @@ public class AuthenticationService
 
     private JwtSecurityToken GetToken(IEnumerable<Claim> claims)
     {
-        var token = new JwtSecurityToken(
+        JwtSecurityToken token = new(
             issuer: Jwt.Issuer,
             audience: Jwt.Audience,
             signingCredentials: Jwt.SigningCredentials,

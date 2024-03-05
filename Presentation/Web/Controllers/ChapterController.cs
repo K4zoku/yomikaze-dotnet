@@ -35,9 +35,4 @@ public class ChapterController : Controller
         return View(chapter.ToModel());
     }
 
-    public IActionResult Relate()
-    {
-        return View();
-    }
-
 }

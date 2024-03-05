@@ -35,7 +35,7 @@ public class ComicsController : ControllerBase
     }
 
     // get comic
-    [HttpGet("{id}")]
+    [HttpGet("{id:long}")]
     public async Task<ActionResult<ResponseModel<ComicModel>>> GetComicAsync(long id)
     {
         var comic = await _comicDao.GetAsync(id);
@@ -47,7 +47,7 @@ public class ComicsController : ControllerBase
     }
 
     // get comic chapters
-    [HttpGet("{id}/Chapters")]
+    [HttpGet("{id:long}/Chapters")]
     public async Task<ActionResult<ResponseModel<IEnumerable<ChapterModel>>>> GetComicChaptersAsync(long id)
     {
         var comic = await _comicDao.GetAsync(id);
@@ -60,7 +60,7 @@ public class ComicsController : ControllerBase
     }
 
     // get comic chapter
-    [HttpGet("{id}/Chapters/{chapterIndex}")]
+    [HttpGet("{id:long}/Chapters/{chapterIndex:long}")]
     public async Task<ActionResult<ResponseModel<ChapterModel>>> GetComicChapterAsync(long id, long chapterIndex)
     {
         var comic = await _comicDao.GetAsync(id);
@@ -106,20 +106,19 @@ public class ComicsController : ControllerBase
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<ResponseModel<ComicModel>>> Create([FromBody] ComicRequestModel model)
     {
-        var genres = model.Genres?.Split(",").Select(g => g.Trim()).ToList() ?? new();
-        var existingGenres = await (await _genreDao.QueryAsync())
+        List<string> genres = model.Genres?.Split(",").Select(g => g.Trim()).ToList() ?? new();
+        List<Genre> existingGenres = await (await _genreDao.QueryAsync())
             .Where(g => genres.Contains(g.Name))
             .ToListAsync();
-        var newGenres = genres.Except(existingGenres.Select(g => g.Name)).ToList();
-        foreach (var genre in newGenres)
+        List<string> newGenres = genres.Except(existingGenres.Select(g => g.Name)).ToList();
+        foreach (Genre genreEntity in newGenres.Select(genre => new Genre { Name = genre }))
         {
-            var genreEntity = new Genre { Name = genre };
             await _genreDao.AddAsync(genreEntity);
             existingGenres.Add(genreEntity);
         }
         _genreDao.SaveChanges();
 
-        var comic = new Comic
+        Comic comic = new()
         {
             Name = model.Name,
             Description = model.Description,
@@ -136,7 +135,7 @@ public class ComicsController : ControllerBase
         return Ok(ResponseModel.CreateSuccess(comic.ToModel()));
     }
 
-    [HttpPost("{id}/Chapters/Add")]
+    [HttpPost("{id:long}/Chapters/Add")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<ResponseModel<ChapterModel>>> AddChapter([FromRoute] long id, [FromBody] ChapterRequestModel model)
     {

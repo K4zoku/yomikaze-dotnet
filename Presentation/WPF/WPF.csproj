@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Yomikaze.WPF</RootNamespace>
@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
