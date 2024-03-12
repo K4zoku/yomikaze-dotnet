@@ -11,6 +11,19 @@
       ],
       "UpstreamPathTemplate": "/Images/{fileName}",
       "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/API/V1/{url}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7187
+        }
+      ],
+      "UpstreamPathTemplate": "/API/V1/{url}",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     }
   ]
 }
