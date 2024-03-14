@@ -49,14 +49,14 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     }
     
     [HttpGet("Statistics")]
-    public IActionResult GetStatistics()
+    public ActionResult<ResponseModel> GetStatistics()
     {
         var files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();
-        double bytes = files.Sum(f => f.Length);
-        int i;
-        for (i = 0; bytes >= 1024; i++) bytes /= 1024;
         string[] suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
-        string size = $"{bytes:0.##} {suffixes[i]}";
-        return Ok(new { TotalFiles = files.Length, TotalSize = size });
+        long bytes = files.Sum(f => f.Length);
+        int i = (int)Math.Floor(Math.Log(bytes, 1024));
+        double value = bytes / Math.Pow(1024, i);
+        string size = $"{value:0.##} {suffixes[i]}";
+        return Ok(ResponseModel.CreateSuccess("OK", new { TotalFiles = files.Length, TotalSize = size }));
     }
 }
