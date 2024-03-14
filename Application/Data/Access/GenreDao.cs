@@ -1,25 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
-using Yomikaze.Domain.Database.Entities;
-using Yomikaze.Infrastructure.Data;
+using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Data.Access;
 
-public class GenreDao : BaseDao<Genre>, IDao<Genre>
+public class GenreDao(DbContext dbContext) : BaseDao<Genre>(dbContext)
 {
-
-    public GenreDao(YomikazeDbContext dbContext) : base(dbContext)
+    public override IQueryable<Genre> Query()
     {
+        return base.Query()
+            .Include(genre => genre.Comics);
     }
-
-    public override async Task<IEnumerable<Genre>> GetAllAsync()
-    {
-        return await DbSet.Include(g => g.Comics).ToListAsync();
-    }
-
-    public override async Task<Genre?> GetAsync(long id)
-    {
-        return await DbSet.Include(g => g.Comics).FirstOrDefaultAsync(g => g.Id == id);
-    }
-
 }

@@ -1,4 +1,4 @@
-﻿using Yomikaze.Domain.Database.Entities;
+﻿using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Data.Models.Common;
 
@@ -10,11 +10,6 @@ public class GenreModel
 
     public static explicit operator GenreModel(Genre genre)
     {
-        return new()
-        {
-            Id = genre.Id,
-            Name = genre.Name,
-            Description = genre.Description
-        };
+        return new GenreModel { Id = genre.Id, Name = genre.Name, Description = genre.Description };
     }
 }

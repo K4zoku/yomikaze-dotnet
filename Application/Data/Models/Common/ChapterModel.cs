@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Yomikaze.Domain.Database.Entities;
 
 namespace Yomikaze.Application.Data.Models.Common;
 
@@ -13,17 +12,4 @@ public class ChapterModel
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual ICollection<PageModel> Pages { get; set; } = default!;
-
-    public static explicit operator ChapterModel(Chapter chapter)
-    {
-        return new()
-        {
-            Id = chapter.Id,
-            Index = chapter.Index,
-            Title = chapter.Title,
-            Description = chapter.Description,
-            Available = chapter.Available,
-            Pages = chapter.Pages.Select(p => p.ToModel()).ToList()
-        };
-    }
 }

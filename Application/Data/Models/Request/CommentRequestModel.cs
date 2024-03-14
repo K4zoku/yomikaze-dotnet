@@ -10,6 +10,5 @@ public class CommentRequestModel
 
     public long? ReplyToId { get; set; }
 
-    [Required]
-    public required string Content { get; set; } = default!;
+    [Required] public required string Content { get; set; } = default!;
 }

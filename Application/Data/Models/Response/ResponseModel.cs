@@ -18,22 +18,42 @@ public class ResponseModel<TData, TError>
 
 public class ResponseModel<T> : ResponseModel<T, IDictionary<string, string[]>>
 {
-
 }
 
 public class ResponseModel : ResponseModel<object, IDictionary<string, string[]>>
 {
-    public static ResponseModel CreateSuccess() => new() { Success = true };
+    public static ResponseModel CreateSuccess()
+    {
+        return new ResponseModel { Success = true };
+    }
 
-    public static ResponseModel CreateSuccess(string message) => new() { Success = true, Message = message };
+    public static ResponseModel CreateSuccess(string message)
+    {
+        return new ResponseModel { Success = true, Message = message };
+    }
 
-    public static ResponseModel<T> CreateSuccess<T>(T data) => new() { Success = true, Data = data };
+    public static ResponseModel<T> CreateSuccess<T>(T data)
+    {
+        return new ResponseModel<T> { Success = true, Data = data };
+    }
 
-    public static ResponseModel<T> CreateSuccess<T>(string message, T data) => new() { Success = true, Message = message, Data = data };
+    public static ResponseModel<T> CreateSuccess<T>(string message, T data)
+    {
+        return new ResponseModel<T> { Success = true, Message = message, Data = data };
+    }
 
-    public static ResponseModel CreateError() => new() { Success = false };
+    public static ResponseModel CreateError()
+    {
+        return new ResponseModel { Success = false };
+    }
 
-    public static ResponseModel CreateError(string message) => new() { Success = false, Message = message };
+    public static ResponseModel CreateError(string message)
+    {
+        return new ResponseModel { Success = false, Message = message };
+    }
 
-    public static ResponseModel<object, E> CreateError<E>(string message, E errors) => new() { Success = false, Message = message, Errors = errors };
+    public static ResponseModel<object, E> CreateError<E>(string message, E errors)
+    {
+        return new ResponseModel<object, E> { Success = false, Message = message, Errors = errors };
+    }
 }

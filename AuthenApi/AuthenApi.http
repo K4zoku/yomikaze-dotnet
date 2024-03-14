@@ -1,6 +1,0 @@
-@AuthenApi_HostAddress = http://localhost:5291
-
-GET {{AuthenApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

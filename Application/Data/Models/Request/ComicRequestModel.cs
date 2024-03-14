@@ -1,4 +1,5 @@
 ﻿namespace Yomikaze.Application.Data.Models.Request;
+
 public class ComicRequestModel
 {
     public string Name { get; set; } = default!;

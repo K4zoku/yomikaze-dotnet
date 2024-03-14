@@ -1,4 +1,5 @@
 ﻿namespace Yomikaze.Application.Data.Models.Request;
+
 public class ChapterRequestModel
 {
     public int Index { get; set; }
