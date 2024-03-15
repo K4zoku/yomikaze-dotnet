@@ -5,7 +5,7 @@ namespace Yomikaze.Application.Data.Models.Common;
 
 public class  GenreInputModel
 {
-    [Required]
+    [Required, Length(1, 50, ErrorMessage = "Genre's name must be between 1 and 100 characters")]
     public string Name { get; set; } = default!;
 
     public string? Description { get; set; }
