@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using Yomikaze.Domain.Attributes;
+using Yomikaze.Application.Data.Attributes;
 
 namespace Yomikaze.API.CDN.Images.Models;
 
