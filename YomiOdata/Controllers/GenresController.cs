@@ -5,6 +5,6 @@ using YomiOdata.Base;
 
 namespace YomiOdata.Controllers;
 
-public class ChaptersOdataController(DbContext dbContext) : ODataControllerBase<Chapter>(dbContext, new ChapterRepo(dbContext))
+public class GenresController(DbContext dbContext) : ODataControllerBase<Genre>(dbContext, new GenreRepo(dbContext))
 {
 }

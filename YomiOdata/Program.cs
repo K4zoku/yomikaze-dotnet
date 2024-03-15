@@ -5,6 +5,7 @@ using Microsoft.OData.ModelBuilder;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Infrastructure.Database;
+using YomiOdata;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureBuilder(builder);
@@ -30,7 +31,7 @@ static void ConfigureBuilder(WebApplicationBuilder builder)
         services.AddSwaggerGen(options =>
         {
 
-            //options.OperationFilter<ODataOperationFilter>();
+            options.OperationFilter<ODataOperationFilter>();
         });
 
     services.AddDbContext<YomikazeDbContext>(options =>
@@ -82,6 +83,8 @@ static IEdmModel GetEdmModel()
 {
     var builder = new ODataConventionModelBuilder();
     builder.EntitySet<Chapter>("Chapters");
-    //builder.EntitySet<Order>("Orders");
+    builder.EntitySet<Comic>("Comics");
+    builder.EntitySet<Comment>("Comments");
+    builder.EntitySet<Genre>("Genres");
     return builder.GetEdmModel();
 }

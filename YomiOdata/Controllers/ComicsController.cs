@@ -5,6 +5,6 @@ using YomiOdata.Base;
 
 namespace YomiOdata.Controllers;
 
-public class CommentsOdataController(DbContext dbContext) : ODataControllerBase<Comment>(dbContext, new CommentRepo(dbContext))
+public class ComicsController(DbContext dbContext) : ODataControllerBase<Comic>(dbContext, new ComicRepo(dbContext))
 {
 }
