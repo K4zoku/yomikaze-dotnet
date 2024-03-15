@@ -1,12 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
-using Yomikaze.Application.Data.Models.Response;
-using Yomikaze.Domain.Entities.Identity;
 using Yomikaze.Domain.Helpers;
+using Yomikaze.Domain.Helpers.API;
 using Yomikaze.Domain.Helpers.Security;
 using Yomikaze.Infrastructure.Database;
 
@@ -14,7 +8,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 ConfigurationManager configuration = builder.Configuration;
 
-// Database context
 services.AddDbContext<YomikazeDbContext>(options =>
 {
     string? connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -22,24 +15,9 @@ services.AddDbContext<YomikazeDbContext>(options =>
 });
 services.AddScoped<DbContext, YomikazeDbContext>();
 
-// CORS
-services.AddCors(options =>
-    options.AddPolicy("PublicCORS",
-        cors => cors
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .SetIsOriginAllowed(_ => true)
-            .AllowCredentials()
-    )
-);
+services.AddPublicCors();
 
-// Identity and JWT
-services.AddIdentity<User, Role>(options =>
-    {
-        options.User.RequireUniqueEmail = true;
-    })
-    .AddEntityFrameworkStores<YomikazeDbContext>()
-    .AddDefaultTokenProviders();
+services.AddYomikazeIdentity();
 
 JwtConfiguration jwt = configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
@@ -48,44 +26,18 @@ JwtConfiguration jwt = configuration
 
 services.AddSingleton(jwt);
 
-services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = false;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            RequireExpirationTime = false,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret))
-        };
-    });
+services.AddJwtBearerAuthentication(jwt);
 
 services
     .AddControllers(options =>
     {
         options.Filters.Add<HttpResponseExceptionFilter>();
     })
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory = InvalidModelStateResponse.Factory;
-    });
+    .ConfigureApiBehaviorOptionsYomikaze();
 
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(opt =>
-{
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication", Version = "v1" });
-    opt.AddSecurityDefinition("JWT", new JwtSecurityScheme());
-    opt.AddSecurityRequirement(new JwtSecurityRequirement());
-});
+
+services.AddSwaggerGenWithJwt();
 
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
@@ -96,17 +48,12 @@ if (env.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("PublicCORS");
+app.UseCors("Public");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-IServiceScope scope = app.Services.CreateScope();
-IServiceProvider service = scope.ServiceProvider;
-DbContext dbContext = service.GetRequiredService<DbContext>();
-dbContext.Database.Migrate();
 
 await app.RunAsync();

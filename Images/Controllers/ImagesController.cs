@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
-using MimeKit;
-using System.Net.Mime;
-using Yomikaze.Application.Data.Models.Request;
-using Yomikaze.Application.Data.Models.Response;
+using Yomikaze.Domain.Models.Response;
 using static System.IO.File;
 using static System.IO.Path;
+using ImageUploadModel = Yomikaze.API.CDN.Images.Models.ImageUploadModel;
 
 namespace Yomikaze.API.CDN.Images.Controllers;
 

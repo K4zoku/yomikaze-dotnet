@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using Yomikaze.Application.Data.Models.Request;
-using Yomikaze.Application.Data.Models.Response;
 using Yomikaze.Domain.Entities.Identity;
 using Yomikaze.Domain.Helpers;
 using Yomikaze.Domain.Helpers.Security;
+using Yomikaze.Domain.Models.Request;
+using Yomikaze.Domain.Models.Response;
 
 namespace Yomikaze.API.Authentication.Controllers;
 
@@ -55,7 +55,7 @@ public class AuthenticationController(UserManager<User> userManager, JwtConfigur
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
-            return ResponseModel.CreateSuccess(new TokenModel(await GenerateToken(user)));
+            return ResponseModel.CreateSuccess(new TokenModel((await GenerateToken(user)).ToTokenString()));
         }
 
         throw new HttpResponseException(HttpStatusCode.InternalServerError,

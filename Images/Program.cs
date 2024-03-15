@@ -1,40 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.FileProviders;
-using Yomikaze.Application.Data.Models.Response;
+using Yomikaze.Domain.Helpers.API;
+using Yomikaze.Domain.Helpers.Security;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
-services.AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory = context =>
-        {
-            Dictionary<string, IEnumerable<string>> errors = new();
-            foreach ((string? key, ModelStateEntry? value) in context.ModelState)
-            {
-                IEnumerable<string> errorsToAdd = value.Errors.Where(error => !string.IsNullOrEmpty(error.ErrorMessage))
-                    .Select(error => error.ErrorMessage);
-                errors.Add(key, errorsToAdd);
-            }
-
-            ResponseModel<object, Dictionary<string, IEnumerable<string>>> problems =
-                ResponseModel.CreateError("Validation errors", errors);
-            return new BadRequestObjectResult(problems);
-        };
-    });
+services.AddControllers().ConfigureApiBehaviorOptionsYomikaze();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddCors(options =>
-{
-    options.AddPolicy("Public", cors =>
-    {
-        cors.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
+services.AddPublicCors();
+
 string storagePath = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
 if (!Directory.Exists(storagePath))
 {

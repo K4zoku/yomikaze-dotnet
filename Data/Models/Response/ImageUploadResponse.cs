@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Application.Data.Models.Response;
+﻿namespace Yomikaze.Domain.Models.Response;
 
 public class ImageUploadResponse
 {

@@ -11,7 +11,7 @@
     <ItemGroup>
         <PackageReference Include="MMLib.SwaggerForOcelot" Version="8.1.0"/>
         <PackageReference Include="Ocelot" Version="23.1.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Application.Data.Models.Request;
+﻿namespace Yomikaze.Domain.Models.Request;
 
 public class ComicRequestModel
 {
