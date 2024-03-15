@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Yomikaze.Domain.Models.Common;
+namespace Yomikaze.Domain.Models;
 
 public class HistoryRecordInputModel
 {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Entities.Identity;
 
 namespace Yomikaze.Infrastructure.Database;
 

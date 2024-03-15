@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
-using Yomikaze.Domain.Entities.Identity;
 
 namespace Yomikaze.Domain.Entities;
 

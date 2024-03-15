@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Entities.Identity;
-using Yomikaze.Domain.Models.Common;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.Application.Data.Configs;
 

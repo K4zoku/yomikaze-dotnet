@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Yomikaze.Domain.Models.Common;
+namespace Yomikaze.Domain.Models;
 
 public class LibraryEntryInputModel
 {

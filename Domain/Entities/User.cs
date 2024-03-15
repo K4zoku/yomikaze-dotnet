@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Common;
 
-namespace Yomikaze.Domain.Entities.Identity;
+namespace Yomikaze.Domain.Entities;
 
 public class User : IdentityUser<long>, IEntity
 {

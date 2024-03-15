@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
-using Yomikaze.Domain.Models.Response;
+using Yomikaze.Domain.Models;
 using static System.IO.File;
 using static System.IO.Path;
 using ImageUploadModel = Yomikaze.API.CDN.Images.Models.ImageUploadModel;

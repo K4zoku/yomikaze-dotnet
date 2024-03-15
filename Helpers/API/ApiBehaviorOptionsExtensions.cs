@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
-using Yomikaze.Domain.Models.Response;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.Application.Helpers.API;
 

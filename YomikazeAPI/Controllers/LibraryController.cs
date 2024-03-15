@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Common;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Models.Response;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Main.Controllers;
 

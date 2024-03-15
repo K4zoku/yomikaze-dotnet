@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Yomikaze.Domain.Models.Request;
+namespace Yomikaze.Domain.Models;
 
 public abstract class AuthenticationModel
 {

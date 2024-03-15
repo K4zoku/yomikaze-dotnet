@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Yomikaze.API.Main.Base;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Models.Common;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Main.Controllers;
 

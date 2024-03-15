@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using Yomikaze.Domain.Entities.Identity;
+using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Helpers.API;
 

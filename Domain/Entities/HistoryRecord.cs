@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Domain.Common;
-using Yomikaze.Domain.Entities.Identity;
 
 namespace Yomikaze.Domain.Entities;
 

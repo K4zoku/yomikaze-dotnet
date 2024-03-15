@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Yomikaze.Domain.Entities.Identity;
+using Yomikaze.Domain.Entities;
 using Yomikaze.Infrastructure.Database;
 
 namespace Yomikaze.Application.Helpers.Security;
