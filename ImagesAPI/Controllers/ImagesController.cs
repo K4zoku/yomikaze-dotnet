@@ -45,11 +45,11 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         Delete(info.PhysicalPath);
         return NoContent();
     }
-    
+
     [HttpGet("Statistics")]
     public ActionResult<ResponseModel> GetStatistics()
     {
-        var files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();
+        IFileInfo[] files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();
         string[] suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
         long bytes = files.Sum(f => f.Length);
         int i = (int)Math.Floor(Math.Log(bytes, 1024));

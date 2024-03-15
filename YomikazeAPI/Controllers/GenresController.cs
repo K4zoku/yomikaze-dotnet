@@ -7,8 +7,10 @@ using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Models.Common;
 
 namespace Yomikaze.API.Main.Controllers;
+
 [ApiController]
 [Route("[controller]")]
-public class GenresController(DbContext dbContext, IMapper mapper) : CrudControllerBase<Genre, GenreInputModel, GenreOutputModel>(dbContext, mapper, new GenreRepo(dbContext))
+public class GenresController(DbContext dbContext, IMapper mapper)
+    : CrudControllerBase<Genre, GenreInputModel, GenreOutputModel>(dbContext, mapper, new GenreRepo(dbContext))
 {
 }

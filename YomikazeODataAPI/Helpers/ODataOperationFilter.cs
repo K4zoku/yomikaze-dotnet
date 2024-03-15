@@ -11,18 +11,19 @@ public class ODataOperationFilter : IOperationFilter
     {
         operation.Parameters ??= new List<OpenApiParameter>();
 
-        var descriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
+        ControllerActionDescriptor? descriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
 
         if (descriptor == null || !descriptor.FilterDescriptors.Any(filter =>
-                filter.Filter is EnableQueryAttribute)) return;
+                filter.Filter is EnableQueryAttribute))
+        {
+            return;
+        }
+
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = "$select",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Returns only the selected properties. (ex. FirstName, LastName, City)",
             Required = false
         });
@@ -31,10 +32,7 @@ public class ODataOperationFilter : IOperationFilter
         {
             Name = "$expand",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Include only the selected objects. (ex. Childrens, Locations)",
             Required = false
         });
@@ -43,10 +41,7 @@ public class ODataOperationFilter : IOperationFilter
         {
             Name = "$filter",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Filter the response with OData filter queries.",
             Required = false
         });
@@ -55,10 +50,7 @@ public class ODataOperationFilter : IOperationFilter
         {
             Name = "$top",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Number of objects to return. (ex. 25)",
             Required = false
         });
@@ -67,10 +59,7 @@ public class ODataOperationFilter : IOperationFilter
         {
             Name = "$skip",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Number of objects to skip in the current order (ex. 50)",
             Required = false
         });
@@ -79,10 +68,7 @@ public class ODataOperationFilter : IOperationFilter
         {
             Name = "$orderby",
             In = ParameterLocation.Query,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            },
+            Schema = new OpenApiSchema { Type = "string" },
             Description = "Define the order by one or more fields (ex. LastModified)",
             Required = false
         });

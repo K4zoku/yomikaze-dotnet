@@ -2,21 +2,17 @@
 
 namespace Yomikaze.Domain.Models.Common;
 
-
 public class HistoryRecordInputModel
 {
-    [Required]
-    public long ChapterId { get; set; }
+    [Required] public long ChapterId { get; set; }
 
-    [Required]
-    public long UserId { get; set; }
+    [Required] public long UserId { get; set; }
 
     public DateTimeOffset LastRead { get; set; }
-
 }
 
 public class HistoryRecordOutputModel
-{   
+{
     public long Id { get; set; }
 
     public ChapterOutputModel Chapter { get; set; } = default!;

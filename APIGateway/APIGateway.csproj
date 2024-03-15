@@ -11,11 +11,11 @@
     <ItemGroup>
         <PackageReference Include="MMLib.SwaggerForOcelot" Version="8.1.0"/>
         <PackageReference Include="Ocelot" Version="23.1.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Helpers\Helpers.csproj" />
+        <ProjectReference Include="..\Helpers\Helpers.csproj"/>
     </ItemGroup>
 
 </Project>

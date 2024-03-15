@@ -23,7 +23,7 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddPublicCors();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
 
 if (env.IsDevelopment())

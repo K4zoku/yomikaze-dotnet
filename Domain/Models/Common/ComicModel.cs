@@ -4,9 +4,8 @@ namespace Yomikaze.Domain.Models.Common;
 
 public class ComicInputModel
 {
-    
-
-    [Required, Length(0, 150, ErrorMessage = "Comic's name must from 0 to 150 characters")]
+    [Required]
+    [Length(0, 150, ErrorMessage = "Comic's name must from 0 to 150 characters")]
     public string Name { get; set; } = default!;
 
     [Length(0, 500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
@@ -35,7 +34,7 @@ public class ComicOutputModel
     public long Id { get; set; }
 
     public string Name { get; set; } = default!;
-    
+
     public string? Description { get; set; }
 
     public string? Cover { get; set; }

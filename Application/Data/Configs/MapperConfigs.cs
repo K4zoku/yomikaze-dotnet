@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Identity;
 using Yomikaze.Domain.Models.Common;
 
 namespace Yomikaze.Application.Data.Configs;
+
 public class MapperConfigs : Profile
 {
     public MapperConfigs()

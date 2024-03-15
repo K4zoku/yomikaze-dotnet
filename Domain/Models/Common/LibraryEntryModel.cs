@@ -5,11 +5,9 @@ namespace Yomikaze.Domain.Models.Common;
 
 public class LibraryEntryInputModel
 {
-    [Required]
-    public long UserId { get; set; }
+    [Required] public long UserId { get; set; }
 
-    [Required]
-    public long ComicId { get; set; }
+    [Required] public long ComicId { get; set; }
 
     public DateTimeOffset DateAdded { get; set; } = DateTimeOffset.Now;
 }

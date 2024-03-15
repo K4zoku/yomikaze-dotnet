@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
-using Yomikaze.API.OData;
 using Yomikaze.API.OData.Helpers;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers.Database;
@@ -20,7 +19,7 @@ edm.EntitySet<Comment>("Comments");
 edm.EntitySet<Genre>("Genres");
 
 services.AddControllers()
-    .AddOData(options => 
+    .AddOData(options =>
         options
             .Count()
             .Filter()
@@ -29,8 +28,8 @@ services.AddControllers()
             .OrderBy()
             .SetMaxTop(20)
             .AddRouteComponents("OData", edm.GetEdmModel()
-    )
-);
+            )
+    );
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(options => options.OperationFilter<ODataOperationFilter>());

@@ -12,8 +12,9 @@ public static class JwtExtensions
     {
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
-    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services, JwtConfiguration configuration)
+
+    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services,
+        JwtConfiguration configuration)
     {
         services.AddAuthentication(options =>
             {
@@ -38,25 +39,23 @@ public static class JwtExtensions
     {
         services.AddSwaggerGen(options =>
         {
-            options.AddSecurityDefinition("JWT", new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT"
-            });
+            options.AddSecurityDefinition("JWT",
+                new OpenApiSecurityScheme
+                {
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "JWT"
-                        }
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "JWT" }
                     },
                     Array.Empty<string>()
                 }

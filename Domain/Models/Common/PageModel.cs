@@ -1,6 +1,5 @@
 ﻿namespace Yomikaze.Domain.Models.Common;
 
-
 public class PageInputModel
 {
     public int Index { get; set; }
@@ -9,7 +8,7 @@ public class PageInputModel
 }
 
 public class PageOutputModel
-{   
+{
     public long Id { get; set; }
 
     public int Index { get; set; }

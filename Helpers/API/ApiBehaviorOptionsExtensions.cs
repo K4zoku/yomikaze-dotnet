@@ -16,7 +16,8 @@ public static class ApiBehaviorOptionsExtensions
                 Dictionary<string, IEnumerable<string>> errors = new();
                 foreach ((string? key, ModelStateEntry? value) in context.ModelState)
                 {
-                    IEnumerable<string> errorsToAdd = value.Errors.Where(error => !string.IsNullOrEmpty(error.ErrorMessage))
+                    IEnumerable<string> errorsToAdd = value.Errors
+                        .Where(error => !string.IsNullOrEmpty(error.ErrorMessage))
                         .Select(error => error.ErrorMessage);
                     errors.Add(key, errorsToAdd);
                 }

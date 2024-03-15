@@ -2,12 +2,12 @@
 
 namespace Yomikaze.Domain.Models.Common;
 
-
 public class ChapterInputModel
 {
     public int Index { get; set; }
 
-    [Required, Length(0, 50, ErrorMessage = "Tittle must from 0 to 50 characters")]
+    [Required]
+    [Length(0, 50, ErrorMessage = "Tittle must from 0 to 50 characters")]
     public string Title { get; set; } = default!;
 
     [Length(0, 250, ErrorMessage = "Description must from 0 to 250 characters")]

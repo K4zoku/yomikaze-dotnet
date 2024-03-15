@@ -29,16 +29,24 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     [HttpGet("{key}")]
     public virtual ActionResult<TOutput> Get(TKey key)
     {
-        var entity = Repository.Get(key);
-        if (entity == null) return NotFound();
+        T? entity = Repository.Get(key);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
         return Ok(Mapper.Map<TOutput>(entity));
     }
 
     [HttpPost]
     public virtual ActionResult<TOutput> Post(TInput input)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var entity = Mapper.Map<T>(input);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        T? entity = Mapper.Map<T>(input);
         Repository.Add(entity);
         return Ok(Mapper.Map<TOutput>(entity));
     }
@@ -46,9 +54,17 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     [HttpPut("{key}")]
     public virtual ActionResult<TOutput> Put(TKey key, TInput input)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var entityToUpdate = Repository.Get(key);
-        if (entityToUpdate == null) return NotFound();
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        T? entityToUpdate = Repository.Get(key);
+        if (entityToUpdate == null)
+        {
+            return NotFound();
+        }
+
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
         return Ok(Mapper.Map<TOutput>(entityToUpdate));
@@ -57,8 +73,12 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     [HttpDelete("{key}")]
     public virtual ActionResult Delete(TKey key)
     {
-        var entity = Repository.Get(key);
-        if (entity == null) return NotFound();
+        T? entity = Repository.Get(key);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
         Repository.Delete(entity);
         return Ok();
     }

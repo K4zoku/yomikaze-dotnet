@@ -11,8 +11,8 @@ public static class YomikazeDatabase
     {
         services.AddDbContext<YomikazeDbContext>(options =>
         {
-            string? connectionString = configuration.GetConnectionString("DefaultConnection") 
-                                    ?? throw new InvalidOperationException("Could not read connection string");
+            string? connectionString = configuration.GetConnectionString("DefaultConnection")
+                                       ?? throw new InvalidOperationException("Could not read connection string");
             options.UseSqlServer(connectionString, server => server.EnableRetryOnFailure());
         });
         services.AddScoped<DbContext, YomikazeDbContext>();

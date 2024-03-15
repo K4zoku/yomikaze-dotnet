@@ -10,7 +10,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ComicsController(DbContext dbContext, IMapper mapper) : CrudControllerBase<Comic, ComicInputModel, ComicOutputModel>(dbContext, mapper, new ComicRepo(dbContext))
+public class ComicsController(DbContext dbContext, IMapper mapper)
+    : CrudControllerBase<Comic, ComicInputModel, ComicOutputModel>(dbContext, mapper, new ComicRepo(dbContext))
 {
-
 }

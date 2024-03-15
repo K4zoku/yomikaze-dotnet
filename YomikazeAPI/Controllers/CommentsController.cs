@@ -7,8 +7,10 @@ using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Models.Common;
 
 namespace Yomikaze.API.Main.Controllers;
+
 [ApiController]
 [Route("[controller]")]
-public class CommentsController(DbContext dbContext, IMapper mapper) : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepo(dbContext))
+public class CommentsController(DbContext dbContext, IMapper mapper)
+    : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepo(dbContext))
 {
 }

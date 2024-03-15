@@ -10,7 +10,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ChaptersController(DbContext dbContext, IMapper mapper) : CrudControllerBase<Chapter, ChapterInputModel, ChapterOutputModel>(dbContext, mapper, new ChapterRepo(dbContext))
+public class ChaptersController(DbContext dbContext, IMapper mapper)
+    : CrudControllerBase<Chapter, ChapterInputModel, ChapterOutputModel>(dbContext, mapper, new ChapterRepo(dbContext))
 {
-    
 }

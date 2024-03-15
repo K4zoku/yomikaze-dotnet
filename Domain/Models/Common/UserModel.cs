@@ -4,7 +4,6 @@ namespace Yomikaze.Domain.Models.Common;
 
 public class UserInputModel
 {
-    
     public string? Fullname { get; set; }
 
     public string? Avatar { get; set; }
@@ -14,7 +13,6 @@ public class UserInputModel
     public string? Bio { get; set; }
 
     public DateTimeOffset? Birthday { get; set; }
-
 }
 
 public class UserOutputModel
