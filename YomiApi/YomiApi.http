@@ -1,6 +1,0 @@
-@YomiApi_HostAddress = http://localhost:5168
-
-GET {{YomiApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

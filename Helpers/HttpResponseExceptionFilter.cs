@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Yomikaze.Domain.Helpers;
+namespace Yomikaze.Application.Helpers;
 
 public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {

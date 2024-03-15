@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Yomikaze.Domain.Helpers;
+namespace Yomikaze.Application.Helpers;
 
 public class HttpResponseException(int statusCode, object? value = null) : Exception
 {

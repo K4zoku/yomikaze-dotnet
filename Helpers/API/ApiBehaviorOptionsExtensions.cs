@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Yomikaze.Domain.Models.Response;
 
-namespace Yomikaze.Domain.Helpers.API;
+namespace Yomikaze.Application.Helpers.API;
 
 public static class ApiBehaviorOptionsExtensions
 {

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Yomikaze.Domain.Helpers.Security;
+namespace Yomikaze.Application.Helpers.Security;
 
 public static class JwtExtensions
 {

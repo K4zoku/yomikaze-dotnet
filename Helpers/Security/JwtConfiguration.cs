@@ -1,16 +1,20 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Yomikaze.Domain.Helpers.Security;
+namespace Yomikaze.Application.Helpers.Security;
 
 public class JwtConfiguration
 {
     public const string SectionName = "JWT";
+    
+    
     public string Secret { get; set; } = default!;
     
     public string? Issuer { get; set; }
     
     public string? Audience { get; set; }
+    
+    
     
     public bool SaveToken { get; set; } = false;
     

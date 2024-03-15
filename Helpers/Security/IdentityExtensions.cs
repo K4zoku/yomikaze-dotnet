@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Yomikaze.Domain.Entities.Identity;
 using Yomikaze.Infrastructure.Database;
 
-namespace Yomikaze.Domain.Helpers.Security;
+namespace Yomikaze.Application.Helpers.Security;
 
 public static class IdentityExtensions
 {

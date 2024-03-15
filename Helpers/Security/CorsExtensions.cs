@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Yomikaze.Domain.Helpers.Security;
+namespace Yomikaze.Application.Helpers.Security;
 
 public static class CorsExtensions
 {
