@@ -1,18 +1,34 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Data.Models.Common;
 
-public class CommentModel
+
+
+public class CommentInputModel
 {
-    public long Id { get; set; }
-    public required string Content { get; set; } = default!;
+    [Required]
+    public string Content { get; set; } = default!;
 
-    public DateTimeOffset CreatedAt { get; set; }
-    public required UserModel CreatedBy { get; set; } = default!;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Required]
+    public long UserId { get; set; }
+
+    public long ReplyToId { get; set; }
+
     public DateTimeOffset UpdatedAt { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public CommentModel[]? Replies { get; set; } = default!;
+}
+
+public class CommentOutputModel
+{   
+    public long Id { get; set; }
+
+    public required string Content { get; set; } = default!;
+
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    public CommentOutputModel[]? Replies { get; set; } = default!;
 }
