@@ -14,10 +14,11 @@ namespace Yomikaze.API.Authentication.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthenticationController(UserManager<User> userManager, JwtConfiguration jwtConfiguration)
+public class AuthenticationController(UserManager<User> userManager, RoleManager<Role> roleManager, JwtConfiguration jwtConfiguration)
     : ControllerBase
 {
     private UserManager<User> UserManager { get; } = userManager;
+    private RoleManager<Role> RoleManager { get; } = roleManager;
 
     private JwtConfiguration Jwt { get; } = jwtConfiguration;
 
@@ -42,24 +43,34 @@ public class AuthenticationController(UserManager<User> userManager, JwtConfigur
     [HttpPost]
     public async Task<ActionResult<ResponseModel<TokenModel>>> SignUp([FromBody] SignUpModel model)
     {
-        User? user = await UserManager.FindByNameAsync(model.Username) ??
-                     await UserManager.FindByEmailAsync(model.Email);
-        if (user is not null)
+        bool any = UserManager.Users.Any();
+        User? user;
+        if (any) // If there is any user, check if username or email already exists
         {
-            throw new HttpResponseException(HttpStatusCode.Conflict,
-                ResponseModel.CreateError("Username or email already exists"));
+            user = await UserManager.FindByNameAsync(model.Username) ??
+                         await UserManager.FindByEmailAsync(model.Email);
+            if (user is not null)
+            {
+                throw new HttpResponseException(HttpStatusCode.Conflict,
+                    ResponseModel.CreateError("Username or email already exists"));
+            }   
         }
 
         user = new User { UserName = model.Username, Email = model.Email, Birthday = model.Birthday.Date };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            return ResponseModel.CreateSuccess(new TokenModel((await GenerateToken(user)).ToTokenString()));
+            throw new HttpResponseException(HttpStatusCode.InternalServerError,
+                ResponseModel.CreateError("Errors occurred!", result.Errors));
         }
 
-        throw new HttpResponseException(HttpStatusCode.InternalServerError,
-            ResponseModel.CreateError("Errors occurred!", result.Errors));
+        if (!any) // First user is admin
+        {
+            await UserManager.AddToRoleAsync(user, "Administrator");
+        }
+        return ResponseModel.CreateSuccess(new TokenModel((await GenerateToken(user)).ToTokenString()));
+
     }
 
     [HttpGet]

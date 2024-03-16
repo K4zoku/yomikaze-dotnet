@@ -12,8 +12,8 @@ using Yomikaze.Infrastructure.Database;
 namespace Yomikaze.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    [Migration("20240316151727_UpdateComicGenreRelationship")]
-    partial class UpdateComicGenreRelationship
+    [Migration("20240316165633_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

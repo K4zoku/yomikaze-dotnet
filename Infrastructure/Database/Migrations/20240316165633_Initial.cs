@@ -117,24 +117,26 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComicGenre",
+                name: "ComicGenres",
                 columns: table => new
                 {
-                    ComicsId = table.Column<long>(type: "bigint", nullable: false),
-                    GenresId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ComicId = table.Column<long>(type: "bigint", nullable: false),
+                    GenreId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComicGenre", x => new { x.ComicsId, x.GenresId });
+                    table.PrimaryKey("PK_ComicGenres", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ComicGenre_Comics_ComicsId",
-                        column: x => x.ComicsId,
+                        name: "FK_ComicGenres_Comics_ComicId",
+                        column: x => x.ComicId,
                         principalTable: "Comics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ComicGenre_Genres_GenresId",
-                        column: x => x.GenresId,
+                        name: "FK_ComicGenres_Genres_GenreId",
+                        column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -370,9 +372,9 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Page", x => x.Id);
+                    table.PrimaryKey("PK_Pages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Page_Chapters_ChapterId",
+                        name: "FK_Pages_Chapters_ChapterId",
                         column: x => x.ChapterId,
                         principalTable: "Chapters",
                         principalColumn: "Id",
@@ -411,9 +413,14 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 column: "ComicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComicGenre_GenresId",
-                table: "ComicGenre",
-                column: "GenresId");
+                name: "IX_ComicGenres_ComicId",
+                table: "ComicGenres",
+                column: "ComicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ComicGenres_GenreId",
+                table: "ComicGenres",
+                column: "GenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ComicId",
@@ -462,7 +469,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Page_ChapterId",
+                name: "IX_Pages_ChapterId",
                 table: "Pages",
                 column: "ChapterId");
 
@@ -510,7 +517,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ComicGenre");
+                name: "ComicGenres");
 
             migrationBuilder.DropTable(
                 name: "Comments");
