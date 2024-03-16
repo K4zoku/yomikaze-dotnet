@@ -15,11 +15,11 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class CommentsController(DbContext dbContext, IMapper mapper)
     : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepo(dbContext))
 {
     [HttpPost]
-    [Authorize]
     public override ActionResult<CommentOutputModel> Post(CommentInputModel input)
     {
         if (!ModelState.IsValid)
@@ -35,16 +35,12 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpPut("{key}")]
-    [Authorize]
     public override ActionResult<CommentOutputModel> Put(long key, CommentInputModel input)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        CheckModelState();
 
         Comment? entityToUpdate = Repository.Get(key);
-        if (entityToUpdate == null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        CheckEntity(entityToUpdate);
 
         long id = User.GetId();
         if (entityToUpdate.UserId != id) throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
@@ -58,7 +54,8 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
     public override ActionResult Delete(long key)
     {
         Comment? entity = Repository.Get(key);
-        if (entity == null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+
+        CheckEntity(entity);
 
 
         long id = User.GetId();

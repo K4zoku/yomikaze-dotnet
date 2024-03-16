@@ -14,16 +14,13 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class LibraryController(IMapper mapper, DbContext dbContext) : ControllerBase
 {
     protected IMapper Mapper { get; set; } = mapper;
     protected LibraryRepo Repository { get; set; } = new LibraryRepo(dbContext);
 
-
-
-
     [HttpPost]
-    [Authorize]
     public virtual ActionResult<ResponseModel> Post(long comicId)
     {
         long id = User.GetId();
@@ -36,7 +33,6 @@ public class LibraryController(IMapper mapper, DbContext dbContext) : Controller
 
     [HttpDelete]
     [Route("{comicId:long}")]
-    [Authorize]
     public virtual ActionResult Delete(long comicId)
     {
         long id = User.GetId();

@@ -2,6 +2,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using Yomikaze.Application.Helpers;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Main.Base;
 
@@ -19,21 +22,13 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
 
     protected IRepo<T, TKey> Repository { get; set; } = repository;
 
-    [HttpGet]
-    public virtual ActionResult<IEnumerable<TOutput>> Get()
-    {
-        return Ok(Mapper.Map<IEnumerable<TOutput>>(Repository.Query()));
-    }
-
 
     [HttpGet("{key}")]
     public virtual ActionResult<TOutput> Get(TKey key)
     {
         T? entity = Repository.Get(key);
-        if (entity == null)
-        {
-            return NotFound();
-        }
+     
+        CheckEntity(entity);
 
         return Ok(Mapper.Map<TOutput>(entity));
     }
@@ -41,11 +36,8 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     [HttpPost]
     public virtual ActionResult<TOutput> Post(TInput input)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+        CheckModelState();
+       
         T? entity = Mapper.Map<T>(input);
         Repository.Add(entity);
         return Ok(Mapper.Map<TOutput>(entity));
@@ -54,16 +46,10 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     [HttpPut("{key}")]
     public virtual ActionResult<TOutput> Put(TKey key, TInput input)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
+        CheckModelState();
+        
         T? entityToUpdate = Repository.Get(key);
-        if (entityToUpdate == null)
-        {
-            return NotFound();
-        }
+        CheckEntity(entityToUpdate);
 
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
@@ -74,14 +60,28 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     public virtual ActionResult Delete(TKey key)
     {
         T? entity = Repository.Get(key);
-        if (entity == null)
-        {
-            return NotFound();
-        }
+        
+        CheckEntity(entity);
 
         Repository.Delete(entity);
         return Ok();
     }
+
+
+    [NonAction]
+    // check model state and throw exception if invalid
+    protected void CheckModelState()
+    {
+        if (!ModelState.IsValid) throw new HttpResponseException(HttpStatusCode.BadRequest, ResponseModel.CreateError("Invalid input"));
+    }
+
+    [NonAction]
+    // check entity and throw exception if null
+    protected void CheckEntity(T? entity)
+    {
+        if (entity == null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+    }
+
 }
 
 public abstract class CrudControllerBase<T, TInput, TOutput>(

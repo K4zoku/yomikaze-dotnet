@@ -11,12 +11,12 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.API.OData.Controllers;
 [EnableQuery]
-public class LibraryController(DbContext dbContext) : ODataController
+[Authorize]
+public class LibraryController(DbContext dbContext) : ControllerBase
 {
     private LibraryRepo Repository { get; set; } = new LibraryRepo(dbContext);
 
-    [Authorize]
-
+   
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {   
         long id = User.GetId();

@@ -4,6 +4,8 @@ namespace Yomikaze.Domain.Models;
 
 public class ChapterInputModel
 {
+    public long ComicId { get; set; }
+
     public int Index { get; set; }
 
     [Required]
@@ -13,7 +15,7 @@ public class ChapterInputModel
     [Length(0, 250, ErrorMessage = "Description must from 0 to 250 characters")]
     public string? Description { get; set; }
 
-    public string Pages { get; set; } = default!;
+    public ICollection<PageInputModel> Pages { get; set; } = new List<PageInputModel>();
 
     public DateTimeOffset? Available { get; set; } = DateTimeOffset.Now;
 }
