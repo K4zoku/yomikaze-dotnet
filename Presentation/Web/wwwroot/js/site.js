@@ -20,22 +20,27 @@
         
         getProfile() {
             if (!this.authenticated) return null;
-            let p = localStorage.getItem('profile');
+            let p = sessionStorage.getItem('profile')
             if (p) {
-                console.log("Profile from local storage");
+                console.log("Profile from session storage");
                 return JSON.parse(p);
             }
-            console.log("Local storage empty, fetching profile from server...");
+            console.log("Session storage not storing profile data, fetching profile from server...");
             return this.http.get('/API/Authenticate/Info')
-                .then(response => {
+                .then(async response => {
                     let responseObject = response.data;
-                    let data = responseObject.data;
-                    if (!data.profile) {
+                    let data = responseObject.data || { profile: null };
+                    let profile = data.profile;
+                    if (!profile) {
                         console.log("No profile found in response data", response);
                         return null;
                     }
-                    localStorage.setItem('profile', JSON.stringify(data.profile));
-                    return data.profile;
+                    if (!profile.avatar) {
+                        let emailHash = await sha256(profile.email);
+                        profile.avatar = `https://gravatar.com/avatar/${emailHash}?d=mp&f=y`;
+                    }
+                    sessionStorage.setItem('profile', JSON.stringify(data.profile));
+                    return profile;
                 }).catch((error) => {
                     console.log("Error fetching profile");
                     console.error(error);
@@ -103,6 +108,13 @@
 
 document.addEventListener('alpine:initialized', () => {
     console.log("Alpine initialized");
-    Alpine.store('auth').getProfile();
 })
 
+window.sha256 = async (input) => {
+    const textAsBuffer = new TextEncoder().encode(input);
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", textAsBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray
+        .map((item) => item.toString(16).padStart(2, "0"))
+        .join("");
+};

@@ -38,11 +38,12 @@
             </div>
         </div>
         <template x-if="$store.auth.authenticated">
-            <div class="dropdown dropdown-end">
+            <div class="dropdown dropdown-end" x-data="{ profile: null }" x-init="profile = await $store.auth.getProfile()">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 rounded-full">
-                        <img alt="Tailwind CSS Navbar component"
-                             src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                        <img alt="Avatar"
+                             src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                             :src="profile?.avatar" />
                     </div>
                 </div>
                 <ul tabindex="0"
