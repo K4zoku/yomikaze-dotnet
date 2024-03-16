@@ -26,6 +26,7 @@ edm.EntitySet<Comic>("Comics");
 edm.EntitySet<Comment>("Comments");
 edm.EntitySet<Genre>("Genres");
 edm.EntitySet<LibraryEntry>("Library");
+edm.EntitySet<HistoryRecord>("History");
 
 services.AddControllers()
     .AddOData(options =>

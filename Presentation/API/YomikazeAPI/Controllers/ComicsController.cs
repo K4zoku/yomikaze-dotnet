@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.API.Main.Base;
 using Yomikaze.Application.Data.Repos;
+using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Models;
 
@@ -17,6 +18,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
 {
     private new ComicRepo Repository => (ComicRepo)base.Repository;
     private ChapterRepo ChapterRepo => new ChapterRepo(DbContext);
+    private HistoryRepo HistoryRepo => new HistoryRepo(DbContext);
 
     [HttpPost]
     public override ActionResult<ComicOutputModel> Post(ComicInputModel input)
@@ -71,6 +73,18 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     {
         var chapter = ChapterRepo.GetByComicIdAndIndex(comicId, index);
         CheckEntity(chapter);
+        
+        // check if user is logged in then add history
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            long id = User.GetId();
+            var history = new HistoryRecord
+            {
+                UserId = id,
+                ChapterId = chapter.Id
+            };
+            HistoryRepo.Add(history);
+        }
 
         return Ok(Mapper.Map<ChapterOutputModel>(chapter));
     }
