@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "axios@1.6.8",
+      "destination": "wwwroot/lib/axios"
+    },
+    {
+      "library": "alpinejs@3.13.7",
+      "destination": "wwwroot/lib/alpinejs"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "@alpinejs/persist@3.13.7",
+      "destination": "wwwroot/lib/alpinejs/persist/"
+    },
+    {
+      "library": "Sortable@1.15.2",
+      "destination": "wwwroot/lib/Sortable/"
+    }
+  ]
+}
