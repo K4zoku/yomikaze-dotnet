@@ -6,11 +6,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Yomikaze.API.OData.Base;
 
 [EnableQuery]
-public abstract class ODataControllerBase<T, TKey>(DbContext dbContext, IRepo<T, TKey> repository) : ControllerBase
+public abstract class ODataControllerBase<T, TKey>(IRepo<T, TKey> repository) : ControllerBase
     where T : class, IEntity<TKey>
 {
-    protected DbContext DbContext { get; set; } = dbContext;
-
     protected IRepo<T, TKey> Repository { get; set; } = repository;
 
 
@@ -32,6 +30,6 @@ public abstract class ODataControllerBase<T, TKey>(DbContext dbContext, IRepo<T,
     }
 }
 
-public abstract class ODataControllerBase<T>(DbContext dbContext, IRepo<T, long> repository)
-    : ODataControllerBase<T, long>(dbContext, repository)
-    where T : class, IEntity<long>;
+public abstract class ODataControllerBase<T>(IRepo<T> repository)
+    : ODataControllerBase<T, long>(repository)
+    where T : class, IEntity;

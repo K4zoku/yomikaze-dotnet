@@ -6,6 +6,6 @@ using Yomikaze.Domain.Entities;
 namespace Yomikaze.API.OData.Controllers;
 
 public class ChaptersController(DbContext dbContext)
-    : ODataControllerBase<Chapter>(dbContext, new ChapterRepo(dbContext))
+    : ODataControllerBase<Chapter>(new ChapterRepo(dbContext))
 {
 }

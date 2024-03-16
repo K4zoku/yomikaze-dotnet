@@ -24,4 +24,9 @@ public class User : IdentityUser<long>, IEntity
     [InverseProperty(nameof(HistoryRecord.User))]
 
     public virtual ICollection<HistoryRecord> History { get; set; } = new List<HistoryRecord>();
+
+    public static long GetId()
+    {
+        throw new NotImplementedException();
+    }
 }

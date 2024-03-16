@@ -11,12 +11,22 @@ IServiceCollection services = builder.Services;
 ConfigurationManager configuration = builder.Configuration;
 
 services.AddYomikazeDbContext(configuration);
+services.AddYomikazeIdentity();
+
+JwtConfiguration jwt = configuration
+                           .GetRequiredSection(JwtConfiguration.SectionName)
+                           .Get<JwtConfiguration>()
+                       ?? throw new InvalidOperationException("Could not read JWT Configuration");
+services.AddSingleton(jwt);
+services.AddJwtBearerAuthentication(jwt);
 
 ODataConventionModelBuilder edm = new();
 edm.EntitySet<Chapter>("Chapters");
 edm.EntitySet<Comic>("Comics");
 edm.EntitySet<Comment>("Comments");
 edm.EntitySet<Genre>("Genres");
+edm.EntitySet<LibraryEntry>("Library");
+edm.EntitySet<HistoryRecord>("History");
 
 services.AddControllers()
     .AddOData(options =>
@@ -27,13 +37,13 @@ services.AddControllers()
             .Select()
             .OrderBy()
             .SetMaxTop(20)
-            .AddRouteComponents("OData", edm.GetEdmModel()
+            .AddRouteComponents("API/OData", edm.GetEdmModel()
             )
     );
 
 services.AddEndpointsApiExplorer();
+services.AddSwaggerGenWithJwt();
 services.AddSwaggerGen(options => options.OperationFilter<ODataOperationFilter>());
-services.AddAutoMapper(typeof(MapperConfigs));
 services.AddPublicCors();
 
 WebApplication app = builder.Build();
@@ -44,6 +54,8 @@ if (env.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

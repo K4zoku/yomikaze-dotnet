@@ -19,7 +19,5 @@ public class LibraryEntryOutputModel
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ComicOutputModel Comic { get; set; } = default!;
 
-    public UserOutputModel User { get; set; } = default!;
-
     public DateTimeOffset DateAdded { get; set; }
 }

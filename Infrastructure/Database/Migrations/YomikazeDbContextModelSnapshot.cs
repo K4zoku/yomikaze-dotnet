@@ -582,7 +582,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
                     b.HasIndex("ChapterId");
 
-                    b.ToTable("Page");
+                    b.ToTable("Pages");
                 });
 
             modelBuilder.Entity("ComicGenre", b =>
