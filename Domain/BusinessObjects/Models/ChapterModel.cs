@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Yomikaze.Domain.Models;
 
@@ -32,5 +33,5 @@ public class ChapterOutputModel
 
     public DateTimeOffset? Available { get; set; }
 
-    public ICollection<PageOutputModel> Pages { get; set; } = new List<PageOutputModel>();
+    public ICollection<PageOutputModel>? Pages { get; set; } = new List<PageOutputModel>();
 }

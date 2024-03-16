@@ -77,7 +77,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
 
     [NonAction]
     // check entity and throw exception if null
-    protected void CheckEntity(T? entity)
+    protected void CheckEntity(object? entity)
     {
         if (entity == null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
     }
