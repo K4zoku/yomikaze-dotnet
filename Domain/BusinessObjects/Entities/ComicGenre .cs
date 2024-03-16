@@ -1,16 +1,19 @@
 ﻿using Abstracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Yomikaze.Domain.Entities;
 public class ComicGenre : BaseEntity
 {
-    public virtual long ComicId { get; set; }
+    [ForeignKey(nameof(Comic))]
+    public long ComicId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual Comic Comic { get; set; } = default!;
 
-    public virtual long GenreId { get; set; }
+    [ForeignKey(nameof(Genre))]
+    public long GenreId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual Genre Genre { get; set; } = default!;
 }

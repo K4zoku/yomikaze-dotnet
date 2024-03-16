@@ -9,6 +9,7 @@ public class GenreDao(DbContext dbContext) : BaseDao<Genre>(dbContext)
     public override IQueryable<Genre> Query()
     {
         return base.Query()
-            .Include(genre => genre.Comics);
+            .Include(genre => genre.ComicGenres)
+            .ThenInclude(comicGenre => comicGenre.Comic);
     }
 }
