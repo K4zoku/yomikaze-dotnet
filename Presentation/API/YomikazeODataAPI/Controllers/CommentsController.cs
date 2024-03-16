@@ -6,6 +6,6 @@ using Yomikaze.Domain.Entities;
 namespace Yomikaze.API.OData.Controllers;
 
 public class CommentsController(DbContext dbContext)
-    : ODataControllerBase<Comment>(dbContext, new CommentRepo(dbContext))
+    : ODataControllerBase<Comment>(new CommentRepo(dbContext))
 {
 }

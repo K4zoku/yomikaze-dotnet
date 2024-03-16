@@ -10,8 +10,6 @@ public class CommentInputModel
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
-    [Required] public long UserId { get; set; }
-
     public long ReplyToId { get; set; }
 
     public DateTimeOffset UpdatedAt { get; set; }

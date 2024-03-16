@@ -359,7 +359,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Page",
+                name: "Pages",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -463,7 +463,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Page_ChapterId",
-                table: "Page",
+                table: "Pages",
                 column: "ChapterId");
 
             migrationBuilder.CreateIndex(
@@ -525,7 +525,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "Page");
+                name: "Pages");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");

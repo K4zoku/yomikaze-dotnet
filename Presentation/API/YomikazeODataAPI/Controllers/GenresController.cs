@@ -5,6 +5,6 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.API.OData.Controllers;
 
-public class GenresController(DbContext dbContext) : ODataControllerBase<Genre>(dbContext, new GenreRepo(dbContext))
+public class GenresController(DbContext dbContext) : ODataControllerBase<Genre>(new GenreRepo(dbContext))
 {
 }
