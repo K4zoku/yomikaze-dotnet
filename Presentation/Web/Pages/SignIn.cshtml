@@ -92,13 +92,13 @@
     <div class="mb-4">
       <label for="username" class="block text-sm font-bold mb-2">Username</label>
       <input id="username" type="text" x-model="username" placeholder="Enter your email address" required
-             class="input input-bordered w-full" />
+             class="input input-bordered w-full" autocomplete="username" :class="{ 'input-error': !!usernameError }"/>
       <span class="text-xs text-red-500" x-show="!!usernameError" x-text="usernameError"></span>
     </div>
     <div class="mb-4">
       <label for="password" class="block text-sm font-bold mb-2">Password</label>
       <input id="password" type="password" x-model="password" placeholder="Enter your password" required
-             class="input input-bordered w-full" />
+             class="input input-bordered w-full" autocomplete="current-password" :class="{ 'input-error': !!passwordError }"/>
       <span class="text-xs text-red-500" x-show="!!passwordError" x-text="passwordError"></span>
     </div>
     <template x-if="!!errorMessage">
