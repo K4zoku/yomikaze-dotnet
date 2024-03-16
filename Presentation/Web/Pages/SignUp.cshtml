@@ -1,5 +1,5 @@
 ﻿@page
-@model Web.Pages.SignIn
+@model Web.Pages.SignUp
 
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -7,7 +7,7 @@
 
 <script>
   document.addEventListener('alpine:init', () => {
-    Alpine.data('signInForm', () => ({
+    Alpine.data('signUpForm', () => ({
       username: '',
       password: '',
       
@@ -84,11 +84,11 @@
 
 <div class="flex items-center justify-center w-full min-h-[calc(100vh-8rem)]" 
      x-init="if ($store.auth.authenticated) window.location.href = '/'"
-     x-data="signInForm"
+     x-data="signUpForm"
 >
   <form class="w-full h-fit max-w-md bg-base-300 p-8 shadow-lg rounded-lg" 
         x-on:submit.prevent="submit()">
-    <h2 class="flex text-2xl font-bold items-center justify-center mb-3">Sign In</h2>
+    <h2 class="flex text-2xl font-bold items-center justify-center mb-3">Sign Up</h2>
     <div class="mb-4">
       <label for="username" class="block text-sm font-bold mb-2">Username</label>
       <input id="username" type="text" x-model="username" placeholder="Enter your email address" required
@@ -108,15 +108,14 @@
       </div>
     </template>
     <div class="mb-6">
-      <button :disabled="loading" class="btn btn-accent w-full"
+      <button :disabled="loading" class="btn btn-success w-full"
               type="submit">
         <span class="loading loading-infinity" x-show="loading"></span>
-        <span x-text="loading ? 'Signing In...' : 'Sign In'">Sign In</span>
+        <span x-text="loading ? 'Signing Up...' : 'Sign Up'">Sign Up</span>
       </button>
     </div>
-    <a asp-page="Forgot" class="flex justify-center text-center underline text-gray-500 text-xs mb-2">Forgot password?</a>
     <p class="text-center text-gray-500 text-xs">
-      Don't have an account? <a asp-page="SignUp" class="underline">Sign Up</a>.
+      Already have an account? <a asp-page="SignIn" class="underline">Sign In</a>.
     </p>
   </form>
 </div>
