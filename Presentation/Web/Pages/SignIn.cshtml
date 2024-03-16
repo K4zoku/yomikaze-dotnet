@@ -46,8 +46,8 @@
             break;
           case 400:
           default:
-            this.usernameError = data.errors?.Username || '';
-            this.passwordError = data.errors?.Password || '';
+            this.usernameError = getFirstError(data, 'Username');
+            this.passwordError = getFirstError(data, 'Password');
             this.errorMessage = data.message || '';
             break;
         }    

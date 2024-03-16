@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -43,34 +44,42 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
     [HttpPost]
     public async Task<ActionResult<ResponseModel<TokenModel>>> SignUp([FromBody] SignUpModel model)
     {
-        bool any = UserManager.Users.Any();
-        User? user;
-        if (any) // If there is any user, check if username or email already exists
+        User? user = await UserManager.FindByNameAsync(model.Username) ??
+                     await UserManager.FindByEmailAsync(model.Email);
+        if (user is not null)
         {
-            user = await UserManager.FindByNameAsync(model.Username) ??
-                         await UserManager.FindByEmailAsync(model.Email);
-            if (user is not null)
-            {
-                throw new HttpResponseException(HttpStatusCode.Conflict,
-                    ResponseModel.CreateError("Username or email already exists"));
-            }   
-        }
-
+            throw new HttpResponseException(HttpStatusCode.Conflict,
+                ResponseModel.CreateError("Username or email already exists"));
+        }   
+        
         user = new User { UserName = model.Username, Email = model.Email, Birthday = model.Birthday.Date };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
+        if (result.Succeeded)
         {
-            throw new HttpResponseException(HttpStatusCode.InternalServerError,
-                ResponseModel.CreateError("Errors occurred!", result.Errors));
+            string token = (await GenerateToken(user)).ToTokenString();
+            return ResponseModel.CreateSuccess(new TokenModel(token));
         }
 
-        if (!any) // First user is admin
+        result.Errors.Where(e => e.Code.Contains("Password")).ToList()
+            .ForEach(e => ModelState.AddModelError("Password", e.Description));
+        result.Errors.Where(e => e.Code.Contains("Email")).ToList()
+            .ForEach(e => ModelState.AddModelError("Email", e.Description));
+        result.Errors.Where(e => e.Code.Contains("Username")).ToList()
+            .ForEach(e => ModelState.AddModelError("Username", e.Description));
+        
+        Dictionary<string, IEnumerable<string>> errors = new();
+        foreach ((string? key, ModelStateEntry? value) in ModelState)
         {
-            await UserManager.AddToRoleAsync(user, "Administrator");
+            IEnumerable<string> errorsToAdd = value.Errors
+                .Where(error => !string.IsNullOrEmpty(error.ErrorMessage))
+                .Select(error => error.ErrorMessage);
+            errors.Add(key, errorsToAdd);
         }
-        return ResponseModel.CreateSuccess(new TokenModel((await GenerateToken(user)).ToTokenString()));
 
+        ResponseModel<object, Dictionary<string, IEnumerable<string>>> problems =
+            ResponseModel.CreateError("Validation errors", errors);
+        throw new HttpResponseException(HttpStatusCode.BadRequest, problems);
     }
 
     [HttpGet]

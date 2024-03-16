@@ -48,22 +48,19 @@
                 console.log(response);
                 let data = response.data;
                 switch (response.status) {
-                    case 404:
+                    case 409:
                         this.usernameError = data.message;
-                        break;
-                    case 401:
-                        this.passwordError = data.message;
+                        this.emailError = data.message;
                         break;
                     case 400:
+                        this.usernameError = getFirstError(data, 'Username');
+                        this.passwordError = getFirstError(data, 'Password');
+                        this.confirmPasswordError = getFirstError(data, 'ConfirmPassword');
+                        this.emailError = getFirstError(data, 'Email');
+                        this.birthdayError = getFirstError(data, 'Birthday');
+                        break;
                     default:
-                        this.usernameError = data.errors?.Username || '';
-                        this.passwordError = data.errors?.Password || '';
-                        this.confirmPasswordError = data.errors?.ConfirmPassword || '';
-                        this.emailError = data.errors?.Email || '';
-                        this.birthdayError = data.errors?.Birthday || '';
                         this.errorMessage = data.message || '';
-
-
                         break;
                 }
                 this.loading = false;

@@ -57,7 +57,7 @@
         logout() {
             this.token = null
             localStorage.removeItem('token');
-            localStorage.removeItem('profile');
+            sessionStorage.removeItem('profile');
             this.http.defaults.headers.common['Authorization'] = undefined;
             window.location.reload();
         },
@@ -118,3 +118,5 @@ window.sha256 = async (input) => {
         .map((item) => item.toString(16).padStart(2, "0"))
         .join("");
 };
+
+window.getFirstError = (data, errorField) => [].concat((data?.errors ?? {})[errorField] || []).at(0) || '';
