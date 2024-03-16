@@ -20,6 +20,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, long>
     public virtual DbSet<Notification> Notifications { get; init; } = default!;
     public virtual DbSet<Page> Pages { get; init; } = default!;
     public virtual DbSet<LibraryEntry> LibraryEntries { get; init; } = default!;
+    public virtual DbSet<ComicGenre> ComicGenres { get; init; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

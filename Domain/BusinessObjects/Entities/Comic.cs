@@ -16,7 +16,7 @@ public class Comic : BaseEntity
     public virtual string? Authors { get; set; } = default!;
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
+    public virtual ICollection<ComicGenre> ComicGenres { get; set; } = new List<ComicGenre>();
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
