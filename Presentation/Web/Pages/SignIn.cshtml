@@ -1,5 +1,5 @@
 ﻿@page
-@model Web.Pages.Login
+@model Web.Pages.SignIn
 
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -12,43 +12,71 @@
       password: '',
       
       loading: false,
+      
       usernameError: '',
       passwordError: '',
       
       errorMessage: '',
-      auth: null,
-      client: null,
+      
       init() {
         this.auth = Alpine.store('auth');
         this.client = this.auth.http;
-        console.log('ok');
       },
-      async submit() {
+      
+      resetErrorMessages() {
+        this.usernameError = '';
+        this.passwordError = '';
+        this.errorMessage = '';
+      },
+      
+      handleError(error) {
+        if (!error.response) return;
+        // Reset the error messages
+        this.resetErrorMessages();
+        
+        let response = error.response;
+        console.log(response);
+        let data = response.data;
+        switch (response.status) {
+          case 404:
+            this.usernameError = data.message;
+            break;
+          case 401:
+            this.passwordError = data.message;
+            break;
+          case 400:
+          default:
+            this.usernameError = data.errors?.Username || '';
+            this.passwordError = data.errors?.Password || '';
+            this.errorMessage = data.message || '';
+            break;
+        }    
+        this.loading = false;
+      },
+      
+      handleSuccess(response) {
+        let responseObject = response.data;
+        let token = responseObject.data.token;
+        if (!token) {
+          this.errorMessage = 'An error occurred while signing in. Please try again.';
+          this.loading = false;
+          return;
+        }
+        
+        this.auth.login(token); // Set the token
+        window.location.href = '/'; // Redirect to the home page
+      },
+      
+      submit() {
         this.loading = true;
-       
-        console.log('logging in');
-        let response = await this.client.post('/API/Authenticate/SignIn', {
+        let data = {
           username: this.username,
           password: this.password
-        }, { validateStatus: () => true });
-        response = response.data;
+        };
         
-        await new Promise(r => setTimeout(r, 1000));
-        
-        if (response.success) {
-          this.auth.login(response.data.token);
-          this.loading = false;
-          console.log('logged in')
-          window.location.href = '/';
-          return;
-        } else {
-          console.log('error');
-          this.usernameError = response.errors?.username || '';
-          this.passwordError = response.errors?.password || '';
-          this.errorMessage = response.message || '';
-        }
-
-        this.loading = false;
+        this.client.post('/API/Authenticate/SignIn', data)
+                  .then(response => this.handleSuccess(response))
+                  .catch(error => this.handleError(error));
       }
     }));
   });
@@ -59,7 +87,7 @@
      x-data="loginForm"
 >
   <form class="w-full h-fit max-w-md bg-base-300 p-8 shadow-lg rounded-lg" 
-        x-on:submit.prevent="await submit()">
+        x-on:submit.prevent="submit()">
     <h2 class="flex text-2xl font-bold items-center justify-center mb-3">Sign In</h2>
     <div class="mb-4">
       <label for="username" class="block text-sm font-bold mb-2">Username</label>

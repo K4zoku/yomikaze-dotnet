@@ -2,7 +2,7 @@
 
 namespace Web.Pages;
 
-public class Login : PageModel
+public class SignIn : PageModel
 {
     public void OnGet()
     {

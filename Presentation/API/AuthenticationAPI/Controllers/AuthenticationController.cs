@@ -63,7 +63,7 @@ public class AuthenticationController(UserManager<User> userManager, JwtConfigur
     }
 
     [HttpGet]
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public async Task<ActionResult<ResponseModel>> Info()
     {
         User? user = User.GetUser(userManager);
