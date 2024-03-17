@@ -14,7 +14,7 @@
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden">
 <header>
-    <nav class="navbar bg-base-200"  x-data="{ authenticated: $store.auth.authenticated }">
+    <nav class="navbar bg-base-200" x-on:keydown.window.prevent.ctrl.k="$refs.search.focus()" x-data="{ authenticated: $store.auth.authenticated }">
         <div class="navbar-start gap-2">
             <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" asp-page="Index">
                 <img alt="logo" class="w-12 h-12" src="~/favicon.svg">
@@ -85,13 +85,12 @@
                 <input type="text" placeholder="Search" class="w-50" x-ref="search" 
                        x-on:keydown.esc="$el.value = ''; $el.blur()"
                        x-on:keydown.enter="alert('This feature not implemented yet');"
-                       x-on:keydown.window.prevent.ctrl.k="$el.focus()"
                        />
                 <kbd class="kbd kbd-sm">Ctrl</kbd>
                 <span class="text-base-content">+</span>
                 <kbd class="kbd kbd-sm">K</kbd>
             </label>
-            <template x-if="authenticated">
+            <template x-if="$store.auth.authenticated">
                 <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }" 
                          x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName"
                          >
@@ -128,17 +127,17 @@
                     </ul>
                 </details>
             </template>
-            <template x-if="!authenticated">
+            <template x-if="!$store.auth.authenticated">
                 <div class="contents">
-                    <a class="btn btn-accent" asp-page="SignIn">Sign In</a>
-                    <a class="btn btn-success" asp-page="SignUp">Sign Up</a>
+                    <a class="btn btn-accent me-2" asp-page="SignIn">Sign In</a>
+                    <a class="btn btn-success me-2" asp-page="SignUp">Sign Up</a>
                 </div>
             </template>
         </div>
     </nav>
 </header>
 <div class="max-w-screen w-full bg-base-100">
-    <main role="main" class="w-10/12 mx-auto min-h-[calc(100vh-4.5rem)]">
+    <main role="main" class="w-10/12 mx-auto min-h-[calc(100vh-8rem)]">
         @RenderBody()
     </main>
     <button x-on:click="window.scrollTo({top: 0, behavior: 'smooth'})" 
@@ -158,20 +157,21 @@
     </button>
 </div>
 
-<footer class="footer footer-center p-10 bg-base-200 text-base-content">
+<footer class="footer p-10 bg-base-100 text-base-content">
   <aside>
-    <img src="~/favicon.svg" alt="logo" class="w-16 h-16">
-    <p class="text-md">YOMIKAZE <br> Copyright &copy; <span x-text="new Date().getFullYear()">2024</span> All rights reserved.</p>
+    <img src="~/favicon.svg" alt="logo" class="w-12 h-12">
+    <p>Yomikaze <br> Copyright &copy; <span x-text="new Date().getFullYear()">2024</span> All rights reserved.</p>
   </aside> 
   <div>
-    <div class="grid grid-flow-col gap-4 text-xl">
-        <a href="https://discord.gg">
-            <i data-feather="message-square" class="fill-current"></i>
+    <h6 class="footer-title">Contacts</h6> 
+    <div class="grid grid-flow-col gap-4">
+        <a>
+            <i data-feather="discord" class="fill-current"></i>
         </a>
-        <a href="https://github.com">
+        <a>
             <i data-feather="github" class="fill-current"></i>
         </a>
-        <a href="mailto:yomikaze.org@gmail.com">
+        <a>
             <i data-feather="mail" class="fill-current"></i>
         </a>
     </div>
