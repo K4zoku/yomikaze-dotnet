@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
-using System.ComponentModel.DataAnnotations;
 namespace Yomikaze.Domain.Models;
 
 public class CustomDateRangeAttribute : RangeAttribute
@@ -14,16 +13,14 @@ public class CustomDateRangeAttribute : RangeAttribute
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        if(value is not DateTime currentValue) return ValidationResult.Success; 
+        if (value is not DateTime currentValue) return ValidationResult.Success;
       
-
         DateTime currentDate = DateTime.Now;
 
-        if (currentValue < currentDate)
+        if (currentValue <= currentDate)
         {
             return ValidationResult.Success;
         }
-
         return new ValidationResult("Birthday cannot be greater than current date.");
     }
 }
