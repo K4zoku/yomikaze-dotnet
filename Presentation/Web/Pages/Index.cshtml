@@ -4,7 +4,136 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('comics', () => ({
+
+            loading: true,
+
+            comics: [],
+
+            init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+                this.client.get('https://yomikaze.org/API/OData/Comics?$expand=ComicGenres($expand=Genre)')
+                    .then(response => { setTimeout(() => { this.comics = response.data.value; this.loading = false }, 1000) })
+                    .catch(error => console.error(error))
+
+            },
+        }));
+    });
+</script>
+
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" x-data="comics">
+    <template x-if="loading">
+        <div class="contents">
+            <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>
+            <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>        <div class="mx-auto">
+                <div class="w-[190px] h-[280px] skeleton">
+                </div>
+
+                <div class="mt-4">
+                    <div class="w-30 h-3 skeleton ">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <template x-for="comic in comics" x-show="!loading">
+        <a class="mx-auto" :href="`/Comic/${comic.Id}`">
+            <!--thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicDetailModel"-->
+            <div class="dropdown dropdown-hover dropdown-right">
+                <label class="w-[190px] h-[280px]" tabindex="0">
+                    <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer" 
+                    :src="comic.Cover">
+                </label>
+
+                <div class="dropdown-content" tabindex="0">
+                    <!--* card comic -->
+                    <div class="card w-64 bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <!--* card title -->
+                            <h4 class="card-title text-accent font-bold text-base" x-text="comic.Name">Name</h4>
+                            <p class="font-semibold">
+                                Status:
+
+                                <span class="badge badge-success badge-sm">Completed</span>
+                            </p>
+     
+                            <p class="font-semibold">
+                                Last updated:
+                                <span>13 minutes ago</span>
+                            </p>
+                            <p class="text-sm font-normal leading-relaxed">Tuong</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h3 class="title-font mb-1 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
+                    x-text="comic.Name">
+                        Name
+                    </h3>
+                </div>
+            </div>
+        </a>
+    </template>
+   
+
 </div>
