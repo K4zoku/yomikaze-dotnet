@@ -7,133 +7,158 @@
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('comics', () => ({
-
             loading: true,
-
+                        
             comics: [],
-
+            pageSize: 8,
+            total: 0,
+            
+            _currentPage: @Model.PageNumber,
+            
+            get totalPages() {
+                return Math.ceil(this.total / this.pageSize);
+            },
+            
+            get currentPage() {
+                return this._currentPage;
+            },
+            
+            set currentPage(value) {
+                this._currentPage = value;
+                window.history.replaceState(null, '', `?page=${value}`);
+                this.fetchComics();
+            },
+            
             init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
-                this.client.get('https://yomikaze.org/API/OData/Comics?$expand=ComicGenres($expand=Genre)')
-                    .then(response => { setTimeout(() => { this.comics = response.data.value; this.loading = false }, 1000) })
-                    .catch(error => console.error(error))
-
+                this.getCount();
             },
+            
+            async fetchComics() {
+                this.loading = true;
+                await this.getCount();
+                
+                let url = new URL('/API/OData/Comics/', window.location.origin);
+                
+                url.searchParams.set('$expand', 'ComicGenres($expand=Genre)');
+                url.searchParams.set('$orderby', 'Id desc');
+                url.searchParams.set('$top', this.pageSize.toString());
+                url.searchParams.set('$skip', ((this.currentPage - 1) * this.pageSize).toString());
+                
+                let comics = await this.client.get(url)
+                    .then(response => response.data.value) // random delay from 500ms to 3000ms
+                    .catch(error => {
+                        console.error(error);
+                        return [];
+                    });
+                
+                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
+                
+                this.comics = comics;
+                this.loading = false;
+            },
+            
+            async getCount() {
+                let url = new URL('/API/OData/Comics/$count', window.location.origin);
+                this.total = await this.client.get(url)
+                    .then(response => parseInt(response.data) || 0)
+                    .catch(error => {
+                        console.error('Error while getting $count', error); 
+                        return 0;
+                    });
+                return this.total;
+            }
         }));
     });
 </script>
-
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" x-data="comics">
-    <template x-if="loading">
-        <div class="contents">
-            <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
+<div class="contents" x-data="comics" x-init="await fetchComics()">
+    <!--* cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:min-h-[680px] sm:min-h-0">
+        <!--* skeleton -->
+        <div class="contents" x-show="loading">
+            <template x-for="i in 8">
+                <div class="mx-auto">
+                    <div class="w-[190px] h-[280px] skeleton"></div>
+                    <!-- random width from 50% to 100% -->
+                    <div class="mt-4 h-3 skeleton"
+                         :style="{ width: `${Math.floor(Math.random() * 50) + 50}%` }">
+                    </div>
+                    <div class="mt-2 h-3 skeleton"
+                         :style="{ width: `${Math.floor(Math.random() * 20) + 20}%` }">
                     </div>
                 </div>
-            </div>
-            <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>        <div class="mx-auto">
-                <div class="w-[190px] h-[280px] skeleton">
-                </div>
-
-                <div class="mt-4">
-                    <div class="w-30 h-3 skeleton ">
-                    </div>
-                </div>
-            </div>
+            </template>
         </div>
+        <!--* comics -->
+        <div class="contents"
+             x-show="!loading"
+             x-transition:enter="transition ease-out duration-300 delay-500"
+             x-transition:enter-start="opacity-0 scale-90"
+             x-transition:enter-end="opacity-100 scale-100">
+            <template x-for="comic in comics">
+                <a class="mx-auto" :href="" asp-page="/Comic/Details">
+                    <div class="dropdown dropdown-hover">
+                        <label class="w-[190px] h-[280px]" tabindex="0">
+                            <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
+                                 :src="comic.Cover">
+                        </label>
 
-    </template>
-    <template x-for="comic in comics" x-show="!loading">
-        <a class="mx-auto" :href="`/Comic/${comic.Id}`">
-            <!--thymesVar id="comic" type="org.yomikaze.web.dto.comic.ComicDetailModel"-->
-            <div class="dropdown dropdown-hover dropdown-right">
-                <label class="w-[190px] h-[280px]" tabindex="0">
-                    <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer" 
-                    :src="comic.Cover">
-                </label>
-
-                <div class="dropdown-content" tabindex="0">
-                    <!--* card comic -->
-                    <div class="card w-64 bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <!--* card title -->
-                            <h4 class="card-title text-accent font-bold text-base" x-text="comic.Name">Name</h4>
-                            <p class="font-semibold">
-                                Status:
-
-                                <span class="badge badge-success badge-sm">Completed</span>
-                            </p>
-     
-                            <p class="font-semibold">
-                                Last updated:
-                                <span>13 minutes ago</span>
-                            </p>
-                            <p class="text-sm font-normal leading-relaxed">Tuong</p>
+                        <div class="dropdown-content z-50" tabindex="0">
+                            <div class="card w-[230px] bg-base-100 shadow-2xl">
+                                <div class="card-body">
+                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic?.Name">Name</h4>
+                                    <p class="text-sm font-normal leading-relaxed"
+                                       x-text="comic?.Description">
+                                        Description
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="title-font mb-2 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
+                                x-text="comic.Name">
+                                Name
+                            </h3>
                         </div>
                     </div>
-                </div>
-                <div class="mt-4">
-                    <h3 class="title-font mb-1 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
-                    x-text="comic.Name">
-                        Name
-                    </h3>
-                </div>
-            </div>
-        </a>
-    </template>
-   
+                </a>
+            </template>
+        </div>
+    </div>
+    
+    <!--* pagination -->
+    <div class="w-full mt-4 flex justify-center">
+        <div class="join">
+            <button class="join-item btn"
+                    :disabled="currentPage <= 1"
+                    x-on:click="currentPage = 1">
+                «
+            </button>
+            <button class="join-item btn"
+                    :disabled="currentPage <= 1"
+                    x-on:click="currentPage--">
+                ‹
+            </button>
+            <select
+                class="join-item select select-bordered"
+                x-model="currentPage">
+                <template x-for="i in totalPages">
+                    <option x-text="`Page ${i}`" :value="i" :selected="i === currentPage"></option>
+                </template>
 
+            </select>
+
+            <button class="join-item btn"
+                    :disabled="currentPage >= totalPages"
+                    x-on:click="currentPage++">
+                ›
+            </button>
+            <button class="join-item btn"
+                    :disabled="currentPage >= totalPages"
+                    x-on:click="currentPage = totalPages">
+                »
+            </button>
+        </div>
+    </div>
 </div>

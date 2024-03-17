@@ -18,6 +18,4 @@ public class GenreOutputModel
     public string Name { get; set; } = default!;
 
     public string? Description { get; set; }
-
-   public ICollection<ComicGenreOutputModel>? ComicGenre { get; set; } = new List<ComicGenreOutputModel>();
 }
