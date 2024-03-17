@@ -127,7 +127,7 @@
             </template>
         </div>
     </div>
-    
+
     <!--* pagination -->
     <div class="w-full mt-4 flex justify-center">
         <div class="join">
@@ -141,13 +141,12 @@
                     x-on:click="currentPage--">
                 ‹
             </button>
-            <select
-                class="join-item select select-bordered"
-                x-model="currentPage">
-                <template x-for="i in totalPages">
-                    <option x-text="`Page ${i}`" :value="i" :selected="i === currentPage"></option>
+            <select class="join-item select select-bordered"
+                    x-model.debounce="currentPage"
+                    x-data="{ selected: currentPage }">
+                <template x-for="i in totalPages" :key="i">
+                    <option x-text="`Page ${i}`" :value="i" :selected="i === selected"></option>
                 </template>
-
             </select>
 
             <button class="join-item btn"

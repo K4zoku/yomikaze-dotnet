@@ -101,9 +101,7 @@
     <div class="mb-6 w-full">
         <label class="input input-bordered flex items-center gap-2">
             <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
-            <input type="text" placeholder="Search" class="w-50" x-model.debounce="query"
-               x-on:keydown.esc="$el.value = ''; $el.blur()"
-               x-on:keydown.window.prevent.ctrl.k="$el.focus()"/>
+            <input type="text" placeholder="Search" class="w-50" x-model.debounce="query"/>
         </label>
     </div>
     
@@ -182,13 +180,13 @@
                     x-on:click="currentPage--">
                 ‹
             </button>
-            <select
-                class="join-item select select-bordered"
-                x-model="currentPage">
-                <template x-for="i in totalPages">
-                    <option x-text="`Page ${i}`" :value="i" :selected="i === currentPage"></option>
+            <select class="join-item select select-bordered"
+                    x-model.debounce="currentPage"
+                    x-data="{ selected: currentPage }"
+                >
+                <template x-for="i in totalPages" :key="i">
+                    <option x-text="`Page ${i}`" :value="i" :selected="i === selected"></option>
                 </template>
-
             </select>
 
             <button class="join-item btn"
