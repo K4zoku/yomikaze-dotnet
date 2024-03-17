@@ -23,12 +23,12 @@
                     <span class="lowercase">kaze</span>
                 </div>
             </a>
-            <button x-on:click="nextTheme()" aria-label="Theme switcher" class="ms-2 btn btn-ghost btn-circle"
+            <button x-on:click="nextTheme()" aria-label="Theme switcher" class="btn btn-ghost btn-circle"
                     th:fragment="theme-switcher">
                 <i :data-feather="themeIcon" class="text-xl text-base-content" aria-hidden="true"></i>
             </button>
-        </div>
-        <div class="navbar-center gap-2">
+        
+       
             <a asp-page="Genres" class="btn btn-ghost">
                 <i data-feather="grid" class="text-base-content" aria-hidden="true"></i>
                 Genres

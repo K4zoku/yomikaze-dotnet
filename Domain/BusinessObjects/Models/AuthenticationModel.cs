@@ -4,7 +4,8 @@ namespace Yomikaze.Domain.Models;
 
 public abstract class AuthenticationModel
 {
-    [Required] public string Username { get; set; } = default!;
+    [Required,Length(3,32, ErrorMessage = "UserName must be between 3 and 32 characters")] 
+    public string Username { get; set; } = default!;
 
     [Required] public string Password { get; set; } = default!;
 }
@@ -15,6 +16,9 @@ public class SignInModel : AuthenticationModel
 
 public class SignUpModel : AuthenticationModel
 {
+    [Required, Length(3, 40, ErrorMessage = "FullName must be between 3 and 40 characters")]
+    public string FullName { get; set; } = default!;
+
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
     public string ConfirmPassword { get; set; } = default!;
 
