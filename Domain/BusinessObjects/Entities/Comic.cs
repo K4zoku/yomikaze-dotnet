@@ -22,5 +22,6 @@ public class Comic : BaseEntity
     
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
+    [InverseProperty(nameof(Chapter.Comic))]
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 }

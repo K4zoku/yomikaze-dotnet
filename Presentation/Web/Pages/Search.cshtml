@@ -1,5 +1,5 @@
 ﻿@page
-@model IndexModel
+@model SearchModel
 @{
     ViewData["Title"] = "Home page";
 }
@@ -13,20 +13,34 @@
             pageSize: 10,
             total: 0,
             
-            _currentPage: @Model.PageNumber,
+            _query: '@Model.Query',
+            get query() {
+                return this._query;
+            },
+            set query(value) {
+                this._query = value;
+                this.updateParam('query', value);
+                this.fetchComics();
+            },
             
             get totalPages() {
                 return Math.ceil(this.total / this.pageSize);
             },
             
+            _currentPage: @Model.PageNumber,
             get currentPage() {
                 return this._currentPage;
             },
-            
             set currentPage(value) {
                 this._currentPage = value;
-                window.history.replaceState(null, '', `?page=${value}`);
+                this.updateParam('page', value);
                 this.fetchComics();
+            },
+            
+            updateParam(key, value) {
+                let search = new URLSearchParams(window.location.search);
+                search.set(key, value);
+                window.history.replaceState(null, '', window.location.pathname + '?' + search.toString());
             },
             
             init() {
@@ -35,16 +49,25 @@
                 this.getCount();
             },
             
+            buildUrl(url) {
+                url.searchParams.set('$expand', 'ComicGenres($expand=Genre)');
+                url.searchParams.set('$orderby', 'Id desc');
+                url.searchParams.set('$top', this.pageSize.toString());
+                url.searchParams.set('$skip', ((this.currentPage - 1) * this.pageSize).toString());
+                if (this.query) {
+                    let filter = `contains(tolower(Name), tolower('${this._query}'))`;
+                    filter += ` or contains(tolower(Aliases), tolower('${this._query}'))`;
+                    url.searchParams.set('$filter', filter);
+                }
+            },
+            
             async fetchComics() {
                 this.loading = true;
                 await this.getCount();
                 
                 let url = new URL('/API/OData/Comics/', window.location.origin);
                 
-                url.searchParams.set('$expand', 'ComicGenres($expand=Genre)');
-                url.searchParams.set('$orderby', 'Id desc');
-                url.searchParams.set('$top', this.pageSize.toString());
-                url.searchParams.set('$skip', ((this.currentPage - 1) * this.pageSize).toString());
+                this.buildUrl(url);
                 
                 let comics = await this.client.get(url)
                     .then(response => response.data.value) // random delay from 500ms to 3000ms
@@ -61,6 +84,7 @@
             
             async getCount() {
                 let url = new URL('/API/OData/Comics/$count', window.location.origin);
+                this.buildUrl(url);
                 this.total = await this.client.get(url)
                     .then(response => parseInt(response.data) || 0)
                     .catch(error => {
@@ -74,6 +98,21 @@
 </script>
 
 <div class="contents" x-data="comics" x-init="await fetchComics()">
+    <div class="mb-6 w-full">
+        <label class="input input-bordered flex items-center gap-2">
+            <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
+            <input type="text" placeholder="Search" class="w-50" x-model.debounce="query"/>
+        </label>
+    </div>
+    
+    <!--* Not found -->
+    <div class="flex justify-center py-10" x-show="!loading && total === 0">
+        <h1 class="text-4xl font-bold text-center">
+            <i data-feather="alert-triangle" aria-hidden="true"></i>
+            No comics found
+        </h1>
+    </div>
+    
     <!--* cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:min-h-[680px] sm:min-h-0">
         <!--* skeleton -->
@@ -143,7 +182,8 @@
             </button>
             <select class="join-item select select-bordered"
                     x-model.debounce="currentPage"
-                    x-data="{ selected: currentPage }">
+                    x-data="{ selected: currentPage }"
+                >
                 <template x-for="i in totalPages" :key="i">
                     <option x-text="`Page ${i}`" :value="i" :selected="i === selected"></option>
                 </template>

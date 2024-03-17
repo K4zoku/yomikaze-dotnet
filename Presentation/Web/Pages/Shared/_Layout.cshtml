@@ -84,7 +84,7 @@
                 <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
                 <input type="text" placeholder="Search" class="w-50" x-ref="search" 
                        x-on:keydown.esc="$el.value = ''; $el.blur()"
-                       x-on:keydown.enter="alert('This feature not implemented yet');"
+                       x-on:keydown.enter="window.location.href = `/Search?query=${$el.value}`"
                        x-on:keydown.window.prevent.ctrl.k="$el.focus()"
                        />
                 <kbd class="kbd kbd-sm">Ctrl</kbd>
