@@ -9,6 +9,8 @@ public class ComicDao(DbContext dbContext) : BaseDao<Comic>(dbContext)
     public override IQueryable<Comic> Query()
     {
         return base.Query()
-            .Include(entity => entity.ComicGenres);
+            .Include(entity => entity.ComicGenres)
+            .ThenInclude(entity => entity.Genre)
+            ;
     }
 }

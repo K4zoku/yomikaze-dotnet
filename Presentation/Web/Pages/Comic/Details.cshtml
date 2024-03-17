@@ -1,0 +1,85 @@
+﻿@page "/Comic/{id:int}"
+@model Web.Pages.Comic.Details
+
+@{
+    Layout = "_Layout";
+}
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('comic', () => ({
+            id: @Model.Id,
+            init() {
+                console.log('Comic details page loaded');
+            },
+            
+        }));
+    });
+</script>
+
+<div class="card card-side bg-base-100" x-data="comic">
+    <figure><img src="" class="rounded-lg skeleton w-full h-52" alt="Movie" /></figure>
+    <div class="card-body">
+        <h2 class="card-title">Thiên Quan Tứ Phúc</h2>
+        <table class="justify-start">
+            <tr x-data="{ Author: 'Đang cập nhật' }">
+                <td><i class="fa-solid fa-user me-6"></i>Author</td>
+                <td x-text="Author"></td>
+            </tr>
+            <tr x-data="{ Condition: 'Đang cập nhật' }">
+                <td><i class="fa-solid fa-wifi me-4"></i>Condition</td>
+                <td x-text="Condition"></td>
+            </tr>
+            <tr x-data="{ Likes: 'Đang cập nhật' }">
+                <td><i class="fa-solid fa-thumbs-up me-5"></i>Likes</td>
+                <td x-text="Likes"></td>
+            </tr>
+            <tr x-data="{ Followers: 'Đang cập nhật' }">
+                <td><i class="fa-solid fa-heart me-5"></i>Followers</td>
+                <td x-text="Followers"></td>
+            </tr>
+            <tr x-data="{ Views: 'Đang cập nhật' }">
+                <td><i class="fa-solid fa-eye me-5"></i>Views</td>
+                <td x-text="Views"></td>
+            </tr>
+        </table>
+        <div class="card-actions justify-start mt-5">
+            <!-- <div x-data="{ open: false }">
+                <button x-on:click="open = true;" class="btn btn-active btn-error">
+                    <i class="fa-solid fa-heart text-white"></i>
+                    <p class="text-white">Add to Libary</p>
+                </button>
+                <div x-show="open" class="fixed inset-0 flex items-center justify-center z-10 bg-gray-500/50">
+                    <div class="bg-white p-6 rounded shadow-xl">
+                        <p>Added to library successfully!</p>
+                        <button x-on:click="open = false"
+                            class="mt-4 p-2 bg-blue-500 text-white rounded justify-end">OK</button>
+                    </div>
+                </div>
+            </div> -->
+            <div x-data x-on:foo="alert('Added to library successfully!')">
+                <button class="btn btn-warning text-white"
+                    x-on:click="$event.target.dispatchEvent(new CustomEvent('foo', { bubbles: true }))"><i
+                        class="fa-solid fa-plus text-white"></i>
+                    <p class="text-white">Add to Libary</p>
+                </button>
+            </div>
+            <button class="btn btn-active btn-success"><i class="fa-solid fa-book text-white"></i>
+                <p class="text-white">Start Reading</p>
+            </button>
+            <button class="btn btn-active btn-neutral"><i class="fa-solid fa-circle-info text-white"></i>
+                <p class="text-white">Continue Reading</p>
+            </button>
+
+            <div x-data x-on:foo="alert('Added to library successfully!')">
+                <button class="btn btn-error text-white"
+                    x-on:click="$event.target.dispatchEvent(new CustomEvent('foo', { bubbles: true }))"><i
+                        class="fa-solid fa-heart text-white"></i>
+                    <p class="text-white">Follow</p>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
