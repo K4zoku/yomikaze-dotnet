@@ -29,21 +29,21 @@
             </button>
         
        
-            <a asp-page="Genres" class="btn btn-ghost">
+            <a asp-page="/Genres" class="btn btn-ghost">
                 <i data-feather="grid" class="text-base-content" aria-hidden="true"></i>
                 Genres
             </a>
-            <a asp-page="AdvancedSearch" class="btn btn-ghost">
+            <a asp-page="/AdvancedSearch" class="btn btn-ghost">
                 <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
                 Advanced Search
             </a>
             <template x-if="authenticated">
                 <div class="contents">
-                    <a asp-page="History" class="btn btn-ghost">
+                    <a asp-page="/History" class="btn btn-ghost">
                         <i data-feather="clock" class="text-base-content" aria-hidden="true"></i>
                         History
                     </a>
-                    <a asp-page="Library" class="btn btn-ghost">
+                    <a asp-page="/Library" class="btn btn-ghost">
                         <i data-feather="book" class="text-base-content" aria-hidden="true"></i>
                         Library
                     </a>
@@ -59,7 +59,7 @@
                                 <form method="dialog">
                                     <button class="btn">Close</button>
                                 </form>
-                                <a asp-page="SignIn" class="btn btn-primary">Sign In</a>
+                                <a asp-page="/SignIn" class="btn btn-primary">Sign In</a>
                             </div>
                             <form method="dialog" class="modal-backdrop">
                                 <button>close</button>
@@ -136,15 +136,15 @@
             </template>
             <template x-if="!authenticated">
                 <div class="contents">
-                    <a class="btn btn-accent" asp-page="SignIn">Sign In</a>
-                    <a class="btn btn-success" asp-page="SignUp">Sign Up</a>
+                    <a class="btn btn-accent" asp-page="/SignIn">Sign In</a>
+                    <a class="btn btn-success" asp-page="/SignUp">Sign Up</a>
                 </div>
             </template>
         </div>
     </nav>
 </header>
 <div class="max-w-screen w-full bg-base-100">
-    <main role="main" class="w-10/12 mx-auto min-h-[calc(100vh-4.5rem)] py-4">
+    <main role="main" class="w-10/12 mx-auto min-h-[calc(100vh-4.5rem)] py-8">
         @RenderBody()
     </main>
     <button x-on:click="window.scrollTo({top: 0, behavior: 'smooth'})" 

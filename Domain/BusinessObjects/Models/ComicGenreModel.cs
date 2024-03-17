@@ -12,5 +12,5 @@ public class ComicGenreInputModel
 
 public class ComicGenreOutputModel
 {
-    public GenreOutputModel Genres { get; set; } = default!;
+    public GenreOutputModel Genre { get; set; } = default!;
 }

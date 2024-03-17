@@ -1,17 +1,15 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Web.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    
+    public int PageNumber { get; set; } = 1;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public void OnGet([FromQuery] int page = 1)
     {
-        _logger = logger;
-    }
-
-    public void OnGet()
-    {
+        PageNumber = page;
     }
 }
