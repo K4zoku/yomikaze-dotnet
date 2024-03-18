@@ -19,6 +19,9 @@ namespace Yomikaze.API.Main.Controllers;
 public class CommentsController(DbContext dbContext, IMapper mapper)
     : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepo(dbContext))
 {
+    private new CommentRepo Repository => (CommentRepo)base.Repository;
+
+
     [HttpPost]
     public override ActionResult<CommentOutputModel> Post(CommentInputModel input)
     {
@@ -64,4 +67,17 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
         Repository.Delete(entity);
         return Ok();
     }
+
+    // get chapter by comic id
+    [HttpGet("{comicId}/Comments")]
+    public ActionResult<IEnumerable<CommentOutputModel>> GetComments(long comicId)
+    {
+        var comment = Repository.GetCommentByComicId(comicId);
+        CheckEntity(comment);
+
+        return Ok(Mapper.Map<IEnumerable<CommentOutputModel>>(comment));
+    }
+
+
+
 }
