@@ -65,10 +65,6 @@
                     .catch(error => this.handleError(error));
             },
 
-            test() {
-                console.log(this.genres);
-            },
-
             getGenreCount() {
 
                 this.client.get('/API/OData/Genres/$count')
@@ -136,9 +132,7 @@
 <div class="contents" x-data="comicDetail">
     <div class="min-h-[calc(100vh-10rem)]">
         <div class="card shadow-2xl bg-base-200 mx-auto my-10 w-10/12 rounded-box">
-            <button x-on:click="test()">test</button>
             <div class="card-body gap-4">
-                <input type="hidden">
                 <h2 class="card-title">Create comic</h2>
                 <fieldset>
                     <legend class="text-center">Basic information</legend>

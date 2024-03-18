@@ -156,9 +156,9 @@
 
 </script>
 
-<div class="contents" x-data="comics" x-on:genre-updated.window="fetchComics()">
+<div class="contents" x-data="comics">
     <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-bold mb-4">List of Genres</h2>
+        <h2 class="text-2xl font-bold mb-4">List of Comcis</h2>
         <a class="btn btn-success" asp-page="/Manage/Comics/Create">
             <i data-feather="plus-square" class="mr-2"></i>
             <span>Create New Comic</span>
@@ -207,7 +207,7 @@
                         <td>
                             <span x-text="comic.Authors">
                                 Authors
-                            </span
+                            </span>
                         </td>
                         <td>
                             <a class="btn btn-xs btn-warning gap-2" asp-page="/Manage/Comics/Edit">
@@ -256,3 +256,4 @@
             </div>
         </div>
     </div>
+</div>
