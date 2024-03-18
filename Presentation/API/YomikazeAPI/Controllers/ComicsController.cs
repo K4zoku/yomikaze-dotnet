@@ -21,7 +21,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     private HistoryRepo HistoryRepo => new HistoryRepo(DbContext);
 
     [HttpPost]
-    public override ActionResult<ComicOutputModel> Post(ComicInputModel input)
+    public override ActionResult<ComicOutputModel> Post([FromBody]ComicInputModel input)
     {
         CheckModelState();
 
