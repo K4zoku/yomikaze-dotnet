@@ -36,7 +36,6 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
             throw new HttpResponseException(HttpStatusCode.Unauthorized,
                 ResponseModel.CreateError("Password does not match"));
         }
-
         string token = (await GenerateToken(user)).ToTokenString();
         return ResponseModel.CreateSuccess(new TokenModel(token));
     }
@@ -87,9 +86,25 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
     public async Task<ActionResult<ResponseModel>> Info()
     {
         User? user = User.GetUser(userManager);
+        bool isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
+        object profile = new { user.Id, user.Fullname, user.UserName, user.Email, user.Birthday, Avatar = user.Avatar, IsAdmin = isAdmin };
         return Ok(ResponseModel.CreateSuccess("Authorized",
-            new { Profile = user, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
+            new { Profile = profile, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
         ));
+    }
+    
+    [HttpHead]
+    [Authorize]
+    public IActionResult Validate()
+    {
+        return Ok();
+    }
+    
+    [HttpHead]
+    [Authorize(Roles = "Administrator")]
+    public IActionResult ValidateAdmin()
+    {
+        return Ok();
     }
 
     [NonAction]

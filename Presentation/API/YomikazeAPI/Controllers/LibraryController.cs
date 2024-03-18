@@ -13,7 +13,7 @@ using Yomikaze.Domain.Models;
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/{comicId}")]
 [Authorize]
 public class LibraryController(IMapper mapper, DbContext dbContext) : ControllerBase
 {
@@ -30,9 +30,17 @@ public class LibraryController(IMapper mapper, DbContext dbContext) : Controller
         Repository.Add(entity);
         return Ok(ResponseModel.CreateSuccess("Add successful"));
     }
+    
+    [HttpGet]
+    public virtual ActionResult<ResponseModel<LibraryEntryOutputModel>> Get(long comicId)
+    {
+        long id = User.GetId();
+        LibraryEntry? entity = Repository.GetLibraryEntry(id, comicId);
+        if (entity is null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Comic not in library"));
+        return Ok(ResponseModel.CreateSuccess(Mapper.Map<LibraryEntryOutputModel>(entity)));
+    }
 
     [HttpDelete]
-    [Route("{comicId:long}")]
     public virtual ActionResult Delete(long comicId)
     {
         long id = User.GetId();

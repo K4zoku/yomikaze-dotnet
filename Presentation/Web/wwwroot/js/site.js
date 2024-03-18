@@ -22,8 +22,9 @@
             if (!this.authenticated) return null;
             let p = sessionStorage.getItem('profile')
             if (p) {
+                this._profile = JSON.parse(p);
                 console.log("Profile from session storage");
-                return JSON.parse(p);
+                return this._profile;
             }
             console.log("Session storage not storing profile data, fetching profile from server...");
             let data = await this.http.get('/API/Authenticate/Info')
@@ -45,8 +46,19 @@
                 let emailHash = await sha256(profile.email);
                 profile.avatar = `https://gravatar.com/avatar/${emailHash}?d=mp&f=y`;
             }
-            sessionStorage.setItem('profile', JSON.stringify(data.profile));
+            this.profile = profile;
             return profile;
+        },
+        
+        _profile: null,
+        
+        get profile() {
+            return this._profile;
+        },
+        
+        set profile(value) {
+            this._profile = value;
+            sessionStorage.setItem('profile', JSON.stringify(value));
         },
 
         login(token) {

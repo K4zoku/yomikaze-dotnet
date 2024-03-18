@@ -2,11 +2,7 @@
 @model Web.Pages.GenreModel
 
 
-<script>
-
-    // if for create button change to edit button
-    
-
+<script>   
     document.addEventListener('alpine:init', () => {
         Alpine.data('genres', () => ({
             genres: [],
@@ -29,8 +25,6 @@
                 window.history.replaceState(null, '', `?page=${value}`);
                 this.fetchGenres();
             },
-
-
 
             init() {
                 this.auth = Alpine.store('auth');

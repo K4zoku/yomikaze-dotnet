@@ -16,10 +16,23 @@
             init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
-                this.client.get(`/API/OData/Comics/${this.id}?$expand=ComicGenres($expand=Genre)`)
-                    .then(response => { setTimeout(() => { this.comic = response.data; this.loading = false }, 1000) })
-                    .catch(error => console.error(error))
-                this.fetchChapters();
+                this.fetchDetails();
+            },
+            
+            async fetchDetails() {
+                this.comic = await this.client.get(`/API/OData/Comics(${this.id})?$expand=ComicGenres($expand=Genre)`)
+                    .then(response => response.data)
+                    .catch(error => {
+                        if (error.response.status === 404) {
+                            window.location.href = '/404';
+                        }
+                        console.error('Error while fetching comic details', error);
+                        return null;
+                    });
+                
+                await this.fetchChapters();
+                await this.checkLibrary();
+                this.loading = false;
             },
             
             async fetchChapters() {
@@ -29,6 +42,53 @@
                 this.chapters = await this.client.get(url)
                     .then(response => response.data.value)
                     .catch(error => { console.error(error); return []; });
+            },
+            
+            _isInLibrary: false,
+            
+            async checkLibrary() {
+                if (!this.auth.authenticated) return;
+                this._isInLibrary = await this.client.get(`/API/Library/${this.id}`)
+                    .then(() => true)
+                    .catch(error => {
+                        console.error('Error while checking library', error);
+                        return false;
+                    });
+            },
+            
+            get isInLibrary() {
+                return this._isInLibrary;
+            },
+            
+            set isInLibrary(value) {
+                this._isInLibrary = value;
+                if (value) {
+                    this.client.post(`/API/Library/${this.id}`)
+                        .then(() => console.log('Added to library'))
+                        .catch(error => console.error('Error while adding to library', error));
+                } else {
+                    this.client.delete(`/API/Library/${this.id}`)
+                        .then(() => console.log('Removed from library'))
+                        .catch(error => console.error('Error while removing from library', error));
+                }
+            },
+            
+            async deleteThis() {
+                
+                let error = await this.client.delete(`/API/Comics/${this.id}`)
+                    .then(() => false)
+                    .catch(error => {
+                        console.error('Error while deleting comic', error);
+                        return error;
+                    });
+                if (error) {
+                    let message = error.response?.data?.message
+                    if (message) {
+                        alert(message);
+                    }
+                } else {
+                    window.location.href = '/';
+                }
             }
             
         }));
@@ -60,11 +120,11 @@
             </div>
             <div class="flex-shrink">
                 <div class="a2a_kit a2a_kit_size_24 a2a_default_style" data-a2a-icon-color="transparent,#55B4D4">
-                    <a class="a2a_button_copy_link" href="#copy_link"></a>
-                    <a class="a2a_button_x" href="#x"></a>
-                    <a class="a2a_button_facebook" href="#facebook"></a>
-                    <a class="a2a_button_reddit" href="#reddit"></a>
-                    <a class="a2a_dd" href="#dd"></a>
+                    <a class="a2a_button_copy_link"></a>
+                    <a class="a2a_button_x"></a>
+                    <a class="a2a_button_facebook"></a>
+                    <a class="a2a_button_reddit"></a>
+                    <a class="a2a_dd"></a>
                 </div>
                 <script async="" src="https://static.addtoany.com/menu/page.js"></script>
             </div>
@@ -125,9 +185,9 @@
             <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
                 <template x-for="genre in comic?.ComicGenres">
                     <span class="badge badge-outline badge-primary" x-text="genre?.Genre?.Name">
-                        Action
+                        Genre
                     </span>
-                    
+
                 </template>
             </div>
         </div>
@@ -136,7 +196,7 @@
             <!-- Read button -->
 
             <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : 'Read'">
-                <button 
+                <button
                     class="btn btn-primary gap-2" :disabled="chapters.length === 0"
                     x-on:click="window.location.href = `/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
                     <i data-feather="book-open"></i>
@@ -145,7 +205,7 @@
             </div>
 
             <!-- Continue reading button -->
-            
+
             <div class="tooltip" data-tip="You must be logged in to continue reading" :class="{ tooltip: !authenticated }">
                 <button class="btn btn-accent gap-2" :disabled="!authenticated">
                     <i data-feather="navigation"></i>
@@ -155,11 +215,50 @@
 
             <!-- Add to library button -->
             <div class="tooltip" data-tip="You must be logged in to add this comic to your library" :class="{ tooltip: !authenticated }">
-                <button class="btn btn-error gap-2" :disabled="!authenticated">
+                <label class="btn btn-error gap-2" :class="{ 'btn-disabled': !authenticated }">
+                    <input type="checkbox" x-model="isInLibrary" class="hidden">
                     <i data-feather="bookmark"></i>
-                    Add to library
-                </button>
+                    <span x-text="isInLibrary ? 'Remove from library' : 'Add to library'">Add to library</span>
+                </label>
             </div>
+
+            <template x-if="$store.auth.profile?.isAdmin">
+                <div class="contents">
+                    <dialog class="modal cursor-pointer" x-ref="deleteComicModal">
+                        <label class="modal-box relative">
+                            <h3 class="text-xl font-bold">Delete comic</h3>
+                            <p class="p-4">Are you sure you want to delete this comic?</p>
+                            <div class="modal-action">
+                                <button class="btn btn-error" x-on:click="await deleteThis(); $refs.deleteComicModal.close();">Delete</button>
+                                <form method="dialog">
+                                    <button class="btn">Cancel</button>
+                                </form>
+                            </div>
+                        </label>
+                    </dialog>
+                    <details class="dropdown">
+                        <summary class="btn btn-ghost">
+                            <i data-feather="settings" class="text-base-content" aria-hidden="true"></i>
+                            Manage
+                            <i data-feather="chevron-down" class="text-base-content" aria-hidden="true"></i>
+                        </summary>
+                        <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-200 rounded-box w-52 z-50">
+                            <li>
+                                <a asp-page="/Manage/Comic/Edit" asp-route-id="-1" :href="$el.href.replace('-1', id)">
+                                    <i data-feather="edit" aria-hidden="true"></i>
+                                    Edit comic
+                                </a>
+                            </li>
+                            <li>
+                                <a x-on:click="$refs.deleteComicModal.showModal()" class="text-error hover:bg-error hover:text-error-content">
+                                    <i data-feather="trash-2" aria-hidden="true"></i>
+                                    Delete comic
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
+                </div>
+            </template>
         </div>
     </div>
 </div>
@@ -211,41 +310,5 @@
 </label>
 </div>
 </div>
-<!-- Comments -->
-
-
-<form class="hidden" id="delete-comic-form" method="post" action="/comic/292236210020175872/delete">
-    <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c"><input type="hidden" name="_method" value="delete">
-</form>
-<input class="modal-toggle" id="delete-comic-modal" type="checkbox">
-<label class="modal cursor-pointer" for="delete-comic-modal">
-    <label class="modal-box relative">
-        <h3 class="text-xl font-bold">Delete comic</h3>
-        <p class="p-4">Are you sure you want to delete this comic?</p>
-        <div class="modal-action">
-            <label class="btn btn-ghost" for="delete-comic-modal">Cancel</label>
-            <button class="btn btn-error" form="delete-comic-form" type="submit">Delete</button>
-        </div>
-    </label>
-</label>
-
-<form class="hidden" id="report-comic-form" method="post" action="/comic/292236210020175872/report">
-    <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c">
-</form>
-
-<input class="modal-toggle" id="report-comic-modal" type="checkbox">
-<label class="modal cursor-pointer" for="report-comic-modal">
-    <label class="modal-box relative">
-        <h3 class="text-xl font-bold">Report comic</h3>
-        <label class="label" for="reason">
-            <span class="label-text">Reason</span>
-        </label>
-        <textarea class="w-full textarea textarea-bordered" id="reason" name="message" placeholder="Reason"></textarea>
-        <div class="modal-action">
-            <label class="btn btn-ghost" for="report-comic-modal">Cancel</label>
-            <button class="btn btn-error" form="report-comic-form" type="submit">Report</button>
-        </div>
-    </label>
-</label>
 </div>
 </div>
