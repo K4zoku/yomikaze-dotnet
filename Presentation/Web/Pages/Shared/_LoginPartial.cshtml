@@ -1,5 +1,4 @@
-﻿
-<template x-if="authenticated">
+﻿<template x-if="authenticated">
     <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }"
              x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName">
         <summary class="btn btn-circle avatar">
@@ -18,6 +17,12 @@
                 <a>
                     <i data-feather="user" class="text-base-content" aria-hidden="true"></i>
                     Profile
+                </a>
+            </li>
+            <li>
+                <a asp-page="/Genre">
+                    <i data-feather="grid" class="text-base-content" aria-hidden="true"></i>
+                    Manage Genres
                 </a>
             </li>
             <li>
