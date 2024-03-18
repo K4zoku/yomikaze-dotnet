@@ -5,9 +5,9 @@ namespace Web.Pages.Manage.Comics;
 
 public class EditModel : PageModel
 {
-    public long Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    public void OnGet([FromRoute] long id)
+    public void OnGet([FromRoute] string id)
     {
         Id = id;
     }

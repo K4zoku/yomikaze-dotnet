@@ -38,7 +38,7 @@ public abstract class BaseRepo<T, TKey> : IRepo<T, TKey> where T : class, IEntit
     }
 }
 
-public abstract class BaseRepo<T> : BaseRepo<T, ulong>, IRepo<T> where T : class, IEntity
+public abstract class BaseRepo<T> : BaseRepo<T, string>, IRepo<T> where T : class, IEntity
 {
     protected BaseRepo(BaseDao<T> dao) : base(dao)
     {

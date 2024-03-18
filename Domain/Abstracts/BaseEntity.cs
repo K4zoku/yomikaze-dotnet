@@ -18,8 +18,11 @@ public abstract class BaseEntity<TId> : IEntity<TId>
     public virtual TId Id { get; set; } = default!;
 }
 
-public abstract class BaseEntity : BaseEntity<ulong>, IEntity
+[PrimaryKey(nameof(Id))]
+public abstract class BaseEntity : BaseEntity<string>, IEntity
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public override ulong Id { get; set; } = SnowflakeGenerator.Generate();
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    [StringLength(20)]
+    [Key]
+    public override string Id { get; set; } = SnowflakeGenerator.Generate();
 }

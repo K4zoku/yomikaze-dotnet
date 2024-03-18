@@ -7,7 +7,7 @@ using Yomikaze.Domain.Abstracts;
 namespace Yomikaze.Domain.Entities;
 
 [PrimaryKey(nameof(Id))]
-public class User : IdentityUser<ulong>, IEntity
+public class User : IdentityUser, IEntity
 {
     public string? Avatar { get; set; }
 
@@ -30,5 +30,16 @@ public class User : IdentityUser<ulong>, IEntity
 
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Key]
-    public override ulong Id { get; set; } = SnowflakeGenerator.Generate(10);
+    public override string Id { get; set; }
+
+    public User()
+    {
+        Id = SnowflakeGenerator.Generate(10);
+        SecurityStamp = Guid.NewGuid().ToString();
+    }
+    
+    public User(string userName) : this()
+    {
+        UserName = userName;
+    }
 }

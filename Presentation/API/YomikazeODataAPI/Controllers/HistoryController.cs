@@ -18,7 +18,7 @@ public class HistoryController(DbContext dbContext) : ControllerBase
     // Chapter($expand= Comic)
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
-        ulong id = User.GetId();
+        string id = User.GetId();
         return Ok(Repository.GetHistoryByUserId(id));
     }
 }

@@ -11,20 +11,20 @@ public static class SnowflakeGenerator
 
     private static readonly object Lock = new();
 
-    public static ulong Generate(int workerId = 0)
+    public static string Generate(int workerId = 0)
     {
         workerId &= 0x1F; // 5 bits
         lock (Lock)
         {
             if (Generators.TryGetValue(workerId, out SnowflakeIDGenerator? value))
             {
-                return value.GetCode();
+                return value.GetCodeString();
             }
 
             value = new SnowflakeIDGenerator(workerId, Epoch);
             Generators.Add(workerId, value);
 
-            return value.GetCode();
+            return value.GetCodeString();
         }
     }
 }

@@ -20,9 +20,9 @@ public class LibraryController(IMapper mapper, DbContext dbContext) : Controller
     protected LibraryRepo Repository { get; set; } = new(dbContext);
 
     [HttpPost]
-    public virtual ActionResult<ResponseModel> Post(ulong comicId)
+    public virtual ActionResult<ResponseModel> Post(string comicId)
     {
-        ulong id = User.GetId();
+        string id = User.GetId();
         LibraryEntry? entity = Repository.GetLibraryEntry(id, comicId);
         if (entity != null)
         {
@@ -36,9 +36,9 @@ public class LibraryController(IMapper mapper, DbContext dbContext) : Controller
     }
 
     [HttpGet]
-    public virtual ActionResult<ResponseModel<LibraryEntryOutputModel>> Get(ulong comicId)
+    public virtual ActionResult<ResponseModel<LibraryEntryOutputModel>> Get(string comicId)
     {
-        ulong id = User.GetId();
+        string id = User.GetId();
         LibraryEntry? entity = Repository.GetLibraryEntry(id, comicId);
         if (entity is null)
         {
@@ -49,9 +49,9 @@ public class LibraryController(IMapper mapper, DbContext dbContext) : Controller
     }
 
     [HttpDelete]
-    public virtual ActionResult Delete(ulong comicId)
+    public virtual ActionResult Delete(string comicId)
     {
-        ulong id = User.GetId();
+        string id = User.GetId();
         LibraryEntry entity = Repository.GetLibraryEntry(id, comicId) ??
                               throw new HttpResponseException(HttpStatusCode.NotFound,
                                   ResponseModel.CreateError("Comic not in library"));

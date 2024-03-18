@@ -258,10 +258,10 @@
                     <legend class="text-center">Genres</legend>
                     <div class=" grid grid-cols-4 gap-4">
 
-                        <template x-for="genre in genres" :key="genre.Id">
+                        <template x-for="genre in genres">
                             <div class="inline">
                                 <label class="label cursor-pointer gap-1" x-init="comic.comicGenres.value[genre.Id] = false">
-                                    <input class="toggle shrink" value="genre.Id" type="checkbox"
+                                    <input class="toggle shrink" type="checkbox"
                                            x-model="comic.comicGenres.value[genre.Id]">
                                     <span class="label-text grow" x-text="genre.Name"></span>
                                 </label>

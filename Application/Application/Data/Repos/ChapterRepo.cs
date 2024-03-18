@@ -7,7 +7,7 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class ChapterRepo(DbContext dbContext) : BaseRepo<Chapter>(new ChapterDao(dbContext))
 {
-    public Chapter? GetByComicIdAndIndex(ulong comicId, int index)
+    public Chapter? GetByComicIdAndIndex(string comicId, int index)
     {
         return Query()
             .Include(chapter => chapter.Pages)

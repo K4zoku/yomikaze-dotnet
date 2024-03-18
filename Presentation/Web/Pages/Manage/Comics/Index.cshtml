@@ -2,10 +2,6 @@
 @model Web.Pages.Manage.Comic.IndexModel
 
 <script>
-
-    // if for create button change to edit button
-
-
     document.addEventListener('alpine:init', () => {
         Alpine.data('comics', () => ({
             comics: [],
@@ -151,9 +147,6 @@
 
         }));
     });
-
-
-
 </script>
 
 <div class="contents" x-data="comics">

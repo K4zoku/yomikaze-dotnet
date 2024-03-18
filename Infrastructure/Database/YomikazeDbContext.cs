@@ -6,7 +6,7 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Infrastructure.Database;
 
-public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
+public partial class YomikazeDbContext : IdentityDbContext<User, Role, string>
 {
     public YomikazeDbContext() { }
 
@@ -41,11 +41,11 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         base.OnModelCreating(builder);
         builder.Entity<User>().ToTable("Users");
         builder.Entity<Role>().ToTable("Roles").HasData(Default.Roles);
-        builder.Entity<IdentityUserLogin<ulong>>().ToTable("UserLogins");
-        builder.Entity<IdentityUserClaim<ulong>>().ToTable("UserClaims");
-        builder.Entity<IdentityUserToken<ulong>>().ToTable("UserTokens");
-        builder.Entity<IdentityUserRole<ulong>>().ToTable("UserRoles");
-        builder.Entity<IdentityRoleClaim<ulong>>().ToTable("RoleClaims");
+        builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
+        builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
+        builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+        builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
+        builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
         builder.Entity<Genre>().HasData(Default.Genres);
         builder.ApplyConfigurationsFromAssembly(typeof(YomikazeDbContext).Assembly);
     }

@@ -7,6 +7,6 @@ public interface IEntity<TId>
     [Key] public TId Id { get; set; }
 }
 
-public interface IEntity : IEntity<ulong>
+public interface IEntity : IEntity<string>
 {
 }

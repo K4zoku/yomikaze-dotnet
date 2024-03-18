@@ -7,7 +7,7 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class ComicRepo(DbContext dbContext) : BaseRepo<Comic>(new ComicDao(dbContext))
 {
-    public Comic? GetChaptersByComicId(ulong comicId)
+    public Comic? GetChaptersByComicId(string comicId)
     {
         return Query()
             .Include(comic => comic.Chapters)

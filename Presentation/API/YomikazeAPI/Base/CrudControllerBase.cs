@@ -93,7 +93,7 @@ public abstract class CrudControllerBase<T, TInput, TOutput>(
     DbContext dbContext,
     IMapper mapper,
     IRepo<T> repository)
-    : CrudControllerBase<T, ulong, TInput, TOutput>(dbContext, mapper, repository)
+    : CrudControllerBase<T, string, TInput, TOutput>(dbContext, mapper, repository)
     where T : class, IEntity
     where TInput : class
     where TOutput : class;

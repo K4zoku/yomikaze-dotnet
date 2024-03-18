@@ -4,9 +4,9 @@ namespace Web.Pages.Comics;
 
 public class Details : PageModel
 {
-    public long Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    public void OnGet(long id)
+    public void OnGet(string id)
     {
         Id = id;
     }

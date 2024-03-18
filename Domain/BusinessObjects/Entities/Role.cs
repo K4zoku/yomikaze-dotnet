@@ -3,7 +3,7 @@ using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
-public sealed class Role : IdentityRole<ulong>, IEntity
+public sealed class Role : IdentityRole, IEntity
 {
     public Role(string name) : base(name)
     {

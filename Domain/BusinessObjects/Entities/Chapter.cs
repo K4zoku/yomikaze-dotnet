@@ -17,7 +17,7 @@ public class Chapter : BaseEntity
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public virtual ICollection<HistoryRecord> Trackers { get; set; } = new List<HistoryRecord>();
 
-    [ForeignKey(nameof(Comic))] public ulong ComicId { get; set; }
+    [ForeignKey(nameof(Comic))] public string ComicId { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     [DeleteBehavior(DeleteBehavior.Cascade)]

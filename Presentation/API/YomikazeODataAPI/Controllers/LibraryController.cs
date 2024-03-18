@@ -17,7 +17,7 @@ public class LibraryController(DbContext dbContext) : ControllerBase
 
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
-        ulong id = User.GetId();
+        string id = User.GetId();
         return Ok(Repository.GetLibraryByUserId(id));
     }
 }

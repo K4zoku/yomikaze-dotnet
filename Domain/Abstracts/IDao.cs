@@ -21,6 +21,6 @@ public interface IDao<TEntity, in TId> where TEntity : class, IEntity<TId>
     public void Save();
 }
 
-public interface IDao<TEntity> : IDao<TEntity, ulong> where TEntity : class, IEntity
+public interface IDao<TEntity> : IDao<TEntity, string> where TEntity : class, IEntity
 {
 }

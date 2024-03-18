@@ -7,12 +7,12 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class LibraryRepo(DbContext dbContext) : BaseRepo<LibraryEntry>(new LibraryDao(dbContext))
 {
-    public IEnumerable<LibraryEntry> GetLibraryByUserId(ulong userId)
+    public IEnumerable<LibraryEntry> GetLibraryByUserId(string userId)
     {
         return Query().Where(x => x.UserId == userId);
     }
 
-    public LibraryEntry? GetLibraryEntry(ulong userId, ulong comicId)
+    public LibraryEntry? GetLibraryEntry(string userId, string comicId)
     {
         return Query().FirstOrDefault(x => x.UserId == userId && x.ComicId == comicId);
     }

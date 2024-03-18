@@ -30,5 +30,5 @@ public abstract class ODataControllerBase<T, TKey>(IRepo<T, TKey> repository) : 
 }
 
 public abstract class ODataControllerBase<T>(IRepo<T> repository)
-    : ODataControllerBase<T, ulong>(repository)
+    : ODataControllerBase<T, string>(repository)
     where T : class, IEntity;

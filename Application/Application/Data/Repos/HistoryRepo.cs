@@ -7,7 +7,7 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class HistoryRepo(DbContext dbContext) : BaseRepo<HistoryRecord>(new HistoryDao(dbContext))
 {
-    public IEnumerable<HistoryRecord> GetHistoryByUserId(ulong userId)
+    public IEnumerable<HistoryRecord> GetHistoryByUserId(string userId)
     {
         return Query()
             .Include(x => x.Chapter)

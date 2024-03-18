@@ -31,7 +31,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpPut("{key}")]
-    public override ActionResult<ComicOutputModel> Put(ulong key, ComicInputModel input)
+    public override ActionResult<ComicOutputModel> Put(string key, ComicInputModel input)
     {
         CheckModelState();
 
@@ -46,7 +46,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
 
 
     [HttpDelete("{key}")]
-    public override ActionResult Delete(ulong key)
+    public override ActionResult Delete(string key)
     {
         Comic? entity = Repository.Get(key);
         CheckEntity(entity);
@@ -58,7 +58,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     // get chapter by comic id
     [HttpGet("{comicId}/Chapters")]
     [AllowAnonymous]
-    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(ulong comicId)
+    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(string comicId)
     {
         Comic? comic = Repository.GetChaptersByComicId(comicId);
         CheckEntity(comic);
@@ -69,7 +69,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     // get chapter by comic id and index
     [HttpGet("{comicId}/Chapters/{index}")]
     [AllowAnonymous]
-    public ActionResult<ChapterOutputModel> GetChapter(ulong comicId, int index)
+    public ActionResult<ChapterOutputModel> GetChapter(string comicId, int index)
     {
         Chapter? chapter = ChapterRepo.GetByComicIdAndIndex(comicId, index);
         CheckEntity(chapter);
@@ -77,7 +77,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
         // check if user is logged in then add history
         if (User.Identity?.IsAuthenticated == true)
         {
-            ulong id = User.GetId();
+            string id = User.GetId();
             HistoryRecord history = new HistoryRecord { UserId = id, ChapterId = chapter.Id };
             HistoryRepo.Add(history);
         }

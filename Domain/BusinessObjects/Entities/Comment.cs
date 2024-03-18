@@ -7,11 +7,11 @@ public class Comment : BaseEntity
 {
     public string Content { get; set; } = default!;
 
-    [ForeignKey(nameof(User))] public virtual ulong UserId { get; set; }
+    [ForeignKey(nameof(User))] public virtual string UserId { get; set; }
 
     public virtual User User { get; set; } = default!;
 
-    [ForeignKey(nameof(Comic))] public ulong ComicId { get; set; }
+    [ForeignKey(nameof(Comic))] public string ComicId { get; set; }
 
     public virtual Comic Comic { get; set; } = default!;
 
