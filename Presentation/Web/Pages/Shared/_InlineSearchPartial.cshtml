@@ -1,0 +1,93 @@
+﻿<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('inlineSearch', () => ({
+            _search: '',
+            get search() {
+                return this._search;
+            },
+            set search(value) {
+                this._search = value;
+                if (value === '') {
+                    this.comics = [];
+                    return;
+                }
+                this.fetchComics();
+            },
+            focused: false,
+            comics: [],
+            init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+            },
+            
+            async fetchComics() {
+                let url = new URL('/API/OData/Comics/', window.location.origin);
+                url.searchParams.set('$orderby', 'Id desc');
+                url.searchParams.set('$top', '3');
+                if (this.search) {
+                    let filter = `contains(tolower(Name), tolower('${this.search}'))`;
+                    filter += ` or contains(tolower(Aliases), tolower('${this.search}'))`;
+                    url.searchParams.set('$filter', filter);
+                }
+                this.comics = await this.client.get(url)
+                    .then(response => response.data.value)
+                    .catch(error => {
+                        console.error(error);
+                        return [];
+                    });
+            }
+        }));
+    });
+</script>
+
+
+<div class="dropdown dropdown-end" x-data="inlineSearch">
+    <label class="input input-bordered flex items-center gap-2 w-120">
+        <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
+        <input type="text" placeholder="Search" x-ref="search"
+               x-model.debounce="search"
+               x-on:focus="focused = true"
+               x-on:blur="focused = false"
+               x-on:keydown.esc="$el.value = ''; $el.blur()"
+               x-on:keydown.enter="window.location.href = `/Search?query=${$el.value}`"
+               x-on:keydown.window.prevent.ctrl.k="$el.focus()"/>
+        <kbd class="kbd kbd-sm">Ctrl</kbd>
+        <span class="text-base-content">+</span>
+        <kbd class="kbd kbd-sm">K</kbd>
+    </label>
+    <div class="dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-[22rem]" :class="{ 'dropdown-open': focused }">
+        <div class="flex flex-col gap-2">
+            <span class="text-sm text-base-content p-4"
+                  x-show="comics.length === 0 && !!search" x-text="`No results for '${search}'`">
+                No results for ''
+            </span>
+            <span class="text-sm text-base-content p-4"
+                  x-show="comics.length === 0 && !search">Start typing to search
+            </span>
+            <span class="text-sm text-base-content p-4"
+                  x-show="comics.length > 0" x-text="`Results for '${search}'`">
+                    Results for ''
+            </span>
+            <template x-for="comic in comics" :key="comic.Id">
+                <a asp-page="/Comic/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"
+                   class="card card-side bg-base-100 shadow-lg hover:bg-base-200">
+                    <figure class="max-w-[80px] max-h-[120px]">
+                        <img class="w-[80px] h-full object-cover object-center" :src="comic?.Cover" src="" alt="Cover"/>
+                    </figure>
+                    <div class="card-body">
+                        <p class="text-sm card-title" x-text="comic?.Name">Name</p>
+                        <p class="text-sm font-normal leading-relaxed" x-text="comic?.Aliases">
+                            Aliases
+                        </p>
+                    </div>
+                </a>
+            </template>
+            <button class="btn btn-ghost w-full"
+                    x-on:click="window.location.href = `/Search?query=${search}`"
+                    x-show="comics.length > 0">
+                <i data-feather="plus" class="text-base-content" aria-hidden="true"></i>
+                See all results
+            </button>
+        </div>
+    </div>
+</div>

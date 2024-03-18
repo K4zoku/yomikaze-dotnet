@@ -1,0 +1,43 @@
+﻿
+<template x-if="authenticated">
+    <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }"
+             x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName">
+        <summary class="btn btn-circle avatar">
+            <div class="w-10 rounded-full ring ring-neutral ring-offset-base-100 ring-offset-2">
+                <img alt="Avatar"
+                     src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                     :src="profile?.avatar"/>
+            </div>
+        </summary>
+        <ul class="mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52">
+            <li class="menu-title"
+                x-text="`Welcome ${name || username || 'User'}`">
+                Welcome User
+            </li>
+            <li>
+                <a>
+                    <i data-feather="user" class="text-base-content" aria-hidden="true"></i>
+                    Profile
+                </a>
+            </li>
+            <li>
+                <a>
+                    <i data-feather="settings" class="text-base-content" aria-hidden="true"></i>
+                    Settings
+                </a>
+            </li>
+            <li>
+                <a x-on:click="$store.auth.logout()">
+                    <i data-feather="log-out" class="text-base-content" aria-hidden="true"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </details>
+</template>
+<template x-if="!authenticated">
+    <div class="contents">
+        <a class="btn btn-accent" asp-page="/SignIn">Sign In</a>
+        <a class="btn btn-success" asp-page="/SignUp">Sign Up</a>
+    </div>
+</template>
