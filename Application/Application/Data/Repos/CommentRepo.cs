@@ -1,13 +1,13 @@
-﻿using Abstracts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Access;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Data.Repos;
 
 public class CommentRepo(DbContext dbContext) : BaseRepo<Comment>(new CommentDao(dbContext))
 {
-    public IEnumerable<Comment> GetCommentByComicId(long comicId)
+    public IEnumerable<Comment> GetCommentByComicId(ulong comicId)
     {
         return Query().Where(comment => comment.ComicId == comicId);
     }

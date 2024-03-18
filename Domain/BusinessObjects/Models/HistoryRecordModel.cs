@@ -7,8 +7,6 @@ public class HistoryRecordInputModel
     [Required] public long ChapterId { get; set; }
 
     [Required] public long UserId { get; set; }
-
-    public DateTimeOffset LastRead { get; set; }
 }
 
 public class HistoryRecordOutputModel
@@ -19,5 +17,5 @@ public class HistoryRecordOutputModel
 
     public UserOutputModel User { get; set; } = default!;
 
-    public DateTimeOffset LastRead { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset CreatedAt { get; set; }
 }

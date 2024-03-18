@@ -15,7 +15,10 @@ namespace Yomikaze.API.Authentication.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthenticationController(UserManager<User> userManager, RoleManager<Role> roleManager, JwtConfiguration jwtConfiguration)
+public class AuthenticationController(
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager,
+    JwtConfiguration jwtConfiguration)
     : ControllerBase
 {
     private UserManager<User> UserManager { get; } = userManager;
@@ -36,7 +39,10 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
             throw new HttpResponseException(HttpStatusCode.Unauthorized,
                 ResponseModel.CreateError("Password does not match"));
         }
+
         string token = (await GenerateToken(user)).ToTokenString();
+        await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
+        await UserManager.UpdateSecurityStampAsync(user);
         return ResponseModel.CreateSuccess(new TokenModel(token));
     }
 
@@ -49,9 +55,15 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
         {
             throw new HttpResponseException(HttpStatusCode.Conflict,
                 ResponseModel.CreateError("Username or email already exists"));
-        }   
-        
-        user = new User { Fullname = model.Fullname, UserName = model.Username, Email = model.Email, Birthday = model.Birthday.Date };
+        }
+
+        user = new User
+        {
+            Fullname = model.Fullname,
+            UserName = model.Username,
+            Email = model.Email,
+            Birthday = model.Birthday.Date
+        };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
@@ -66,7 +78,7 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
             .ForEach(e => ModelState.AddModelError("Email", e.Description));
         result.Errors.Where(e => e.Code.Contains("Username")).ToList()
             .ForEach(e => ModelState.AddModelError("Username", e.Description));
-        
+
         Dictionary<string, IEnumerable<string>> errors = new();
         foreach ((string? key, ModelStateEntry? value) in ModelState)
         {
@@ -87,19 +99,28 @@ public class AuthenticationController(UserManager<User> userManager, RoleManager
     {
         User? user = User.GetUser(userManager);
         bool isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
-        object profile = new { user.Id, user.Fullname, user.UserName, user.Email, user.Birthday, Avatar = user.Avatar, IsAdmin = isAdmin };
+        object profile = new
+        {
+            user.Id,
+            user.Fullname,
+            user.UserName,
+            user.Email,
+            user.Birthday,
+            user.Avatar,
+            IsAdmin = isAdmin
+        };
         return Ok(ResponseModel.CreateSuccess("Authorized",
             new { Profile = profile, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
         ));
     }
-    
+
     [HttpHead]
     [Authorize]
     public IActionResult Validate()
     {
         return Ok();
     }
-    
+
     [HttpHead]
     [Authorize(Roles = "Administrator")]
     public IActionResult ValidateAdmin()

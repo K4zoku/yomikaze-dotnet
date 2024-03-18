@@ -6,11 +6,11 @@ namespace Yomikaze.Application.Helpers.API;
 
 public static class UserExtensions
 {
-    public static long GetId(this ClaimsPrincipal user)
+    public static ulong GetId(this ClaimsPrincipal user)
     {
         string idStr = user.FindFirstValue(ClaimTypes.NameIdentifier) ??
                        throw new HttpResponseException(500, "Cannot get user ID");
-        if (!long.TryParse(idStr, out long id))
+        if (!ulong.TryParse(idStr, out ulong id))
         {
             throw new HttpResponseException(500, "Cannot parse user ID");
         }

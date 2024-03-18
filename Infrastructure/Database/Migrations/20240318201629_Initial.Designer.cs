@@ -12,8 +12,8 @@ using Yomikaze.Infrastructure.Database;
 namespace Yomikaze.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    [Migration("20240316172511_AddDefaultRoles")]
-    partial class AddDefaultRoles
+    [Migration("20240318201629_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<ulong>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,8 +39,8 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("RoleId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -49,7 +49,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.ToTable("RoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<ulong>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,8 +63,8 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -73,7 +73,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.ToTable("UserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<ulong>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -84,8 +84,8 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -94,13 +94,13 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.ToTable("UserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<ulong>", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("RoleId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -109,10 +109,10 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<ulong>", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -130,23 +130,31 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Chapter", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
                     b.Property<DateTimeOffset?>("Available")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long>("ComicId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Index")
                         .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -161,11 +169,11 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comic", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
                     b.Property<string>("Aliases")
                         .HasColumnType("nvarchar(max)");
@@ -179,10 +187,18 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.Property<string>("Cover")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("Ended")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
@@ -199,17 +215,25 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.ComicGenre", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
-                    b.Property<long>("ComicId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("decimal(20,0)");
 
-                    b.Property<long>("GenreId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("GenreId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
 
@@ -222,30 +246,32 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
-                    b.Property<long>("ComicId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long?>("ReplyToId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal?>("ReplyToId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -260,14 +286,22 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Genre", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -283,85 +317,99 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = 28210004645380096m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(7604), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
                             Name = "Action"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = 28210004645380097m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8172), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
                             Name = "Adventure"
                         },
                         new
                         {
-                            Id = 3L,
+                            Id = 28210004645380098m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8179), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
                             Name = "Comedy"
                         },
                         new
                         {
-                            Id = 4L,
+                            Id = 28210004645380099m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8182), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
                             Name = "Drama"
                         },
                         new
                         {
-                            Id = 5L,
+                            Id = 28210004645380100m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8184), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
                             Name = "Fantasy"
                         },
                         new
                         {
-                            Id = 6L,
+                            Id = 28210004645380101m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8186), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that evokes fear in both the characters and the audience.",
                             Name = "Horror"
                         },
                         new
                         {
-                            Id = 7L,
+                            Id = 28210004645380102m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8188), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around solving a puzzle or a crime.",
                             Name = "Mystery"
                         },
                         new
                         {
-                            Id = 8L,
+                            Id = 28210004645380103m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8190), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that emphasizes the psychology of its characters and their unstable emotional states.",
                             Name = "Psychological"
                         },
                         new
                         {
-                            Id = 9L,
+                            Id = 28210004645380104m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8192), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story about love.",
                             Name = "Romance"
                         },
                         new
                         {
-                            Id = 10L,
+                            Id = 28210004645380105m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8194), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
                             Name = "Slice of Life"
                         },
                         new
                         {
-                            Id = 11L,
+                            Id = 28210004645380106m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8195), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around sports, such as baseball or basketball.",
                             Name = "Sports"
                         },
                         new
                         {
-                            Id = 12L,
+                            Id = 28210004645380107m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8197), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that involves supernatural elements, such as ghosts or demons.",
                             Name = "Supernatural"
                         },
                         new
                         {
-                            Id = 13L,
+                            Id = 28210004645380108m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8199), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is fast-paced and suspenseful, often involving a crime.",
                             Name = "Thriller"
                         },
                         new
                         {
-                            Id = 14L,
+                            Id = 28210004645380109m,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8201), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that ends in a tragic or unhappy way.",
                             Name = "Tragedy"
                         });
@@ -369,20 +417,25 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.HistoryRecord", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
-                    b.Property<long>("ChapterId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ChapterId")
+                        .HasColumnType("decimal(20,0)");
 
-                    b.Property<DateTimeOffset>("LastRead")
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -395,20 +448,28 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.LibraryEntry", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
-                    b.Property<long>("ComicId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("DateAdded")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -421,28 +482,33 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Notification", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsRead")
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("Read")
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
 
@@ -453,14 +519,18 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Page", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
-                    b.Property<long>("ChapterId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("ChapterId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -468,6 +538,10 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
                     b.Property<int>("Index")
                         .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("LastUpdated")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
 
@@ -478,11 +552,11 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Role", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("decimal(20,0)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<decimal>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -508,19 +582,19 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = 28210004645421070m,
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = 28210004645421071m,
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = 3L,
+                            Id = 28210004645421072m,
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -528,11 +602,8 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.User", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    b.Property<decimal>("Id")
+                        .HasColumnType("decimal(20,0)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -609,7 +680,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Role", null)
                         .WithMany()
@@ -618,7 +689,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.User", null)
                         .WithMany()
@@ -627,7 +698,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.User", null)
                         .WithMany()
@@ -636,7 +707,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Role", null)
                         .WithMany()
@@ -651,7 +722,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.User", null)
                         .WithMany()

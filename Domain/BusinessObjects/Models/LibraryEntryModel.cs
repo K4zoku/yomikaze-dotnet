@@ -8,8 +8,6 @@ public class LibraryEntryInputModel
     [Required] public long UserId { get; set; }
 
     [Required] public long ComicId { get; set; }
-
-    public DateTimeOffset DateAdded { get; set; } = DateTimeOffset.Now;
 }
 
 public class LibraryEntryOutputModel
@@ -19,5 +17,5 @@ public class LibraryEntryOutputModel
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ComicOutputModel Comic { get; set; } = default!;
 
-    public DateTimeOffset DateAdded { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 }

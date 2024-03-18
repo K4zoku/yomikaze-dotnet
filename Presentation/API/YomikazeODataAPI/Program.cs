@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
 using Yomikaze.API.OData.Helpers;
-using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Domain.Entities;
@@ -54,6 +53,7 @@ if (env.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,7 +1,6 @@
-using Abstracts;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -10,7 +9,7 @@ public class Genre : BaseEntity
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
-    
+
     [InverseProperty(nameof(ComicGenre.Genre))]
     public virtual ICollection<ComicGenre> ComicGenres { get; private set; } = new List<ComicGenre>();
 }

@@ -6,6 +6,5 @@ public class SignUp : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

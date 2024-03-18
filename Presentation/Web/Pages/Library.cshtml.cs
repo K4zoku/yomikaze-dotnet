@@ -5,7 +5,6 @@ namespace Web.Pages;
 
 public class LibraryModel : PageModel
 {
-    
     public int PageNumber { get; set; } = 1;
 
     public void OnGet([FromQuery] int page = 1)

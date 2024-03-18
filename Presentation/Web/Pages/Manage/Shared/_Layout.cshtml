@@ -66,7 +66,7 @@
                             </form>
                         </div>
                     </dialog>
-                
+
                     <button class="btn btn-ghost" x-on:click="$refs.reqAuth.showModal()">
                         <i data-feather="clock" class="text-base-content" aria-hidden="true"></i>
                         History
@@ -78,22 +78,20 @@
                 </div>
             </template>
         </div>
-        
+
         <div class="navbar-end gap-2">
             <label class="input input-bordered flex items-center gap-2">
                 <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
-                <input type="text" placeholder="Search" class="w-50" x-ref="search" 
+                <input type="text" placeholder="Search" class="w-50" x-ref="search"
                        x-on:keydown.esc="$el.value = ''; $el.blur()"
-                       x-on:keydown.enter="alert('This feature not implemented yet');"
-                       />
+                       x-on:keydown.enter="alert('This feature not implemented yet');"/>
                 <kbd class="kbd kbd-sm">Ctrl</kbd>
                 <span class="text-base-content">+</span>
                 <kbd class="kbd kbd-sm">K</kbd>
             </label>
             <template x-if="$store.auth.authenticated">
-                <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }" 
-                         x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName"
-                         >
+                <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }"
+                         x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName">
                     <summary class="btn btn-circle avatar">
                         <div class="w-10 rounded-full ring ring-neutral ring-offset-base-100 ring-offset-2">
                             <img alt="Avatar"
@@ -140,42 +138,42 @@
     <main role="main" class="w-10/12 mx-auto min-h-[calc(100vh-8rem)]">
         @RenderBody()
     </main>
-    <button x-on:click="window.scrollTo({top: 0, behavior: 'smooth'})" 
-            x-on:scroll.window="scroll = document.documentElement.scrollTop > 20" 
-            aria-label="Back to top" 
-            class="fixed bottom-7 right-5 btn btn-circle btn-accent shadow-md" 
-            id="btn-back-to-top" type="button" 
-            x-data="{scroll : document.documentElement.scrollTop > 20}" 
+    <button x-on:click="window.scrollTo({top: 0, behavior: 'smooth'})"
+            x-on:scroll.window="scroll = document.documentElement.scrollTop > 20"
+            aria-label="Back to top"
+            class="fixed bottom-7 right-5 btn btn-circle btn-accent shadow-md"
+            id="btn-back-to-top" type="button"
+            x-data="{scroll : document.documentElement.scrollTop > 20}"
             x-show="scroll"
-            x-transition:enter="transition ease-out duration-300" 
-            x-transition:enter-end="opacity-100 transform scale-100" 
-            x-transition:enter-start="opacity-0 transform scale-90" 
-            x-transition:leave="transition ease-in duration-300" 
-            x-transition:leave-end="opacity-0 transform scale-90" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:enter-start="opacity-0 transform scale-90"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-end="opacity-0 transform scale-90"
             x-transition:leave-start="opacity-100 transform scale-100">
         <i aria-hidden="true" data-feather="arrow-up"></i>
     </button>
 </div>
 
 <footer class="footer p-10 bg-base-100 text-base-content">
-  <aside>
-    <img src="~/favicon.svg" alt="logo" class="w-12 h-12">
-    <p>Yomikaze <br> Copyright &copy; <span x-text="new Date().getFullYear()">2024</span> All rights reserved.</p>
-  </aside> 
-  <div>
-    <h6 class="footer-title">Contacts</h6> 
-    <div class="grid grid-flow-col gap-4">
-        <a>
-            <i data-feather="discord" class="fill-current"></i>
-        </a>
-        <a>
-            <i data-feather="github" class="fill-current"></i>
-        </a>
-        <a>
-            <i data-feather="mail" class="fill-current"></i>
-        </a>
+    <aside>
+        <img src="~/favicon.svg" alt="logo" class="w-12 h-12">
+        <p>Yomikaze <br> Copyright &copy; <span x-text="new Date().getFullYear()">2024</span> All rights reserved.</p>
+    </aside>
+    <div>
+        <h6 class="footer-title">Contacts</h6>
+        <div class="grid grid-flow-col gap-4">
+            <a>
+                <i data-feather="discord" class="fill-current"></i>
+            </a>
+            <a>
+                <i data-feather="github" class="fill-current"></i>
+            </a>
+            <a>
+                <i data-feather="mail" class="fill-current"></i>
+            </a>
+        </div>
     </div>
-  </div>
 </footer>
 <script src="~/lib/axios/axios.min.js"></script>
 <script src="~/js/site.js"></script>

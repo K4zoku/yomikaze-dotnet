@@ -24,6 +24,11 @@ public static class JwtExtensions
             })
             .AddJwtBearer(options =>
             {
+                options.SaveToken = configuration.SaveToken;
+                options.RequireHttpsMetadata = configuration.RequireHttpsMetadata;
+                options.Audience = configuration.Audience;
+                options.ClaimsIssuer = configuration.Issuer;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = configuration.ValidateIssuer,

@@ -1,7 +1,6 @@
-﻿using Abstracts;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.API.OData.Base;
 
@@ -31,5 +30,5 @@ public abstract class ODataControllerBase<T, TKey>(IRepo<T, TKey> repository) : 
 }
 
 public abstract class ODataControllerBase<T>(IRepo<T> repository)
-    : ODataControllerBase<T, long>(repository)
+    : ODataControllerBase<T, ulong>(repository)
     where T : class, IEntity;

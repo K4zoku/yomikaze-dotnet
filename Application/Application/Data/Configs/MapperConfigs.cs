@@ -34,6 +34,5 @@ public class MapperConfigs : Profile
 
         CreateMap<ComicGenreInputModel, ComicGenre>();
         CreateMap<ComicGenre, ComicGenreOutputModel>();
-       
     }
 }

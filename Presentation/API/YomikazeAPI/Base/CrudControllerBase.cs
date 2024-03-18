@@ -1,9 +1,9 @@
-﻿using Abstracts;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using Yomikaze.Application.Helpers;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Main.Base;
@@ -27,7 +27,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     public virtual ActionResult<TOutput> Get(TKey key)
     {
         T? entity = Repository.Get(key);
-     
+
         CheckEntity(entity);
 
         return Ok(Mapper.Map<TOutput>(entity));
@@ -37,7 +37,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     public virtual ActionResult<TOutput> Post(TInput input)
     {
         CheckModelState();
-       
+
         T? entity = Mapper.Map<T>(input);
         Repository.Add(entity);
         return Ok(Mapper.Map<TOutput>(entity));
@@ -47,7 +47,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     public virtual ActionResult<TOutput> Put(TKey key, TInput input)
     {
         CheckModelState();
-        
+
         T? entityToUpdate = Repository.Get(key);
         CheckEntity(entityToUpdate);
 
@@ -60,7 +60,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     public virtual ActionResult Delete(TKey key)
     {
         T? entity = Repository.Get(key);
-        
+
         CheckEntity(entity);
 
         Repository.Delete(entity);
@@ -72,23 +72,28 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     // check model state and throw exception if invalid
     protected void CheckModelState()
     {
-        if (!ModelState.IsValid) throw new HttpResponseException(HttpStatusCode.BadRequest, ResponseModel.CreateError("Invalid input"));
+        if (!ModelState.IsValid)
+        {
+            throw new HttpResponseException(HttpStatusCode.BadRequest, ResponseModel.CreateError("Invalid input"));
+        }
     }
 
     [NonAction]
     // check entity and throw exception if null
     protected void CheckEntity(object? entity)
     {
-        if (entity == null) throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
     }
-
 }
 
 public abstract class CrudControllerBase<T, TInput, TOutput>(
     DbContext dbContext,
     IMapper mapper,
-    IRepo<T, long> repository)
-    : CrudControllerBase<T, long, TInput, TOutput>(dbContext, mapper, repository)
-    where T : class, IEntity<long>
+    IRepo<T> repository)
+    : CrudControllerBase<T, ulong, TInput, TOutput>(dbContext, mapper, repository)
+    where T : class, IEntity
     where TInput : class
     where TOutput : class;

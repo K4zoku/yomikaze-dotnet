@@ -1,5 +1,5 @@
 ﻿@page
-@model Web.Pages.Manage.Comics.CreateModel
+@model CreateModel
 
 <script>
     document.addEventListener('alpine:init', () => {
@@ -83,6 +83,8 @@
 
             reset() {
                 this.comic = this.defaults.comic();
+                this.coverImageFile = null;
+                this.coverImageURL = '';
                 this.message = '';
             },
             
@@ -93,6 +95,7 @@
             },
             
             uploading: false,
+            coverImageURL: '',
             
             async uploadImage() {
                 let file = this.coverImageFile;
@@ -115,12 +118,13 @@
                 console.log('Image uploaded', response);
                 let location = response.headers['location'];
                 this.uploading = false;
+                this.coverImageURL = location;
                 return location;
             },
 
             async create() {
                 this.loading = true;
-                let url = await this.uploadImage();
+                let url = this.coverImageURL ?? await this.uploadImage();
                 let data = {};
                 for (let key in this.comic) {
                     let prop = this.comic[key];
@@ -138,11 +142,12 @@
                     case 200:
                         this.message = 'Comic created successfully';
                         console.log('Comic created', response.data);
+                        let createdComic = response.data.data;
                         let ans = confirm('Comic created successfully do you want to create another one?')
                         if (ans) {
                             this.reset();
                         } else {
-                            window.location.href = '/Manage/Comics';
+                            window.location.href = '/Manage/Comics/' + createdComic.Id;
                         }
                         break;
                     case 400:
@@ -181,25 +186,34 @@
                                     </span>
                                 </span>
                             </div>
+
                             <div class="self-center p-3 border-2 border-dashed border-gray-500 rounded-box">
-                                <div class="card w-[190px] h-[280px] cursor-pointer" :class="{ 'image-full': uploading }">
-                                    <figure>
-                                        <img :src="coverImageFile ? URL.createObjectURL(coverImageFile) : $el.dataset.placeholder"
-                                             alt="Cover"
-                                             class="object-cover object-center w-[190px] h-[280px]"
-                                             data-placeholder="https://via.placeholder.com/190x280?text=No+Image"
-                                             src="https://via.placeholder.com/190x280?text=No+Image">  
-                                    </figure>
-                                    <div class="card-body flex justify-center items-center" x-show="uploading">
-                                        <div class="loading loading-lg"></div>
+                                <div class="indicator">
+                                    <span class="indicator-item badge badge-secondary" x-show="coverImageURL"></span>
+                                    <div class="card w-[190px] h-[280px] cursor-pointer" :class="{ 'image-full': uploading }">
+                                        <figure>
+                                            <img :src="coverImageURL || (coverImageFile ? URL.createObjectURL(coverImageFile) : $el.dataset.placeholder)"
+                                                 alt="Cover"
+                                                 class="object-cover object-center w-[190px] h-[280px]"
+                                                 data-placeholder="https://via.placeholder.com/190x280?text=No+Image"
+                                                 src="https://via.placeholder.com/190x280?text=No+Image">
+                                        </figure>
+                                        <div class="card-body flex justify-center items-center" x-show="uploading">
+                                            <div class="loading loading-lg"></div>
+                                        </div>
                                     </div>
                                 </div>
+                                <input x-on:change="coverImageFile = $event.target.files[0]"
+                                       accept="image/jpeg,image/jpg,image/png,image/webp"
+                                       class="file-input file-input-bordered w-full hidden"
+                                       id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail">
                             </div>
-                            <input x-on:change="coverImageFile = $event.target.files[0]" 
-                                   accept="image/jpeg,image/jpg,image/png,image/webp" 
-                                   class="file-input file-input-bordered w-full hidden" 
-                                   id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail"
-                                   >
+
+                            <button class="btn btn-primary mt-2" type="button" x-on:click="await uploadImage()" :disabled="!coverImageFile || uploading || loading">
+                                <i data-feather="upload"></i>
+                                <span class="loading loading-lg" x-show="uploading"></span>
+                                Upload thumbnail
+                            </button>
                         </label>
 
                         <div class="grow">
@@ -246,10 +260,9 @@
 
                         <template x-for="genre in genres" :key="genre.Id">
                             <div class="inline">
-                                <label class="label cursor-pointer gap-1">
+                                <label class="label cursor-pointer gap-1" x-init="comic.comicGenres.value[genre.Id] = false">
                                     <input class="toggle shrink" value="genre.Id" type="checkbox"
-                                           x-on:change="comic.comicGenres.value[genre.Id] = $event.target.checked"
-                                           >
+                                           x-model="comic.comicGenres.value[genre.Id]">
                                     <span class="label-text grow" x-text="genre.Name"></span>
                                 </label>
                             </div>

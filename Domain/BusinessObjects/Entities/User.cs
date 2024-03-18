@@ -1,10 +1,13 @@
-﻿using Abstracts;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
-public class User : IdentityUser<long>, IEntity
+[PrimaryKey(nameof(Id))]
+public class User : IdentityUser<ulong>, IEntity
 {
     public string? Avatar { get; set; }
 
@@ -25,8 +28,7 @@ public class User : IdentityUser<long>, IEntity
 
     public virtual ICollection<HistoryRecord> History { get; set; } = new List<HistoryRecord>();
 
-    public static long GetId()
-    {
-        throw new NotImplementedException();
-    }
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    [Key]
+    public override ulong Id { get; set; } = SnowflakeGenerator.Generate(10);
 }

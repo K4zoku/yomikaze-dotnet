@@ -13,11 +13,11 @@
                 }
             });
         },
-        
+
         get authenticated() {
             return !!this.token;
         },
-        
+
         async getProfile() {
             if (!this.authenticated) return null;
             let p = sessionStorage.getItem('profile')
@@ -49,13 +49,13 @@
             this.profile = profile;
             return profile;
         },
-        
+
         _profile: null,
-        
+
         get profile() {
             return this._profile;
         },
-        
+
         set profile(value) {
             this._profile = value;
             sessionStorage.setItem('profile', JSON.stringify(value));
@@ -75,7 +75,7 @@
             window.location.reload();
         },
     });
-    
+
     Alpine.data('theme', () => ({
         init() {
             this.$watch('themeId', (value) => localStorage.setItem('theme', value))

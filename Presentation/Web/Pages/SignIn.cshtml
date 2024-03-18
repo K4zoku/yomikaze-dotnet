@@ -1,5 +1,5 @@
 ﻿@page
-@model Web.Pages.SignIn
+@model SignIn
 
 <script>
   document.addEventListener('alpine:init', () => {
@@ -78,41 +78,40 @@
   });
 </script>
 
-<div class="flex items-center justify-center w-full min-h-[calc(100vh-8rem)]" 
+<div class="flex items-center justify-center w-full min-h-[calc(100vh-8rem)]"
      x-init="if ($store.auth.authenticated) window.location.href = '/'"
-     x-data="signInForm"
->
-  <form class="w-full h-fit max-w-md bg-base-300 p-8 shadow-lg rounded-lg" 
-        x-on:submit.prevent="submit()">
-    <h2 class="flex text-2xl font-bold items-center justify-center mb-3">Sign In</h2>
-    <div class="mb-4">
-      <label for="username" class="block text-sm font-bold mb-2">Username</label>
-      <input id="username" type="text" x-model="username" placeholder="Enter your email address" required
-             class="input input-bordered w-full" autocomplete="username" :class="{ 'input-error': !!usernameError }"/>
-      <span class="text-xs text-red-500" x-show="!!usernameError" x-text="usernameError"></span>
-    </div>
-    <div class="mb-4">
-      <label for="password" class="block text-sm font-bold mb-2">Password</label>
-      <input id="password" type="password" x-model="password" placeholder="Enter your password" required
-             class="input input-bordered w-full" autocomplete="current-password" :class="{ 'input-error': !!passwordError }"/>
-      <span class="text-xs text-red-500" x-show="!!passwordError" x-text="passwordError"></span>
-    </div>
-    <template x-if="!!errorMessage">
-      <div role="alert" class="alert alert-error mb-4 shadow-lg">
-        <i aria-hidden="true" data-feather="alert-circle"></i>
-        <span x-text="errorMessage"></span>
-      </div>
-    </template>
-    <div class="mb-6">
-      <button :disabled="loading" class="btn btn-accent w-full"
-              type="submit">
-        <span class="loading loading-infinity" x-show="loading"></span>
-        <span x-text="loading ? 'Signing In...' : 'Sign In'">Sign In</span>
-      </button>
-    </div>
-    <a asp-page="Forgot" class="flex justify-center text-center underline text-gray-500 text-xs mb-2">Forgot password?</a>
-    <p class="text-center text-gray-500 text-xs">
-      Don't have an account? <a asp-page="SignUp" class="underline">Sign Up</a>.
-    </p>
-  </form>
+     x-data="signInForm">
+    <form class="w-full h-fit max-w-md bg-base-300 p-8 shadow-lg rounded-lg"
+          x-on:submit.prevent="submit()">
+        <h2 class="flex text-2xl font-bold items-center justify-center mb-3">Sign In</h2>
+        <div class="mb-4">
+            <label for="username" class="block text-sm font-bold mb-2">Username</label>
+            <input id="username" type="text" x-model="username" placeholder="Enter your email address" required
+                   class="input input-bordered w-full" autocomplete="username" :class="{ 'input-error': !!usernameError }"/>
+            <span class="text-xs text-red-500" x-show="!!usernameError" x-text="usernameError"></span>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-bold mb-2">Password</label>
+            <input id="password" type="password" x-model="password" placeholder="Enter your password" required
+                   class="input input-bordered w-full" autocomplete="current-password" :class="{ 'input-error': !!passwordError }"/>
+            <span class="text-xs text-red-500" x-show="!!passwordError" x-text="passwordError"></span>
+        </div>
+        <template x-if="!!errorMessage">
+            <div role="alert" class="alert alert-error mb-4 shadow-lg">
+                <i aria-hidden="true" data-feather="alert-circle"></i>
+                <span x-text="errorMessage"></span>
+            </div>
+        </template>
+        <div class="mb-6">
+            <button :disabled="loading" class="btn btn-accent w-full"
+                    type="submit">
+                <span class="loading loading-infinity" x-show="loading"></span>
+                <span x-text="loading ? 'Signing In...' : 'Sign In'">Sign In</span>
+            </button>
+        </div>
+        <a asp-page="Forgot" class="flex justify-center text-center underline text-gray-500 text-xs mb-2">Forgot password?</a>
+        <p class="text-center text-gray-500 text-xs">
+            Don't have an account? <a asp-page="SignUp" class="underline">Sign Up</a>.
+        </p>
+    </form>
 </div>

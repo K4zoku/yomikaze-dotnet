@@ -62,11 +62,12 @@
                 No results for ''
             </span>
             <span class="text-sm text-base-content p-4"
-                  x-show="comics.length === 0 && !search">Start typing to search
+                  x-show="comics.length === 0 && !search">
+                Start typing to search
             </span>
             <span class="text-sm text-base-content p-4"
                   x-show="comics.length > 0" x-text="`Results for '${search}'`">
-                    Results for ''
+                Results for ''
             </span>
             <template x-for="comic in comics" :key="comic.Id">
                 <a asp-page="/Comic/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"

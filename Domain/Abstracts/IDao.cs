@@ -1,4 +1,4 @@
-namespace Abstracts;
+namespace Yomikaze.Domain.Abstracts;
 
 public interface IDao<TEntity, in TId> where TEntity : class, IEntity<TId>
 {
@@ -21,6 +21,6 @@ public interface IDao<TEntity, in TId> where TEntity : class, IEntity<TId>
     public void Save();
 }
 
-public interface IDao<TEntity> : IDao<TEntity, long> where TEntity : class, IEntity
+public interface IDao<TEntity> : IDao<TEntity, ulong> where TEntity : class, IEntity
 {
 }

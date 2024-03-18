@@ -17,7 +17,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Comics",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -26,7 +26,9 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     Published = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     Ended = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     Aliases = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Authors = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Authors = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,10 +39,12 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,7 +55,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -66,8 +70,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Banner = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -97,13 +100,15 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Chapters",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Index = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Available = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ComicId = table.Column<long>(type: "bigint", nullable: false)
+                    ComicId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,10 +125,12 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "ComicGenres",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ComicId = table.Column<long>(type: "bigint", nullable: false),
-                    GenreId = table.Column<long>(type: "bigint", nullable: false)
+                    ComicId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    GenreId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,7 +155,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false),
+                    RoleId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -167,14 +174,14 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ComicId = table.Column<long>(type: "bigint", nullable: false),
-                    ReplyToId = table.Column<long>(type: "bigint", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    ComicId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    ReplyToId = table.Column<decimal>(type: "decimal(20,0)", nullable: true),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -202,11 +209,13 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "LibraryEntries",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ComicId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    DateAdded = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    ComicId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    DateAdded = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,13 +238,14 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    Read = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -254,7 +264,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -276,7 +286,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -293,8 +303,8 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false)
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    RoleId = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -317,7 +327,7 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "UserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -337,11 +347,12 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Histories",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ChapterId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    LastRead = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    ChapterId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    UserId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -364,11 +375,13 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 name: "Pages",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Index = table.Column<int>(type: "int", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ChapterId = table.Column<long>(type: "bigint", nullable: false)
+                    ChapterId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    LastUpdated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -383,29 +396,34 @@ namespace Yomikaze.Infrastructure.Database.Migrations
 
             migrationBuilder.InsertData(
                 table: "Genres",
-                columns: new[] { "Id", "Description", "Name" },
+                columns: new[] { "Id", "CreatedAt", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1L, "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
-                    { 2L, "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
-                    { 3L, "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
-                    { 4L, "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
-                    { 5L, "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
-                    { 6L, "A story that evokes fear in both the characters and the audience.", "Horror" },
-                    { 7L, "A story that revolves around solving a puzzle or a crime.", "Mystery" },
-                    { 8L, "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
-                    { 9L, "A story about love.", "Romance" },
-                    { 10L, "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
-                    { 11L, "A story that revolves around sports, such as baseball or basketball.", "Sports" },
-                    { 12L, "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
-                    { 13L, "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
-                    { 14L, "A story that ends in a tragic or unhappy way.", "Tragedy" }
+                    { 28210004645380096m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(7604), new TimeSpan(0, 0, 0, 0, 0)), "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
+                    { 28210004645380097m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8172), new TimeSpan(0, 0, 0, 0, 0)), "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
+                    { 28210004645380098m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8179), new TimeSpan(0, 0, 0, 0, 0)), "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
+                    { 28210004645380099m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8182), new TimeSpan(0, 0, 0, 0, 0)), "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
+                    { 28210004645380100m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8184), new TimeSpan(0, 0, 0, 0, 0)), "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
+                    { 28210004645380101m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8186), new TimeSpan(0, 0, 0, 0, 0)), "A story that evokes fear in both the characters and the audience.", "Horror" },
+                    { 28210004645380102m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8188), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around solving a puzzle or a crime.", "Mystery" },
+                    { 28210004645380103m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8190), new TimeSpan(0, 0, 0, 0, 0)), "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
+                    { 28210004645380104m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8192), new TimeSpan(0, 0, 0, 0, 0)), "A story about love.", "Romance" },
+                    { 28210004645380105m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8194), new TimeSpan(0, 0, 0, 0, 0)), "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
+                    { 28210004645380106m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8195), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around sports, such as baseball or basketball.", "Sports" },
+                    { 28210004645380107m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8197), new TimeSpan(0, 0, 0, 0, 0)), "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
+                    { 28210004645380108m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8199), new TimeSpan(0, 0, 0, 0, 0)), "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
+                    { 28210004645380109m, new DateTimeOffset(new DateTime(2024, 3, 18, 20, 16, 29, 224, DateTimeKind.Unspecified).AddTicks(8201), new TimeSpan(0, 0, 0, 0, 0)), "A story that ends in a tragic or unhappy way.", "Tragedy" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { 1L, null, "Administrator", null });
+                values: new object[,]
+                {
+                    { 28210004645421070m, null, "Administrator", "ADMINISTRATOR" },
+                    { 28210004645421071m, null, "Publisher", "PUBLISHER" },
+                    { 28210004645421072m, null, "Reader", "READER" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chapters_ComicId",

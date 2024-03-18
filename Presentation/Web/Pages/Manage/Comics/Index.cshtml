@@ -167,60 +167,60 @@
     <div class="w-full mt-8">
         <table class="table w-full max-w-full rounded-box" aria-describedby="comics_info" :class="{ 'min-h-[538px]': loading }">
             <thead>
-                <tr>
-                    <th class=" font-semibold p-4 relative pr-6">#</th>
-                    <th class=" font-semibold p-4 relative pr-6 ">Comic</th>
-                    <th class=" font-semibold p-4 relative pr-6">Authors</th>
-                    <th class=" font-semibold p-4 relative pr-6">Actions</th>
-                </tr>
+            <tr>
+                <th class=" font-semibold p-4 relative pr-6">#</th>
+                <th class=" font-semibold p-4 relative pr-6 ">Comic</th>
+                <th class=" font-semibold p-4 relative pr-6">Authors</th>
+                <th class=" font-semibold p-4 relative pr-6">Actions</th>
+            </tr>
             </thead>
             <tbody>
-                <tr x-show="loading">
-                    <td colspan="4" class="text-center">
-                        <span class="loading loading-lg loading-infinity"></span>
+            <tr x-show="loading">
+                <td colspan="4" class="text-center">
+                <span class="loading loading-lg loading-infinity"></span>
+                <td>
+            </tr>
+            <template x-for="comic in comics">
+                <tr class="bg-base-100 hover" x-show="!loading"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100">
                     <td>
+                        <span class="text-sm" x-text="'#' + comic.Id">
+                            Id
+                        </span>
+                    </td>
+                    <td>
+                        <a asp-page="/Comics/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"
+                           class="card card-side">
+                            <figure class="max-w-[80px] max-h-[120px]">
+                                <img class="w-[80px] h-full object-cover object-center" :src="comic?.Cover" src="" alt="Cover"/>
+                            </figure>
+                            <div class="card-body">
+                                <p class="text-sm card-title" x-text="comic?.Name">Name</p>
+                                <p class="text-sm font-normal leading-relaxed" x-text="comic?.Aliases">
+                                    Aliases
+                                </p>
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <span x-text="comic.Authors">
+                            Authors
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn btn-xs btn-warning gap-2" asp-page="/Manage/Comics/Edit">
+                            <i data-feather="edit"></i>
+                            <span class="text-sm">Edit</span>
+                        </a>
+                        <a class="btn btn-xs btn-error gap-2" x-on:click="confirmDelete(genre.Id)">
+                            <i data-feather="trash"></i>
+                            <span class="text-sm">Delete</span>
+                        </a>
+                    </td>
                 </tr>
-                <template x-for="comic in comics">
-                    <tr class="bg-base-100 hover" x-show="!loading"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100">
-                        <td>
-                            <span class="text-sm" x-text="'#' + comic.Id">
-                                Id
-                            </span>
-                        </td>
-                        <td>
-                            <a asp-page="/Comics/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"
-                               class="card card-side">
-                                <figure class="max-w-[80px] max-h-[120px]">
-                                    <img class="w-[80px] h-full object-cover object-center" :src="comic?.Cover" src="" alt="Cover" />
-                                </figure>
-                                <div class="card-body">
-                                    <p class="text-sm card-title" x-text="comic?.Name">Name</p>
-                                    <p class="text-sm font-normal leading-relaxed" x-text="comic?.Aliases">
-                                        Aliases
-                                    </p>
-                                </div>
-                            </a>
-                        </td>
-                        <td>
-                            <span x-text="comic.Authors">
-                                Authors
-                            </span>
-                        </td>
-                        <td>
-                            <a class="btn btn-xs btn-warning gap-2" asp-page="/Manage/Comics/Edit">
-                                <i data-feather="edit"></i>
-                                <span class="text-sm">Edit</span>
-                            </a>
-                            <a class="btn btn-xs btn-error gap-2" x-on:click="confirmDelete(genre.Id)">
-                                <i data-feather="trash"></i>
-                                <span class="text-sm">Delete</span>
-                            </a>
-                        </td>
-                    </tr>
-                </template>
+            </template>
             </tbody>
         </table>
         <div class="w-full mt-4 flex justify-end">

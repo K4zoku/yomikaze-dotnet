@@ -1,5 +1,5 @@
 ﻿@page
-@model Web.Pages.SignUp
+@model SignUp
 
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -118,42 +118,42 @@
         <div class="mb-4">
             <label for="fullname" class="block text-sm font-bold mb-2">Fullname</label>
             <input id="fullname" type="text" x-model="fullname" placeholder="Enter your fullname" required
-                   class="input input-bordered w-full" autocomplete="fullname" :class="{ 'input-error': !!usernameError }" />
+                   class="input input-bordered w-full" autocomplete="fullname" :class="{ 'input-error': !!usernameError }"/>
             <span class="text-xs text-red-500" x-show="!!fullnameError" x-text="fullnameError"></span>
         </div>
 
         <div class="mb-4">
             <label for="username" class="block text-sm font-bold mb-2">Username</label>
             <input id="username" type="text" x-model="username" placeholder="Enter your username" required
-                   class="input input-bordered w-full" autocomplete="username" :class="{ 'input-error': !!usernameError }" />
+                   class="input input-bordered w-full" autocomplete="username" :class="{ 'input-error': !!usernameError }"/>
             <span class="text-xs text-red-500" x-show="!!usernameError" x-text="usernameError"></span>
         </div>
 
         <div class="mb-4">
             <label for="email" class="block text-sm font-bold mb-2">Email</label>
             <input id="email" type="email" x-model="email" placeholder="Enter your email" required
-                   class="input input-bordered w-full" autocomplete="email" :class="{ 'input-error': !!emailError }" />
+                   class="input input-bordered w-full" autocomplete="email" :class="{ 'input-error': !!emailError }"/>
             <span class="text-xs text-red-500" x-show="!!emailError" x-text="emailError"></span>
         </div>
 
         <div class="mb-4">
             <label for="password" class="block text-sm font-bold mb-2">Password</label>
             <input id="password" type="password" x-model="password" placeholder="Enter your password" required
-                   class="input input-bordered w-full" autocomplete="new-password" :class="{ 'input-error': !!passwordError }" />
+                   class="input input-bordered w-full" autocomplete="new-password" :class="{ 'input-error': !!passwordError }"/>
             <span class="text-xs text-red-500" x-show="!!passwordError" x-text="passwordError"></span>
         </div>
 
         <div class="mb-4">
             <label for="confirmPassword" class="block text-sm font-bold mb-2">Confirm Password</label>
             <input id="confirmPassword" type="password" x-model="confirmPassword" placeholder="Enter your confirmPassword" required
-                   class="input input-bordered w-full" autocomplete="new-password" :class="{ 'input-error': !!confirmPasswordError }" />
+                   class="input input-bordered w-full" autocomplete="new-password" :class="{ 'input-error': !!confirmPasswordError }"/>
             <span class="text-xs text-red-500" x-show="!!confirmPasswordError" x-text="confirmPasswordError"></span>
         </div>
 
         <div class="mb-4">
             <label for="birthday" class="block text-sm font-bold mb-2">Date of Birth</label>
             <input id="birthday" type="date" :min="minDate" :max="maxDate" x-model="birthday" placeholder="Enter your date of birth" required
-                   class="input input-bordered w-full" autocomplete="birthday" :class="{ 'input-error': !!birthdayError }" />
+                   class="input input-bordered w-full" autocomplete="birthday" :class="{ 'input-error': !!birthdayError }"/>
             <span class="text-xs text-red-500" x-show="!!birthdayError" x-text="birthdayError"></span>
         </div>
 

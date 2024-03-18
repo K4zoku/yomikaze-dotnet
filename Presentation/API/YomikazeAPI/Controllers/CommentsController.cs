@@ -31,22 +31,25 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
         }
 
         Comment? entity = Mapper.Map<Comment>(input);
-        long id = User.GetId();
+        ulong id = User.GetId();
         entity.UserId = id;
         Repository.Add(entity);
         return Ok(Mapper.Map<CommentOutputModel>(entity));
     }
 
     [HttpPut("{key}")]
-    public override ActionResult<CommentOutputModel> Put(long key, CommentInputModel input)
+    public override ActionResult<CommentOutputModel> Put(ulong key, CommentInputModel input)
     {
         CheckModelState();
 
         Comment? entityToUpdate = Repository.Get(key);
         CheckEntity(entityToUpdate);
 
-        long id = User.GetId();
-        if (entityToUpdate.UserId != id) throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
+        ulong id = User.GetId();
+        if (entityToUpdate.UserId != id)
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
+        }
 
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
@@ -54,15 +57,18 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpDelete("{key}")]
-    public override ActionResult Delete(long key)
+    public override ActionResult Delete(ulong key)
     {
         Comment? entity = Repository.Get(key);
 
         CheckEntity(entity);
 
 
-        long id = User.GetId();
-        if (entity.UserId != id && !User.HasClaim(ClaimTypes.Role, "Administrator")) throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
+        ulong id = User.GetId();
+        if (entity.UserId != id && !User.HasClaim(ClaimTypes.Role, "Administrator"))
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
+        }
 
         Repository.Delete(entity);
         return Ok();
@@ -70,14 +76,11 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
 
     // get chapter by comic id
     [HttpGet("{comicId}/Comments")]
-    public ActionResult<IEnumerable<CommentOutputModel>> GetComments(long comicId)
+    public ActionResult<IEnumerable<CommentOutputModel>> GetComments(ulong comicId)
     {
-        var comment = Repository.GetCommentByComicId(comicId);
+        IEnumerable<Comment> comment = Repository.GetCommentByComicId(comicId);
         CheckEntity(comment);
 
         return Ok(Mapper.Map<IEnumerable<CommentOutputModel>>(comment));
     }
-
-
-
 }

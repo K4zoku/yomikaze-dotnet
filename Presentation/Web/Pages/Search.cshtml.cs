@@ -5,7 +5,6 @@ namespace Web.Pages;
 
 public class SearchModel : PageModel
 {
-    
     public int PageNumber { get; set; } = 1;
     public string Query { get; set; } = string.Empty;
 

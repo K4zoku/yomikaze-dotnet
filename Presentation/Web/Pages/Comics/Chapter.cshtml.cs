@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages.Comics
+namespace Web.Pages.Comics;
+
+public class ChapterModel : PageModel
 {
-    public class ChapterModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

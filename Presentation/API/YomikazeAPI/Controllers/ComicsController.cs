@@ -17,8 +17,8 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     : CrudControllerBase<Comic, ComicInputModel, ComicOutputModel>(dbContext, mapper, new ComicRepo(dbContext))
 {
     private new ComicRepo Repository => (ComicRepo)base.Repository;
-    private ChapterRepo ChapterRepo => new ChapterRepo(DbContext);
-    private HistoryRepo HistoryRepo => new HistoryRepo(DbContext);
+    private ChapterRepo ChapterRepo => new(DbContext);
+    private HistoryRepo HistoryRepo => new(DbContext);
 
     [HttpPost]
     public override ActionResult<ComicOutputModel> Post(ComicInputModel input)
@@ -31,7 +31,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpPut("{key}")]
-    public override ActionResult<ComicOutputModel> Put(long key, ComicInputModel input)
+    public override ActionResult<ComicOutputModel> Put(ulong key, ComicInputModel input)
     {
         CheckModelState();
 
@@ -46,7 +46,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
 
 
     [HttpDelete("{key}")]
-    public override ActionResult Delete(long key)
+    public override ActionResult Delete(ulong key)
     {
         Comic? entity = Repository.Get(key);
         CheckEntity(entity);
@@ -58,9 +58,9 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     // get chapter by comic id
     [HttpGet("{comicId}/Chapters")]
     [AllowAnonymous]
-    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(long comicId)
+    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(ulong comicId)
     {
-        var comic = Repository.GetChaptersByComicId(comicId);
+        Comic? comic = Repository.GetChaptersByComicId(comicId);
         CheckEntity(comic);
 
         return Ok(Mapper.Map<IEnumerable<ChapterOutputModel>>(comic.Chapters));
@@ -69,20 +69,16 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     // get chapter by comic id and index
     [HttpGet("{comicId}/Chapters/{index}")]
     [AllowAnonymous]
-    public ActionResult<ChapterOutputModel> GetChapter(long comicId, int index)
+    public ActionResult<ChapterOutputModel> GetChapter(ulong comicId, int index)
     {
-        var chapter = ChapterRepo.GetByComicIdAndIndex(comicId, index);
+        Chapter? chapter = ChapterRepo.GetByComicIdAndIndex(comicId, index);
         CheckEntity(chapter);
-        
+
         // check if user is logged in then add history
         if (User.Identity?.IsAuthenticated == true)
         {
-            long id = User.GetId();
-            var history = new HistoryRecord
-            {
-                UserId = id,
-                ChapterId = chapter.Id
-            };
+            ulong id = User.GetId();
+            HistoryRecord history = new HistoryRecord { UserId = id, ChapterId = chapter.Id };
             HistoryRepo.Add(history);
         }
 

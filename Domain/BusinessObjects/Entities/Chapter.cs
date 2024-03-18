@@ -1,7 +1,7 @@
-using Abstracts;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -17,8 +17,7 @@ public class Chapter : BaseEntity
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public virtual ICollection<HistoryRecord> Trackers { get; set; } = new List<HistoryRecord>();
 
-    [ForeignKey(nameof(Comic))]
-    public long ComicId { get; set; }
+    [ForeignKey(nameof(Comic))] public ulong ComicId { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     [DeleteBehavior(DeleteBehavior.Cascade)]

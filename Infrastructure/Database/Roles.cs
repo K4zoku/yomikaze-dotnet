@@ -8,9 +8,9 @@ public partial class YomikazeDbContext
     {
         public static readonly Role[] Roles =
         [
-            new Role("Administrator") { Id = 1 },
-            new Role("Publisher") { Id = 2 },
-            new Role("Reader") { Id = 3 }
+            new Role("Administrator"),
+            new Role("Publisher"),
+            new Role("Reader")
         ];
     }
 }

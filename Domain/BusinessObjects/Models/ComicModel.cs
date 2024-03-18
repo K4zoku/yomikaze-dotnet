@@ -50,4 +50,8 @@ public class ComicOutputModel
     public string? Authors { get; set; }
 
     public ICollection<ComicGenreOutputModel>? ComicGenres { get; set; }
+
+    public DateTimeOffset LastUpdated { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; }
 }

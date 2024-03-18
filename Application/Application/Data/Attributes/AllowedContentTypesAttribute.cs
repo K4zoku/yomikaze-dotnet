@@ -7,8 +7,12 @@ public class AllowedContentTypesAttribute(string[] types) : ValidationAttribute(
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (value is not IFormFile file) return ValidationResult.Success;
-        var contentType = file.ContentType;
+        if (value is not IFormFile file)
+        {
+            return ValidationResult.Success;
+        }
+
+        string contentType = file.ContentType;
         return Array.Exists(types,
             type => type.Equals(contentType, StringComparison.InvariantCultureIgnoreCase))
             ? ValidationResult.Success

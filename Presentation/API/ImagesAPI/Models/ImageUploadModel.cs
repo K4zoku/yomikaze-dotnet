@@ -12,6 +12,5 @@ public class ImageUploadModel
         MediaTypeNames.Image.Png, MediaTypeNames.Image.Jpeg, MediaTypeNames.Image.Webp, MediaTypeNames.Image.Svg,
         MediaTypeNames.Image.Gif
     ])]
-
     public IFormFile File { get; set; } = default!;
 }
