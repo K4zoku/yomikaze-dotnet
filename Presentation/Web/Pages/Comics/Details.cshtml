@@ -27,7 +27,7 @@
             },
 
             async fetchDetails() {
-                this.comic = await this.client.get(`/API/OData/Comics(${this.id})?$expand=ComicGenres($expand=Genre)`)
+                this.comic = await this.client.get(`/API/OData/Comics/${this.id}?$expand=ComicGenres($expand=Genre)`)
                     .then(response => response.data)
                     .catch(error => {
                         if (error.response.status === 404) {

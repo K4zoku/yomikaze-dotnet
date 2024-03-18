@@ -124,7 +124,7 @@
 
             async create() {
                 this.loading = true;
-                let url = this.coverImageURL ?? await this.uploadImage();
+                let url = this.coverImageURL || await this.uploadImage();
                 let data = {};
                 for (let key in this.comic) {
                     let prop = this.comic[key];
@@ -141,13 +141,13 @@
                 switch (response.status) {
                     case 200:
                         this.message = 'Comic created successfully';
-                        console.log('Comic created', response.data);
-                        let createdComic = response.data.data;
+                        let createdComic = response.data;
+                        console.log('Comic created', createdComic);
                         let ans = confirm('Comic created successfully do you want to create another one?')
                         if (ans) {
                             this.reset();
                         } else {
-                            window.location.href = '/Manage/Comics/' + createdComic.Id;
+                            window.location.href = '/Manage/Comics/' + createdComic.id;
                         }
                         break;
                     case 400:

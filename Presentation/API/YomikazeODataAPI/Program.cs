@@ -35,7 +35,7 @@ services.AddControllers()
             .Expand()
             .Select()
             .OrderBy()
-            .SetMaxTop(20)
+            .SetMaxTop(null)
             .AddRouteComponents("API/OData", edm.GetEdmModel()
             )
     );
