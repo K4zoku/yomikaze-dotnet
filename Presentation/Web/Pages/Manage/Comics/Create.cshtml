@@ -2,190 +2,239 @@
 @model Web.Pages.Manage.Comics.CreateModel
 
 <script>
-
     document.addEventListener('alpine:init', () => {
-        Alpine.data('comicDetail', () => ({
-            comics: [],
-            files: [],
-
-            // for comic details
-            name: '',
-            description: '',
-            cover: '',
-            banner: '',
-            published: '',
-            ended: '',
-            aliases: '',
-            authors: '',
-            comicGenres: [],
+        Alpine.data('comic', () => ({
             genres: [],
-            totalGenres: 0,
+            defaults: {
+                comic: () => ({
+                    name: {
+                        value: '',
+                        error: '',
+                    },
+                    aliases: {
+                        value: '',
+                        error: '',
+                    },
+                    authors: {
+                        value: '',
+                        error: '',
+                    },
+                    description: {
+                        value: '',
+                        error: '',
+                    },
+                    cover: {
+                        value: null,
+                        error: '',
+                    },
+                    banner: {
+                        value: null,
+                        error: '',
+                    },
+                    published: {
+                        value: null,
+                        error: '',
+                    },
+                    ended: {
+                        value: null,
+                        error: '',
+                    },
+                    comicGenres: {
+                        value: {},
+                        map(value) {
+                            let genres = [];
+                            for (let id in value) {
+                                let included = value[id];
+                                if (!included) continue;
+                                genres.push({ genreId: id });
+                            }
+                            return genres;
+                        },
+                        error: '',
+                    },
+                }),
+            },
+            message: '',
+            comic: {},
+            coverImageFile: null,
+            loading: false,
 
+            async fetchGenres() {
+                this.genres = await this.client.get(`/API/OData/Genres`)
+                    .then(response => response.data?.value || [])
+                    .catch(error => {
+                        console.error('Error fetching genres', error);
+                        return [];
+                    });
+            },
 
-
-            init() {
+            async init() {
                 this.auth = Alpine.store('auth');
+                if (!this.auth.authenticated && !this.auth.profile?.isAdmin) {
+                    window.location.href = '/';
+                    return;
+                }
                 this.client = this.auth.http;
-                this.getListGenres();
-
+                
+                this.reset();
+                
+                await this.fetchGenres();
             },
 
-            save() {
-                let data = {
-
-                    name: this.name,
-                    description: this.description,
-                    cover: this.cover,
-                    banner: this.banner,
-                    published: this.published,
-                    ended: this.ended,
-                    aliases: this.aliases,
-                    authors: this.authors,
-
-                };
-
-                this.client.post('API/Comics/', data)
-                    .then(response => this.handleSuccess(response))
-                    .catch(error => this.handleError(error));
+            reset() {
+                this.comic = this.defaults.comic();
+                this.message = '';
             },
-
-            addGenre() {
-                let genre = this.genres.find(g => g.id === this.currentId);
-                if (genre) {
-                    this.comicGenres.push(genre);
+            
+            resetErrors() {
+                for (let key in this.comic) {
+                    this.comic[key].error = '';
                 }
             },
-
-            getListGenres() {
-
-                this.client.get(`/API/OData/Genres`)
-                    .then(response => {
-                        this.genres = response.data.value;
-                    })
-                    .catch(error => this.handleError(error));
+            
+            uploading: false,
+            
+            async uploadImage() {
+                let file = this.coverImageFile;
+                if (!file) return null;
+                
+                this.uploading = true;
+                let formData = new FormData();
+                formData.append('file', file);
+                await (new Promise(resolve => setTimeout(resolve, 1000)));
+                let response = await this.client.post('API/Images', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => response)
+                .catch(error => {
+                    console.error('Error uploading image', error);
+                    return error.response;
+                });
+                console.log('Image uploaded', response);
+                let location = response.headers['location'];
+                this.uploading = false;
+                return location;
             },
 
-            getGenreCount() {
-
-                this.client.get('/API/OData/Genres/$count')
-                    .then(response => {
-                        this.totalGenres = response.data;
-                    })
-                    .catch(error => this.handleError(error));
-            },
-
-
-            name: '',
-            description: '',
-            create: true,
-            currentId: 0,
-
-            formLoading: false,
-
-            nameError: '',
-            descriptionError: '',
-
-            errorMessage: '',
-
-
-            resetErrorMessages() {
-                this.nameError = '';
-                this.descriptionError = '';
-                this.errorMessage = '';
-            },
-
-            handleError(error) {
-                if (!error.response) return;
-                // Reset the error messages
-                this.resetErrorMessages();
-                let response = error.response;
-                console.log(response);
-                let data = response.data;
+            async create() {
+                this.loading = true;
+                let url = await this.uploadImage();
+                let data = {};
+                for (let key in this.comic) {
+                    let prop = this.comic[key];
+                    data[key] = prop.map ? prop.map(prop.value) : prop.value;                    
+                }
+                data.cover = url;
+                console.log('Creating comic', data);
+                let response = await this.client.post('API/Comics/', data)
+                    .then(response => response)
+                    .catch(error => {
+                        console.error('Error creating comic', error);
+                        return error.response;
+                    });
                 switch (response.status) {
+                    case 200:
+                        this.message = 'Comic created successfully';
+                        console.log('Comic created', response.data);
+                        let ans = confirm('Comic created successfully do you want to create another one?')
+                        if (ans) {
+                            this.reset();
+                        } else {
+                            window.location.href = '/Manage/Comics';
+                        }
+                        break;
                     case 400:
-                        this.nameError = data.errors.Name ? data.errors.Name[0] : '';
-                        this.descriptionError = data.errors.Description ? data.errors.Description[0] : '';
+                        this.message = 'Invalid data';
+                        for (let key in response.data.errors) {
+                            this.comic[key.toLowerCase()].error = response.data.errors[key];
+                        }
                         break;
                     default:
-                        this.name = '';
-                        this.description = '';
-                        this.errorMessage = data.message || '';
+                        this.message = 'Error creating comic';
                         break;
                 }
                 this.loading = false;
-            },
-
-            handleSuccess(response) {
-                let responseObject = response.data;
-                this.loading = false;
-
-                this.name = '';
-                this.description = '';
-                this.fetchGenres();
             },
 
         }));
     });
-
-
 </script>
-<div class="contents" x-data="comicDetail">
+<div class="contents" x-data="comic">
     <div class="min-h-[calc(100vh-10rem)]">
         <div class="card shadow-2xl bg-base-200 mx-auto my-10 w-10/12 rounded-box">
             <div class="card-body gap-4">
-                <h2 class="card-title">Create comic</h2>
+                <h2 class="card-title">
+                    <i data-feather="plus-square"></i>
+                    Add new comic
+                </h2>
                 <fieldset>
                     <legend class="text-center">Basic information</legend>
                     <div class="flex flex-row w-full justify-items-center gap-4">
-                        <label class="shrink flex flex-col" x-data="{files: []}">
-                            <label class="label">
+                        <label class="shrink flex flex-col">
+                            <div class="label">
                                 <span class="label-text">
                                     Thumbnail
                                     <span class="tooltip" data-tip="Click to change thumbnail">
                                         <i data-feather="info"></i>
                                     </span>
                                 </span>
-                            </label>
-                            <span class="self-center p-3 border border-2 border-dashed border-gray-500 rounded-box">
-                                <img :src="files[0] ? URL.createObjectURL(files[0]) : $el.dataset.placeholder" alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer" data-placeholder="https://via.placeholder.com/190x280?text=No+Image" src="https://via.placeholder.com/190x280?text=No+Image">
-                            </span>
-                            <input x-on:change="files = $event.target.files" accept="image/jpeg,image/jpg,image/png,image/webp" class="file-input file-input-bordered w-full hidden" id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail">
+                            </div>
+                            <div class="self-center p-3 border-2 border-dashed border-gray-500 rounded-box">
+                                <div class="card w-[190px] h-[280px] cursor-pointer" :class="{ 'image-full': uploading }">
+                                    <figure>
+                                        <img :src="coverImageFile ? URL.createObjectURL(coverImageFile) : $el.dataset.placeholder"
+                                             alt="Cover"
+                                             class="object-cover object-center w-[190px] h-[280px]"
+                                             data-placeholder="https://via.placeholder.com/190x280?text=No+Image"
+                                             src="https://via.placeholder.com/190x280?text=No+Image">  
+                                    </figure>
+                                    <div class="card-body flex justify-center items-center" x-show="uploading">
+                                        <div class="loading loading-lg"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input x-on:change="coverImageFile = $event.target.files[0]" 
+                                   accept="image/jpeg,image/jpg,image/png,image/webp" 
+                                   class="file-input file-input-bordered w-full hidden" 
+                                   id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail"
+                                   >
                         </label>
 
                         <div class="grow">
                             <div class="form-control">
-                                <label class="label">
+                                <label class="label" for="name">
                                     <span class="label-text">
                                         Comic name
                                         <span class="text-error">*</span>
                                     </span>
                                 </label>
-                                <input class="input input-bordered" id="name" x-model="name" placeholder="Comic name" required="" type="text" value="">
-
+                                <input class="input input-bordered" :class="{ 'input-error': comic.name.error }" id="name" type="text" x-model="comic.name.value" placeholder="Comic name" required>
+                                <span class="text-error" x-text="comic.name.error" x-show="comic.name.error"></span>
                             </div>
                             <div class="form-control">
-                                <label class="label">
+                                <label class="label" for="authors">
                                     <span class="label-text">
                                         Authors
-                                        <span class="text-error">*</span>
                                     </span>
                                 </label>
-                                <textarea class="input h-24 input-bordered" id="authors" x-model="authors" placeholder="Authors, one per line" name="authors"></textarea>
-
+                                <textarea class="input h-24 input-bordered" :class="{ 'textarea-error': comic.authors.error }" id="authors" x-model="comic.authors.value" placeholder="Authors, one per line" name="authors"></textarea>
+                                <span class="text-error" x-text="comic.authors.error" x-show="comic.authors.error"></span>
                             </div>
                             <div class="form-control">
-                                <label class="label">
+                                <label class="label" for="aliases">
                                     <span class="label-text">Comic aliases</span>
                                 </label>
-                                <textarea class="textarea h-24 textarea-bordered" id="aliases" x-model="aliases" placeholder="Comic aliases, one per line" name="aliases"></textarea>
-
+                                <textarea class="textarea h-24 textarea-bordered" :class="{ 'textarea-error': comic.aliases.error }" id="aliases" x-model="comic.aliases.value" placeholder="Comic aliases, one per line" name="aliases"></textarea>
+                                <span class="text-error" x-text="comic.aliases.error" x-show="comic.aliases.error"></span>
                             </div>
                             <div class="form-control">
-                                <label class="label">
+                                <label class="label" for="description">
                                     <span class="label-text">Comic description</span>
                                 </label>
-                                <textarea class="textarea h-24 textarea-bordered" id="description" x-model="description" placeholder="Write description here" name="description"></textarea>
-
+                                <textarea class="textarea h-24 textarea-bordered" :class="{ 'textarea-error': comic.description.error }" id="description" x-model="comic.description.value" placeholder="Write description here" name="description"></textarea>
+                                <span class="text-error" x-text="comic.description.error" x-show="comic.description.error"></span>
                             </div>
                         </div>
                     </div>
@@ -195,11 +244,12 @@
                     <legend class="text-center">Genres</legend>
                     <div class=" grid grid-cols-4 gap-4">
 
-                        <template x-for="genre in genres">
-
+                        <template x-for="genre in genres" :key="genre.Id">
                             <div class="inline">
-                                <label class="label cursor-pointer gap-2" for="genre.Name">
-                                    <input class="toggle shrink" id="genre.Id" value="genre.Id" type="checkbox"><input type="hidden" value="on">
+                                <label class="label cursor-pointer gap-1">
+                                    <input class="toggle shrink" value="genre.Id" type="checkbox"
+                                           x-on:change="comic.comicGenres.value[genre.Id] = $event.target.checked"
+                                           >
                                     <span class="label-text grow" x-text="genre.Name"></span>
                                 </label>
                             </div>
@@ -214,20 +264,24 @@
                             <label class="label" for="published">
                                 <span class="label-text">Publish date</span>
                             </label>
-                            <input class="input input-bordered" id="published" x-model="published" type="date" name="published" value="">
-
+                            <input class="input input-bordered" id="published" x-model="comic.published.value" type="date">
+                            <span class="text-error" x-text="comic.published.error" x-show="comic.published.error"></span>
                         </div>
                         <div class="form-control">
                             <label class="label" for="ended">
                                 <span class="label-text">Finish date</span>
                             </label>
-                            <input class="input input-bordered" x-model="ended" id="ended" type="date" name="ended" value="">
-
+                            <input class="input input-bordered" x-model="comic.ended.value" id="ended" type="date">
+                            <span class="text-error" x-text="comic.ended.error" x-show="comic.ended.error"></span>
                         </div>
                     </div>
                 </fieldset>
                 <hr>
-                <button class="btn btn-primary" type="button" x-on:click="save()">Save</button>
+                <button class="btn btn-primary" type="button" x-on:click="await create()"
+                        :disabled="uploading || loading">
+                    <span x-show="loading" class="loading loading-lg"></span>
+                    Create
+                </button>
             </div>
         </div>
     </div>

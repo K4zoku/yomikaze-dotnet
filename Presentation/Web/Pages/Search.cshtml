@@ -137,7 +137,7 @@
              x-transition:enter-start="opacity-0 scale-90"
              x-transition:enter-end="opacity-100 scale-100">
             <template x-for="comic in comics">
-                <a class="mx-auto" :href="$el.href.replace('-1', comic.Id)" asp-page="/Comic/Details" asp-route-id="-1">
+                <a class="mx-auto" :href="$el.href.replace('-1', comic.Id)" asp-page="/Comics/Details" asp-route-id="-1">
                     <div class="dropdown dropdown-hover">
                         <label class="w-[190px] h-[280px]" tabindex="0">
                             <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"

@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages.Comic
+namespace Web.Pages.Comics
 {
     public class ChapterModel : PageModel
     {
