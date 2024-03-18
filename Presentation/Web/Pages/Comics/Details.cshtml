@@ -22,6 +22,8 @@
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
                 this.fetchDetails();
+                this.getComments();
+                console.log(this.comments);
             },
 
             async fetchDetails() {
@@ -103,7 +105,7 @@
                     content: this.content,
                     comicId: this.id,
                     replyToId: 0,
-                  
+
                     createAt: new Date().Date,
                     updateAt: new Date().Date,
 
@@ -114,12 +116,18 @@
                     .then(response => this.handleSuccess(response))
                     .catch(error => console.error('Error while posting comment', error));
 
-            }
+            },
 
-            getComments() {
-                this.client.get(`API/Comments/?$filter=ComicId eq ${this.id}`)
+            async getComments() {
+                this.client.get(`API/OData/Comments/?$filter=ComicId eq ${this.id}`)
                     .then(response => this.comments = response.data.value)
                     .catch(error => console.error('Error while fetching comments', error));
+            },
+
+            deleteComment(id) {
+                this.client.delete(`API/Comments/${id}`)
+                    .then(response => this.handleSuccess(response))
+                    .catch(error => console.error('Error while deleting comment', error));
             },
 
         }));
@@ -361,94 +369,106 @@
                         </button>
 
                     </div>
-                </div>
 
-                <div class="p-4 flex gap-4 w-full" id="comment-292695685990625280">
-                    <!--! user avatar -->
+                    <template x-for="comment in comments">
+                     
 
-                    <div class="avatar placeholder">
-                        <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
-                            <span class="text-xl">A</span>
+                    <div class="p-4 flex gap-4 w-full" id="comment-292695685990625280">
+                        <!--! user avatar -->
+
+                        <div class="avatar placeholder">
+                            <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
+                                <span class="text-xl">A</span>
+                            </div>
                         </div>
-                    </div>
-                    <!--! display name / roles / chapter -->
-                    <div class="w-full">
-                        <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
-                            <div class="flex justify-between">
-                                <!-- roles / chapter -->
-                                <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
-                                    <span>Administrator</span>
-                                    <!-- roles -->
+                        <!--! display name / roles / chapter -->
+                        <div class="w-full">
+                            <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
+                                <div class="flex justify-between">
+                                    <!-- roles / chapter -->
+                                    <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
+                                        <span>Administrator</span>
+                                        <!-- roles -->
 
-                                    <span class="badge badge-primary badge-outline mx-1">Member</span><span class="badge badge-primary badge-outline mx-1">Uploader</span><span class="badge badge-primary badge-outline mx-1">Admin</span>
+                                        <span class="badge badge-primary badge-outline mx-1">Member</span>
+                                        <span class="badge badge-primary badge-outline mx-1">Uploader</span>
+                                        <span class="badge badge-primary badge-outline mx-1">Admin</span>
 
-                                    <!-- chapter -->
+                                        <!-- chapter -->
 
-                                </div>
-                                <!--! actions edit / delete / report -->
-                                <div class="my-2">
-                                    <label class="btn btn-xs btn-ghost btn-circle" for="delete-comment-292695685990625280-modal">
-                                        <i data-feather="trash"></i>
-                                    </label>
-                                    <input class="modal-toggle" id="delete-comment-292695685990625280-modal" type="checkbox">
-                                    <label class="modal cursor-pointer" for="delete-comment-292695685990625280-modal">
-                                        <label class="modal-box relative">
-                                            <h3 class="text-xl font-bold">Delete comment</h3>
-                                            <p class="text-sm">Are you sure you want to delete this comment?</p>
-                                            <div class="modal-action">
-                                                <label class="btn btn-ghost" for="delete-comment-292695685990625280-modal">Cancel</label>
-                                                <form method="post" action="/comic/292304895065870336/comment/292695685990625280/delete">
-                                                    <input type="hidden" name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9">
-                                                    <input name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9" type="hidden">
-                                                    <button class="btn btn-error" type="submit">Delete</button>
-                                                </form>
-                                            </div>
+                                    </div>
+                                    <!--! actions edit / delete / report -->
+                                    <div class="my-2">
+                                        <label class="btn btn-xs btn-ghost btn-circle" for="delete-comment-292695685990625280-modal">
+                                            <i data-feather="trash"></i>
                                         </label>
-                                    </label>
+                                        <input class="modal-toggle" id="delete-comment-292695685990625280-modal" type="checkbox">
+                                        <label class="modal cursor-pointer" for="delete-comment-292695685990625280-modal">
+                                            <label class="modal-box relative">
+                                                <h3 class="text-xl font-bold">Delete comment</h3>
+                                                <p class="text-sm">Are you sure you want to delete this comment?</p>
+                                                <div class="modal-action">
+                                                    <label class="btn btn-ghost" for="delete-comment-292695685990625280-modal">Cancel</label>
+                                                    <div >
+                                                        <input type="hidden" name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9">
+                                                        <input name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9" type="hidden">
+                                                            <button class="btn btn-error" type="btn" x-on:click="deleteComment(comment.Id)">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!--! comment content -->
+                                <div class="leading-snug md:leading-normal">
+                                    <p class="py-2" x-text="comment.Content">Content</p>
                                 </div>
                             </div>
 
-                            <!--! comment content -->
-                            <div class="leading-snug md:leading-normal">
-                                <p class="py-2">I</p>
-                            </div>
-                        </div>
-                        <!--! like / dislike / reply -->
-                        <div class="button-group">
-                            <a class="btn btn-sm gap-2 btn-ghost" href="/comic/292304895065870336/comment/292695685990625280/like">
-                                <i data-feather="thumbs-up"></i>
-                                <span class="font-semibold">0</span>
-                            </a>
-                            <label x-on:click="reply = !reply" class="btn btn-ghost btn-sm gap-2">
-                                <i data-feather="corner-down-right"></i>
-                                <span class="font-semibold">Reply</span>
-                            </label>
-                        </div>
-                        <!--! replies -->
-                        <!--! reply form -->
-                        <form class="flex flex-col gap-2 p-4" method="post" action="/comic/292304895065870336/comment/292695685990625280/reply" x-data="{content:''}" x-show="reply" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100 transform scale-100" x-transition:enter-start="opacity-0 transform scale-95" x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 transform scale-95" x-transition:leave-start="opacity-100 transform scale-100" style="display: none;">
-                            <input type="hidden" name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9">
-                            <input name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9" type="hidden">
-                            <div class="form-control">
-                                <label class="label" for=" reply-box-292695685990625280 ">
-                                    <span class="label-text text-xl font-bold">Reply</span>
+
+                            <!--! like / dislike / reply -->
+                           @*  <div class="button-group">
+                                <a class="btn btn-sm gap-2 btn-ghost" href="/comic/292304895065870336/comment/292695685990625280/like">
+                                    <i data-feather="thumbs-up"></i>
+                                    <span class="font-semibold">0</span>
+                                </a>
+                                <label x-on:click="reply = !reply" class="btn btn-ghost btn-sm gap-2">
+                                    <i data-feather="corner-down-right"></i>
+                                    <span class="font-semibold">Reply</span>
                                 </label>
-                                <textarea class="textarea textarea-bordered" id=" reply-box-292695685990625280 " name="content" placeholder="Write your comment here..." rows="3" x-model="content"></textarea>
-                            </div>
-                            <div class="form-control">
-                                <div class="self-end">
-                                    <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="submit" disabled="disabled">
-                                        <i data-feather="send"></i>
-                                        <span>Reply</span>
-                                    </button>
+                            </div> *@
+
+
+                            <!--! replies -->
+                            <!--! reply form -->
+                          @*   <form class="flex flex-col gap-2 p-4" method="post" action="/comic/292304895065870336/comment/292695685990625280/reply" x-data="{content:''}" x-show="reply" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100 transform scale-100" x-transition:enter-start="opacity-0 transform scale-95" x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 transform scale-95" x-transition:leave-start="opacity-100 transform scale-100" style="display: none;">
+                                <input type="hidden" name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9">
+                                <input name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9" type="hidden">
+                                <div class="form-control">
+                                    <label class="label" for=" reply-box-292695685990625280 ">
+                                        <span class="label-text text-xl font-bold">Reply</span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered" id=" reply-box-292695685990625280 " name="content" placeholder="Write your comment here..." rows="3" x-model="content"></textarea>
                                 </div>
-                            </div>
-                        </form>
+                                <div class="form-control">
+                                    <div class="self-end">
+                                        <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="submit" disabled="disabled">
+                                            <i data-feather="send"></i>
+                                            <span>Reply</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form> *@
+
+
+                        </div>
                     </div>
+
+                    </template>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
+
