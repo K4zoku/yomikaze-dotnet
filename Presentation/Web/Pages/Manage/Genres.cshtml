@@ -54,7 +54,7 @@
                         return [];
                     });
 
-                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
+                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 1200) + 100));
 
                 this.genres = genres;
                 this.loading = false;
@@ -269,7 +269,7 @@
         </button>
     </div>
     <div class="w-full mt-8">
-        <table class="table w-full rounded-box" aria-describedby="genres_info">
+        <table class="table w-full rounded-box min-h-[538px]" aria-describedby="genres_info">
             <thead>
             <tr>
                 <th class=" font-semibold p-4 relative pr-6">#</th>
