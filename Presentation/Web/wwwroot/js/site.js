@@ -18,7 +18,7 @@
             return !!this.token;
         },
         
-        getProfile() {
+        async getProfile() {
             if (!this.authenticated) return null;
             let p = sessionStorage.getItem('profile')
             if (p) {
@@ -26,26 +26,27 @@
                 return JSON.parse(p);
             }
             console.log("Session storage not storing profile data, fetching profile from server...");
-            return this.http.get('/API/Authenticate/Info')
-                .then(async response => {
+            let data = await this.http.get('/API/Authenticate/Info')
+                .then((response) => {
                     let responseObject = response.data;
-                    let data = responseObject.data || { profile: null };
-                    let profile = data.profile;
-                    if (!profile) {
-                        console.log("No profile found in response data", response);
-                        return null;
-                    }
-                    if (!profile.avatar) {
-                        let emailHash = await sha256(profile.email);
-                        profile.avatar = `https://gravatar.com/avatar/${emailHash}?d=mp&f=y`;
-                    }
-                    sessionStorage.setItem('profile', JSON.stringify(data.profile));
-                    return profile;
+                    return responseObject.data || {profile: null};
                 }).catch((error) => {
                     console.log("Error fetching profile");
                     console.error(error);
                     return null;
-                });   
+                });
+            let profile = data.profile;
+            if (!profile) {
+                console.log("No profile found in response data", data);
+                return null;
+            }
+            if (!profile.avatar) {
+                console.log("No avatar found in profile, generating gravatar...");
+                let emailHash = await sha256(profile.email);
+                profile.avatar = `https://gravatar.com/avatar/${emailHash}?d=mp&f=y`;
+            }
+            sessionStorage.setItem('profile', JSON.stringify(data.profile));
+            return profile;
         },
 
         login(token) {
