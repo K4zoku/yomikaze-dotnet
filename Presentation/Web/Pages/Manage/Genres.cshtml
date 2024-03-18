@@ -22,7 +22,7 @@
 
             set currentPage(value) {
                 this._currentPage = value;
-                window.history.replaceState(null, '', `?page=${value}`);
+                window.history.replaceState(null, '', `?page=${value}`); // Update the URL without a page refresh
                 this.fetchGenres();
             },
 
@@ -79,7 +79,6 @@
             errorMessage: '',
 
             editGenre(id) {
-                console.log(id);
                 this.create = false;
                 this.formLoading = true;
                 this.currentId = id;
@@ -246,9 +245,6 @@
                             Cancel
                         </button>
                     </div>
-                </form>
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
                 </form>
             </div>
         </dialog>

@@ -1,0 +1,240 @@
+﻿@page
+@model Web.Pages.Manage.Comics.CreateModel
+
+<script>
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('comicDetail', () => ({
+            comics: [],
+            files: [],
+
+            // for comic details
+            name: '',
+            description: '',
+            cover: '',
+            banner: '',
+            published: '',
+            ended: '',
+            aliases: '',
+            authors: '',
+            comicGenres: [],
+            genres: [],
+            totalGenres: 0,
+
+
+
+            init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+                this.getListGenres();
+
+            },
+
+            save() {
+                let data = {
+
+                    name: this.name,
+                    description: this.description,
+                    cover: this.cover,
+                    banner: this.banner,
+                    published: this.published,
+                    ended: this.ended,
+                    aliases: this.aliases,
+                    authors: this.authors,
+
+                };
+
+                this.client.post('API/Comics/', data)
+                    .then(response => this.handleSuccess(response))
+                    .catch(error => this.handleError(error));
+            },
+
+            addGenre() {
+                let genre = this.genres.find(g => g.id === this.currentId);
+                if (genre) {
+                    this.comicGenres.push(genre);
+                }
+            },
+
+            getListGenres() {
+
+                this.client.get(`/API/OData/Genres`)
+                    .then(response => {
+                        this.genres = response.data.value;
+                    })
+                    .catch(error => this.handleError(error));
+            },
+
+            test() {
+                console.log(this.genres);
+            },
+
+            getGenreCount() {
+
+                this.client.get('/API/OData/Genres/$count')
+                    .then(response => {
+                        this.totalGenres = response.data;
+                    })
+                    .catch(error => this.handleError(error));
+            },
+
+
+            name: '',
+            description: '',
+            create: true,
+            currentId: 0,
+
+            formLoading: false,
+
+            nameError: '',
+            descriptionError: '',
+
+            errorMessage: '',
+
+
+            resetErrorMessages() {
+                this.nameError = '';
+                this.descriptionError = '';
+                this.errorMessage = '';
+            },
+
+            handleError(error) {
+                if (!error.response) return;
+                // Reset the error messages
+                this.resetErrorMessages();
+                let response = error.response;
+                console.log(response);
+                let data = response.data;
+                switch (response.status) {
+                    case 400:
+                        this.nameError = data.errors.Name ? data.errors.Name[0] : '';
+                        this.descriptionError = data.errors.Description ? data.errors.Description[0] : '';
+                        break;
+                    default:
+                        this.name = '';
+                        this.description = '';
+                        this.errorMessage = data.message || '';
+                        break;
+                }
+                this.loading = false;
+            },
+
+            handleSuccess(response) {
+                let responseObject = response.data;
+                this.loading = false;
+
+                this.name = '';
+                this.description = '';
+                this.fetchGenres();
+            },
+
+        }));
+    });
+
+
+</script>
+<div class="contents" x-data="comicDetail">
+    <div class="min-h-[calc(100vh-10rem)]">
+        <div class="card shadow-2xl bg-base-200 mx-auto my-10 w-10/12 rounded-box">
+            <button x-on:click="test()">test</button>
+            <div class="card-body gap-4">
+                <input type="hidden">
+                <h2 class="card-title">Create comic</h2>
+                <fieldset>
+                    <legend class="text-center">Basic information</legend>
+                    <div class="flex flex-row w-full justify-items-center gap-4">
+                        <label class="shrink flex flex-col" x-data="{files: []}">
+                            <label class="label">
+                                <span class="label-text">
+                                    Thumbnail
+                                    <span class="tooltip" data-tip="Click to change thumbnail">
+                                        <i data-feather="info"></i>
+                                    </span>
+                                </span>
+                            </label>
+                            <span class="self-center p-3 border border-2 border-dashed border-gray-500 rounded-box">
+                                <img :src="files[0] ? URL.createObjectURL(files[0]) : $el.dataset.placeholder" alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer" data-placeholder="https://via.placeholder.com/190x280?text=No+Image" src="https://via.placeholder.com/190x280?text=No+Image">
+                            </span>
+                            <input x-on:change="files = $event.target.files" accept="image/jpeg,image/jpg,image/png,image/webp" class="file-input file-input-bordered w-full hidden" id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail">
+                        </label>
+
+                        <div class="grow">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">
+                                        Comic name
+                                        <span class="text-error">*</span>
+                                    </span>
+                                </label>
+                                <input class="input input-bordered" id="name" x-model="name" placeholder="Comic name" required="" type="text" value="">
+
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">
+                                        Authors
+                                        <span class="text-error">*</span>
+                                    </span>
+                                </label>
+                                <textarea class="input h-24 input-bordered" id="authors" x-model="authors" placeholder="Authors, one per line" name="authors"></textarea>
+
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Comic aliases</span>
+                                </label>
+                                <textarea class="textarea h-24 textarea-bordered" id="aliases" x-model="aliases" placeholder="Comic aliases, one per line" name="aliases"></textarea>
+
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Comic description</span>
+                                </label>
+                                <textarea class="textarea h-24 textarea-bordered" id="description" x-model="description" placeholder="Write description here" name="description"></textarea>
+
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <hr>
+                <fieldset>
+                    <legend class="text-center">Genres</legend>
+                    <div class=" grid grid-cols-4 gap-4">
+
+                        <template x-for="genre in genres">
+
+                            <div class="inline">
+                                <label class="label cursor-pointer gap-2" for="genre.Name">
+                                    <input class="toggle shrink" id="genre.Id" value="genre.Id" type="checkbox"><input type="hidden" value="on">
+                                    <span class="label-text grow" x-text="genre.Name"></span>
+                                </label>
+                            </div>
+                        </template>
+                    </div>
+                </fieldset>
+                <hr>
+                <fieldset>
+                    <legend class="text-center">Additional Information</legend>
+                    <div class="flex flex-row justify-center gap-4">
+                        <div class="form-control">
+                            <label class="label" for="published">
+                                <span class="label-text">Publish date</span>
+                            </label>
+                            <input class="input input-bordered" id="published" x-model="published" type="date" name="published" value="">
+
+                        </div>
+                        <div class="form-control">
+                            <label class="label" for="ended">
+                                <span class="label-text">Finish date</span>
+                            </label>
+                            <input class="input input-bordered" x-model="ended" id="ended" type="date" name="ended" value="">
+
+                        </div>
+                    </div>
+                </fieldset>
+                <hr>
+                <button class="btn btn-primary" type="button" x-on:click="save()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
