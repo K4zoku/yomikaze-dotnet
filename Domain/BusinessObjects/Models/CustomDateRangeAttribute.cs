@@ -2,11 +2,9 @@
 
 namespace Yomikaze.Domain.Models;
 
-public class CustomDateRangeAttribute : RangeAttribute
+public class CustomDateRangeAttribute() : RangeAttribute(typeof(DateTime), "1900-01-01", "")
 {
-    public CustomDateRangeAttribute() : base(typeof(DateTime), "1900-01-01", "") { }
-
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         if (value is not DateTime currentValue)
         {
@@ -15,11 +13,6 @@ public class CustomDateRangeAttribute : RangeAttribute
 
         DateTime currentDate = DateTime.Now;
 
-        if (currentValue <= currentDate)
-        {
-            return ValidationResult.Success;
-        }
-
-        return new ValidationResult("Birthday cannot be greater than current date.");
+        return currentValue <= currentDate ? ValidationResult.Success : new ValidationResult("Birthday cannot be greater than current date.");
     }
 }

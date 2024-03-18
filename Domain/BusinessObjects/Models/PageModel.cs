@@ -9,7 +9,7 @@ public class PageInputModel
 
 public class PageOutputModel
 {
-    public long Id { get; set; }
+    public string Id { get; set; }
 
     public int Index { get; set; }
 

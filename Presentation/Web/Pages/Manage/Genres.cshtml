@@ -1,7 +1,6 @@
 ﻿@page
 @model GenreModel
 
-
 <script>   
     document.addEventListener('alpine:init', () => {
         Alpine.data('genres', () => ({
@@ -262,7 +261,6 @@
         <table class="table w-full rounded-box" aria-describedby="genres_info" :class="{ 'min-h-[538px]': loading }">
             <thead>
             <tr>
-                <th class=" font-semibold p-4 relative pr-6">#</th>
                 <th class=" font-semibold p-4 relative pr-6 ">Genre</th>
                 <th class=" font-semibold p-4 relative pr-6">Description</th>
                 <th class=" font-semibold p-4 relative pr-6">Actions</th>
@@ -279,11 +277,6 @@
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0"
                     x-transition:enter-end="opacity-100">
-                    <td>
-                        <span class="text-sm" x-text="'#' + genre.Id">
-                            Id
-                        </span>
-                    </td>
                     <td>
                         <span class="badge badge-outline badge-outline-success" x-text="genre.Name">
                             Genre

@@ -4,7 +4,7 @@ namespace Yomikaze.Domain.Models;
 
 public class ChapterInputModel
 {
-    public long ComicId { get; set; }
+    public string ComicId { get; set; }
 
     public int Index { get; set; }
 
@@ -22,7 +22,7 @@ public class ChapterInputModel
 
 public class ChapterOutputModel
 {
-    public long Id { get; set; }
+    public string Id { get; set; }
 
     public int Index { get; set; }
 

@@ -2,7 +2,7 @@
 
 public class ComicGenreInputModel
 {
-    public long GenreId { get; set; }
+    public string GenreId { get; set; }
 }
 
 public class ComicGenreOutputModel
