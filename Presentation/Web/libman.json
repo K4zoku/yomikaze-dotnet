@@ -18,6 +18,10 @@
     {
       "library": "Sortable@1.15.2",
       "destination": "wwwroot/lib/Sortable/"
+    },
+    {
+      "library": "moment.js@2.30.1",
+      "destination": "wwwroot/lib/moment.js/"
     }
   ]
 }

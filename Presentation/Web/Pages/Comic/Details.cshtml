@@ -11,254 +11,241 @@
             id: @Model.Id,
             loading: true,
             comic: null,
+            chapters: [],
+            
             init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
-                this.client.get(`https://yomikaze.org/API/OData/Comics/${this.id}?$expand=ComicGenres($expand=Genre)`)
+                this.client.get(`/API/OData/Comics/${this.id}?$expand=ComicGenres($expand=Genre)`)
                     .then(response => { setTimeout(() => { this.comic = response.data; this.loading = false }, 1000) })
                     .catch(error => console.error(error))
-
+                this.fetchChapters();
             },
+            
+            async fetchChapters() {
+                let url = new URL(`/API/OData/Chapters/`, window.location.origin);
+                url.searchParams.set('$filter', `ComicId eq ${this.id}`);
+                url.searchParams.set('$orderby', 'Index asc');
+                this.chapters = await this.client.get(url)
+                    .then(response => response.data.value)
+                    .catch(error => { console.error(error); return []; });
+            }
             
         }));
     });
 </script>
 
 <div class="max-w-screen w-full min-h-[calc(100vh-8rem)] bg-base-100" x-data="comic">
-    <div class="w-10/12 mx-auto py-10">
-        <div class="bg-base-100 rounded-box shadow-2xl p-10">
-            <div class="flex flex-col gap-8 flex-wrap justify-items-center">
-                <div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
-                    <!-- Thumbnail -->
-                    <div class="shrink-0 flex-grow-0 mx-auto">
-                        <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl" :src="">
+<div class="w-10/12 mx-auto py-10">
+<div class="bg-base-100 rounded-box shadow-2xl p-10">
+<div class="flex flex-col gap-8 flex-wrap justify-items-center">
+<div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
+    <!-- Thumbnail -->
+    <div class="shrink-0 flex-grow-0 mx-auto">
+        <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
+             :src="comic?.Cover">
+    </div>
+    <!-- Detail -->
+    <div class="flex-grow flex flex-col gap-4">
+        <!-- Comic name -->
+        <div class="flex gap-2">
+            <div class="flex-grow">
+                <div class="flex flex-col">
+                    <div class="indicator">
+                        <span class="indicator-item badge badge-secondary badge-sm">New</span>
+                        <h2 class="text-3xl title-font font-medium" x-text="comic?.Name">Name</h2>
                     </div>
-                    <!-- Detail -->
-                    <div class="flex-grow flex flex-col gap-4">
-                        <!-- Comic name -->
-                        <div class="flex gap-2">
-                            <div class="flex-grow">
-                                <div class="flex flex-col">
-                                    <div class="indicator">
-                                        <span class="indicator-item badge badge-secondary badge-sm">New</span>
-                                        <h2 class="text-3xl title-font font-medium" x-text="comic?.Name">Name</h2>
-                                    </div>
-                                    <span class="text-sm text-neutral italic" x-text="comic?.Aliases">Tuong</span>
-                                </div>
-                            </div>
-                            <div class="flex-shrink">
-                                <div class="a2a_kit a2a_kit_size_24 a2a_default_style" data-a2a-icon-color="transparent,#55B4D4" style="line-height: 24px;">
-                                    <a class="a2a_button_copy_link" target="_blank" rel="nofollow noopener" href="/#copy_link"><span class="a2a_svg a2a_s__default a2a_s_link" style="background-color: transparent; width: 24px; line-height: 24px; height: 24px; background-size: 24px; border-radius: 3px;"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="#55B4D4" d="M7.591 21.177c0-.36.126-.665.377-.917l2.804-2.804a1.235 1.235 0 0 1 .913-.378c.377 0 .7.144.97.43-.026.028-.11.11-.255.25-.144.14-.24.236-.29.29a2.82 2.82 0 0 0-.2.256 1.056 1.056 0 0 0-.177.344 1.43 1.43 0 0 0-.046.37c0 .36.126.666.377.918a1.25 1.25 0 0 0 .918.377c.126.001.251-.015.373-.047.125-.037.242-.096.345-.175.09-.06.176-.127.256-.2.1-.094.196-.19.29-.29.14-.142.223-.23.25-.254.297.28.445.607.445.984 0 .36-.126.664-.377.916l-2.778 2.79a1.242 1.242 0 0 1-.917.364c-.36 0-.665-.118-.917-.35l-1.982-1.97a1.223 1.223 0 0 1-.378-.9l-.001-.004Zm9.477-9.504c0-.36.126-.665.377-.917l2.777-2.79a1.235 1.235 0 0 1 .913-.378c.35 0 .656.12.917.364l1.984 1.968c.254.252.38.553.38.903 0 .36-.126.665-.38.917l-2.802 2.804a1.238 1.238 0 0 1-.916.364c-.377 0-.7-.14-.97-.418.026-.027.11-.11.255-.25a7.5 7.5 0 0 0 .29-.29c.072-.08.139-.166.2-.255.08-.103.14-.22.176-.344.032-.12.048-.245.047-.37 0-.36-.126-.662-.377-.914a1.247 1.247 0 0 0-.917-.377c-.136 0-.26.015-.37.046-.114.03-.23.09-.346.175a3.868 3.868 0 0 0-.256.2c-.054.05-.15.148-.29.29-.14.146-.222.23-.25.258-.294-.278-.442-.606-.442-.983v-.003ZM5.003 21.177c0 1.078.382 1.99 1.146 2.736l1.982 1.968c.745.75 1.658 1.12 2.736 1.12 1.087 0 2.004-.38 2.75-1.143l2.777-2.79c.75-.747 1.12-1.66 1.12-2.737 0-1.106-.392-2.046-1.183-2.818l1.186-1.185c.774.79 1.708 1.186 2.805 1.186 1.078 0 1.995-.376 2.75-1.13l2.803-2.81c.751-.754 1.128-1.671 1.128-2.748 0-1.08-.382-1.993-1.146-2.738L23.875 6.12C23.13 5.372 22.218 5 21.139 5c-1.087 0-2.004.382-2.75 1.146l-2.777 2.79c-.75.747-1.12 1.66-1.12 2.737 0 1.105.392 2.045 1.183 2.817l-1.186 1.186c-.774-.79-1.708-1.186-2.805-1.186-1.078 0-1.995.377-2.75 1.132L6.13 18.426c-.754.755-1.13 1.672-1.13 2.75l.003.001Z"></path></svg></span><span class="a2a_label">Copy Link</span></a>
-                                    <a class="a2a_button_twitter" target="_blank" rel="nofollow noopener" href="/#twitter"><span class="a2a_svg a2a_s__default a2a_s_twitter" style="background-color: transparent; width: 24px; line-height: 24px; height: 24px; background-size: 24px; border-radius: 3px;"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="#55B4D4" d="M28 8.557a9.913 9.913 0 0 1-2.828.775 4.93 4.93 0 0 0 2.166-2.725 9.738 9.738 0 0 1-3.13 1.194 4.92 4.92 0 0 0-3.593-1.55 4.924 4.924 0 0 0-4.794 6.049c-4.09-.21-7.72-2.17-10.15-5.15a4.942 4.942 0 0 0-.665 2.477c0 1.71.87 3.214 2.19 4.1a4.968 4.968 0 0 1-2.23-.616v.06c0 2.39 1.7 4.38 3.952 4.83-.414.115-.85.174-1.297.174-.318 0-.626-.03-.928-.086a4.935 4.935 0 0 0 4.6 3.42 9.893 9.893 0 0 1-6.114 2.107c-.398 0-.79-.023-1.175-.068a13.953 13.953 0 0 0 7.55 2.213c9.056 0 14.01-7.507 14.01-14.013 0-.213-.005-.426-.015-.637.96-.695 1.795-1.56 2.455-2.55z"></path></svg></span><span class="a2a_label">Twitter</span></a>
-                                    <a class="a2a_button_facebook" target="_blank" rel="nofollow noopener" href="/#facebook"><span class="a2a_svg a2a_s__default a2a_s_facebook" style="background-color: transparent; width: 24px; line-height: 24px; height: 24px; background-size: 24px; border-radius: 3px;"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="#55B4D4" d="M28 16c0-6.627-5.373-12-12-12S4 9.373 4 16c0 5.628 3.875 10.35 9.101 11.647v-7.98h-2.474V16H13.1v-1.58c0-4.085 1.849-5.978 5.859-5.978.76 0 2.072.15 2.608.298v3.325c-.283-.03-.775-.045-1.386-.045-1.967 0-2.728.745-2.728 2.683V16h3.92l-.673 3.667h-3.247v8.245C23.395 27.195 28 22.135 28 16Z"></path></svg></span><span class="a2a_label">Facebook</span></a>
-                                    <a class="a2a_button_reddit" target="_blank" rel="nofollow noopener" href="/#reddit"><span class="a2a_svg a2a_s__default a2a_s_reddit" style="background-color: transparent; width: 24px; line-height: 24px; height: 24px; background-size: 24px; border-radius: 3px;"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="#55B4D4" d="M28.543 15.774a2.953 2.953 0 0 0-2.951-2.949 2.882 2.882 0 0 0-1.9.713 14.075 14.075 0 0 0-6.85-2.044l1.38-4.349 3.768.884a2.452 2.452 0 1 0 .24-1.176l-4.274-1a.6.6 0 0 0-.709.4l-1.659 5.224a14.314 14.314 0 0 0-7.316 2.029 2.908 2.908 0 0 0-1.872-.681 2.942 2.942 0 0 0-1.618 5.4 5.109 5.109 0 0 0-.062.765c0 4.158 5.037 7.541 11.229 7.541s11.22-3.383 11.22-7.541a5.2 5.2 0 0 0-.053-.706 2.963 2.963 0 0 0 1.427-2.51zm-18.008 1.88a1.753 1.753 0 0 1 1.73-1.74 1.73 1.73 0 0 1 1.709 1.74 1.709 1.709 0 0 1-1.709 1.711 1.733 1.733 0 0 1-1.73-1.711zm9.565 4.968a5.573 5.573 0 0 1-4.081 1.272h-.032a5.576 5.576 0 0 1-4.087-1.272.6.6 0 0 1 .844-.854 4.5 4.5 0 0 0 3.238.927h.032a4.5 4.5 0 0 0 3.237-.927.6.6 0 1 1 .844.854zm-.331-3.256a1.726 1.726 0 1 1 1.709-1.712 1.717 1.717 0 0 1-1.712 1.712z"></path></svg></span><span class="a2a_label">Reddit</span></a>
-                                    <a class="a2a_dd" href="https://www.addtoany.com/share#url=https%3A%2F%2Fspring.yomikaze.org%2Fcomic%2F292236210020175872%2Fdetail%2F&amp;title=yomikaze%3A%3Acomic%3A%3Adetail"><span class="a2a_svg a2a_s__default a2a_s_a2a" style="background-color: transparent; width: 24px; line-height: 24px; height: 24px; background-size: 24px; border-radius: 3px;"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g fill="#55B4D4"><path d="M14 7h4v18h-4z"></path><path d="M7 14h18v4H7z"></path></g></svg></span><span class="a2a_label a2a_localize" data-a2a-localize="inner,Share">Share</span></a>
-                                    <div style="clear: both;"></div>
-                                </div>
-                                <script async="" src="https://static.addtoany.com/menu/page.js"></script>
-                            </div>
-
-                        </div>
-                        <!-- Comic attributes -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="user"></i>
-                                    Authors
-                                </dt>
-                                <dd class="col-span-3" x-text="comic?.Authors">
-
-                                    Author
-
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="upload-cloud"></i>
-                                    Uploader
-                                </dt>
-                                <dd class="col-span-3">
-                                    <a class="link link-accent" href="/profile/292235084566761472">Administrator</a>
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="activity"></i>
-                                    Status
-                                </dt>
-                                <dd class="col-span-3">
-
-                                    <span class="badge badge-success">Completed</span>
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="clock"></i>
-                                    Last updated
-                                </dt>
-                                <dd class="col-span-3">
-                                    <span>an hour ago</span>
-                                </dd>
-                            </dl>
-                            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="eye"></i>
-                                    Views
-                                </dt>
-                                <dd class="col-span-3">
-                                    <span>0</span>
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="bookmark"></i>
-                                    In libraries
-                                </dt>
-                                <dd class="col-span-3">
-                                    <span>1</span>
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="calendar"></i>
-                                    Published
-                                </dt>
-                                <dd class="col-span-3" x-text="comic?.Published">
-
-                                    <span>18 hours ago</span>
-                                </dd>
-                                <dt class="col-span-2 gap-2 font-bold">
-                                    <i data-feather="calendar"></i>
-                                    Finished
-                                </dt>
-                                <dd class="col-span-3" x-text="comic?.Ended">
-
-                                    <span>18 hours ago</span>
-                                </dd>
-                            </dl>
-                        </div>
-                        <!-- Comic genres -->
-                        <div class="grid grid-cols-5 gap-2">
-                            <div class="col-span-1">
-                                <span class="font-bold gap-2">
-                                    <i data-feather="tag"></i>
-                                    Genres
-                                </span>
-                            </div>
-                            <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
-                            </div>
-                        </div>
-                        <!-- Action button -->
-                        <div class="flex flex-row flex-wrap gap-2">
-                            <!-- Read button -->
-
-                            <div class="tooltip" data-tip="Comic currently has no chapters">
-                                <button class="btn btn-primary btn-disabled gap-2" disabled="">
-                                    <i data-feather="book-open"></i>
-                                    Read
-                                </button>
-                            </div>
-                            <!-- Read the latest button -->
-
-                            <div class="tooltip" data-tip="Comic currently has no chapters">
-                                <button class="btn btn-secondary btn-disabled gap-2" disabled="">
-                                    <i data-feather="fast-forward"></i>
-                                    Read latest
-                                </button>
-                            </div>
-
-                            <!-- Continue reading button -->
-
-
-                            <div class="tooltip" data-tip="You must be logged in to continue reading">
-                                <button class="btn btn-accent btn-disabled gap-2" disabled="">
-                                    <i data-feather="navigation"></i>
-                                    Continue reading
-                                </button>
-                            </div>
-
-                            <!-- Add to library button -->
-
-
-                            <div class="tooltip" data-tip="You must be logged in to add this comic to your library">
-                                <button class="btn btn-error btn-disabled gap-2" disabled="">
-                                    <i data-feather="bookmark"></i>
-                                    Add to library
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span class="text-sm text-neutral italic" x-text="comic?.Aliases">Aliases</span>
                 </div>
-                <!-- Description -->
-                <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
-                    <input class="peer" type="checkbox" x-model="open">
-                    <span class="collapse-title gap-2">
-                        <i data-feather="info"></i>
-                        <span class="font-bold">
-                            Description
-                        </span>
-                        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
-                    </span>
-                    <span class="collapse-content">
-                        <span class="leading-relaxed text-justify" x-text="comic?.Description">
+            </div>
+            <div class="flex-shrink">
+                <div class="a2a_kit a2a_kit_size_24 a2a_default_style" data-a2a-icon-color="transparent,#55B4D4">
+                    <a class="a2a_button_copy_link" href="#copy_link"></a>
+                    <a class="a2a_button_x" href="#x"></a>
+                    <a class="a2a_button_facebook" href="#facebook"></a>
+                    <a class="a2a_button_reddit" href="#reddit"></a>
+                    <a class="a2a_dd" href="#dd"></a>
+                </div>
+                <script async="" src="https://static.addtoany.com/menu/page.js"></script>
+            </div>
 
-                            <span>
-                                Tuong
-                            </span>
-                        </span>
-                    </span>
-                </label>
-                <!-- Chapters -->
-                <label class="collapse collapse-plus bg-base-300 shadow-xl rounded-box" x-data="{open: true}">
-                    <input :checked="open" class="peer" type="checkbox" x-model="open" checked="checked">
-                    <span class="collapse-title gap-2">
-                        <i data-feather="list"></i>
-                        <span class="font-bold">
-                            Chapter
-                        </span>
-                        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
-                    </span>
-                    <span class="collapse-content">
+        </div>
+        <!-- Comic attributes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="user"></i>
+                    Authors
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Authors">
+                    Authors
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="activity"></i>
+                    Status
+                </dt>
+                <dd class="col-span-3">
+                    <span class="badge badge-outline badge-warning">Updating...</span>
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="clock"></i>
+                    Last updated
+                </dt>
+                <dd class="col-span-3">
+                    <span>an hour ago</span>
+                </dd>
+            </dl>
+            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="calendar"></i>
+                    Published
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Published ? moment(comic?.Published).fromNow() : 'N/A'">
 
-                        <span class="italic">
-                            No chapters available
-                        </span>
+                    <span>18 hours ago</span>
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="calendar"></i>
+                    Finished
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Finished ? moment(comic?.Finished).fromNow() : 'N/A'">
 
+                    <span>18 hours ago</span>
+                </dd>
+            </dl>
+        </div>
+        <!-- Comic genres -->
+        <div class="grid grid-cols-5 gap-2">
+            <div class="col-span-1">
+                <span class="font-bold gap-2">
+                    <i data-feather="tag"></i>
+                    Genres
+                </span>
+            </div>
+            <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
+                <template x-for="genre in comic?.ComicGenres">
+                    <span class="badge badge-outline badge-primary" x-text="genre?.Genre?.Name">
+                        Action
                     </span>
-                </label>
+                    
+                </template>
             </div>
         </div>
-        <!-- Comments -->
+        <!-- Action button -->
+        <div class="flex flex-row flex-wrap gap-2" x-data="{ authenticated: $store.auth.authenticated }">
+            <!-- Read button -->
 
+            <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : 'Read'">
+                <button 
+                    class="btn btn-primary gap-2" :disabled="chapters.length === 0"
+                    x-on:click="window.location.href = `/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
+                    <i data-feather="book-open"></i>
+                    Read
+                </button>
+            </div>
 
-        <form class="hidden" id="delete-comic-form" method="post" action="/comic/292236210020175872/delete">
-            <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c"><input type="hidden" name="_method" value="delete">
-        </form>
-        <input class="modal-toggle" id="delete-comic-modal" type="checkbox">
-        <label class="modal cursor-pointer" for="delete-comic-modal">
-            <label class="modal-box relative">
-                <h3 class="text-xl font-bold">Delete comic</h3>
-                <p class="p-4">Are you sure you want to delete this comic?</p>
-                <div class="modal-action">
-                    <label class="btn btn-ghost" for="delete-comic-modal">Cancel</label>
-                    <button class="btn btn-error" form="delete-comic-form" type="submit">Delete</button>
-                </div>
-            </label>
-        </label>
+            <!-- Continue reading button -->
+            
+            <div class="tooltip" data-tip="You must be logged in to continue reading" :class="{ tooltip: !authenticated }">
+                <button class="btn btn-accent gap-2" :disabled="!authenticated">
+                    <i data-feather="navigation"></i>
+                    Continue reading
+                </button>
+            </div>
 
-        <form class="hidden" id="report-comic-form" method="post" action="/comic/292236210020175872/report">
-            <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c">
-        </form>
-
-        <input class="modal-toggle" id="report-comic-modal" type="checkbox">
-        <label class="modal cursor-pointer" for="report-comic-modal">
-            <label class="modal-box relative">
-                <h3 class="text-xl font-bold">Report comic</h3>
-                <label class="label" for="reason">
-                    <span class="label-text">Reason</span>
-                </label>
-                <textarea class="w-full textarea textarea-bordered" id="reason" name="message" placeholder="Reason"></textarea>
-                <div class="modal-action">
-                    <label class="btn btn-ghost" for="report-comic-modal">Cancel</label>
-                    <button class="btn btn-error" form="report-comic-form" type="submit">Report</button>
-                </div>
-            </label>
-        </label>
+            <!-- Add to library button -->
+            <div class="tooltip" data-tip="You must be logged in to add this comic to your library" :class="{ tooltip: !authenticated }">
+                <button class="btn btn-error gap-2" :disabled="!authenticated">
+                    <i data-feather="bookmark"></i>
+                    Add to library
+                </button>
+            </div>
+        </div>
     </div>
-    <button x-on:click="window.scrollTo({top: 0, behavior: 'smooth'})" x-on:scroll.window="scroll = document.documentElement.scrollTop > 20" aria-label="Back to top" class="fixed bottom-7 right-5 btn btn-circle bg-neutral shadow-md hover:bg-accent hover:shadow-lg focus:bg-accent focus:shadow-lg active:bg-accent active:shadow-lg" id="btn-back-to-top" type="button" x-data="{scroll : document.documentElement.scrollTop > 20}" x-show="scroll" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100 transform scale-100" x-transition:enter-start="opacity-0 transform scale-90" x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 transform scale-90" x-transition:leave-start="opacity-100 transform scale-100">
-        <i aria-hidden="true" data-feather="arrow-up"></i>
-    </button>
+</div>
+<!-- Description -->
+<label class="collapse collapse-plus bg-base-200 shadow-xl rounded-box" x-data="{open: true}">
+    <input class="peer" type="checkbox" x-model="open">
+    <span class="collapse-title gap-2">
+        <i data-feather="info"></i>
+        <span class="font-bold">
+            Description
+        </span>
+        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
+    </span>
+    <span class="collapse-content">
+        <span class="leading-relaxed text-justify" x-text="comic?.Description">
+            Description
+        </span>
+    </span>
+</label>
+<!-- Chapters -->
+<label class="collapse collapse-plus bg-base-200 shadow-xl rounded-box" x-data="{open: true}">
+    <input :checked="open" class="peer" type="checkbox" x-model="open" checked="checked">
+    <span class="collapse-title gap-2">
+        <i data-feather="list"></i>
+        <span class="font-bold">
+            Chapter
+        </span>
+        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
+    </span>
+    <span class="collapse-content">
 
-    
+        <span class="italic" x-show="chapters.length === 0">
+            No chapters available
+        </span>
+        <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
+            <template x-for="chapter in chapters">
+                <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30">
+                    <a class="flex-grow flex flex-nowrap items-center gap-4" :href="`/Comics/${comic?.Id}/Chapters/${chapter?.Index}`">
+                        <span class="flex-grow" x-text="chapter?.Title">
+                            Chapter 1
+                        </span>
+                        <span x-text=" moment('2024-03-18T04:38:22.376Z').fromNow() ">a few seconds ago</span>
+                    </a>
+                </span>
+            </template>
+        </span>
 
+    </span>
+</label>
+</div>
+</div>
+<!-- Comments -->
+
+
+<form class="hidden" id="delete-comic-form" method="post" action="/comic/292236210020175872/delete">
+    <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c"><input type="hidden" name="_method" value="delete">
+</form>
+<input class="modal-toggle" id="delete-comic-modal" type="checkbox">
+<label class="modal cursor-pointer" for="delete-comic-modal">
+    <label class="modal-box relative">
+        <h3 class="text-xl font-bold">Delete comic</h3>
+        <p class="p-4">Are you sure you want to delete this comic?</p>
+        <div class="modal-action">
+            <label class="btn btn-ghost" for="delete-comic-modal">Cancel</label>
+            <button class="btn btn-error" form="delete-comic-form" type="submit">Delete</button>
+        </div>
+    </label>
+</label>
+
+<form class="hidden" id="report-comic-form" method="post" action="/comic/292236210020175872/report">
+    <input type="hidden" name="_csrf" value="b3f7ff6a-36f7-4bbd-88bb-3654fd06407c">
+</form>
+
+<input class="modal-toggle" id="report-comic-modal" type="checkbox">
+<label class="modal cursor-pointer" for="report-comic-modal">
+    <label class="modal-box relative">
+        <h3 class="text-xl font-bold">Report comic</h3>
+        <label class="label" for="reason">
+            <span class="label-text">Reason</span>
+        </label>
+        <textarea class="w-full textarea textarea-bordered" id="reason" name="message" placeholder="Reason"></textarea>
+        <div class="modal-action">
+            <label class="btn btn-ghost" for="report-comic-modal">Cancel</label>
+            <button class="btn btn-error" form="report-comic-form" type="submit">Report</button>
+        </div>
+    </label>
+</label>
+</div>
 </div>

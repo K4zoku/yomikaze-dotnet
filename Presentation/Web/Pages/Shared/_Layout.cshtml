@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="~/lib/feather/css/feather.min.css"/>
     <script defer src="~/lib/alpinejs/persist/dist/cdn.min.js"></script>
     <script defer src="~/lib/alpinejs/cdn.min.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
     <!-- Preload fonts -->
     <link rel="preload" href="~/lib/feather/font/feather.woff" as="font" type="font/woff" crossorigin>
     <link rel="preload" href="~/lib/feather/font/feather.ttf" as="font" type="font/ttf" crossorigin>
@@ -20,7 +21,7 @@
 <header>
     <nav class="navbar bg-base-200" x-data="{ authenticated: $store.auth.authenticated }">
         <div class="navbar-start gap-2">
-            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" asp-page="Index">
+            <a class="btn btn-ghost gap-2 text-xl text-white hover:bg-transparent" asp-page="/Index">
                 <img alt="logo" class="w-12 h-12" src="~/favicon.svg">
                 <div class="font-title text-primary inline-flex text-lg transition-all duration-200 md:text-3xl">
                     <span class="text-base-content lowercase">yomi</span>
