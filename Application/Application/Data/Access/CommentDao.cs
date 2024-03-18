@@ -13,4 +13,9 @@ public class CommentDao(DbContext dbContext) : BaseDao<Comment>(dbContext)
             // .Include(comment => comment.Comic)
             .Include(comment => comment.Replies);
     }
+
+    public IEnumerable<Comment> GetCommentByComicId(long comicId)
+    {
+        return  Query().Where(comment => comment.ComicId == comicId);
+    }
 }
