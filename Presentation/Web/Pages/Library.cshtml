@@ -14,19 +14,27 @@
             pagination: { current: 0, size: 0, total: 0, count: 0 },
             comics: [],
             
-            init() {
+            async init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
+                this.pagination = Alpine.store('pagination');
+                this.$watch('pagination.current', async () => await this.load());
+                this.$watch('pagination.size', async () => await this.load());
+                await this.load();
+            },
+            
+            async load() {
+                this.loading = true;
+                this.pagination.count = await this.getCount();
+                await this.fetchComics();
+                this.loading = false;
             },
             
             buildUrl(url) {
                 url.searchParams.set('$orderby', 'DateAdded desc');
             },
             
-            async fetchComics() {
-                this.loading = true;
-                await this.getCount();
-                
+            async fetchComics() {                
                 let url = new URL('/API/OData/Library/', window.location.origin);
                 this.buildUrl(url);
                 url.searchParams.set('$expand', 'Comic($select=Id,Name,Description,Cover)');
@@ -42,19 +50,17 @@
                 await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
                 
                 this.comics = library.map(item => item.Comic);
-                this.loading = false;
             },
             
             async getCount() {
                 let url = new URL('/API/OData/Library/$count', window.location.origin);
                 this.buildUrl(url);
-                this.total = await this.client.get(url)
+                return await this.client.get(url)
                     .then(response => parseInt(response.data) || 0)
                     .catch(error => {
                         console.error('Error while getting $count', error); 
                         return 0;
                     });
-                return this.total;
             },
             
             async removeFromLibrary(id) {
@@ -80,18 +86,18 @@
         <h1 class="text-4xl font-bold">Library</h1>
     </div>
 
-    <div class="flex justify-center py-10" x-show="!loading && total === 0">
+    <div class="flex justify-center py-10" x-show="!loading && $store.pagination.total === 0">
         <h2 class="text-xl text-center text-gray-500 italic">
             There are no comics in the library. <a asp-page="/Index" class="underline">Add some!</a>
         </h2>
     </div>
-    <template x-if="total > 0">
+    <template x-if="$store.pagination.total > 0">
         <div class="contents">
             <!--* cards -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:min-h-[680px] sm:min-h-0 mt-8">
                 <!--* skeleton -->
                 <div class="contents" x-show="loading">
-                    <template x-for="i in pageSize" :key="i">
+                    <template x-for="i in pagination.size">
                         <div class="mx-auto">
                             <div class="w-[190px] h-[280px] skeleton"></div>
                             <!-- random width from 50% to 100% -->
@@ -136,7 +142,7 @@
             </div>
 
             
-            <div class="w-full mt-4 flex justify-center">
+            <div class="w-full mt-4 flex justify-center gap-2">
                 @await Html.PartialAsync("_PaginationPartial")
             </div>
         </div>

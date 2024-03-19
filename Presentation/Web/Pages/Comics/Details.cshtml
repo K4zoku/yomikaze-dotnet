@@ -44,7 +44,7 @@
 
             async fetchChapters() {
                 let url = new URL(`/API/OData/Chapters/`, window.location.origin);
-                url.searchParams.set('$filter', `ComicId eq ${this.id}`);
+                url.searchParams.set('$filter', `ComicId eq '${this.id}'`);
                 url.searchParams.set('$orderby', 'Index asc');
                 this.chapters = await this.client.get(url)
                     .then(response => response.data.value)
@@ -57,10 +57,7 @@
                 if (!this.auth.authenticated) return;
                 this._isInLibrary = await this.client.get(`/API/Library/${this.id}`)
                     .then(() => true)
-                    .catch(error => {
-                        console.error('Error while checking library', error);
-                        return false;
-                    });
+                    .catch(() => false); 
             },
 
             get isInLibrary() {
@@ -104,29 +101,22 @@
                 let data = {
                     content: this.content,
                     comicId: this.id,
-                    replyToId: 0,
-                  
-                    createAt: new Date().Date,
-                    updateAt: new Date().Date,
-
-
                 };
-                console.log(data);
                 this.client.post('API/Comments/', data)
-                    .then(response => this.handleSuccess(response))
+                    .then(response => this.getComments())
                     .catch(error => console.error('Error while posting comment', error));
 
             },
 
             async getComments() {
-                this.client.get(`API/OData/Comments/?$filter=ComicId eq ${this.id} and ReplyToId eq null`
+                this.client.get(`API/OData/Comments/?$filter=ComicId eq '${this.id}'`)
                     .then(response => this.comments = response.data.value)
-                    .catch(error => console.error('Error while fetching comments', error)));
+                    .catch(error => console.error('Error while fetching comments', error));
             },
 
             deleteComment(id) {
                 this.client.delete(`API/Comments/${id}`)
-                    .then(response => this.handleSuccess(response))
+                    .then(response => this.getComments())
                     .catch(error => console.error('Error while deleting comment', error));
             },
 
@@ -196,7 +186,7 @@
                     Last updated
                 </dt>
                 <dd class="col-span-3">
-                    <span>an hour ago</span>
+                    <span x-text="comic?.LastUpdated ? moment(comic?.LastUpdated).fromNow() : 'N/A'">0 hours ago</span>
                 </dd>
             </dl>
             <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
@@ -387,10 +377,6 @@
                             <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
                                 <span>Administrator</span>
                                 <!-- roles -->
-
-                                <span class="badge badge-primary badge-outline mx-1">Member</span>
-                                <span class="badge badge-primary badge-outline mx-1">Uploader</span>
-                                <span class="badge badge-primary badge-outline mx-1">Admin</span>
 
                                 <!-- chapter -->
 

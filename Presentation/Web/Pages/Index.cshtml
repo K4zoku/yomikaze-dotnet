@@ -91,8 +91,8 @@
              x-transition:enter="transition ease-out duration-300 delay-500"
              x-transition:enter-start="opacity-0 scale-90"
              x-transition:enter-end="opacity-100 scale-100">
-            <template x-for="comic in data">
-                <a class="mx-auto" :href="$el.href.replace('-1', comic.Id)" asp-page="/Comics/Details" asp-route-id="-1">
+            <template x-for="comic in data" :key="comic.id">
+                <a class="mx-auto" :href="$el.href.replace('-1', comic.id)" asp-page="/Comics/Details" asp-route-id="-1">
                     <div class="dropdown dropdown-hover">
                         <label class="w-[190px] h-[280px]" tabindex="0">
                             <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
@@ -102,9 +102,9 @@
                         <div class="dropdown-content z-50" tabindex="0">
                             <div class="card w-[230px] bg-base-100 shadow-2xl">
                                 <div class="card-body">
-                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic?.name">Name</h4>
+                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic.name">Name</h4>
                                     <p class="text-sm font-normal leading-relaxed"
-                                       x-text="comic?.description">
+                                       x-text="comic.description">
                                         Description
                                     </p>
                                 </div>
@@ -123,7 +123,7 @@
     </div>
 
     <!--* pagination -->
-    <div class="w-full mt-4 flex justify-center">
+    <div class="w-full mt-4 flex justify-center gap-2">
         @await Html.PartialAsync("_PaginationPartial")
     </div>
 </div>

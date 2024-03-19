@@ -30,7 +30,7 @@
                         x-model.debounce="$store.pagination.current"
                         x-data="{ selected: $store.pagination.current }">
                     <template x-for="i in $store.pagination.total" :key="i">
-                        <option x-text="`Page ${i}`" :value="i" :selected="i === selected"></option>
+                        <option x-text="`Page ${i}`" :value="i"></option>
                     </template>
                 </select>
 

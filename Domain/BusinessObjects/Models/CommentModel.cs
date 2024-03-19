@@ -10,7 +10,7 @@ public class CommentInputModel
     [Length(0, 250, ErrorMessage = "Content must from 0 to 250 characters")]
     public string Content { get; set; } = default!;
 
-    public string ReplyToId { get; set; }
+    public string? ReplyToId { get; set; }
 }
 
 public class CommentOutputModel
