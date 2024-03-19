@@ -6,10 +6,9 @@
                 <span class="label-text">Page size</span>
             </div>
             <select class="select select-bordered" x-model="$store.pagination.size">
-                <option selected value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
+                <template x-for="size in $store.pagination.sizes">
+                    <option x-text="size" :value="size"/>
+                </template>
             </select>
         </label>
         <div class="form-control">
@@ -42,7 +41,7 @@
                 </button>
                 <button class="join-item btn"
                         :disabled="$store.pagination.current >= $store.pagination.total"
-                        x-on:click="$store.pagination.current = total">
+                        x-on:click="$store.pagination.current = $store.pagination.total">
                     »
                 </button>
             </div>

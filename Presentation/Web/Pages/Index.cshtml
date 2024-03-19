@@ -21,7 +21,6 @@
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
                 this.pagination = Alpine.store('pagination');
-                
                 this.$watch('pagination.current', () => this.load());
                 this.$watch('pagination.size', () => this.load());
                 this.load();
@@ -46,6 +45,8 @@
                         console.error(error);
                         return [];
                     });
+                comics = camelize(comics);
+                console.log(comics);
                 
                 await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
                 
@@ -95,15 +96,15 @@
                     <div class="dropdown dropdown-hover">
                         <label class="w-[190px] h-[280px]" tabindex="0">
                             <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
-                                 :src="comic.Cover">
+                                 :src="comic.cover">
                         </label>
 
                         <div class="dropdown-content z-50" tabindex="0">
                             <div class="card w-[230px] bg-base-100 shadow-2xl">
                                 <div class="card-body">
-                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic?.Name">Name</h4>
+                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic?.name">Name</h4>
                                     <p class="text-sm font-normal leading-relaxed"
-                                       x-text="comic?.Description">
+                                       x-text="comic?.description">
                                         Description
                                     </p>
                                 </div>
@@ -111,7 +112,7 @@
                         </div>
                         <div class="mt-4">
                             <h3 class="title-font mb-2 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
-                                x-text="comic.Name">
+                                x-text="comic.name">
                                 Name
                             </h3>
                         </div>
