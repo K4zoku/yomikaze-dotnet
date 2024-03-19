@@ -1,0 +1,288 @@
+﻿@page "/Manage/Comics/{comicId}/AddChapter"
+@model Yomikaze.Presentation.Web.Pages.Manage.Comics.AddChapter
+
+@{
+    ViewData["Title"] = "Add Chapter";
+}
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('addChapter', {
+            chapter: {
+                title: '',
+                index: 1,
+                comicId: '@Model.ComicId',
+                pages: [],
+            },
+            async submit() {
+                let client = Alpine.store('auth').http;
+                let pages = Alpine.store('data').urls;
+                this.chapter.pages = [];
+                for (let i = 0; i < pages.length; i++) {
+                    let page = {
+                        index: i + 1,
+                        image: pages[i],
+                    };
+                    this.chapter.pages.push(page);
+                }
+                let response = await client.post('API/Chapters', this.chapter)
+                    .then(response => response)
+                    .catch(error => {
+                        console.error('Error creating chapter', error);
+                        return error.response;
+                    });
+                switch (response.status) {
+                    case 200:
+                        alert('Chapter created successfully');
+                        window.location.href = `/Comics/${this.chapter.comicId}`;
+                        break;
+                    default:
+                        alert('Error creating chapter');
+                        break;
+                }
+            }
+        });
+    });
+</script>
+
+<div class="w-10/12 mx-auto py-10">
+<div class="min-h-screen flex flex-col items-stretch p-8 gap-8">
+    <ul class="steps w-full max-w-lg self-center">
+        <li :class="{'step-primary': $store.current_step >= 1}" x-on:click="$store.current_step = 1" class="step step-primary">Fill in
+            infos
+        </li>
+        <li :class="{'step-primary': $store.current_step >= 2}" x-on:click="$store.current_step = 2" class="step">Upload
+            images
+        </li>
+        <li :class="{'step-primary': $store.current_step >= 3}" x-on:click="$store.current_step = 3" class="step">
+            Finishing
+        </li>
+    </ul>
+    <div class="grow flex items-center justify-center">
+        <div class="flex justify-center gap-4" x-show="$store.current_step === 1">
+            <div>
+                <label class="label" for="chapter-no">
+                    <span class="label-text">Chapter Index</span>
+                </label>
+                <input id="chapter-no" class="input input-bordered w-24" type="number" name="index" x-model="$store.addChapter.chapter.index">
+            </div>
+            <div>
+                <label class="label" for="chapter-title">
+                    <span class="label-text">Chapter Title</span>
+                </label>
+                <input class="input input-bordered w-48 sm:w-64" x-model="$store.addChapter.chapter.title" id="chapter-title" required="" placeholder="Chapter's title" type="text" name="title" value="Chapter 1">
+            </div>
+        </div>
+        <div class="flex justify-center gap-4 w-9/12" x-show="$store.current_step === 2">
+            <div class="w-full">
+                <div x-data="dataFileDnD()" class="relative flex flex-col p-4 text-base-content rounded bg-base-200">
+                    <form x-on:submit.prevent="uploadImages()" x-ref="dnd" method="POST" enctype="multipart/form-data" class="relative flex flex-col text-base-content border border-base-content border-dashed rounded cursor-pointer" id="upload"><input type="hidden" name="_csrf" value="365d8f70-2cd7-4dc0-bb30-c78342e1bdc4">
+                        <input type="file" multiple="" accept="image/jpeg,image/jpg,image/png,image/webp" class="absolute inset-0 z-50 w-full h-full p-0 m-0 outline-none opacity-0 cursor-pointer" x-on:change="replaceFiles($event)" x-on:dragover="$refs.dnd.classList.add('border-primary'); $refs.dnd.classList.add('ring-4'); $refs.dnd.classList.add('ring-inset');" x-on:dragleave="$refs.dnd.classList.remove('border-primary'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');" x-on:drop="$refs.dnd.classList.remove('border-primary'); $refs.dnd.classList.remove('ring-4'); $refs.dnd.classList.remove('ring-inset');" name="files" :disabled="submitting">
+                        <div class="flex flex-col items-center justify-center py-10 text-center">
+                            <i data-feather="upload-cloud" class="w-16 h-16 mx-auto text-primary"></i>
+                            <p class="m-0">
+                                <span class="hidden sm:inline">Drag your files here or click in this area.</span>
+                                <span class="sm:hidden">Click in this area.</span>
+                            </p>
+                        </div>
+                    </form>
+                    <template x-if="files.length > 0">
+                        <div class="grid grid-cols-2 gap-4 mt-4 md:grid-cols-6" x-on:drop.prevent="drop($event)" x-on:dragover.prevent="$event.dataTransfer.dropEffect = 'move'">
+                            <template x-for="(file, index) in files" :key="index">
+                                <div class="relative flex flex-col items-center overflow-hidden text-center bg-gray-100 border rounded cursor-move select-none" style="padding-top: 100%;" x-on:dragstart="dragstart($event)" x-on:dragend="fileDragging = null" :class="{'border-primary': fileDragging === index}" :draggable="!submitting" :data-index="index">
+                                    <button class="absolute top-0 right-0 z-50 p-1 bg-white rounded-bl focus:outline-none text-error text-xl" type="button" x-on:click="remove(index)" aria-label="remove" :disabled="submitting">
+                                        <i data-feather="trash" aria-hidden="true"></i>
+                                    </button>
+                                    <template x-if="file.type.includes('image/')">
+                                        <img class="absolute inset-0 z-0 object-cover w-full h-full border-4 border-white preview" x-bind:src="loadFile(file)" x-bind:alt="file.name" alt="image">
+                                    </template>
+
+                                    <div class="absolute bottom-0 left-0 right-0 flex flex-col p-2 text-xs bg-white bg-opacity-50">
+                                        <span class="w-full font-bold text-gray-900 truncate" x-text="file.name">
+                                            Loading...
+                                        </span>
+                                        <span class="text-xs text-gray-900" x-text="humanFileSize(file.size)">0B</span>
+                                    </div>
+
+                                    <div class="absolute inset-0 z-40 transition-colors duration-300" x-on:dragenter="dragenter($event)" x-on:dragleave="fileDropping = null" :class="{'bg-primary bg-opacity-80': fileDropping === index &amp;&amp; fileDragging !== index}">
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <div class="p-4 mx-auto">
+                        <button form="upload" class="btn btn-accent" type="submit" :class="{loading: submitting}" :disabled="submitting">
+                            <span x-text="submitting ? 'Uploading...' : 'Upload'">Upload</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-row w-11/12 h-full" x-show="$store.current_step === 3">
+            <div class="w-6/12 h-full">
+                <div class="form-control h-full">
+                    <label for="image-order" class="label"><span class="label-text">Images order</span></label>
+                    <textarea id="image-order" form="chapter-form" class="input input-bordered input-primary max-h-screen min-h-screen" placeholder="Paste here the image urls, one per line" x-data="{focus: false, lastKeyUp: 0}" x-on:focus="focus = true" x-on:blur="focus = false" x-on:change="if (focus) { $store.data.urls = $el.value.split('\n') || [] }" x-on:keyup="if (focus &amp;&amp; lastKeyUp + 500 >= Date.now()) { lastKeyUp = Date.now(); $store.data.urls = $el.value.split('\n') || [] }" x-init="$watch('$store.data.urls', value => { if (!focus) $el.value = value.join('\n').trim() })" name="pages"></textarea>
+                </div>
+            </div>
+            <div x-show="$store?.data?.urls?.length" class="divider divider-horizontal"></div>
+            <div x-show="$store?.data?.urls?.length" id="images" class="w-6/12 grid grid-cols-3 gap-4 h-full">
+                <template x-for="url in ($store?.data?.urls || [])">
+                    <img :src="url" alt="image">
+                </template>
+            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    let images = document.getElementById('images');
+                    let textarea = document.getElementById('image-order');
+                    Sortable.create(images, {
+                        animation: 150,
+                        scrollSensitivity: 300,
+                        scrollSpeed: 10,
+                        scroll: true,
+                        store: {
+                            set: function (sortable) {
+                                let images = sortable.el.children;
+                                let urls = Array.from(images)
+                                    .filter(img => img.tagName === 'IMG')
+                                    .map(img => img.getAttribute('src'))
+                                    .filter(src => !!src);
+                                textarea.value = urls.join('\n');
+                            }
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    <div class="flex justify-between">
+        <button x-show="$store.current_step === 1">&nbsp;</button>
+        <button x-on:click="$store.current_step--" class="btn self-start" x-show="$store.current_step >= 2">Back</button>
+        <button x-on:click="$store.current_step = 2" class="btn btn-primary" x-show="$store.current_step === 1">Next</button>
+        <button x-on:click="$store.current_step = 3" class="btn btn-primary" x-show="$store.current_step === 2">Next</button>
+        <button type="button" x-show="$store.current_step === 3" class="btn btn-primary"
+                x-on:click="$store.addChapter.submit()">Create Chapter</button>
+    </div>
+</div>
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.store("current_step", 1);
+    });
+
+    function dataFileDnD() {
+        return {
+            files: [],
+            fileDragging: null,
+            fileDropping: null,
+            submitting: false,
+            humanFileSize(size) {
+                const i = Math.floor(Math.log(size) / Math.log(1024));
+                return (
+                    (size / Math.pow(1024, i)).toFixed(2) * 1 +
+                    " " +
+                    ["B", "kB", "MB", "GB", "TB"][i]
+                );
+            },
+            remove(index) {
+                let files = [...this.files];
+                files.splice(index, 1);
+
+                this.files = createFileList(files);
+            },
+            drop(e) {
+                let removed, add;
+                let files = [...this.files];
+
+                removed = files.splice(this.fileDragging, 1);
+                files.splice(this.fileDropping, 0, ...removed);
+
+                this.files = createFileList(files);
+
+                this.fileDropping = null;
+                this.fileDragging = null;
+            },
+            dragenter(e) {
+                let targetElem = e.target.closest("[draggable]");
+
+                this.fileDropping = targetElem.getAttribute("data-index");
+            },
+            dragstart(e) {
+                this.fileDragging = e.target
+                    .closest("[draggable]")
+                    .getAttribute("data-index");
+                e.dataTransfer.effectAllowed = "move";
+            },
+            loadFile(file) {
+                const preview = document.querySelectorAll(".preview");
+                const blobUrl = URL.createObjectURL(file);
+
+                preview.forEach(elem => {
+                    elem.onload = () => {
+                        URL.revokeObjectURL(elem.src); // free memory
+                    };
+                });
+
+                return blobUrl;
+            },
+            addFiles(e) {
+                this.files = createFileList([...this.files], [...e.target.files]);
+            },
+            replaceFiles(e) {
+                this.files = createFileList([...e.target.files]);
+            },
+            init() {
+                this.auth = Alpine.store('auth');
+                if (!this.auth.authenticated && !this.auth.profile?.isAdmin) {
+                    window.location.href = '/';
+                    return;
+                }
+                this.client = this.auth.http;
+            },
+            async uploadImage(file) {
+                if (!file) return null;
+                
+                this.uploading = true;
+                let formData = new FormData();
+                formData.append('file', file);
+                let response = await this.client.post('API/Images', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => response)
+                .catch(error => {
+                    console.error('Error uploading image', error);
+                    return error.response;
+                });
+                console.log('Image uploaded', response);
+                let location = response.headers['location'];
+                this.uploading = false;
+                this.coverImageURL = location;
+                return location;
+            },
+            async uploadImages() {
+                this.submitting = true;
+                let urls = [];
+                for (let i = 0; i < this.files.length; i++) {
+                    let file = this.files[i];
+                    urls.push(await this.uploadImage(file));
+                }
+                this.files = [];
+                this.$el.reset();
+                this.$store.data.urls.push(...urls);
+                this.submitting = false;
+                this.$nextTick(() => setTimeout(() => {
+                    alert('Images uploaded successfully, you can now go to the next step');
+                    this.$store.current_step = 3;
+                }, 200));
+            },
+        };
+    }
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('data', {
+            urls: [],
+        })
+    })
+</script>
+</div>

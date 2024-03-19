@@ -179,7 +179,8 @@
                     Status
                 </dt>
                 <dd class="col-span-3">
-                    <span class="badge badge-outline badge-warning">Updating...</span>
+                    <span class="badge badge-outline badge-warning" x-show="!comic?.Ended">Ongoing</span>
+                    <span class="badge badge-outline badge-success" x-show="comic?.Ended">Completed</span>
                 </dd>
                 <dt class="col-span-2 gap-2 font-bold">
                     <i data-feather="clock"></i>
@@ -200,9 +201,9 @@
                 </dd>
                 <dt class="col-span-2 gap-2 font-bold">
                     <i data-feather="calendar"></i>
-                    Finished
+                    Ended
                 </dt>
-                <dd class="col-span-3" x-text="comic?.Finished ? moment(comic?.Finished).fromNow() : 'N/A'">
+                <dd class="col-span-3" x-text="comic?.Ended ? moment(comic?.Ended).fromNow() : 'N/A'">
 
                     <span>18 hours ago</span>
                 </dd>

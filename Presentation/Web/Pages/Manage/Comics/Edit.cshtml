@@ -1,6 +1,8 @@
 ﻿@page "/Manage/Comics/{id}"
 @model EditModel
-
+@{
+    ViewData["Title"] = "Edit comic";
+}
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('comic', () => ({
@@ -91,7 +93,6 @@
                 for (let genre of comic.comicGenres) {
                     this.comic.comicGenres.value[genre.genreId] = true;
                 }
-                console.log ('Comic', this.comic);
             },
 
             async init() {
@@ -165,6 +166,8 @@
                 }
                 data.comicGenres = genres;
                 data.cover = url;
+                data.ended = data.ended || null; // empty string to null for date to prevent 400 error
+                data.published = data.published || null;
                 console.log('Updating comic', data);
                 let response = await this.client.put(`API/Comics/${this.id}`, data)
                     .then(response => response)
