@@ -164,6 +164,13 @@
                     let prop = this.comic[key];
                     data[key] = prop.map ? prop.map(prop.value) : prop.value;                    
                 }
+                let genres = [];
+                for (let id in this.comic.comicGenres.value) {
+                    let included = this.comic.comicGenres.value[id];
+                    if (!included) continue;
+                    genres.push({ genreId: id });
+                }
+                data.comicGenres = genres;
                 data.cover = url;
                 console.log('Updating comic', data);
                 let response = await this.client.put(`API/Comics/${this.id}`, data)
@@ -175,10 +182,10 @@
                 switch (response.status) {
                     case 200:
                         this.message = 'Comic updated successfully';
-                        let createdComic = response.data;
-                        console.log('Comic created', createdComic);
+                        let updated = response.data;
+                        console.log('Comic updated', updated);
                         let ans = confirm('Comic updated successfully, do you want to view the comic?');
-                        if (ans) window.location.href = '/Comics/' + createdComic.id;
+                        if (ans) window.location.href = '/Comics/' + updated.id;
                         break;
                     case 400:
                         this.message = 'Invalid data';
@@ -207,7 +214,7 @@
                 <fieldset>
                     <legend class="text-center">Basic information</legend>
                     <div class="flex flex-row w-full justify-items-center gap-4">
-                        <label class="shrink flex flex-col">
+                        <div class="shrink flex flex-col">
                             <div class="label">
                                 <span class="label-text">
                                     Thumbnail
@@ -217,12 +224,12 @@
                                 </span>
                             </div>
 
-                            <div class="self-center p-3 border-2 border-dashed border-gray-500 rounded-box">
+                            <label class="self-center p-3 border-2 border-dashed border-gray-500 rounded-box">
                                 <div class="indicator">
                                     <span class="indicator-item badge badge-secondary" x-show="coverImageURL"></span>
                                     <div class="card w-[190px] h-[280px] cursor-pointer" :class="{ 'image-full': uploading }">
                                         <figure>
-                                            <img :src="coverImageURL || (coverImageFile ? URL.createObjectURL(coverImageFile) : $el.dataset.placeholder)"
+                                            <img :src="coverImageFile ? URL.createObjectURL(coverImageFile) : (coverImageURL || $el.dataset.placeholder)"
                                                  alt="Cover"
                                                  class="object-cover object-center w-[190px] h-[280px]"
                                                  data-placeholder="https://via.placeholder.com/190x280?text=No+Image"
@@ -233,24 +240,24 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input x-on:change="coverImageFile = $event.target.files[0]; coverImageURL = null"
+                                <input x-on:change="coverImageFile = $event.target.files[0]; coverImageURL = coverImageFile ? null : coverImageURL"
                                        accept="image/jpeg,image/jpg,image/png,image/webp"
                                        class="file-input file-input-bordered w-full hidden"
                                        id="thumbnail" name="thumbnail" type="file" x-ref="thumbnail">
-                            </div>
+                            </label>
                             <div class="flex justify-between items-center gap-2 mt-2">
-                                <button class="btn btn-primary" type="button" x-on:click="await uploadImage()" :disabled="!coverImageFile || uploading || loading">
+                                <button class="btn btn-primary btn-sm" type="button" x-on:click="await uploadImage()" :disabled="!coverImageFile || uploading || loading">
                                     <i data-feather="upload"></i>
                                     <span class="loading loading-lg" x-show="uploading"></span>
-                                    Upload thumbnail
+                                    Upload
                                 </button>
                                 @* reset url to comic cover *@
-                                <button class="btn btn-secondary" type="button" x-on:click="coverImageURL = comic.cover.value" :disabled="!comic.cover.value || coverImageURL === comic.cover.value">
+                                <button class="btn btn-secondary btn-sm" type="button" x-on:click="coverImageURL = comic.cover.value; coverImageFile = null; $refs.thumbnail.value = ''" :disabled="!comic.cover.value || coverImageURL === comic.cover.value">
                                     <i data-feather="refresh-ccw"></i>
-                                    Reset thumbnail
+                                    Reset
                                 </button>
                             </div>
-                        </label>
+                        </div>
 
                         <div class="grow">
                             <div class="form-control">
