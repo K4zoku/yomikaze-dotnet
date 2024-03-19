@@ -16,8 +16,7 @@ public class ChapterInputModel
     public string? Description { get; set; }
 
     public ICollection<PageInputModel> Pages { get; set; } = new List<PageInputModel>();
-
-    public DateTimeOffset? Available { get; set; } = DateTimeOffset.Now;
+    
 }
 
 public class ChapterOutputModel
