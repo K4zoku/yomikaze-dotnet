@@ -41,15 +41,6 @@
                     },
                     comicGenres: {
                         value: {},
-                        map(value) {
-                            let genres = [];
-                            for (let id in value) {
-                                let included = value[id];
-                                if (!included) continue;
-                                genres.push({ genreId: id });
-                            }
-                            return genres;
-                        },
                         error: '',
                     },
                 }),
@@ -87,18 +78,20 @@
                 if (!comic) return;
                 comic = camelize(comic);
                 this.comic = this.defaults.comic();
+                let comicGenres = this.comic.comicGenres;
                 for (let key in comic) {
                     this.comic[key] = { value: comic[key], error: '' };
                 }
+                this.comic.comicGenres = comicGenres;
+                
                 this.comic.published.value = new Date(comic.published).toISOString().split('T')[0];
                 this.comic.ended.value = new Date(comic.ended).toISOString().split('T')[0];
                 this.coverImageURL = comic.cover;
-                if (this.comic.comicGenres.map) {
-                    this.comic.comicGenres.map = this.defaults.comic().comicGenres.map;
-                }
+                
                 for (let genre of comic.comicGenres) {
                     this.comic.comicGenres.value[genre.genreId] = true;
                 }
+                console.log ('Comic', this.comic);
             },
 
             async init() {
@@ -162,7 +155,7 @@
                 let data = {};
                 for (let key in this.comic) {
                     let prop = this.comic[key];
-                    data[key] = prop.map ? prop.map(prop.value) : prop.value;                    
+                    data[key] = prop.value;                    
                 }
                 let genres = [];
                 for (let id in this.comic.comicGenres.value) {
