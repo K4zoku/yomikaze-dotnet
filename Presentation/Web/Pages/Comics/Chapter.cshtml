@@ -12,6 +12,7 @@
             client: null,
 
             chapterDetails: [],
+            chapters: [],
             pages: [],
 
 
@@ -20,7 +21,17 @@
                 this.client = this.auth.http;
 
                 this.getPages();
+                this.fetchChapters();
 
+            },
+            
+            async fetchChapters() {
+                let url = new URL(`/API/OData/Chapters/`, window.location.origin);
+                url.searchParams.set('$filter', `ComicId eq '${this.comicId}'`);
+                url.searchParams.set('$orderby', 'Index asc');
+                this.chapters = await this.client.get(url)
+                    .then(response => response.data.value)
+                    .catch(error => { console.error(error); return []; });
             },
 
 
@@ -61,18 +72,19 @@
     <div class="max-w-screen w-full min-h-[calc(100vh-8rem)] bg-base-100">
         <div class="w-10/12 mx-auto py-10">
             <!--preload-->
-            @* <link as="image" rel="preload" href="/asset/image/loading.svg" type="image/svg+xml"> *@
-            <p class="p-8 text-center">
-                <a class="link text-lg font-bold" href="/comic/292236210020175872/detail">new</a>
-                <span class="text-gray-500">::</span>
-                <span class="text-gray-500">Chapter 2</span>
-            </p>
+            <link as="image" rel="preload" href="~/loading.svg" type="image/svg+xml">
             <div class="mb-12 pb-8 flex flex-col items-center">
 
                 <template x-for="page in pages">
-                    <div class="w-full max-w-xl">
-                        <img alt="page.Id" class="object-contain object-center mx-auto" :src="page.image">
-                        @* <img alt="0" class="object-contain object-center mx-auto my-12" src="/asset/image/loading.svg" > *@
+                    <div class="w-full max-w-[800px]" x-data="{ loaded: false }">
+                        <img alt="a" x-on:load="setTimeout(() => loaded = true, 250)" x-show="loaded" 
+                             x-transition:enter="transition ease-out duration-300" 
+                             x-transition:enter-start="opacity-0 transform scale-95" 
+                             x-transition:enter-end="opacity-100 transform scale-100" 
+                             class="object-contain object-center mx-auto" :src="page.image">
+                        <img alt="0" class="object-contain object-center mx-auto my-12" src="~/loading.svg"
+                                x-show="!loaded"
+                             />
                     </div>
                 </template>
 
@@ -84,7 +96,7 @@
                         <i data-feather="chevron-left"></i>
                     </button>
                     <label>
-                        <select x-onchange="window.location.href = $el.dataset.path + $el.value" class="select select-sm select-accent grow sm:w-full sm:max-w-sm" data-path="/comic/292236210020175872/chapter/">
+                        <select x-on:change="window.location.href = $el.dataset.path + $el.value" class="select select-sm select-accent grow sm:w-full sm:max-w-sm" data-path="/Comics/@Model.ComicId/Chapters/">
 
                             <option value="0" disabled="disabled" selected="selected">
                                 Chapter 2

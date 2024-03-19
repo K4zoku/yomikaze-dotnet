@@ -36,7 +36,7 @@
                         console.error('Error while fetching comic details', error);
                         return null;
                     });
-
+                window.document.title = this.comic?.Name ?? 'Comic not found';
                 await this.fetchChapters();
                 await this.checkLibrary();
                 this.loading = false;
@@ -237,20 +237,11 @@
                     Read
                 </button>
             </div>
-
-            <!-- Continue reading button -->
-
-            <div class="tooltip" data-tip="You must be logged in to continue reading" :class="{ tooltip: !authenticated }">
-                <button class="btn btn-accent gap-2" :disabled="!authenticated">
-                    <i data-feather="navigation"></i>
-                    Continue reading
-                </button>
-            </div>
-
+            
             <!-- Add to library button -->
             <div class="tooltip" data-tip="You must be logged in to add this comic to your library" :class="{ tooltip: !authenticated }">
-                <label class="btn btn-error gap-2" :class="{ 'btn-disabled': !authenticated }">
-                    <input type="checkbox" x-model="isInLibrary" class="hidden">
+                <label class="btn btn-accent gap-2" :class="{ 'btn-disabled': !authenticated, 'btn-outline': !isInLibrary }">
+                    <input type="checkbox" x-model.debounce="isInLibrary" class="hidden">
                     <i data-feather="bookmark"></i>
                     <span x-text="isInLibrary ? 'Remove from library' : 'Add to library'">Add to library</span>
                 </label>
@@ -310,6 +301,9 @@
         <span class="leading-relaxed text-justify" x-text="comic?.Description">
             Description
         </span>
+        <span class="text-sm text-neutral italic" x-show="!comic?.Description">
+            No description available
+        </span>
     </span>
 </label>
 <!-- Chapters -->
@@ -323,8 +317,15 @@
         <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
     </span>
     <span class="collapse-content">
+        <template x-if="$store.auth.profile?.isAdmin">
+            <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
+              href="/Manage/Comics/-1/AddChapter" :href="$el.href.replace('-1', id)">
+                <i data-feather="plus"></i>
+                Add chapter
+            </a>
+        </template>
 
-        <span class="italic" x-show="chapters.length === 0">
+        <span class="text-sm text-neutral italic" x-show="chapters.length === 0">
             No chapters available
         </span>
         <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
@@ -349,7 +350,7 @@
     <div class="flex flex-col gap-2 p-4 mb-4">
         <div class="form-control">
             <label class="label" for="comment-box">
-                <span class="label-text text-xl font-bold">Comment</span>
+                <span class="label-text text-xl font-bold">Comments</span>
             </label>
             <textarea class="textarea textarea-bordered" id="comment-box" x-model="content" placeholder="Write your comment here..." rows="3"></textarea>
         </div>
