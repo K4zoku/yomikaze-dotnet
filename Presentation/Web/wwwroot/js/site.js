@@ -99,6 +99,30 @@
                 name: 'Ayu Dark',
                 dark: true,
                 icon: 'moon',
+            },
+            {
+                theme: 'catpuccin-latte',
+                name: 'Catpuccin Latte',
+                dark: false,
+                icon: 'sunrise',
+            },
+            {
+                theme: 'catpuccin-frappe',
+                name: 'Catpuccin Frappe',
+                dark: true,
+                icon: 'droplet',
+            },
+            {
+                theme: 'catpuccin-macchiato',
+                name: 'Catpuccin Macchiato',
+                dark: false,
+                icon: 'filter',
+            },
+            {
+                theme: 'catpuccin-mocha',
+                name: 'Catpuccin Mocha',
+                dark: false,
+                icon: 'star',
             }
         ],
         nextTheme() {
