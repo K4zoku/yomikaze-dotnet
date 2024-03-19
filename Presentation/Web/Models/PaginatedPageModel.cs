@@ -7,7 +7,7 @@ public class PaginatedPageModel : PageModel
 {
     public PaginationModel Pagination { get; set; } = new();
     
-    public void OnGet(PaginationModel pagination)
+    public virtual void OnGet(PaginationModel pagination)
     {
         Pagination = pagination;
     }

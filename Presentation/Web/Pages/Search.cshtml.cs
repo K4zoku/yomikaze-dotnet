@@ -1,16 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Yomikaze.Presentation.Web.Models;
+using Yomikaze.Presentation.Web.Pages.Shared;
 
 namespace Yomikaze.Presentation.Web.Pages;
 
 public class SearchModel : PageModel
 {
-    public int PageNumber { get; set; } = 1;
-    public string Query { get; set; } = string.Empty;
+    public string? Query { get; set; }
+    public string? Genres { get; set; }
+    public string? Authors { get; set; }
+    
+    public PaginationModel Pagination { get; set; } = new();
 
-    public void OnGet([FromQuery] int page = 1, string? query = null)
+    public void OnGet(PaginationModel pagination, string? query = null, string? genres = null, string? authors = null)
     {
-        PageNumber = page;
-        Query = query ?? string.Empty;
+        Pagination = pagination;
+        Query = query;
+        Genres = genres;
+        Authors = authors;
     }
 }
