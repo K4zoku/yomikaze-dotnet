@@ -346,7 +346,7 @@
     <span class="collapse-content">
         <template x-if="$store.auth.profile?.isAdmin">
             <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
-               href="/Manage/Comics/-1/AddChapter" :href="$el.href.replace('-1', id)">
+               asp-page="/Manage/Comics/AddChapter" asp-route-id="-1" :href="$el.href.replace('-1', id)">
                 <i data-feather="plus"></i>
                 Add chapter
             </a>
@@ -362,7 +362,7 @@
                         <span class="flex-grow" x-text="chapter?.Title">
                             Chapter 1
                         </span>
-                        <span x-text=" moment('2024-03-18T04:38:22.376Z').fromNow() ">a few seconds ago</span>
+                        <span x-text="moment(chapter.CreatedAt).fromNow()">a few seconds ago</span>
                     </a>
                 </span>
             </template>

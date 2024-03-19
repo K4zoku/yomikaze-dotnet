@@ -7,9 +7,9 @@ public class AddChapter : PageModel
     
     public string ComicId { get; set; } = string.Empty;
     
-    public void OnGet(string comicId)
+    public void OnGet(string id)
     {
-        ComicId = comicId;
+        ComicId = id;
     }
 
 }

@@ -1,4 +1,4 @@
-﻿@page "/Manage/Comics/{comicId}/AddChapter"
+﻿@page "/Manage/Comics/{id}/AddChapter"
 @model Yomikaze.Presentation.Web.Pages.Manage.Comics.AddChapter
 
 @{
@@ -13,6 +13,19 @@
                 index: 1,
                 comicId: '@Model.ComicId',
                 pages: [],
+            },
+            check() {
+                let {authenticated, profile, http} = Alpine.store('auth');
+                if (!authenticated && !profile?.isAdmin) {
+                    window.location.href = '/';
+                    return;
+                }               
+                http.get(`/API/OData/Comics/${this.chapter.comicId}`)
+                    .catch(error => {
+                        if (error.response.status === 404) {
+                            window.location.href = '/404';
+                        }
+                    });
             },
             async submit() {
                 let client = Alpine.store('auth').http;
@@ -45,7 +58,7 @@
     });
 </script>
 
-<div class="w-10/12 mx-auto py-10">
+<div class="w-10/12 mx-auto py-10" x-init="$store.addChapter.check()">
 <div class="min-h-screen flex flex-col items-stretch p-8 gap-8">
     <ul class="steps w-full max-w-lg self-center">
         <li :class="{'step-primary': $store.current_step >= 1}" x-on:click="$store.current_step = 1" class="step step-primary">Fill in
