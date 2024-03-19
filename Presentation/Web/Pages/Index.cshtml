@@ -93,30 +93,20 @@
              x-transition:enter-end="opacity-100 scale-100">
             <template x-for="comic in data" :key="comic.id">
                 <a class="mx-auto" :href="$el.href.replace('-1', comic.id)" asp-page="/Comics/Details" asp-route-id="-1">
-                    <div class="dropdown dropdown-hover">
-                        <label class="w-[190px] h-[280px]" tabindex="0">
-                            <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
-                                 :src="comic.cover">
-                        </label>
+                    <figure class="w-[190px] h-[280px]">
+                        <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl cursor-pointer"
+                             src=""
+                             :src="comic.cover">
+                    </figure>
 
-                        <div class="dropdown-content z-50" tabindex="0">
-                            <div class="card w-[230px] bg-base-100 shadow-2xl">
-                                <div class="card-body">
-                                    <h4 class="card-title text-accent font-bold text-base" x-text="comic.name">Name</h4>
-                                    <p class="text-sm font-normal leading-relaxed"
-                                       x-text="comic.description">
-                                        Description
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <h3 class="title-font mb-2 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
-                                x-text="comic.name">
-                                Name
-                            </h3>
-                        </div>
+
+                    <div class="mt-4">
+                        <h3 class="title-font mb-2 tracking-widest text-gray-500 hover:text-cyan-600 font-bold text-base text-center"
+                            x-text="comic.name">
+                            Name
+                        </h3>
                     </div>
+
                 </a>
             </template>
         </div>

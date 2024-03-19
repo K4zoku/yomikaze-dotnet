@@ -5,112 +5,87 @@
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('chapter', () => ({
-            index: '@Model.Index',
+            index: @Model.Index,
             comicId: '@Model.ComicId',
 
             auth: null,
             client: null,
 
-            chapterDetails: [],
-            pages: [],
-
-            listChapters: [],
-            totalChapters: 0,
-            comicName: '',
-            currentChapter: '@Model.Index',
-
-            isFirst: false,
-            isLast: false,
-
-
+            chapter: {},
+            chapters: [],
 
             init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
 
-                this.getPages();
-                this.getListChapters();
-                this.getComicName();
-                this.checkFirst();
-                
+                this.fetchChapter();
+                this.$watch('index', () => this.fetchChapter());
+                this.fetchChapters();                
             },
 
 
-            async getPages() {
-
-                await this.client.get(`/API/Comics/${this.comicId}/Chapters/${this.index}`)
-                    .then(response => this.chapterDetails = response.data)
+            async fetchChapter() {
+                this.chapter = await this.client.get(`/API/Comics/${this.comicId}/Chapters/${this.index}`)
+                    .then(response => response.data)
                     .catch(error => {
-
                         if (error.response.status === 404) {
                             window.location.href = '/404';
                         }
-                        console.error('Error while fetching comic details', error);
-                        return null;
-                    });
-
-                this.pages = this.chapterDetails.pages;
-            },
-
-             getListChapters() {
-                 this.client.get(`/API/Comics/${this.comicId}/Chapters`)
-                    .then(response => {
-                        this.listChapters = response.data;
-                        this.totalChapters = this.listChapters.length;
-
-                        //check if it's the first or last chapter
-                        this.checkLast();
-
-                    })
-                    .catch(error => {
-                        console.error('Error while fetching comic details', error);
+                        console.error('Error while fetching pages', error);
                         return null;
                     });
             },
 
-            async getComicName() {
-                await this.client.get(`/API/OData/Comics/${this.comicId}`)
-                    .then(response => this.comicName = response.data.Name)
+             async fetchChapters() {
+                 this.chapters = await this.client.get(`/API/Comics/${this.comicId}/Chapters`)
+                    .then(response => response.data)
                     .catch(error => {
                         console.error('Error while fetching comic details', error);
-                        return null;
-                    });
+                        return [];
+                    });            
+                
+            },
+            
+            get isFirst() {
+                if (this.chapters.length > 0) {
+                    return this.index === this.chapters[0].index;
+                }
+                return true;
+            },
+            
+            get isLast() {
+                if (this.chapters.length > 0) {
+                    return this.index === this.chapters[this.chapters.length - 1].index;
+                }
+                return true;
             },
 
             prevChapter() {
-                return `/Comics/${this.comicId}/Chapters/${this.chapterDetails.index - 1}`;
-
+                if (this.isFirst) return;
+                for (let i = 0; i < this.chapters.length; i++) {
+                    if (this.chapters[i].index === this.index) {
+                        this.goToChapter(this.chapters[i - 1].index);
+                        return;
+                    }
+                }
             },
 
             nextChapter() {
-                return `/Comics/${this.comicId}/Chapters/${this.chapterDetails.index + 1}`;
-            },
-
-            goChapter(indexSelected) {
-                console.log(indexSelected);
-                window.location.href = `/Comics/${this.comicId}/Chapters/${indexSelected}`;
-                this.currentChapter = indexSelected;
-                console.log(this.currentChapter);
-            },
-
-            goComicsDetails() {
-                return `/Comics/${this.comicId}`;
-            },
-
-             checkFirst() {
-                if (this.currentChapter == 0) {
-                    this.isFirst = true;
+                if (this.isLast) return;
+                for (let i = 0; i < this.chapters.length; i++) {
+                    if (this.chapters[i].index === this.index) {
+                        this.goToChapter(this.chapters[i + 1].index);
+                        return;
+                    }
                 }
             },
 
-             checkLast() {
-                if (this.currentChapter == this.totalChapters-1) {
-                    this.isLast = true;
-                }
+            goToChapter(index) {
+                let url = `/Comics/${this.comicId}/Chapters/${index}`;
+                this.index = index;
+                window.history.pushState(null, '', url);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             },
-
-
-
         }));
     });
 
@@ -121,45 +96,39 @@
         <div class="w-10/12 mx-auto py-10">
             <!--preload-->
             <link as="image" rel="preload" href="~/loading.svg" type="image/svg+xml">
-            @* <link as="image" rel="preload" href="/asset/image/loading.svg" type="image/svg+xml"> *@
-
-            <p class="p-8 text-center">
-                <a class="link text-lg font-bold" :href="goComicsDetails()" x-text="comicName">Comic Name</a>
-                <span class="text-gray-500">::</span>
-                <span class="text-gray-500">Chapter</span>
-                <span class="text-gray-500" x-text="index">index</span>
-            </p>
+            
             <div class="mb-12 pb-8 flex flex-col items-center">
-
-                <template x-for="page in pages">
-                    <div class="w-full max-w-[800px]" x-data="{ loaded: false }">
-                        <img alt="a" x-on:load="setTimeout(() => loaded = true, 250)" x-show="loaded" 
-                             x-transition:enter="transition ease-out duration-300" 
+                <template x-for="page in chapter.pages">
+                    <div class="w-full max-w-screen" x-data="{ loaded: false }">
+                        <img src="" alt="a" x-on:load="setTimeout(() => loaded = true, 300)" x-show="loaded" 
+                             x-transition:enter="transition ease-out duration-500" 
                              x-transition:enter-start="opacity-0 transform scale-95" 
                              x-transition:enter-end="opacity-100 transform scale-100" 
                              class="object-contain object-center mx-auto" :src="page.image">
-                        <img alt="0" class="object-contain object-center mx-auto my-12" src="~/loading.svg"
-                                x-show="!loaded"
-                             />
+                        <img alt="0" class="object-contain object-center mx-auto my-12" src="~/loading.svg" x-show="!loaded"/>
                     </div>
                 </template>
 
             </div>
 
             <div class="bottom-2 sticky btm-nav btm-nav-sm rounded-box shadow-2xl bg-base-300 border border-dashed border-neutral">
-                <div class="px-2 flex flex-row gap-4">
-                    <button type="button" class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent" x-on:click="window.location.href = prevChapter()" :disabled="isFirst">
+                <div class="px-2 flex flex-row gap-4"
+                     x-on:keydown.arrow-left.window="prevChapter()"
+                     x-on:keydown.arrow-right.window="nextChapter()"
+                     >
+                    <button type="button" class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent" 
+                            x-on:click="prevChapter()" :disabled="isFirst">
                         <i data-feather="chevron-left"></i>
                     </button>
                     <label>
-                        <select x-model="currentChapter" x-on:change="goChapter(currentChapter)" class="select select-sm select-accent grow sm:w-full sm:max-w-sm">
-                            <option x-bind:value="currentChapter" x-text="'Chapter ' + currentChapter"></option>
-                            <template x-for="chapterIndex in listChapters">
-                                <option :value="chapterIndex.index" x-text="'Chapter ' + chapterIndex.index"></option>
+                        <select x-model="index" class="select select-sm select-accent grow sm:w-full sm:max-w-sm">
+                            <template x-for="(chapter, i) in Object.values(chapters)">
+                                <option :selected="chapter.index === index" :value="chapter.index" x-text="chapter.title || 'Chapter ' + (chapter.index || i)"></option>
                             </template>
                         </select>
                     </label>
-                    <button type="button" class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent" x-on:click="window.location.href = nextChapter()" :disabled="isLast">
+                    <button type="button" class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent" 
+                            x-on:click="nextChapter()" :disabled="isLast">
                         <i data-feather="chevron-right"></i>
                     </button>
                 </div>

@@ -39,6 +39,8 @@
                 window.document.title = this.comic?.Name ?? 'Comic not found';
                 await this.fetchChapters();
                 await this.checkLibrary();
+                await this.fetchLastHistory();
+                
                 this.loading = false;
             },
 
@@ -76,6 +78,20 @@
                         .catch(error => console.error('Error while removing from library', error));
                 }
             },
+            
+            lastReadChapter: null,
+            
+            async fetchLastHistory() {
+                let url = new URL(`/API/OData/History`, window.location.origin);
+                url.searchParams.set('$expand', 'Chapter');
+                url.searchParams.set('$top', '1');
+                url.searchParams.set('$orderby', 'CreatedAt desc');
+                let history = await this.client.get(url)
+                    .then(response => response.data.value[0])
+                    .catch(error => { console.error(error); return null; });
+                this.lastReadChapter = history?.Chapter?.Index;              
+            },
+            
 
             async deleteThis() {
 
@@ -231,13 +247,23 @@
             <!-- Read button -->
 
             <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : 'Read'">
-                <button class="btn btn-primary gap-2" :disabled="chapters.length === 0"
-                        x-on:click="window.location.href = `/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
+                <a class="btn btn-primary gap-2" :disabled="chapters.length === 0"
+                        :href="`/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
                     <i data-feather="book-open"></i>
                     Read
-                </button>
+                </a>
             </div>
-            
+
+            <!-- Continue reading button -->
+
+            <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : lastReadChapter ? 'Continue reading' : 'You have not read any chapters yet'">
+                <a class="btn btn-accent gap-2" :disabled="chapters.length === 0 || !lastReadChapter"
+                        :href="`/Comics/${comic?.Id}/Chapters/${lastReadChapter}`">
+                    <i data-feather="navigation"></i>
+                Continue reading
+                </a>
+            </div>
+
             <!-- Add to library button -->
             <div class="tooltip" data-tip="You must be logged in to add this comic to your library" :class="{ tooltip: !authenticated }">
                 <label class="btn btn-accent gap-2" :class="{ 'btn-disabled': !authenticated, 'btn-outline': !isInLibrary }">
@@ -319,7 +345,7 @@
     <span class="collapse-content">
         <template x-if="$store.auth.profile?.isAdmin">
             <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
-              href="/Manage/Comics/-1/AddChapter" :href="$el.href.replace('-1', id)">
+               href="/Manage/Comics/-1/AddChapter" :href="$el.href.replace('-1', id)">
                 <i data-feather="plus"></i>
                 Add chapter
             </a>
