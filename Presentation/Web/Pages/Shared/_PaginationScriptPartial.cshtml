@@ -1,0 +1,76 @@
+﻿@model PaginationModel
+
+<script>
+     document.addEventListener('alpine:init', () => {
+        let pagination = {    
+            _current: undefined,
+            _size: undefined,
+            _count: undefined,
+            
+            get current() {
+                return this._current;
+            },
+            
+            set current(value) {
+                this._current = value;
+                this.updateUrl();
+            },
+            
+            get total() {
+                return Math.ceil(this._count / this._size);
+            },
+            
+            get size() {
+                return this._size;
+            },
+            
+            set size(value) {
+                this._size = value;
+                this.updateUrl();
+            },
+            
+            get count() {
+                return this._count;
+            },
+            
+            set count(value) {
+                this._count = value;
+            },
+            
+            updateUrl: () => {},
+        };
+        
+        Object.defineProperty(pagination, '_current', {
+            value: 1,
+            enumerable: false,
+        });
+        
+        Object.defineProperty(pagination, '_size', {
+            value: 10,
+            enumerable: false,
+        });
+        
+        Object.defineProperty(pagination, '_count', {
+            value: -1,
+            enumerable: false,
+        });
+        
+        Object.defineProperty(pagination, 'updateUrl', {
+            value: function() {
+                let url = new URL(window.location);
+                let params = new URLSearchParams(url.search);
+                params.set('page', this.current);
+                params.set('size', this.size);
+                url.search = params.toString();
+                window.history.replaceState(null, '', url);
+            },
+            enumerable: false,
+        });
+        
+        pagination._current = @Model.Page;
+        pagination._size = @Model.Size;
+        
+        Alpine.store('pagination', pagination);
+        console.log('Pagination stored', Alpine.store('pagination'));
+     });
+</script>

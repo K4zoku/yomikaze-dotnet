@@ -133,3 +133,16 @@ window.sha256 = async (input) => {
 };
 
 window.getFirstError = (data, errorField) => [].concat((data?.errors ?? {})[errorField] || []).at(0) || '';
+
+URLSearchParams.prototype.addODataPagination = function(current, size) {
+    this.set('$top', size.toString());
+    this.set('$skip', ((current - 1) * size).toString());
+}
+
+window.camelize = obj => _.transform(obj, (acc, value, key, target) => {
+    const camelKey = _.isArray(target) ? key : _.camelCase(key);
+    acc[camelKey] = _.isObject(value) ? camelize(value) : value;
+});
+
+window.API_BASE_URL = window.location.origin + '/API';
+window.ODATA_BASE_URL = API_BASE_URL + '/OData';

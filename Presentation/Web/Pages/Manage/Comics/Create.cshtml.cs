@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages.Manage.Comics;
+namespace Yomikaze.Presentation.Web.Pages.Manage.Comics;
 
 public class CreateModel : PageModel
 {

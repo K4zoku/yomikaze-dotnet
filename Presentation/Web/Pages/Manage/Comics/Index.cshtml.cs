@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages.Manage.Comic;
+namespace Yomikaze.Presentation.Web.Pages.Manage.Comics;
 
 public class IndexModel : PageModel
 {

@@ -1,9 +1,8 @@
 ;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-            global.moment = factory()
-}(this, (function () {
-    'use strict';
+    typeof define === 'function' && define.amd ? define(factory) :
+    global.moment = factory()
+}(this, (function () { 'use strict';
 
     var hookCallback;
 
@@ -313,10 +312,10 @@
                 }
                 warn(
                     msg +
-                    '\nArguments: ' +
-                    Array.prototype.slice.call(args).join('') +
-                    '\n' +
-                    new Error().stack
+                        '\nArguments: ' +
+                        Array.prototype.slice.call(args).join('') +
+                        '\n' +
+                        new Error().stack
                 );
                 firstTime = false;
             }
@@ -364,8 +363,8 @@
         // TODO: Remove "ordinalParse" fallback in next major release.
         this._dayOfMonthOrdinalParseLenient = new RegExp(
             (this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) +
-            '|' +
-            /\d{1,2}/.source
+                '|' +
+                /\d{1,2}/.source
         );
     }
 
@@ -723,7 +722,7 @@
             u;
         for (u in unitsObj) {
             if (hasOwnProp(unitsObj, u)) {
-                units.push({unit: u, priority: priorities[u]});
+                units.push({ unit: u, priority: priorities[u] });
             }
         }
         units.sort(function (a, b) {
@@ -762,8 +761,8 @@
         regexes[token] = isFunction(regex)
             ? regex
             : function (isStrict, localeData) {
-                return isStrict && strictRegex ? strictRegex : regex;
-            };
+                  return isStrict && strictRegex ? strictRegex : regex;
+              };
     }
 
     function getParseRegexForToken(token, config) {
@@ -1120,10 +1119,10 @@
         return isArray(this._months)
             ? this._months[m.month()]
             : this._months[
-                (this._months.isFormat || MONTHS_IN_FORMAT).test(format)
-                    ? 'format'
-                    : 'standalone'
-                ][m.month()];
+                  (this._months.isFormat || MONTHS_IN_FORMAT).test(format)
+                      ? 'format'
+                      : 'standalone'
+              ][m.month()];
     }
 
     function localeMonthsShort(m, format) {
@@ -1135,8 +1134,8 @@
         return isArray(this._monthsShort)
             ? this._monthsShort[m.month()]
             : this._monthsShort[
-                MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'
-                ][m.month()];
+                  MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'
+              ][m.month()];
     }
 
     function handleStrictParse(monthName, format, strict) {
@@ -1606,31 +1605,31 @@
         var weekdays = isArray(this._weekdays)
             ? this._weekdays
             : this._weekdays[
-                m && m !== true && this._weekdays.isFormat.test(format)
-                    ? 'format'
-                    : 'standalone'
-                ];
+                  m && m !== true && this._weekdays.isFormat.test(format)
+                      ? 'format'
+                      : 'standalone'
+              ];
         return m === true
             ? shiftWeekdays(weekdays, this._week.dow)
             : m
-                ? weekdays[m.day()]
-                : weekdays;
+              ? weekdays[m.day()]
+              : weekdays;
     }
 
     function localeWeekdaysShort(m) {
         return m === true
             ? shiftWeekdays(this._weekdaysShort, this._week.dow)
             : m
-                ? this._weekdaysShort[m.day()]
-                : this._weekdaysShort;
+              ? this._weekdaysShort[m.day()]
+              : this._weekdaysShort;
     }
 
     function localeWeekdaysMin(m) {
         return m === true
             ? shiftWeekdays(this._weekdaysMin, this._week.dow)
             : m
-                ? this._weekdaysMin[m.day()]
-                : this._weekdaysMin;
+              ? this._weekdaysMin[m.day()]
+              : this._weekdaysMin;
     }
 
     function handleStrictParse$1(weekdayName, format, strict) {
@@ -2205,9 +2204,9 @@
                 deprecateSimple(
                     'defineLocaleOverride',
                     'use moment.updateLocale(localeName, config) to change ' +
-                    'an existing locale. moment.defineLocale(localeName, ' +
-                    'config) should only be used for creating a new locale ' +
-                    'See http://momentjs.com/guides/#/warnings/define-locale/ for more info.'
+                        'an existing locale. moment.defineLocale(localeName, ' +
+                        'config) should only be used for creating a new locale ' +
+                        'See http://momentjs.com/guides/#/warnings/define-locale/ for more info.'
                 );
                 parentConfig = locales[name]._config;
             } else if (config.parentLocale != null) {
@@ -2332,21 +2331,21 @@
                 a[MONTH] < 0 || a[MONTH] > 11
                     ? MONTH
                     : a[DATE] < 1 || a[DATE] > daysInMonth(a[YEAR], a[MONTH])
-                        ? DATE
-                        : a[HOUR] < 0 ||
-                        a[HOUR] > 24 ||
-                        (a[HOUR] === 24 &&
-                            (a[MINUTE] !== 0 ||
-                                a[SECOND] !== 0 ||
-                                a[MILLISECOND] !== 0))
-                            ? HOUR
-                            : a[MINUTE] < 0 || a[MINUTE] > 59
-                                ? MINUTE
-                                : a[SECOND] < 0 || a[SECOND] > 59
-                                    ? SECOND
-                                    : a[MILLISECOND] < 0 || a[MILLISECOND] > 999
-                                        ? MILLISECOND
-                                        : -1;
+                      ? DATE
+                      : a[HOUR] < 0 ||
+                          a[HOUR] > 24 ||
+                          (a[HOUR] === 24 &&
+                              (a[MINUTE] !== 0 ||
+                                  a[SECOND] !== 0 ||
+                                  a[MILLISECOND] !== 0))
+                        ? HOUR
+                        : a[MINUTE] < 0 || a[MINUTE] > 59
+                          ? MINUTE
+                          : a[SECOND] < 0 || a[SECOND] > 59
+                            ? SECOND
+                            : a[MILLISECOND] < 0 || a[MILLISECOND] > 999
+                              ? MILLISECOND
+                              : -1;
 
             if (
                 getParsingFlags(m)._overflowDayOfYear &&
@@ -2611,8 +2610,8 @@
 
     hooks.createFromInputFallback = deprecate(
         'value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), ' +
-        'which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are ' +
-        'discouraged. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.',
+            'which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are ' +
+            'discouraged. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.',
         function (config) {
             config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
         }
@@ -2797,12 +2796,10 @@
     }
 
     // constant that refers to the ISO standard
-    hooks.ISO_8601 = function () {
-    };
+    hooks.ISO_8601 = function () {};
 
     // constant that refers to the RFC 2822 form
-    hooks.RFC_2822 = function () {
-    };
+    hooks.RFC_2822 = function () {};
 
     // date from string and format string
     function configFromStringAndFormat(config) {
@@ -3017,7 +3014,7 @@
         config._locale = config._locale || getLocale(config._l);
 
         if (input === null || (format === undefined && input === '')) {
-            return createInvalid({nullInput: true});
+            return createInvalid({ nullInput: true });
         }
 
         if (typeof input === 'string') {
@@ -3361,8 +3358,7 @@
 
     // This function will be called whenever a moment is mutated.
     // It is intended to keep the offset in sync with the timezone.
-    hooks.updateOffset = function () {
-    };
+    hooks.updateOffset = function () {};
 
     // MOMENTS
 
@@ -3622,7 +3618,7 @@
     function momentsDifference(base, other) {
         var res;
         if (!(base.isValid() && other.isValid())) {
-            return {milliseconds: 0, months: 0};
+            return { milliseconds: 0, months: 0 };
         }
 
         other = cloneWithOffset(other, base);
@@ -3646,11 +3642,11 @@
                 deprecateSimple(
                     name,
                     'moment().' +
-                    name +
-                    '(period, number) is deprecated. Please use moment().' +
-                    name +
-                    '(number, period). ' +
-                    'See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info.'
+                        name +
+                        '(period, number) is deprecated. Please use moment().' +
+                        name +
+                        '(number, period). ' +
+                        'See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info.'
                 );
                 tmp = val;
                 val = period;
@@ -3790,16 +3786,16 @@
         return diff < -6
             ? 'sameElse'
             : diff < -1
-                ? 'lastWeek'
-                : diff < 0
-                    ? 'lastDay'
-                    : diff < 1
-                        ? 'sameDay'
-                        : diff < 2
-                            ? 'nextDay'
-                            : diff < 7
-                                ? 'nextWeek'
-                                : 'sameElse';
+              ? 'lastWeek'
+              : diff < 0
+                ? 'lastDay'
+                : diff < 1
+                  ? 'sameDay'
+                  : diff < 2
+                    ? 'nextDay'
+                    : diff < 7
+                      ? 'nextWeek'
+                      : 'sameElse';
     }
 
     function calendar$1(time, formats) {
@@ -4061,7 +4057,7 @@
             this.isValid() &&
             ((isMoment(time) && time.isValid()) || createLocal(time).isValid())
         ) {
-            return createDuration({to: this, from: time})
+            return createDuration({ to: this, from: time })
                 .locale(this.locale())
                 .humanize(!withoutSuffix);
         } else {
@@ -4078,7 +4074,7 @@
             this.isValid() &&
             ((isMoment(time) && time.isValid()) || createLocal(time).isValid())
         ) {
-            return createDuration({from: this, to: time})
+            return createDuration({ from: this, to: time })
                 .locale(this.locale())
                 .humanize(!withoutSuffix);
         } else {
@@ -5174,12 +5170,12 @@
                     toInt((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
     });
@@ -5755,14 +5751,14 @@
             return n === 0
                 ? 0
                 : n === 1
-                    ? 1
-                    : n === 2
-                        ? 2
-                        : n % 100 >= 3 && n % 100 <= 10
-                            ? 3
-                            : n % 100 >= 11
-                                ? 4
-                                : 5;
+                  ? 1
+                  : n === 2
+                    ? 2
+                    : n % 100 >= 3 && n % 100 <= 10
+                      ? 3
+                      : n % 100 >= 11
+                        ? 4
+                        : 5;
         },
         plurals = {
             s: [
@@ -5968,14 +5964,14 @@
             return n === 0
                 ? 0
                 : n === 1
-                    ? 1
-                    : n === 2
-                        ? 2
-                        : n % 100 >= 3 && n % 100 <= 10
-                            ? 3
-                            : n % 100 >= 11
-                                ? 4
-                                : 5;
+                  ? 1
+                  : n === 2
+                    ? 2
+                    : n % 100 >= 3 && n % 100 <= 10
+                      ? 3
+                      : n % 100 >= 11
+                        ? 4
+                        : 5;
         },
         plurals$1 = {
             s: [
@@ -6463,14 +6459,14 @@
             return n === 0
                 ? 0
                 : n === 1
-                    ? 1
-                    : n === 2
-                        ? 2
-                        : n % 100 >= 3 && n % 100 <= 10
-                            ? 3
-                            : n % 100 >= 11
-                                ? 4
-                                : 5;
+                  ? 1
+                  : n === 2
+                    ? 2
+                    : n % 100 >= 3 && n % 100 <= 10
+                      ? 3
+                      : n % 100 >= 11
+                        ? 4
+                        : 5;
         },
         plurals$2 = {
             s: [
@@ -6723,10 +6719,9 @@
         return num % 10 === 1 && num % 100 !== 11
             ? forms[0]
             : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20)
-                ? forms[1]
-                : forms[2];
+              ? forms[1]
+              : forms[2];
     }
-
     function relativeTimeWithPlural(number, withoutSuffix, key) {
         var format = {
             ss: withoutSuffix ? 'секунда_секунды_секунд' : 'секунду_секунды_секунд',
@@ -6838,8 +6833,8 @@
                 case 'w':
                 case 'W':
                     return (number % 10 === 2 || number % 10 === 3) &&
-                    number % 100 !== 12 &&
-                    number % 100 !== 13
+                        number % 100 !== 12 &&
+                        number % 100 !== 13
                         ? number + '-і'
                         : number + '-ы';
                 case 'D':
@@ -7359,7 +7354,6 @@
         };
         return number + ' ' + mutation(format[key], number);
     }
-
     function specialMutationForYears(number) {
         switch (lastNumber(number)) {
             case 1:
@@ -7372,21 +7366,18 @@
                 return number + ' vloaz';
         }
     }
-
     function lastNumber(number) {
         if (number > 9) {
             return lastNumber(number % 10);
         }
         return number;
     }
-
     function mutation(text, number) {
         if (number === 2) {
             return softMutation(text);
         }
         return text;
     }
-
     function softMutation(text) {
         var mutationTable = {
             m: 'v',
@@ -7526,8 +7517,8 @@
                 return withoutSuffix
                     ? 'jedna minuta'
                     : isFuture
-                        ? 'jednu minutu'
-                        : 'jedne minute';
+                      ? 'jednu minutu'
+                      : 'jedne minute';
         }
     }
 
@@ -7753,12 +7744,12 @@
                 number === 1
                     ? 'r'
                     : number === 2
-                        ? 'n'
-                        : number === 3
-                            ? 'r'
-                            : number === 4
-                                ? 't'
-                                : 'è';
+                      ? 'n'
+                      : number === 3
+                        ? 'r'
+                        : number === 4
+                          ? 't'
+                          : 'è';
             if (period === 'w' || period === 'W') {
                 output = 'a';
             }
@@ -7805,7 +7796,6 @@
     function plural$1(n) {
         return n > 1 && n < 5 && ~~(n / 10) !== 1;
     }
-
     function translate$1(number, withoutSuffix, key, isFuture) {
         var result = number + ' ';
         switch (key) {
@@ -7983,8 +7973,8 @@
                 var affix = /сехет$/i.exec(output)
                     ? 'рен'
                     : /ҫул$/i.exec(output)
-                        ? 'тан'
-                        : 'ран';
+                      ? 'тан'
+                      : 'ран';
                 return output + affix;
             },
             past: '%s каялла',
@@ -8613,12 +8603,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -8678,12 +8668,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
     });
@@ -8739,12 +8729,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -8804,12 +8794,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -8869,12 +8859,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
     });
@@ -8930,12 +8920,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -8995,12 +8985,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -9060,12 +9050,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -9826,7 +9816,6 @@
             numbersPast[8],
             numbersPast[9],
         ];
-
     function translate$2(number, withoutSuffix, key, isFuture) {
         var result = '';
         switch (key) {
@@ -9864,7 +9853,6 @@
         result = verbalNumber(number, isFuture) + ' ' + result;
         return result;
     }
-
     function verbalNumber(number, isFuture) {
         return number < 10
             ? isFuture
@@ -11383,7 +11371,6 @@
 
     var weekEndings =
         'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
-
     function translate$4(number, withoutSuffix, key, isFuture) {
         var num = number;
         switch (key) {
@@ -11418,7 +11405,6 @@
         }
         return '';
     }
-
     function week(isFuture) {
         return (
             (isFuture ? '' : '[múlt] ') +
@@ -11668,7 +11654,6 @@
         }
         return true;
     }
-
     function translate$5(number, withoutSuffix, key, isFuture) {
         var result = number + ' ';
         switch (key) {
@@ -11914,8 +11899,8 @@
                             (this.hours() > 1
                                 ? 'lle '
                                 : this.hours() === 0
-                                    ? ' '
-                                    : "ll'") +
+                                  ? ' '
+                                  : "ll'") +
                             ']LT'
                         );
                     default:
@@ -11924,8 +11909,8 @@
                             (this.hours() > 1
                                 ? 'lle '
                                 : this.hours() === 0
-                                    ? ' '
-                                    : "ll'") +
+                                  ? ' '
+                                  : "ll'") +
                             ']LT'
                         );
                 }
@@ -12656,7 +12641,6 @@
         };
         return withoutSuffix ? format[key][0] : format[key][1];
     }
-
     // function obliqueNumSuffix(num) {
     //     if(num.includes(':'))
     //         num = parseInt(num.split(':')[0]);
@@ -12955,7 +12939,6 @@
         };
         return withoutSuffix ? format[key][0] : format[key][1];
     }
-
     function processFutureTime(string) {
         var number = string.substr(0, string.indexOf(' '));
         if (eifelerRegelAppliesToNumber(number)) {
@@ -12963,7 +12946,6 @@
         }
         return 'an ' + string;
     }
-
     function processPastTime(string) {
         var number = string.substr(0, string.indexOf(' '));
         if (eifelerRegelAppliesToNumber(number)) {
@@ -12971,7 +12953,6 @@
         }
         return 'virun ' + string;
     }
-
     /**
      * Returns true if the word before the given number loses the '-n' ending.
      * e.g. 'an 10 Deeg' but 'a 5 Deeg'
@@ -13157,7 +13138,6 @@
         y: 'metai_metų_metus',
         yy: 'metai_metų_metus',
     };
-
     function translateSeconds(number, withoutSuffix, key, isFuture) {
         if (withoutSuffix) {
             return 'kelios sekundės';
@@ -13165,23 +13145,19 @@
             return isFuture ? 'kelių sekundžių' : 'kelias sekundes';
         }
     }
-
     function translateSingular(number, withoutSuffix, key, isFuture) {
         return withoutSuffix
             ? forms(key)[0]
             : isFuture
-                ? forms(key)[1]
-                : forms(key)[2];
+              ? forms(key)[1]
+              : forms(key)[2];
     }
-
     function special(number) {
         return number % 10 === 0 || (number > 10 && number < 20);
     }
-
     function forms(key) {
         return units[key].split('_');
     }
-
     function translate$6(number, withoutSuffix, key, isFuture) {
         var result = number + ' ';
         if (number === 1) {
@@ -13198,7 +13174,6 @@
             }
         }
     }
-
     hooks.defineLocale('lt', {
         months: {
             format: 'sausio_vasario_kovo_balandžio_gegužės_birželio_liepos_rugpjūčio_rugsėjo_spalio_lapkričio_gruodžio'.split(
@@ -13285,7 +13260,6 @@
         y: 'gada_gadiem_gads_gadi'.split('_'),
         yy: 'gada_gadiem_gads_gadi'.split('_'),
     };
-
     /**
      * @param withoutSuffix boolean true = a length of time; false = before/after a period of time.
      */
@@ -13299,15 +13273,12 @@
             return number % 10 === 1 && number % 100 !== 11 ? forms[0] : forms[1];
         }
     }
-
     function relativeTimeWithPlural$1(number, withoutSuffix, key) {
         return number + ' ' + format$1(units$1[key], number, withoutSuffix);
     }
-
     function relativeTimeWithSingular(number, withoutSuffix, key) {
         return format$1(units$1[key], number, withoutSuffix);
     }
-
     function relativeSeconds(number, withoutSuffix) {
         return withoutSuffix ? 'dažas sekundes' : 'dažām sekundēm';
     }
@@ -13382,8 +13353,8 @@
             return number === 1
                 ? wordKey[0]
                 : number >= 2 && number <= 4
-                    ? wordKey[1]
-                    : wordKey[2];
+                  ? wordKey[1]
+                  : wordKey[2];
         },
         translate: function (number, withoutSuffix, key) {
             var wordKey = translator.words[key];
@@ -14766,12 +14737,12 @@
                 number === 1
                     ? 'r'
                     : number === 2
-                        ? 'n'
-                        : number === 3
-                            ? 'r'
-                            : number === 4
-                                ? 't'
-                                : 'è';
+                      ? 'n'
+                      : number === 3
+                        ? 'r'
+                        : number === 4
+                          ? 't'
+                          : 'è';
             if (period === 'w' || period === 'W') {
                 output = 'a';
             }
@@ -14926,11 +14897,9 @@
             /^lis/i,
             /^gru/i,
         ];
-
     function plural$3(n) {
         return n % 10 < 5 && n % 10 > 1 && ~~(n / 10) % 10 !== 1;
     }
-
     function translate$8(number, withoutSuffix, key) {
         var result = number + ' ';
         switch (key) {
@@ -15234,10 +15203,9 @@
         return num % 10 === 1 && num % 100 !== 11
             ? forms[0]
             : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20)
-                ? forms[1]
-                : forms[2];
+              ? forms[1]
+              : forms[2];
     }
-
     function relativeTimeWithPlural$3(number, withoutSuffix, key) {
         var format = {
             ss: withoutSuffix ? 'секунда_секунды_секунд' : 'секунду_секунды_секунд',
@@ -15254,7 +15222,6 @@
             return number + ' ' + plural$4(format[key], +number);
         }
     }
-
     var monthsParse$b = [
         /^янв/i,
         /^фев/i,
@@ -15642,11 +15609,9 @@
                 '_'
             ),
         monthsShort$7 = 'jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec'.split('_');
-
     function plural$5(n) {
         return n > 1 && n < 5;
     }
-
     function translate$9(number, withoutSuffix, key, isFuture) {
         var result = number + ' ';
         switch (key) {
@@ -16386,12 +16351,12 @@
                     ~~((number % 100) / 10) === 1
                         ? ':e'
                         : b === 1
+                          ? ':a'
+                          : b === 2
                             ? ':a'
-                            : b === 2
-                                ? ':a'
-                                : b === 3
-                                    ? ':e'
-                                    : ':e';
+                            : b === 3
+                              ? ':e'
+                              : ':e';
             return number + output;
         },
         week: {
@@ -16714,12 +16679,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {
@@ -17056,10 +17021,10 @@
             output.indexOf('jaj') !== -1
                 ? time.slice(0, -3) + 'leS'
                 : output.indexOf('jar') !== -1
-                    ? time.slice(0, -3) + 'waQ'
-                    : output.indexOf('DIS') !== -1
-                        ? time.slice(0, -3) + 'nem'
-                        : time + ' pIq';
+                  ? time.slice(0, -3) + 'waQ'
+                  : output.indexOf('DIS') !== -1
+                    ? time.slice(0, -3) + 'nem'
+                    : time + ' pIq';
         return time;
     }
 
@@ -17069,10 +17034,10 @@
             output.indexOf('jaj') !== -1
                 ? time.slice(0, -3) + 'Hu’'
                 : output.indexOf('jar') !== -1
-                    ? time.slice(0, -3) + 'wen'
-                    : output.indexOf('DIS') !== -1
-                        ? time.slice(0, -3) + 'ben'
-                        : time + ' ret';
+                  ? time.slice(0, -3) + 'wen'
+                  : output.indexOf('DIS') !== -1
+                    ? time.slice(0, -3) + 'ben'
+                    : time + ' ret';
         return time;
     }
 
@@ -17350,8 +17315,8 @@
         return isFuture
             ? format[key][0]
             : withoutSuffix
-                ? format[key][0]
-                : format[key][1];
+              ? format[key][0]
+              : format[key][1];
     }
 
     //! moment.js locale configuration
@@ -17571,10 +17536,9 @@
         return num % 10 === 1 && num % 100 !== 11
             ? forms[0]
             : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20)
-                ? forms[1]
-                : forms[2];
+              ? forms[1]
+              : forms[2];
     }
-
     function relativeTimeWithPlural$4(number, withoutSuffix, key) {
         var format = {
             ss: withoutSuffix ? 'секунда_секунди_секунд' : 'секунду_секунди_секунд',
@@ -17592,7 +17556,6 @@
             return number + ' ' + plural$6(format[key], +number);
         }
     }
-
     function weekdaysCaseReplace(m, format) {
         var weekdays = {
                 nominative:
@@ -17622,11 +17585,10 @@
         nounCase = /(\[[ВвУу]\]) ?dddd/.test(format)
             ? 'accusative'
             : /\[?(?:минулої|наступної)? ?\] ?dddd/.test(format)
-                ? 'genitive'
-                : 'nominative';
+              ? 'genitive'
+              : 'nominative';
         return weekdays[nounCase][m.day()];
     }
-
     function processHoursFunction(str) {
         return function () {
             return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';
@@ -18039,12 +18001,12 @@
                     ~~((number % 100) / 10) === 1
                         ? 'th'
                         : b === 1
-                            ? 'st'
-                            : b === 2
-                                ? 'nd'
-                                : b === 3
-                                    ? 'rd'
-                                    : 'th';
+                          ? 'st'
+                          : b === 2
+                            ? 'nd'
+                            : b === 3
+                              ? 'rd'
+                              : 'th';
             return number + output;
         },
         week: {

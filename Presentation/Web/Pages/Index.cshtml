@@ -1,50 +1,44 @@
 ﻿@page
-@model IndexModel
+@model Yomikaze.Presentation.Web.Models.PaginatedPageModel
 @{
     ViewData["Title"] = "Home page";
 }
 
+@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination);
 <script>
     document.addEventListener('alpine:init', () => {
+        const ODATA_URL = ODATA_BASE_URL + '/Comics';
+        
         Alpine.data('comics', () => ({
             loading: true,
-                        
-            comics: [],
-            pageSize: 10,
-            total: 0,
-            
-            _currentPage: @Model.PageNumber,
-            
-            get totalPages() {
-                return Math.ceil(this.total / this.pageSize);
-            },
-            
-            get currentPage() {
-                return this._currentPage;
-            },
-            
-            set currentPage(value) {
-                this._currentPage = value;
-                window.history.replaceState(null, '', `?page=${value}`);
-                this.fetchComics();
-            },
+            auth: null,
+            client: null,
+            pagination: { current: 0, size: 0, total: 0, count: 0 },        
+                                    
+            data: [],
             
             init() {
                 this.auth = Alpine.store('auth');
                 this.client = this.auth.http;
-                this.getCount();
+                this.pagination = Alpine.store('pagination');
+                
+                this.$watch('pagination.current', () => this.load());
+                this.$watch('pagination.size', () => this.load());
+                this.load();
             },
             
-            async fetchComics() {
+            async load() {
                 this.loading = true;
-                await this.getCount();
-                
-                let url = new URL('/API/OData/Comics/', window.location.origin);
-                
+                this.pagination.count = await this.fetchCount();
+                await this.fetchData();
+                this.loading = false;
+            },
+            
+            async fetchData() {                
+                let url = new URL(ODATA_URL, window.location.origin);
+                url.searchParams.addODataPagination(this.pagination.current, this.pagination.size);
                 url.searchParams.set('$expand', 'ComicGenres($expand=Genre)');
-                url.searchParams.set('$orderby', 'Id desc');
-                url.searchParams.set('$top', this.pageSize.toString());
-                url.searchParams.set('$skip', ((this.currentPage - 1) * this.pageSize).toString());
+                url.searchParams.set('$orderby', 'LastUpdated desc, CreatedAt desc');
                 
                 let comics = await this.client.get(url)
                     .then(response => response.data.value) // random delay from 500ms to 3000ms
@@ -55,12 +49,11 @@
                 
                 await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
                 
-                this.comics = comics;
-                this.loading = false;
+                return this.data = comics;
             },
             
-            async getCount() {
-                let url = new URL('/API/OData/Comics/$count', window.location.origin);
+            async fetchCount() {
+                let url = new URL(ODATA_URL + '/$count');
                 this.total = await this.client.get(url)
                     .then(response => parseInt(response.data) || 0)
                     .catch(error => {
@@ -73,12 +66,12 @@
     });
 </script>
 
-<div class="contents" x-data="comics" x-init="await fetchComics()">
+<div class="contents" x-data="comics">
     <!--* cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:min-h-[680px] sm:min-h-0">
         <!--* skeleton -->
         <div class="contents" x-show="loading">
-            <template x-for="i in pageSize">
+            <template x-for="i in pagination.size">
                 <div class="mx-auto">
                     <div class="w-[190px] h-[280px] skeleton"></div>
                     <!-- random width from 50% to 100% -->
@@ -97,7 +90,7 @@
              x-transition:enter="transition ease-out duration-300 delay-500"
              x-transition:enter-start="opacity-0 scale-90"
              x-transition:enter-end="opacity-100 scale-100">
-            <template x-for="comic in comics">
+            <template x-for="comic in data">
                 <a class="mx-auto" :href="$el.href.replace('-1', comic.Id)" asp-page="/Comics/Details" asp-route-id="-1">
                     <div class="dropdown dropdown-hover">
                         <label class="w-[190px] h-[280px]" tabindex="0">
@@ -130,35 +123,6 @@
 
     <!--* pagination -->
     <div class="w-full mt-4 flex justify-center">
-        <div class="join">
-            <button class="join-item btn"
-                    :disabled="currentPage <= 1"
-                    x-on:click="currentPage = 1">
-                «
-            </button>
-            <button class="join-item btn"
-                    :disabled="currentPage <= 1"
-                    x-on:click="currentPage--">
-                ‹
-            </button>
-            <select class="join-item select select-bordered"
-                    x-model.debounce="currentPage"
-                    x-data="{ selected: currentPage }">
-                <template x-for="i in totalPages" :key="i">
-                    <option x-text="`Page ${i}`" :value="i" :selected="i === selected"></option>
-                </template>
-            </select>
-
-            <button class="join-item btn"
-                    :disabled="currentPage >= totalPages"
-                    x-on:click="currentPage++">
-                ›
-            </button>
-            <button class="join-item btn"
-                    :disabled="currentPage >= totalPages"
-                    x-on:click="currentPage = totalPages">
-                »
-            </button>
-        </div>
+        @await Html.PartialAsync("_PaginationPartial");
     </div>
 </div>

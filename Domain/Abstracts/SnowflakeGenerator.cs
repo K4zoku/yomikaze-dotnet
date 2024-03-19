@@ -18,13 +18,13 @@ public static class SnowflakeGenerator
         {
             if (Generators.TryGetValue(workerId, out SnowflakeIDGenerator? value))
             {
-                return value.GetCodeString();
+                return value.GetCode().ToString();
             }
 
             value = new SnowflakeIDGenerator(workerId, Epoch);
             Generators.Add(workerId, value);
 
-            return value.GetCodeString();
+            return value.GetCode().ToString();
         }
     }
 }

@@ -12,7 +12,7 @@ using Yomikaze.Infrastructure.Database;
 namespace Yomikaze.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    [Migration("20240318205250_Initial")]
+    [Migration("20240319024727_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -315,99 +315,99 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "00028219153693278208",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(2519), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441728",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(7778), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
                             Name = "Action"
                         },
                         new
                         {
-                            Id = "00028219153697472512",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3218), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441729",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8381), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
                             Name = "Adventure"
                         },
                         new
                         {
-                            Id = "00028219153697472513",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3225), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441730",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8388), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
                             Name = "Comedy"
                         },
                         new
                         {
-                            Id = "00028219153697472514",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3228), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441731",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8391), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
                             Name = "Drama"
                         },
                         new
                         {
-                            Id = "00028219153697472515",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3231), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441732",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8393), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
                             Name = "Fantasy"
                         },
                         new
                         {
-                            Id = "00028219153697472516",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3234), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441733",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8395), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that evokes fear in both the characters and the audience.",
                             Name = "Horror"
                         },
                         new
                         {
-                            Id = "00028219153697472517",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3236), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441734",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8397), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around solving a puzzle or a crime.",
                             Name = "Mystery"
                         },
                         new
                         {
-                            Id = "00028219153697472518",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3238), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441735",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8399), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that emphasizes the psychology of its characters and their unstable emotional states.",
                             Name = "Psychological"
                         },
                         new
                         {
-                            Id = "00028219153697472519",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3241), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441736",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8401), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story about love.",
                             Name = "Romance"
                         },
                         new
                         {
-                            Id = "00028219153697472520",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3243), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441737",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8403), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
                             Name = "Slice of Life"
                         },
                         new
                         {
-                            Id = "00028219153697472521",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3246), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441738",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8405), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around sports, such as baseball or basketball.",
                             Name = "Sports"
                         },
                         new
                         {
-                            Id = "00028219153697472522",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3248), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441739",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8407), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that involves supernatural elements, such as ghosts or demons.",
                             Name = "Supernatural"
                         },
                         new
                         {
-                            Id = "00028219153697472523",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3250), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441740",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8471), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is fast-paced and suspenseful, often involving a crime.",
                             Name = "Thriller"
                         },
                         new
                         {
-                            Id = "00028219153697472524",
-                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3253), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = "28308392250441741",
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8474), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that ends in a tragic or unhappy way.",
                             Name = "Tragedy"
                         });
@@ -574,19 +574,19 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "00028219153697513485",
+                            Id = "28308392254676992",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "00028219153701707776",
+                            Id = "28308392254676993",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = "00028219153701707777",
+                            Id = "28308392254676994",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });

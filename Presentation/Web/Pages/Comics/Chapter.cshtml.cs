@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages.Comics;
+namespace Yomikaze.Presentation.Web.Pages.Comics;
 
 public class ChapterModel : PageModel
 {

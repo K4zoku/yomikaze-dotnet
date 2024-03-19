@@ -22,6 +22,10 @@
     {
       "library": "moment.js@2.30.1",
       "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "library": "lodash.js@4.17.21",
+      "destination": "wwwroot/lib/lodash.js/"
     }
   ]
 }

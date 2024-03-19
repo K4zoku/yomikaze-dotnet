@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages;
+namespace Yomikaze.Presentation.Web.Pages;
 
 public class Forgot : PageModel
 {

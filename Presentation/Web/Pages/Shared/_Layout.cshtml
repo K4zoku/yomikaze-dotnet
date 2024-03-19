@@ -17,7 +17,14 @@
     <link rel="preload" href="~/lib/feather/font/feather.ttf" as="font" type="font/ttf" crossorigin>
 </head>
 <body class="bg-base-100 text-base-content overflow-x-hidden">
-@await RenderSectionAsync("AlpineScripts", false)
+
+<!-- Section for Alpine.js scripts -->
+@if (IsSectionDefined("AlpineScripts"))
+{
+    @await RenderSectionAsync("AlpineScripts", true);
+}
+<!-- End of Section for Alpine.js scripts -->
+
 <header>
     <nav class="navbar bg-base-200" x-data="{ authenticated: $store.auth.authenticated }">
         <div class="navbar-start gap-2 z-10">
@@ -117,6 +124,7 @@
     </div>
 </footer>
 <script src="~/lib/axios/axios.min.js"></script>
+<script src="~/lib/lodash.js/lodash.min.js"></script>
 <script src="~/js/site.js"></script>
 
 @await RenderSectionAsync("Scripts", false)

@@ -388,20 +388,20 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 columns: new[] { "Id", "CreatedAt", "Description", "Name" },
                 values: new object[,]
                 {
-                    { "00028219153693278208", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(2519), new TimeSpan(0, 0, 0, 0, 0)), "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
-                    { "00028219153697472512", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3218), new TimeSpan(0, 0, 0, 0, 0)), "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
-                    { "00028219153697472513", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3225), new TimeSpan(0, 0, 0, 0, 0)), "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
-                    { "00028219153697472514", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3228), new TimeSpan(0, 0, 0, 0, 0)), "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
-                    { "00028219153697472515", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3231), new TimeSpan(0, 0, 0, 0, 0)), "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
-                    { "00028219153697472516", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3234), new TimeSpan(0, 0, 0, 0, 0)), "A story that evokes fear in both the characters and the audience.", "Horror" },
-                    { "00028219153697472517", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3236), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around solving a puzzle or a crime.", "Mystery" },
-                    { "00028219153697472518", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3238), new TimeSpan(0, 0, 0, 0, 0)), "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
-                    { "00028219153697472519", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3241), new TimeSpan(0, 0, 0, 0, 0)), "A story about love.", "Romance" },
-                    { "00028219153697472520", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3243), new TimeSpan(0, 0, 0, 0, 0)), "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
-                    { "00028219153697472521", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3246), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around sports, such as baseball or basketball.", "Sports" },
-                    { "00028219153697472522", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3248), new TimeSpan(0, 0, 0, 0, 0)), "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
-                    { "00028219153697472523", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3250), new TimeSpan(0, 0, 0, 0, 0)), "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
-                    { "00028219153697472524", new DateTimeOffset(new DateTime(2024, 3, 18, 20, 52, 50, 528, DateTimeKind.Unspecified).AddTicks(3253), new TimeSpan(0, 0, 0, 0, 0)), "A story that ends in a tragic or unhappy way.", "Tragedy" }
+                    { "28308392250441728", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(7778), new TimeSpan(0, 0, 0, 0, 0)), "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
+                    { "28308392250441729", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8381), new TimeSpan(0, 0, 0, 0, 0)), "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
+                    { "28308392250441730", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8388), new TimeSpan(0, 0, 0, 0, 0)), "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
+                    { "28308392250441731", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8391), new TimeSpan(0, 0, 0, 0, 0)), "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
+                    { "28308392250441732", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8393), new TimeSpan(0, 0, 0, 0, 0)), "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
+                    { "28308392250441733", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8395), new TimeSpan(0, 0, 0, 0, 0)), "A story that evokes fear in both the characters and the audience.", "Horror" },
+                    { "28308392250441734", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8397), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around solving a puzzle or a crime.", "Mystery" },
+                    { "28308392250441735", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8399), new TimeSpan(0, 0, 0, 0, 0)), "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
+                    { "28308392250441736", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8401), new TimeSpan(0, 0, 0, 0, 0)), "A story about love.", "Romance" },
+                    { "28308392250441737", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8403), new TimeSpan(0, 0, 0, 0, 0)), "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
+                    { "28308392250441738", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8405), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around sports, such as baseball or basketball.", "Sports" },
+                    { "28308392250441739", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8407), new TimeSpan(0, 0, 0, 0, 0)), "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
+                    { "28308392250441740", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8471), new TimeSpan(0, 0, 0, 0, 0)), "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
+                    { "28308392250441741", new DateTimeOffset(new DateTime(2024, 3, 19, 2, 47, 26, 657, DateTimeKind.Unspecified).AddTicks(8474), new TimeSpan(0, 0, 0, 0, 0)), "A story that ends in a tragic or unhappy way.", "Tragedy" }
                 });
 
             migrationBuilder.InsertData(
@@ -409,9 +409,9 @@ namespace Yomikaze.Infrastructure.Database.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "00028219153697513485", null, "Administrator", "ADMINISTRATOR" },
-                    { "00028219153701707776", null, "Publisher", "PUBLISHER" },
-                    { "00028219153701707777", null, "Reader", "READER" }
+                    { "28308392254676992", null, "Administrator", "ADMINISTRATOR" },
+                    { "28308392254676993", null, "Publisher", "PUBLISHER" },
+                    { "28308392254676994", null, "Reader", "READER" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -3,12 +3,11 @@
 //! author : petrbela : https://github.com/petrbela
 
 ;(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined'
-    && typeof require === 'function' ? factory(require('../moment')) :
-        typeof define === 'function' && define.amd ? define(['../moment'], factory) :
-            factory(global.moment)
-}(this, (function (moment) {
-    'use strict';
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
 
     //! moment.js locale configuration
 
@@ -45,7 +44,6 @@
     function plural(n) {
         return n > 1 && n < 5 && ~~(n / 10) !== 1;
     }
-
     function translate(number, withoutSuffix, key, isFuture) {
         var result = number + ' ';
         switch (key) {
