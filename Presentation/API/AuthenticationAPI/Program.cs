@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
+using Yomikaze.Domain.Entities;
+using Yomikaze.Infrastructure.Database;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
@@ -47,4 +52,24 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+// Migrate and add default admin user if not exists
+var scope = app.Services.CreateScope();
+var serviceProvider = scope.ServiceProvider;
+var dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
+await dbContext.Database.MigrateAsync();
+var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+if (!userManager.Users.Any())
+{
+    User admin = new()
+    {
+        UserName = "admin",
+        Fullname = "Administrator",
+        Email = "admin@yomikaze.org",
+        EmailConfirmed = true
+    };
+    await userManager.CreateAsync(admin, "admin");
+    await userManager.AddToRoleAsync(admin, "Administrator");
+}
+
+// Run the application
+await app.RunAsync();
