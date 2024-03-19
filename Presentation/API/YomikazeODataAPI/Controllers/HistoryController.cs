@@ -13,12 +13,16 @@ namespace Yomikaze.API.OData.Controllers;
 public class HistoryController(DbContext dbContext) : ControllerBase
 {
     private HistoryRepo Repository { get; } = new(dbContext);
-
-    // example of a get request
-    // Chapter($expand= Comic)
+    
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
         string id = User.GetId();
-        return Ok(Repository.GetHistoryByUserId(id));
+        var history = Repository.GetHistoryByUserId(id);
+        // select distinct comic
+
+        history = history
+            .GroupBy(x => x.ChapterId)
+            .Select(x => x.First());
+        return Ok(history.ToList());
     }
 }

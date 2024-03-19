@@ -153,7 +153,8 @@
     <div class="shrink-0 flex-grow-0 mx-auto">
         <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
              src=""
-             :src="comic?.Cover">
+             data-src="/placeholder.png" :src="comic.Cover || $el.dataset.src"
+        />
     </div>
     <!-- Detail -->
     <div class="flex-grow flex flex-col gap-4">

@@ -73,7 +73,9 @@
                 <a asp-page="/Comic/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"
                    class="card card-side bg-base-100 shadow-lg hover:bg-base-200">
                     <figure class="max-w-[80px] max-h-[120px]">
-                        <img class="w-[80px] h-full object-cover object-center" :src="comic?.Cover" src="" alt="Cover"/>
+                        <img class="w-[80px] h-full object-cover object-center"
+                             data-src="/placeholder.png" :src="comic.Cover || $el.dataset.src"
+                             src="" alt="Cover"/>
                     </figure>
                     <div class="card-body">
                         <p class="text-sm card-title" x-text="comic?.Name">Name</p>
