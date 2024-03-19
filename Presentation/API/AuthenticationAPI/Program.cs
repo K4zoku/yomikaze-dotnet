@@ -67,8 +67,16 @@ if (!userManager.Users.Any())
         Email = "admin@yomikaze.org",
         EmailConfirmed = true
     };
-    await userManager.CreateAsync(admin, "admin");
-    await userManager.AddToRoleAsync(admin, "Administrator");
+    var result = await userManager.CreateAsync(admin, "Admin@123");
+    if (!result.Succeeded)
+    {
+        throw new InvalidOperationException("Could not create default admin user");
+    }
+    result = await userManager.AddToRoleAsync(admin, "Administrator");
+    if (!result.Succeeded)
+    {
+        throw new InvalidOperationException("Could not add default admin user to Administrator role");
+    }
 }
 
 // Run the application
