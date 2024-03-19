@@ -1,13 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Yomikaze.Presentation.Web.Pages.Manage.Comics;
 
 public class EditModel : PageModel
 {
-    public string Id { get; set; } = string.Empty;
-
-    public void OnGet([FromRoute] string id)
+    public string Id { get; set; }
+    public void OnGet(string id)
     {
         Id = id;
     }
