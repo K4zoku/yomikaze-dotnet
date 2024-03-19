@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination);
+@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination)
 <script>
     document.addEventListener('alpine:init', () => {
         const ODATA_URL = ODATA_BASE_URL + '/Comics';
@@ -123,6 +123,6 @@
 
     <!--* pagination -->
     <div class="w-full mt-4 flex justify-center">
-        @await Html.PartialAsync("_PaginationPartial");
+        @await Html.PartialAsync("_PaginationPartial")
     </div>
 </div>
