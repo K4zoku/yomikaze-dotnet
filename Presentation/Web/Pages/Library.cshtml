@@ -4,7 +4,7 @@
     ViewData["Title"] = "Library";
 }
 
-@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination);
+@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination)
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('comics', () => ({
