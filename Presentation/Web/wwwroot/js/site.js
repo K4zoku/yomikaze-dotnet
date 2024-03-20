@@ -44,7 +44,7 @@
             if (!profile.avatar) {
                 console.log("No avatar found in profile, generating gravatar...");
                 let emailHash = await sha256(profile.email);
-                profile.avatar = `https://gravatar.com/avatar/${emailHash}?d=mp&f=y`;
+                profile.avatar = `https://gravatar.com/avatar/${emailHash}`;
             }
             this.profile = profile;
             return profile;
