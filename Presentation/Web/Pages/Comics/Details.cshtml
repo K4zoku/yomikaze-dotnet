@@ -385,11 +385,13 @@
             <label class="label" for="comment-box">
                 <span class="label-text text-xl font-bold">Comments</span>
             </label>
-            <textarea class="textarea textarea-bordered" id="comment-box" x-model="content" placeholder="Write your comment here..." rows="3"></textarea>
+            <textarea
+                x-on:keyup.ctrl.enter="$refs.submitComment.click()"
+                class="textarea textarea-bordered" id="comment-box" x-model="content" placeholder="Write your comment here..." rows="3"></textarea>
         </div>
 
         <div class="self-end">
-            <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="button" x-on:click="postComment()">
+            <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="button" x-on:click="postComment()" x-ref="submitComment">
                 <i data-feather="send"></i>
                 <span>Post</span>
             </button>
