@@ -47,7 +47,7 @@
             async fetchChapters() {
                 let url = new URL(`/API/OData/Chapters/`, window.location.origin);
                 url.searchParams.set('$filter', `ComicId eq '${this.id}'`);
-                url.searchParams.set('$orderby', 'Index asc');
+                url.searchParams.set('$orderby', 'Index desc');
                 this.chapters = await this.client.get(url)
                     .then(response => response.data.value)
                     .catch(error => { console.error(error); return []; });

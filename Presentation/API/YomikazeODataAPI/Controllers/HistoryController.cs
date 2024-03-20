@@ -22,7 +22,7 @@ public class HistoryController(DbContext dbContext) : ControllerBase
 
         history = history
             .GroupBy(x => x.ChapterId)
-            .Select(x => x.First());
+            .Select(x => x.OrderByDescending(y => y.CreatedAt).First());
         return Ok(history.ToList());
     }
 }
