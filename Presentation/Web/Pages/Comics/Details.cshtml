@@ -169,7 +169,8 @@
             <div class="flex-grow">
                 <div class="flex flex-col">
                     <div class="indicator">
-                        <span class="indicator-item badge badge-secondary badge-sm">New</span>
+                        <span class="indicator-item badge badge-secondary badge-sm"
+                              x-show="moment().diff(comic?.Published, 'hours') < 2">New</span>
                         <h2 class="text-3xl title-font font-medium" x-text="comic?.Name">Name</h2>
                     </div>
                     <span class="text-sm text-neutral italic" x-text="comic?.Aliases">Aliases</span>
