@@ -10,7 +10,7 @@
         Alpine.data('comic', () => ({
             id: '@Model.Id',
             loading: true,
-            comic: null,
+            comic: {},
             chapters: [],
 
             //for comment
@@ -159,7 +159,7 @@
     <div class="shrink-0 flex-grow-0 mx-auto">
         <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
              src=""
-             data-src="/placeholder.png" :src="comic.Cover || $el.dataset.src"
+             data-src="/placeholder.png" :src="comic?.Cover || $el.dataset.src"
         />
     </div>
     <!-- Detail -->
