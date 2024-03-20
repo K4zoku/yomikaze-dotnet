@@ -70,13 +70,12 @@
             deleteComic(id) {
                 this.loading = true;
                 this.client.delete(`/API/Comics/${id}`)
-                    .then(response => {
-                        this.fetchComics();
-                    })
+                    .then(response => this.fetchComics())
+                    .then(() => this.loading = false)
                     .catch(error => {
                         console.error(error);
                         this.loading = false;
-                    });
+                    })
             },
         }));
     });
