@@ -98,14 +98,14 @@
             <link as="image" rel="preload" href="~/loading.svg" type="image/svg+xml">
             
             <div class="mb-12 pb-8 flex flex-col items-center">
-                <template x-for="page in chapter.pages">
+                <template x-for="page in chapter.pages" :key="page.id">
                     <div class="w-full max-w-screen" x-data="{ loaded: false }">
-                        <img src="" alt="a" x-on:load="setTimeout(() => loaded = true, 300)" x-show="loaded" 
+                        <img src="" :alt="page.id" alt="" x-on:load="setTimeout(() => loaded = true, 300)" x-show="loaded" 
                              x-transition:enter="transition ease-out duration-500" 
                              x-transition:enter-start="opacity-0 transform scale-95" 
                              x-transition:enter-end="opacity-100 transform scale-100" 
                              class="object-contain object-center mx-auto" :src="page.image">
-                        <img alt="0" class="object-contain object-center mx-auto my-12" src="~/loading.svg" x-show="!loaded"/>
+                        <img alt="Loader" class="object-contain object-center mx-auto my-12" src="~/loading.svg" x-show="!loaded"/>
                     </div>
                 </template>
 
@@ -113,8 +113,8 @@
 
             <div class="bottom-2 sticky btm-nav btm-nav-sm rounded-box shadow-2xl bg-base-300 border border-dashed border-neutral">
                 <div class="px-2 flex flex-row gap-4"
-                     x-on:keydown.arrow-left.window="prevChapter()"
-                     x-on:keydown.arrow-right.window="nextChapter()"
+                     x-on:keyup.arrow-left.window="prevChapter()"
+                     x-on:keyup.arrow-right.window="nextChapter()"
                      >
                     <button type="button" class="btn btn-sm btn-circle btn-neutral hover:btn-accent focus:btn-accent active:btn-accent" 
                             x-on:click="prevChapter()" :disabled="isFirst">
@@ -123,7 +123,7 @@
                     <label>
                         <select x-model="index" class="select select-sm select-accent grow sm:w-full sm:max-w-sm">
                             <template x-for="(chapter, i) in Object.values(chapters)">
-                                <option :selected="chapter.index === index" :value="chapter.index" x-text="chapter.title || 'Chapter ' + (chapter.index || i)"></option>
+                                <option :value="chapter.index" x-text="chapter.title || 'Chapter ' + (chapter.index || i)"></option>
                             </template>
                         </select>
                     </label>
