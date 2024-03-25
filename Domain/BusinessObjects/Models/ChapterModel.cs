@@ -19,6 +19,12 @@ public class ChapterInputModel
     
 }
 
+public class ChapterIndexInputModel
+{
+    public string Id { get; set; } = default!;
+    public int Index { get; set; }
+}
+
 public class ChapterOutputModel
 {
     public string Id { get; set; }

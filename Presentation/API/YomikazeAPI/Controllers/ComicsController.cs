@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using Yomikaze.API.Main.Base;
 using Yomikaze.Application.Data.Repos;
+using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Models;
@@ -34,10 +36,21 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     public override ActionResult<ComicOutputModel> Put(string key, ComicInputModel input)
     {
         CheckModelState();
-
+        // update only index
+        foreach (var t in input.Chapters)
+        {
+            var chapter = ChapterRepo.Get(t.Id);
+            if (chapter == null)
+            {
+                continue;
+            }
+            chapter.Index = t.Index;
+            ChapterRepo.Update(chapter);
+        }
+        input.Chapters = null;
+        
         Comic? entityToUpdate = Repository.Get(key);
         CheckEntity(entityToUpdate);
-
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
 
@@ -84,4 +97,21 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
 
         return Ok(Mapper.Map<ChapterOutputModel>(chapter));
     }
+    
+    [HttpGet("{key}")]
+    public override ActionResult<ComicOutputModel> Get(string key)
+    {
+        Comic? entity = Repository.Get(key);
+
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
+        
+        _ = entity.Chapters; // lazy load
+        _ = entity.ComicGenres; // lazy load
+
+        return Ok(Mapper.Map<ComicOutputModel>(entity));
+    }
+
 }

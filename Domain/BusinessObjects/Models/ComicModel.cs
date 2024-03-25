@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Yomikaze.Domain.Models;
 
@@ -24,9 +25,9 @@ public class ComicInputModel
 
     [Length(0, 70, ErrorMessage = "Comic's authors must from 0 to 150 characters")]
     public string? Authors { get; set; }
-
-    //list of genre ids
     public ICollection<ComicGenreInputModel> ComicGenres { get; set; } = new List<ComicGenreInputModel>();
+    
+    public IList<ChapterIndexInputModel> Chapters { get; set; } = new List<ChapterIndexInputModel>();
 }
 
 public class ComicOutputModel
@@ -48,9 +49,11 @@ public class ComicOutputModel
     public string? Aliases { get; set; }
 
     public string? Authors { get; set; }
-
-    public ICollection<ComicGenreOutputModel>? ComicGenres { get; set; }
-
+    
+    public ICollection<ComicGenreOutputModel> ComicGenres { get; set; } = new List<ComicGenreOutputModel>();
+    
+    public ICollection<ChapterOutputModel> Chapters { get; set; } = new List<ChapterOutputModel>();
+    
     public DateTimeOffset LastUpdated { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
