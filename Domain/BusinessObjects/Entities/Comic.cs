@@ -1,5 +1,6 @@
-using Abstracts;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -15,9 +16,11 @@ public class Comic : BaseEntity
     public virtual string? Aliases { get; set; } = default!;
     public virtual string? Authors { get; set; } = default!;
 
-    [DeleteBehavior(DeleteBehavior.Cascade)]
-    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
+    [InverseProperty(nameof(ComicGenre.Comic))]
+    public virtual ICollection<ComicGenre> ComicGenres { get; set; } = new List<ComicGenre>();
+
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
+    [InverseProperty(nameof(Chapter.Comic))]
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
 }

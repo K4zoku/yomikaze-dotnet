@@ -5,6 +5,6 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.API.OData.Controllers;
 
-public class ComicsController(DbContext dbContext) : ODataControllerBase<Comic>(dbContext, new ComicRepo(dbContext))
+public class ComicsController(DbContext dbContext) : ODataControllerBase<Comic>(new ComicRepo(dbContext))
 {
 }

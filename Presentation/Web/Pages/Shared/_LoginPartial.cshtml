@@ -1,0 +1,94 @@
+﻿<template x-if="authenticated">
+    <details class="dropdown dropdown-end" x-data="{ profile: null, name: null, username: null }"
+             x-init="profile = await $store.auth.getProfile(); name = profile?.fullname; username = profile?.userName">
+        <summary class="btn btn-circle avatar">
+            <div class="w-10 rounded-full ring ring-neutral ring-offset-base-100 ring-offset-2">
+                <img alt="Avatar"
+                     src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                     :src="profile?.avatar"/>
+            </div>
+        </summary>
+        <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-200 rounded-box w-52 z-50">
+            <li class="menu-title py-2">
+                <span class="text-base-content" x-text="`Welcome, ${name || username || 'User'}`"></span>
+            </li>
+            <li class="menu-title">
+                <span>Navigation</span>
+            </li>
+            <li>
+                <a asp-page="/Search">
+                    <i aria-hidden="true" data-feather="search"></i>
+                    <span>Advanced search</span>
+                </a>
+            </li>
+            <li></li>
+            <template x-if="profile?.isAdmin">
+                <div class="contents">
+                    <li class="menu-title">
+                        <span>Manage</span>
+                    </li>
+                    <li>
+                        <details>
+                            <summary>
+                                <a asp-page="/Manage/Comics/Index">
+                                    <i aria-hidden="true" class=" text-base-content" data-feather="book-open"></i>
+                                    <span class="text-base-content">Manage comics</span>
+                                </a>
+                            </summary>
+                            <ul>
+                                <li>
+                                    <a asp-page="/Manage/Comics/Create">
+                                        <i aria-hidden="true" class="text-base-content" data-feather="plus-square"></i>
+                                        <span class="text-base-content">Add new comic</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li>
+                        <a asp-page="/Manage/Genres">
+                            <i aria-hidden="true" class="text-base-content" data-feather="tag"></i>
+                            <span class="text-base-content">Manage genres</span>
+                        </a>
+                    </li>
+                    <li></li>
+                </div>
+            </template>
+            <li class="menu-title">
+                <span>Account</span>
+            </li>
+            <li>
+                <a asp-page="/Profile">
+                    <i data-feather="user" aria-hidden="true"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a asp-page="/Library">
+                    <i data-feather="bookmark" aria-hidden="true"></i>
+                    <span>Library</span>
+                </a>
+            </li>
+            <li>
+                <a asp-page="/History">
+                    <i data-feather="rotate-ccw" aria-hidden="true"></i>
+                    <span>History</span>
+                </a>
+            </li>
+
+            <li></li>
+            <li>
+                <a x-on:click="$store.auth.logout()" class="text-error hover:bg-error hover:text-error-content">
+                    <i data-feather="log-out" aria-hidden="true"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </details>
+</template>
+<template x-if="!authenticated">
+    <div class="contents">
+        <a class="btn btn-accent" asp-page="/SignIn">Sign In</a>
+        <a class="btn btn-success" asp-page="/SignUp">Sign Up</a>
+    </div>
+</template>

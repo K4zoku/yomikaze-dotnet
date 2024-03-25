@@ -1,6 +1,6 @@
-using Abstracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 

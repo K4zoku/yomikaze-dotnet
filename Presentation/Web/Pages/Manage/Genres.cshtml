@@ -1,0 +1,341 @@
+﻿@page
+@model GenreModel
+
+@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination)
+<script>   
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('genres', () => ({
+            pagination: { current: 0, size: 0, total: 0, count: 0 },
+            auth: null,
+            client: null,
+            
+            // Listing :{{{
+            data: [],
+            loading: false,
+              
+            async load() {
+                this.loading = true;
+                this.pagination.count = await this.getCount();
+                await this.fetchData();
+                this.loading = false;
+            },
+            
+            async fetchData() {
+                let url = new URL('/API/OData/Genres/', window.location.origin);
+                url.searchParams.addODataPagination(this.pagination.current, this.pagination.size);
+
+                let genres = await this.client.get(url)
+                    .then(response => response.data?.value || [])
+                    .catch(error => {
+                        console.error(error);
+                        return [];
+                    });
+
+                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
+                
+                this.data = camelize(genres);
+                return this.data;
+            },
+
+            async getCount() {
+                let url = new URL('/API/OData/Genres/$count', window.location.origin);
+                return await this.client.get(url)
+                    .then(response => parseInt(response.data) || 0)
+                    .catch(error => {
+                        console.error('Error while getting $count', error);
+                        return 0;
+                    });
+            },
+            // :}}}
+            
+            async init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+                this.pagination = Alpine.store('pagination');
+                this.form.reset();
+                
+                this.$watch('pagination.current', async () => await this.load());
+                this.$watch('pagination.size', async () => await this.load());
+                await this.load();
+                console.log('Data loaded', this.data);
+            },
+            
+            form: {
+                modes: {
+                    create: 'create',
+                    edit: 'edit'
+                },
+                mode: 'create',
+                defaults: () => ({
+                   name: {
+                      value: '',
+                      error: ''
+                   },
+                   description: {
+                      value: '',
+                      error: ''
+                   }
+                }),
+                data: {},
+                id: null,
+                message: '',
+                
+                submitting: false,
+                getData() {
+                    let data = {};
+                    for (let key in this.data) {
+                        if (typeof(this.data[key].map) == 'function') {
+                            data[key] = this.data[key].map(this._data[key].value);
+                        } else {
+                            data[key] = this.data[key].value;
+                        }
+                    }
+                    return data;
+                },
+                setData(data) {
+                    for (let key in data) {
+                        if (this.data[key]) {
+                            this.data[key].value = data[key];
+                        }
+                    }
+                },
+                reset() {
+                    this.data = this.defaults();
+                    this.message = '';
+                    this.id = null;
+                },
+                
+                create($modal) {
+                    this.mode = this.modes.create;
+                    this.reset();
+                    $modal.showModal();
+                },
+                
+                edit(genre, $modal) {
+                    this.mode = this.modes.edit;
+                    this.data = {
+                        name: {
+                            value: genre.name,
+                            error: ''
+                        },
+                        description: {
+                            value: genre.description,
+                            error: ''
+                        }
+                    };
+                    this.id = genre.id;
+                    $modal.showModal();
+                },
+                
+                delete(genre, $modal) {
+                    this.id = genre.id;
+                    this.setData(genre);
+                    $modal.showModal();
+                },
+            },
+            
+            async submit() {
+                let data = this.form.getData();
+                this.form.submitting = true;
+                switch (this.form.mode) {
+                    case this.form.modes.create:
+                        await this.create(data);
+                        break;
+                    case this.form.modes.edit:
+                        await this.edit(data);
+                        break;
+                }
+                this.form.submitting = false;
+            },
+            async create(data) {
+                 let response = await this.client.post('/API/Genres', data)
+                     .then(response => response)
+                     .catch(error => {
+                         console.error(error);
+                         this.message = 'Error creating genre';
+                         return error.response;
+                     });
+                 switch (response.status) {
+                     case 200:
+                         this.form.message = 'Genre created successfully';
+                         this.form.reset();
+                         this.$refs.formModal.close();
+                         await this.load();
+                         break;
+                     case 409:
+                         alert(`Genre with name ${data.name} already exists`);
+                         break;
+                     default:
+                         this.message = 'Error creating genre';
+                         for (let key in response.data.errors) {
+                             this.data[key].error = response.data.errors[key];
+                         }
+                         break;
+                 }
+            },
+            async edit(data) {
+                let response = await this.client.put(`/API/Genres/${this.form.id}`, data)
+                    .then(response => response)
+                    .catch(error => {
+                        console.error(error);
+                        return error.response;
+                    })
+                    .then(response => camelize(response));
+                console.log('Response', response);
+                switch (response.status) {
+                    case 200:
+                        this.form.message = 'Genre updated successfully';
+                        this.form.reset();
+                        this.$refs.formModal.close();
+                        await this.load();
+                        break;
+                    case 409:
+                        alert(`Genre with name ${data.name} already exists`);
+                        break;
+                    default:
+                        this.message = 'Error updating genre';
+                        for (let key in response.data.errors) {
+                            this.data[key].error = response.data.errors[key];
+                        }
+                        break;
+                }
+            },
+            async processDelete() {
+                await this.client.delete(`/API/Genres/${this.form.id}`)
+                    .then(response => {
+                        this.message = 'Genre deleted successfully';
+                        this.$refs.deleteModal.close();
+                        this.form.id = null;
+                        this.load();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        this.message = 'Error deleting genre';
+                    });
+            }
+        }));
+    });
+</script>
+
+<div class="contents" x-data="genres">
+    <div class="container mx-auto py-8 mb-8">
+        <!-- Genre Creation Form -->
+        <dialog x-ref="formModal" class="modal">
+            <div class="modal-box">
+                <form x-on:submit.prevent="await submit()" x-data="{ creating: form.mode === form.modes.create }" x-init="$watch('form.mode', () => creating = form.mode === form.modes.create)">
+                    <p class="text-2xl font-bold flex items-center justify-center mb-3">
+                        <i :data-feather="creating ? 'plus-square' : 'edit'" class="mr-2"></i>
+                        <span x-text="creating ? 'Create Genre' : 'Edit Genre'"></span>
+                    </p>
+
+                    <div class="mb-4">
+                        <label for="genre" class="block text-sm font-bold mb-2">Genre Name</label>
+                        <input id="genre" type="text" x-model="form.data.name.value" placeholder="Enter the genre name" required
+                               class="input input-bordered w-full" autocomplete="off" :class="{ 'input-error': !!form.data.name.error }"/>
+                        <span class="text-xs text-red-500" x-show="!!form.data.name.error" x-text="form.data.name.error"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="block text-sm font-bold mb-2">Description</label>
+                        <textarea class="textarea textarea-bordered w-full max-h-[200px] min-h-[50px]" 
+                        id="description" x-model="form.data.description.value" placeholder="Write description here"
+                        rows="2" 
+                        maxlength="500" :class="{ 'textarea-error': !!form.data.description.error }"></textarea>
+                        <span class=" text-xs text-red-500" x-show="!!form.data.description.error" x-text="form.data.description.error"></span>
+                    </div>
+                    <div class="modal-action">
+                        <button :disabled="form.submitting" class="btn btn-accent"
+                                type="submit">
+                            <span class="loading loading-infinity" x-show="loading"></span>
+                            <span x-text="form.submitting ? 'Saving...' : (creating ? 'Create' : 'Save')">Save</span>
+                        </button>
+                        <button class="btn ms-2"
+                                type="reset"
+                                x-on:click="form.reset(); $refs.formModal.close()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
+    </div>
+
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold mb-4">List of Genres</h2>
+        <button class="btn btn-success" x-on:click="form.create($refs.formModal)">
+            <i data-feather="plus-square" class="mr-2"></i>
+            <span>Create New Genre</span>
+        </button>
+    </div>
+    <div class="w-full mt-8">
+        <table class="table w-full rounded-box" aria-describedby="genres_info" :class="{ 'min-h-[538px]': loading }">
+            <thead>
+            <tr>
+                <th class="font-semibold p-4 relative pr-6 ">Genre</th>
+                <th class="font-semibold p-4 relative pr-6">Description</th>
+                <th class="font-semibold p-4 relative pr-6">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr x-show="loading">
+                <td colspan="4" class="text-center">
+                <span class="loading loading-lg loading-infinity"></span>
+                <td>
+            </tr>
+            <template x-if="!loading && data.length === 0">
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <span class="text-lg text-gray-500">No genres found</span>
+                    </td>
+                </tr>
+            </template>
+            <template x-if="data.length > 0">
+                <template x-for="item in data" :key="item.id">
+                    <tr class="bg-base-100 hover" x-show="!loading"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100">
+                        <td>
+                            <span class="badge badge-outline badge-outline-success" x-text="item.name">
+                                Genre
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-sm" x-text="item.description">
+                                Description
+                            </span>
+                        </td>
+                        <td>
+                            <a class="btn btn-xs btn-warning gap-2" x-on:click="form.edit(item, $refs.formModal)">
+                                <i data-feather="edit"></i>
+                                <span class="text-sm">Edit</span>
+                            </a>
+                            <a class="btn btn-xs btn-error gap-2" x-on:click="form.delete(item, $refs.deleteModal)">
+                                <i data-feather="trash"></i>
+                                <span class="text-sm">Delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                </template>
+            </template>
+            </tbody>
+        </table>
+        <dialog class="modal cursor-pointer" x-ref="deleteModal">
+            <div class="modal-box relative">
+                <h3 class="text-xl font-bold">
+                    Delete genre
+                    <span x-text="form.data.name.value">Name</span>?
+                </h3>
+                <p class="p-4">Are you sure you want to delete this genre?</p>
+                <div class="modal-action">
+                    <button class="btn btn-error" x-on:click="await processDelete()">Delete</button>
+                    <button class="btn" x-on:click="$refs.deleteModal.close()">Cancel</button>
+                </div>
+            </div>
+        </dialog>
+        <div class="w-full mt-4 flex justify-end items-center gap-2">
+            @await Html.PartialAsync("_PaginationPartial")
+        </div>
+    </div>
+</div>

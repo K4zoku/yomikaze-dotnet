@@ -26,12 +26,12 @@ public class ComicInputModel
     public string? Authors { get; set; }
 
     //list of genre ids
-    public ICollection<long> GenresId { get; set; } = new List<long>();
+    public ICollection<ComicGenreInputModel> ComicGenres { get; set; } = new List<ComicGenreInputModel>();
 }
 
 public class ComicOutputModel
 {
-    public long Id { get; set; }
+    public string Id { get; set; }
 
     public string Name { get; set; } = default!;
 
@@ -49,5 +49,9 @@ public class ComicOutputModel
 
     public string? Authors { get; set; }
 
-    public ICollection<GenreOutputModel>? Genres { get; set; }
+    public ICollection<ComicGenreOutputModel>? ComicGenres { get; set; }
+
+    public DateTimeOffset LastUpdated { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; }
 }

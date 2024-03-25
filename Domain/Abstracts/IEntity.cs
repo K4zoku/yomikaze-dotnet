@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Abstracts;
+namespace Yomikaze.Domain.Abstracts;
 
 public interface IEntity<TId>
 {
     [Key] public TId Id { get; set; }
 }
 
-public interface IEntity : IEntity<long>
+public interface IEntity : IEntity<string>
 {
 }

@@ -1,3 +1,5 @@
+using Yomikaze.Application.Data.Configs;
+using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
@@ -8,7 +10,10 @@ ConfigurationManager configuration = builder.Configuration;
 
 services.AddYomikazeDbContext(configuration);
 
-services.AddControllers().ConfigureApiBehaviorOptionsYomikaze();
+services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
+}).ConfigureApiBehaviorOptionsYomikaze();
 
 services.AddYomikazeIdentity();
 
@@ -22,6 +27,9 @@ services.AddJwtBearerAuthentication(jwt);
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddPublicCors();
+
+// add auto-mapper
+services.AddAutoMapper(typeof(MapperConfigs));
 
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
@@ -38,5 +46,6 @@ app.UseAuthorization();
 app.UseCors("Public");
 
 app.MapControllers();
+
 
 app.Run();

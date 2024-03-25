@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.API.Main.Base;
@@ -10,6 +11,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = "Administrator")]
 public class ChaptersController(DbContext dbContext, IMapper mapper)
     : CrudControllerBase<Chapter, ChapterInputModel, ChapterOutputModel>(dbContext, mapper, new ChapterRepo(dbContext))
 {

@@ -4,6 +4,19 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>Yomikaze.Presentation.Web</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="Pages\Shared\PaginationModel.cs">
+        <DependentUpon>_PaginationScriptPartial.cshtml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="Pages\Shared\_PaginationScriptPartial.cshtml">
+        <DependentUpon>_PaginationPartial.cshtml</DependentUpon>
+      </Content>
+    </ItemGroup>
 
 </Project>

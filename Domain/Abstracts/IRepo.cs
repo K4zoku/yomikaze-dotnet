@@ -1,4 +1,4 @@
-﻿namespace Abstracts;
+﻿namespace Yomikaze.Domain.Abstracts;
 
 public interface IRepo<T, TKey> where T : class, IEntity<TKey>
 {
@@ -9,6 +9,6 @@ public interface IRepo<T, TKey> where T : class, IEntity<TKey>
     void Delete(T entity);
 }
 
-public interface IRepo<T> : IRepo<T, long> where T : class, IEntity
+public interface IRepo<T> : IRepo<T, string> where T : class, IEntity
 {
 }

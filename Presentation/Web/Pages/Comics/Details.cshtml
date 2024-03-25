@@ -1,0 +1,495 @@
+﻿@page "/Comics/{id}"
+@model Details
+
+@{
+    Layout = "_Layout";
+}
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('comic', () => ({
+            id: '@Model.Id',
+            loading: true,
+            comic: {},
+            chapters: [],
+
+            //for comment
+            content: '',
+
+            comments: [],
+
+            init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+                this.fetchDetails();
+                this.getComments();
+                console.log(this.comments);
+            },
+
+            async fetchDetails() {
+                this.comic = await this.client.get(`/API/OData/Comics/${this.id}?$expand=ComicGenres($expand=Genre)`)
+                    .then(response => response.data)
+                    .catch(error => {
+                        if (error.response.status === 404) {
+                            window.location.href = '/404';
+                        }
+                        console.error('Error while fetching comic details', error);
+                        return null;
+                    });
+                window.document.title = this.comic?.Name ?? 'Comic not found';
+                await this.fetchChapters();
+                await this.checkLibrary();
+                await this.fetchLastHistory();
+                
+                this.loading = false;
+            },
+
+            async fetchChapters() {
+                let url = new URL(`/API/OData/Chapters/`, window.location.origin);
+                url.searchParams.set('$filter', `ComicId eq '${this.id}'`);
+                url.searchParams.set('$orderby', 'Index desc');
+                this.chapters = await this.client.get(url)
+                    .then(response => response.data.value)
+                    .catch(error => { console.error(error); return []; });
+            },
+
+            _isInLibrary: false,
+
+            async checkLibrary() {
+                if (!this.auth.authenticated) return;
+                this._isInLibrary = await this.client.get(`/API/Library/${this.id}`)
+                    .then(() => true)
+                    .catch(() => false); 
+            },
+
+            get isInLibrary() {
+                return this._isInLibrary;
+            },
+
+            set isInLibrary(value) {
+                this._isInLibrary = value;
+                if (value) {
+                    this.client.post(`/API/Library/${this.id}`)
+                        .then(() => console.log('Added to library'))
+                        .catch(error => console.error('Error while adding to library', error));
+                } else {
+                    this.client.delete(`/API/Library/${this.id}`)
+                        .then(() => console.log('Removed from library'))
+                        .catch(error => console.error('Error while removing from library', error));
+                }
+            },
+            
+            lastReadChapter: null,
+            
+            async fetchLastHistory() {
+                let url = new URL(`/API/OData/History`, window.location.origin);
+                url.searchParams.set('$expand', 'Chapter');
+                url.searchParams.set('$top', '1');
+                url.searchParams.set('$orderby', 'CreatedAt desc');
+                let history = await this.client.get(url)
+                    .then(response => response.data.value[0])
+                    .catch(error => { console.error(error); return null; });
+                this.lastReadChapter = history?.Chapter?.Index;              
+            },
+            
+
+            async deleteThis() {
+
+                let error = await this.client.delete(`/API/Comics/${this.id}`)
+                    .then(() => false)
+                    .catch(error => {
+                        console.error('Error while deleting comic', error);
+                        return error;
+                    });
+                if (error) {
+                    let message = error.response?.data?.message
+                    if (message) {
+                        alert(message);
+                    }
+                } else {
+                    window.location.href = '/';
+                }
+            },
+
+            // for comment
+            async postComment() {
+                console.log(this.id);
+                let data = {
+                    content: this.content,
+                    comicId: this.id,
+                };
+                this.client.post('API/Comments/', data)
+                    .then(response => {
+                        this.content = '';
+                        this.getComments()
+                    })
+                    .catch(error => console.error('Error while posting comment', error));
+
+            },
+
+            async getComments() {
+                this.client.get(`API/OData/Comments/?$filter=ComicId eq '${this.id}'&$orderby=CreatedAt desc&$top=10&$expand=User`)
+                    .then(response => this.comments = response.data?.value || [])
+                    .catch(error => console.error('Error while fetching comments', error));
+            },
+
+            deleteComment(id, el) {
+                this.client.delete(`API/Comments/${id}`)
+                    .then(response => {
+                        el.checked = false;
+                        this.getComments();
+                    })
+                    .catch(error => console.error('Error while deleting comment', error));
+            },
+
+        }));
+
+
+    });
+
+
+</script>
+
+<div class="max-w-screen w-full min-h-[calc(100vh-8rem)] bg-base-100" x-data="comic">
+<div class="w-10/12 mx-auto py-10">
+<div class="bg-base-100 rounded-box shadow-2xl p-10">
+<div class="flex flex-col gap-8 flex-wrap justify-items-center">
+<div class="flex flex-row flex-wrap md:flex-nowrap gap-8">
+    <!-- Thumbnail -->
+    <div class="shrink-0 flex-grow-0 mx-auto">
+        <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
+             src=""
+             data-src="/placeholder.png" :src="comic?.Cover || $el.dataset.src"
+        />
+    </div>
+    <!-- Detail -->
+    <div class="flex-grow flex flex-col gap-4">
+        <!-- Comic name -->
+        <div class="flex gap-2">
+            <div class="flex-grow">
+                <div class="flex flex-col">
+                    <div class="indicator">
+                        <span class="indicator-item badge badge-secondary badge-sm"
+                              x-show="moment().diff(comic?.CreatedAt, 'hours') < 2">New</span>
+                        <h2 class="text-3xl title-font font-medium" x-text="comic?.Name">Name</h2>
+                    </div>
+                    <span class="text-sm text-neutral italic" x-text="comic?.Aliases">Aliases</span>
+                </div>
+            </div>
+            <div class="flex-shrink">
+                <div class="a2a_kit a2a_kit_size_24 a2a_default_style" data-a2a-icon-color="transparent,#55B4D4">
+                    <a class="a2a_button_copy_link"></a>
+                    <a class="a2a_button_x"></a>
+                    <a class="a2a_button_facebook"></a>
+                    <a class="a2a_button_reddit"></a>
+                    <a class="a2a_dd"></a>
+                </div>
+                <script async="" src="https://static.addtoany.com/menu/page.js"></script>
+            </div>
+
+        </div>
+        <!-- Comic attributes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="user"></i>
+                    Authors
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Authors">
+                    Authors
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="activity"></i>
+                    Status
+                </dt>
+                <dd class="col-span-3">
+                    <span class="badge badge-outline badge-warning" x-show="!comic?.Ended">Ongoing</span>
+                    <span class="badge badge-outline badge-success" x-show="comic?.Ended">Completed</span>
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="clock"></i>
+                    Last updated
+                </dt>
+                <dd class="col-span-3">
+                    <span x-text="comic?.LastUpdated ? moment(comic?.LastUpdated).fromNow() : 'N/A'">0 hours ago</span>
+                </dd>
+            </dl>
+            <dl class="grid grid-cols-5 gap-x-4 gap-y-2 flex-grow-0">
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="calendar"></i>
+                    Published
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Published ? moment(comic?.Published).fromNow() : 'N/A'">
+
+                    <span>18 hours ago</span>
+                </dd>
+                <dt class="col-span-2 gap-2 font-bold">
+                    <i data-feather="calendar"></i>
+                    Ended
+                </dt>
+                <dd class="col-span-3" x-text="comic?.Ended ? moment(comic?.Ended).fromNow() : 'N/A'">
+
+                    <span>18 hours ago</span>
+                </dd>
+            </dl>
+        </div>
+        <!-- Comic genres -->
+        <div class="grid grid-cols-5 gap-2">
+            <div class="col-span-1">
+                <span class="font-bold gap-2">
+                    <i data-feather="tag"></i>
+                    Genres
+                </span>
+            </div>
+            <div class="col-span-4 grow flex flex-wrap flex-row gap-2">
+                <template x-for="genre in comic?.ComicGenres">
+                    <span class="badge badge-outline badge-primary" x-text="genre?.Genre?.Name">
+                        Genre
+                    </span>
+
+                </template>
+            </div>
+        </div>
+        <!-- Action button -->
+        <div class="flex flex-row flex-wrap gap-2" x-data="{ authenticated: $store.auth.authenticated }">
+            <!-- Read button -->
+
+            <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : 'Read'">
+                <a class="btn btn-primary gap-2" :disabled="chapters.length === 0"
+                        :href="`/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
+                    <i data-feather="book-open"></i>
+                    Read
+                </a>
+            </div>
+
+            <!-- Continue reading button -->
+
+            <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : lastReadChapter ? 'Continue reading' : 'You have not read any chapters yet'">
+                <a class="btn btn-accent gap-2" :disabled="chapters.length === 0 || !lastReadChapter"
+                        :href="`/Comics/${comic?.Id}/Chapters/${lastReadChapter}`">
+                    <i data-feather="navigation"></i>
+                Continue reading
+                </a>
+            </div>
+
+            <!-- Add to library button -->
+            <div class="tooltip" data-tip="You must be logged in to add this comic to your library" :class="{ tooltip: !authenticated }">
+                <label class="btn btn-accent gap-2" :class="{ 'btn-disabled': !authenticated, 'btn-outline': !isInLibrary }">
+                    <input type="checkbox" x-model.debounce="isInLibrary" class="hidden">
+                    <i data-feather="bookmark"></i>
+                    <span x-text="isInLibrary ? 'Remove from library' : 'Add to library'">Add to library</span>
+                </label>
+            </div>
+
+            <template x-if="$store.auth.profile?.isAdmin">
+                <div class="contents">
+                    <dialog class="modal cursor-pointer" x-ref="deleteComicModal">
+                        <label class="modal-box relative">
+                            <h3 class="text-xl font-bold">Delete comic</h3>
+                            <p class="p-4">Are you sure you want to delete this comic?</p>
+                            <div class="modal-action">
+                                <button class="btn btn-error" x-on:click="await deleteThis(); $refs.deleteComicModal.close();">Delete</button>
+                                <form method="dialog">
+                                    <button class="btn">Cancel</button>
+                                </form>
+                            </div>
+                        </label>
+                    </dialog>
+                    <details class="dropdown">
+                        <summary class="btn btn-ghost">
+                            <i data-feather="settings" class="text-base-content" aria-hidden="true"></i>
+                            Manage
+                            <i data-feather="chevron-down" class="text-base-content" aria-hidden="true"></i>
+                        </summary>
+                        <ul class="dropdown-content menu menu-compact p-2 shadow-lg bg-base-200 rounded-box w-52 z-50">
+                            <li>
+                                <a asp-page="/Manage/Comics/Edit" asp-route-id="-1" :href="$el.href.replace('-1', id)">
+                                    <i data-feather="edit" aria-hidden="true"></i>
+                                    Edit comic
+                                </a>
+                            </li>
+                            <li>
+                                <a x-on:click="$refs.deleteComicModal.showModal()" class="text-error hover:bg-error hover:text-error-content">
+                                    <i data-feather="trash-2" aria-hidden="true"></i>
+                                    Delete comic
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+<!-- Description -->
+<label class="collapse collapse-plus bg-base-200 shadow-xl rounded-box" x-data="{open: true}">
+    <input class="peer" type="checkbox" x-model="open">
+    <span class="collapse-title gap-2">
+        <i data-feather="info"></i>
+        <span class="font-bold">
+            Description
+        </span>
+        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
+    </span>
+    <span class="collapse-content">
+        <span class="leading-relaxed text-justify" x-text="comic?.Description">
+            Description
+        </span>
+        <span class="text-sm text-neutral italic" x-show="!comic?.Description">
+            No description available
+        </span>
+    </span>
+</label>
+<!-- Chapters -->
+<label class="collapse collapse-plus bg-base-200 shadow-xl rounded-box" x-data="{open: true}">
+    <input :checked="open" class="peer" type="checkbox" x-model="open" checked="checked">
+    <span class="collapse-title gap-2">
+        <i data-feather="list"></i>
+        <span class="font-bold">
+            Chapter
+        </span>
+        <span class="text-sm text-neutral italic" x-text="open ? '(click to collapse)' : '(click to expand)'">(click to collapse)</span>
+    </span>
+    <span class="collapse-content">
+        <template x-if="$store.auth.profile?.isAdmin">
+            <a class="btn btn-ghost w-full border-dashed rounded-box border border-dashed border-2"
+               asp-page="/Manage/Comics/AddChapter" asp-route-id="-1" :href="$el.href.replace('-1', id)">
+                <i data-feather="plus"></i>
+                Add chapter
+            </a>
+        </template>
+
+        <span class="text-sm text-neutral italic" x-show="chapters.length === 0">
+            No chapters available
+        </span>
+        <span class="max-h-[500px] divide-y divide-dashed overflow-y-auto pr-4">
+            <template x-for="chapter in chapters">
+                <span class="flex flex-nowrap items-center gap-4 p-2 hover:bg-accent hover:bg-opacity-30">
+                    <a class="flex-grow flex flex-nowrap items-center gap-4" :href="`/Comics/${comic?.Id}/Chapters/${chapter?.Index}`">
+                        <span class="flex-grow" x-text="chapter?.Title">
+                            Chapter 1
+                        </span>
+                        <span x-text="moment(chapter.CreatedAt).fromNow()">a few seconds ago</span>
+                    </a>
+                </span>
+            </template>
+        </span>
+
+    </span>
+</label>
+</div>
+
+<div class="bg-base-100 rounded-box shadow-2xl p-10 mt-8">
+
+    <div class="flex flex-col gap-2 p-4 mb-4">
+        <div class="form-control">
+            <label class="label" for="comment-box">
+                <span class="label-text text-xl font-bold">Comments</span>
+            </label>
+            <textarea
+                x-on:keyup.ctrl.enter="$refs.submitComment.click()"
+                class="textarea textarea-bordered" id="comment-box" x-model="content" placeholder="Write your comment here..." rows="3"></textarea>
+        </div>
+
+        <div class="self-end">
+            <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="button" x-on:click="postComment()" x-ref="submitComment">
+                <i data-feather="send"></i>
+                <span>Post</span>
+            </button>
+        </div>
+
+        <template x-for="comment in comments" :key="comment.Id">
+            <div class="p-4 flex gap-4 w-full">
+                <!--! user avatar -->
+
+                <div class="avatar">
+                    <div class="bg-neutral-focus text-neutral-content rounded-full w-10 h-10">
+                        <img class="rounded-full w-10 h-10" :src="$store.auth.profile.avatar" alt="avatar">
+                    </div>
+                </div>
+                <!--! display name / roles / chapter -->
+                <div class="w-full">
+                    <div class="border rounded-3xl px-4 pt-2 pb-2.5 divide-y gap-2">
+                        <div class="flex justify-between">
+                            <!-- roles / chapter -->
+                            <div class="font-semibold text-sm leading-relaxed gap-x-10 my-2">
+                                <span x-text="comment.User.Fullname">User</span>
+                                <!-- roles -->
+
+                                <!-- chapter -->
+
+                            </div>
+                            <!--! actions edit / delete / report -->
+                            <div class="my-2" x-data="{ el: null, modal: $id('comment') }">
+                                <!-- Created At -->
+                                <span class="text-sm text-neutral italic me-2" x-text="moment(comment.CreatedAt).fromNow()">a few seconds ago</span>
+                                <label class="btn btn-xs btn-ghost btn-circle" :for="modal" x-show="$store.auth.profile.isAdmin || $store.auth.profile.id === comment.UserId">
+                                    <i data-feather="trash"></i>
+                                </label>
+                                <input class="modal-toggle" :id="modal" type="checkbox" x-init="el = $el">
+                                <div class="modal cursor-pointer">
+                                    <div class="modal-box relative">
+                                        <h3 class="text-xl font-bold">Delete comment</h3>
+                                        <p class="text-sm">Are you sure you want to delete this comment?</p>
+                                        <div class="modal-action">
+                                            <label class="btn btn-ghost" :for="modal">Cancel</label>
+                                            <div >
+                                                <button class="btn btn-error" type="button" x-on:click="deleteComment(comment.Id, el)">Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--! comment content -->
+                        <div class="leading-snug md:leading-normal">
+                            <p class="py-2" x-text="comment.Content">Content</p>
+                        </div>
+                    </div>
+
+
+                    <!--! like / dislike / reply -->
+                    @*  <div class="button-group">
+                                <a class="btn btn-sm gap-2 btn-ghost" href="/comic/292304895065870336/comment/292695685990625280/like">
+                                    <i data-feather="thumbs-up"></i>
+                                    <span class="font-semibold">0</span>
+                                </a>
+                                <label x-on:click="reply = !reply" class="btn btn-ghost btn-sm gap-2">
+                                    <i data-feather="corner-down-right"></i>
+                                    <span class="font-semibold">Reply</span>
+                                </label>
+                            </div> *@
+
+
+                    <!--! replies -->
+                    <!--! reply form -->
+                    @*   <form class="flex flex-col gap-2 p-4" method="post" action="/comic/292304895065870336/comment/292695685990625280/reply" x-data="{content:''}" x-show="reply" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100 transform scale-100" x-transition:enter-start="opacity-0 transform scale-95" x-transition:leave="transition ease-in duration-300" x-transition:leave-end="opacity-0 transform scale-95" x-transition:leave-start="opacity-100 transform scale-100" style="display: none;">
+                                <input type="hidden" name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9">
+                                <input name="_csrf" value="cdc70287-50b0-487a-81fb-e306fb994ba9" type="hidden">
+                                <div class="form-control">
+                                    <label class="label" for=" reply-box-292695685990625280 ">
+                                        <span class="label-text text-xl font-bold">Reply</span>
+                                    </label>
+                                    <textarea class="textarea textarea-bordered" id=" reply-box-292695685990625280 " name="content" placeholder="Write your comment here..." rows="3" x-model="content"></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <div class="self-end">
+                                        <button :disabled="content.length === 0" class="btn btn-accent gap-2" type="submit" disabled="disabled">
+                                            <i data-feather="send"></i>
+                                            <span>Reply</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form> *@
+
+
+                </div>
+            </div>
+
+        </template>
+    </div>
+</div>
+</div>
+</div>
+</div>

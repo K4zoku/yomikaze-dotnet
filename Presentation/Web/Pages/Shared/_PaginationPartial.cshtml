@@ -1,0 +1,50 @@
+﻿
+<template x-if="$store.pagination.count > 0">
+    <div class="contents">
+        <label class="form-control">
+            <div class="label">
+                <span class="label-text">Page size</span>
+            </div>
+            <select class="select select-bordered" x-model="$store.pagination.size">
+                <template x-for="size in $store.pagination.sizes">
+                    <option x-text="size" :value="size"/>
+                </template>
+            </select>
+        </label>
+        <div class="form-control">
+            <div class="label">
+                <span class="label-text">Page</span>
+            </div>
+            <div class="join">
+                <button class="join-item btn"
+                        :disabled="$store.pagination.current <= 1"
+                        x-on:click="$store.pagination.current = 1">
+                    «
+                </button>
+                <button class="join-item btn"
+                        :disabled="$store.pagination.current <= 1"
+                        x-on:click="$store.pagination.current--">
+                    ‹
+                </button>
+                <select class="join-item select select-bordered"
+                        x-model.debounce="$store.pagination.current"
+                        x-data="{ selected: $store.pagination.current }">
+                    <template x-for="i in $store.pagination.total" :key="i">
+                        <option x-text="`Page ${i}`" :value="i"></option>
+                    </template>
+                </select>
+
+                <button class="join-item btn"
+                        :disabled="$store.pagination.current >= $store.pagination.total"
+                        x-on:click="$store.pagination.current++">
+                    ›
+                </button>
+                <button class="join-item btn"
+                        :disabled="$store.pagination.current >= $store.pagination.total"
+                        x-on:click="$store.pagination.current = $store.pagination.total">
+                    »
+                </button>
+            </div>
+        </div>
+    </div>
+</template>

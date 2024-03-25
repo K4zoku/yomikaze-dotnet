@@ -1,0 +1,156 @@
+﻿@page
+@model Yomikaze.Presentation.Web.Models.PaginatedPageModel
+@{
+    ViewData["Title"] = "Library";
+}
+
+@await Html.PartialAsync("_PaginationScriptPartial", Model.Pagination)
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('comics', () => ({
+            loading: true,
+            auth: null,
+            client: null,
+            pagination: { current: 0, size: 0, total: 0, count: 0 },
+            comics: [],
+            
+            async init() {
+                this.auth = Alpine.store('auth');
+                this.client = this.auth.http;
+                this.pagination = Alpine.store('pagination');
+                this.$watch('pagination.current', async () => await this.load());
+                this.$watch('pagination.size', async () => await this.load());
+                await this.load();
+            },
+            
+            async load() {
+                this.loading = true;
+                this.pagination.count = await this.getCount();
+                await this.fetchComics();
+                this.loading = false;
+            },
+            
+            buildUrl(url) {
+                url.searchParams.set('$orderby', 'DateAdded desc');
+            },
+            
+            async fetchComics() {                
+                let url = new URL('/API/OData/Library/', window.location.origin);
+                this.buildUrl(url);
+                url.searchParams.set('$expand', 'Comic($select=Id,Name,Description,Cover)');
+                url.searchParams.addODataPagination(this.pagination.current, this.pagination.size);
+                
+                let library = await this.client.get(url)
+                    .then(response => response.data.value) 
+                    .catch(error => {
+                        console.error(error);
+                        return [];
+                    });
+                
+                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 750) + 100));
+                
+                this.comics = library.map(item => item.Comic);
+            },
+            
+            async getCount() {
+                let url = new URL('/API/OData/Library/$count', window.location.origin);
+                this.buildUrl(url);
+                return await this.client.get(url)
+                    .then(response => parseInt(response.data) || 0)
+                    .catch(error => {
+                        console.error('Error while getting $count', error); 
+                        return 0;
+                    });
+            },
+            
+            async removeFromLibrary(id) {
+                let url = new URL(`/API/Library/${id}`, window.location.origin);
+                let result = await this.client.delete(url)
+                    .then(response => true)
+                    .catch(error => {
+                        console.error('Error while removing from library', error);
+                        return false;
+                    });
+                if (result) {
+                    await this.fetchComics();
+                } else {
+                    alert('Error while removing from library');
+                }
+            }
+        }));
+    });
+</script>
+
+<div class="contents" x-data="comics" x-init="await fetchComics()">
+    <div class="divider divider-start my-8">
+        <h1 class="text-4xl font-bold">Library</h1>
+    </div>
+
+    <div class="flex justify-center py-10" x-show="!loading && $store.pagination.total === 0">
+        <h2 class="text-xl text-center text-gray-500 italic">
+            There are no comics in the library. <a asp-page="/Index" class="underline">Add some!</a>
+        </h2>
+    </div>
+    <template x-if="$store.pagination.total > 0">
+        <div class="contents">
+            <!--* cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:min-h-[680px] sm:min-h-0 mt-8">
+                <!--* skeleton -->
+                <div class="contents" x-show="loading">
+                    <template x-for="i in pagination.size">
+                        <div class="mx-auto">
+                            <div class="w-[190px] h-[280px] skeleton"></div>
+                            <!-- random width from 50% to 100% -->
+                            <div class="mt-4 h-3 skeleton"
+                                 :style="{ width: `${Math.floor(Math.random() * 50) + 50}%` }">
+                            </div>
+                            <div class="mt-2 h-3 skeleton"
+                                 :style="{ width: `${Math.floor(Math.random() * 20) + 20}%` }">
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <!--* comics -->
+                <div class="contents"
+                     x-show="!loading"
+                     x-transition:enter="transition ease-out duration-300 delay-500"
+                     x-transition:enter-start="opacity-0 scale-90"
+                     x-transition:enter-end="opacity-100 scale-100">
+                    <template x-for="comic in comics" :key="comic.Id">
+                        <div class="indicator hover:scale-[1.02] duration-300 transition">
+                            <div class="indicator-item indicator-top indicator-end">
+                                <button class="btn btn-sm btn-error btn-circle"
+                                        x-on:click="await removeFromLibrary(comic.Id)">
+                                    <i data-feather="trash-2" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <a class="mx-auto h-fit" 
+                               :href="$el.href.replace('-1', comic.Id)" 
+                               asp-page="/Comics/Details" asp-route-id="-1">
+                                <figure class="w-[190px] h-[280px]">
+                                    <img alt="new" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-xl cursor-pointer"
+                                         src=""
+                                         data-src="/placeholder.png"
+                                         :src="comic.Cover || $el.dataset.src">
+                                </figure>
+                                <div class="mt-4 max-w-[190px] max-h-24">
+                                    <div class="tooltip" :data-tip="comic.Name">
+                                        <h3 class="title-font mb-2 font-bold text-base text-ellipsis"
+                                            x-text="comic.Name">
+                                            Name
+                                        </h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+
+            <div class="w-full mt-4 flex justify-center gap-2">
+                @await Html.PartialAsync("_PaginationPartial")
+            </div>
+        </div>
+    </template>
+</div>

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Abstracts;
+namespace Yomikaze.Domain.Abstracts;
 
 public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity, TId>
     where TEntity : class, IEntity<TId>
@@ -59,5 +59,5 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     }
 }
 
-public abstract class BaseDao<TEntity>(DbContext dbContext) : BaseDao<TEntity, long>(dbContext), IDao<TEntity>
+public abstract class BaseDao<TEntity>(DbContext dbContext) : BaseDao<TEntity, string>(dbContext), IDao<TEntity>
     where TEntity : class, IEntity;

@@ -1,7 +1,10 @@
-﻿using Abstracts;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
+using Yomikaze.Application.Data.Repos;
+using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Models;
@@ -9,28 +12,22 @@ using Yomikaze.Domain.Models;
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class LibraryController : ControllerBase
+[Route("[controller]/{comicId}")]
+[Authorize]
+public class LibraryController(IMapper mapper, DbContext dbContext) : ControllerBase
 {
-    protected LibraryController(IMapper mapper, IRepo<LibraryEntry> repository)
-    {
-        Mapper = mapper;
-        Repository = repository;
-    }
-
-    protected IMapper Mapper { get; set; }
-    protected IRepo<LibraryEntry> Repository { get; set; }
-
+    protected IMapper Mapper { get; set; } = mapper;
+    protected LibraryRepo Repository { get; set; } = new(dbContext);
 
     [HttpPost]
-    [Authorize]
-    public virtual ActionResult<ResponseModel> Post(long comicId)
+    public virtual ActionResult<ResponseModel> Post(string comicId)
     {
-        long id = User.GetId();
-        LibraryEntry? entity = Repository.Query().FirstOrDefault(x => x.ComicId == comicId && x.UserId == id);
+        string id = User.GetId();
+        LibraryEntry? entity = Repository.GetLibraryEntry(id, comicId);
         if (entity != null)
         {
-            return BadRequest("Comic already in library");
+            throw new HttpResponseException(HttpStatusCode.Conflict,
+                ResponseModel.CreateError("Comic already in library"));
         }
 
         entity = new LibraryEntry { ComicId = comicId, UserId = id };
@@ -38,18 +35,26 @@ public class LibraryController : ControllerBase
         return Ok(ResponseModel.CreateSuccess("Add successful"));
     }
 
-    [HttpDelete]
-    [Route("{comicId:long}")]
-    [Authorize]
-    public virtual ActionResult Delete(long comicId)
+    [HttpGet]
+    public virtual ActionResult<ResponseModel<LibraryEntryOutputModel>> Get(string comicId)
     {
-        long id = User.GetId();
-        LibraryEntry? entity = Repository.Query().FirstOrDefault(x => x.ComicId == comicId && x.UserId == id);
-        if (entity == null)
+        string id = User.GetId();
+        LibraryEntry? entity = Repository.GetLibraryEntry(id, comicId);
+        if (entity is null)
         {
-            return NotFound();
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Comic not in library"));
         }
 
+        return Ok(ResponseModel.CreateSuccess(Mapper.Map<LibraryEntryOutputModel>(entity)));
+    }
+
+    [HttpDelete]
+    public virtual ActionResult Delete(string comicId)
+    {
+        string id = User.GetId();
+        LibraryEntry entity = Repository.GetLibraryEntry(id, comicId) ??
+                              throw new HttpResponseException(HttpStatusCode.NotFound,
+                                  ResponseModel.CreateError("Comic not in library"));
         Repository.Delete(entity);
         return Ok();
     }
