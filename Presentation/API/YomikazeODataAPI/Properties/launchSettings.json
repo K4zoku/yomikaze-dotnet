@@ -9,7 +9,8 @@
       "applicationUrl": "http://localhost:5029",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "commandLineArgs": "--provider Postgres"
     },
     "https": {
       "commandName": "Project",

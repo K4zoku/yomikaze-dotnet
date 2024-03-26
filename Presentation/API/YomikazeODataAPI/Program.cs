@@ -1,15 +1,20 @@
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
 using Yomikaze.API.OData.Helpers;
-using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Infrastructure;
+using Yomikaze.Infrastructure.Context;
+using Yomikaze.Infrastructure.Context.Identity;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 ConfigurationManager configuration = builder.Configuration;
-
-services.AddYomikazeDbContext(configuration);
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
+services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
+services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddYomikazeIdentity();
 
 JwtConfiguration jwt = configuration

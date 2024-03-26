@@ -26,8 +26,8 @@ public partial class YomikazeIdentityDbContext : IdentityDbContext<User, Role, s
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(YomikazeIdentityDbContext).Assembly);
-        builder.Entity<User>();
-        builder.Entity<Role>().HasData(Default.Roles);
+        builder.Entity<User>().ToTable("users");
+        builder.Entity<Role>().ToTable("roles").HasData(Default.Roles);
         builder.Entity<IdentityUserLogin<string>>().ToTable("user_logins");
         builder.Entity<IdentityUserClaim<string>>().ToTable("user_claims");
         builder.Entity<IdentityUserToken<string>>().ToTable("user_tokens");

@@ -1,15 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
-using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
+using Yomikaze.Infrastructure;
+using Yomikaze.Infrastructure.Context;
+using Yomikaze.Infrastructure.Context.Identity;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 ConfigurationManager configuration = builder.Configuration;
 
-services.AddYomikazeDbContext(configuration);
-
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
+services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
+services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();

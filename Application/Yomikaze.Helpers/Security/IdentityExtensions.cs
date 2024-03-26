@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Yomikaze.Domain.Identity.Entities;
-using Yomikaze.Infrastructure.Database;
+using Yomikaze.Infrastructure.Context.Identity;
 
 namespace Yomikaze.Application.Helpers.Security;
 
@@ -13,7 +13,7 @@ public static class IdentityExtensions
             {
                 options.User.RequireUniqueEmail = true;
             })
-            .AddEntityFrameworkStores<YomikazeDbContext>()
+            .AddEntityFrameworkStores<YomikazeIdentityDbContext>()
             .AddDefaultTokenProviders();
         return services;
     }

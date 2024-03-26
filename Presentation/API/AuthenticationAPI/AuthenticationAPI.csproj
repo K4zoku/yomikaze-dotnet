@@ -27,6 +27,13 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj" />
         <ProjectReference Include="..\..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj" />
+        <ProjectReference Include="..\..\..\Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.Development.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
     </ItemGroup>
 
 </Project>

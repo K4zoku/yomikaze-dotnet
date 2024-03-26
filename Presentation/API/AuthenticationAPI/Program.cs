@@ -2,16 +2,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
-using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Domain.Identity.Entities;
-using Yomikaze.Infrastructure.Database;
+using Yomikaze.Infrastructure;
+using Yomikaze.Infrastructure.Context.Identity;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
-ConfigurationManager configuration = builder.Configuration;
-
-services.AddYomikazeDbContext(configuration);
+IConfiguration configuration = builder.Configuration;
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
 
 services
     .AddControllers(options =>
@@ -54,19 +54,20 @@ app.MapControllers();
 // Migrate and add default admin user if not exists
 var scope = app.Services.CreateScope();
 var serviceProvider = scope.ServiceProvider;
-var dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
+configuration = app.Configuration;
+var dbContext = serviceProvider.GetRequiredService<YomikazeIdentityDbContext>();
 await dbContext.Database.MigrateAsync();
 var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 if (!userManager.Users.Any())
 {
     User admin = new()
     {
-        UserName = "admin",
-        Fullname = "Administrator",
-        Email = "admin@yomikaze.org",
+        UserName = configuration["Admin:Username"] ?? "administrator",
+        Fullname = configuration["Admin:Fullname"] ?? "Administrator",
+        Email = configuration["Admin:Email"] ?? "administrator@yomikaze.org",
         EmailConfirmed = true
     };
-    var result = await userManager.CreateAsync(admin, "Admin@123");
+    var result = await userManager.CreateAsync(admin, configuration["Admin:Password"] ?? "Admin@123");
     if (!result.Succeeded)
     {
         throw new InvalidOperationException("Could not create default admin user");

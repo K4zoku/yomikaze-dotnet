@@ -44,7 +44,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaims", (string)null);
+                    b.ToTable("role_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -69,7 +69,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("user_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -91,7 +91,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserLogins", (string)null);
+                    b.ToTable("user_logins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -106,7 +106,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("user_roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -125,7 +125,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("user_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Identity.Entities.Role", b =>
@@ -151,24 +151,27 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("roles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = "30642335247278080",
+                            Id = "30924123358142464",
+                            ConcurrencyStamp = "e74aebec-26a2-48d4-9dfd-2c4c258ea7db",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "30642335247278081",
+                            Id = "30924123362336768",
+                            ConcurrencyStamp = "ad203093-1f91-4b51-9707-e386c7c0bb5c",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = "30642335247278082",
+                            Id = "30924123362336769",
+                            ConcurrencyStamp = "6145615d-7401-4bf2-8293-27c181f2a6fe",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -183,15 +186,18 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .HasColumnType("integer");
 
                     b.Property<string>("Avatar")
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Banner")
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
-                    b.Property<DateTimeOffset>("Birthday")
+                    b.Property<DateTimeOffset?>("Birthday")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -206,7 +212,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .HasColumnType("boolean");
 
                     b.Property<string>("Fullname")
-                        .HasColumnType("text");
+                        .HasMaxLength(48)
+                        .HasColumnType("character varying(48)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -250,7 +257,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

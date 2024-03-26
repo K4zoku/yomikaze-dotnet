@@ -44,7 +44,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaims", (string)null);
+                    b.ToTable("role_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -69,7 +69,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("user_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -91,7 +91,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserLogins", (string)null);
+                    b.ToTable("user_logins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -106,7 +106,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("user_roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -125,7 +125,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("user_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Identity.Entities.Role", b =>
@@ -152,24 +152,27 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("roles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = "30642212316422144",
+                            Id = "30924234461061120",
+                            ConcurrencyStamp = "ad7ea703-c24a-44ee-81ab-5cdc0de24c8a",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "30642212316422145",
+                            Id = "30924234465255424",
+                            ConcurrencyStamp = "5e46c256-a5a9-4767-bbef-30745d7b3f49",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = "30642212316422146",
+                            Id = "30924234465255425",
+                            ConcurrencyStamp = "bea4f0ae-c3a2-4bc5-8d89-da51f5a993cf",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -184,15 +187,18 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Banner")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTimeOffset>("Birthday")
+                    b.Property<DateTimeOffset?>("Birthday")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -207,7 +213,8 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
                         .HasColumnType("bit");
 
                     b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(48)
+                        .HasColumnType("nvarchar(48)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -252,7 +259,7 @@ namespace Yomikaze.Infrastructure.Migrations.SQLServer.Identity
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

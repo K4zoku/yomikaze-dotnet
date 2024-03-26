@@ -37,7 +37,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaims", (string)null);
+                    b.ToTable("role_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -60,7 +60,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("user_claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -82,7 +82,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserLogins", (string)null);
+                    b.ToTable("user_logins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -97,7 +97,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("user_roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -116,7 +116,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("user_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Identity.Entities.Role", b =>
@@ -142,24 +142,27 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("roles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = "30641203791831040",
+                            Id = "30924020572528640",
+                            ConcurrencyStamp = "124e1768-d81b-45b2-9b45-f2738a7b00f6",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "30641203796025344",
+                            Id = "30924020572528641",
+                            ConcurrencyStamp = "d7280f8f-6802-455d-a0b1-4d870d8c96cb",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = "30641203796025345",
+                            Id = "30924020572528642",
+                            ConcurrencyStamp = "3608fad0-cd9a-4609-9124-56d4a5e264d9",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -174,15 +177,18 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Avatar")
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Banner")
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Bio")
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Birthday")
+                    b.Property<DateTimeOffset?>("Birthday")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -197,6 +203,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Fullname")
+                        .HasMaxLength(48)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
@@ -241,7 +248,7 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Identity
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

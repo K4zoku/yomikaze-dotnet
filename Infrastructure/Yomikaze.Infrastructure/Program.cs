@@ -7,12 +7,6 @@ using static Yomikaze.Infrastructure.Provider;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
-services.AddLogging(logging => logging.AddSimpleConsole(options =>
-{
-    options.IncludeScopes = true;
-    options.SingleLine = true;
-    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-}));
 
 var provider = FromName(configuration.GetValue("provider", Sqlite.Name));
 
