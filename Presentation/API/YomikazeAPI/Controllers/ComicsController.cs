@@ -16,11 +16,11 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 [Authorize(Roles = "Administrator")]
 public class ComicsController(DbContext dbContext, IMapper mapper)
-    : CrudControllerBase<Comic, ComicInputModel, ComicOutputModel>(dbContext, mapper, new ComicRepo(dbContext))
+    : CrudControllerBase<Comic, ComicInputModel, ComicOutputModel>(dbContext, mapper, new ComicRepository(dbContext))
 {
-    private new ComicRepo Repository => (ComicRepo)base.Repository;
-    private ChapterRepo ChapterRepo => new(DbContext);
-    private HistoryRepo HistoryRepo => new(DbContext);
+    private new ComicRepository Repository => (ComicRepository)base.Repository;
+    private ChapterRepository ChapterRepository => new(DbContext);
+    private HistoryRepository HistoryRepository => new(DbContext);
 
     [HttpPost]
     public override ActionResult<ComicOutputModel> Post(ComicInputModel input)
@@ -39,13 +39,13 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
         // update only index
         foreach (var t in input.Chapters)
         {
-            var chapter = ChapterRepo.Get(t.Id);
+            var chapter = ChapterRepository.Get(t.Id);
             if (chapter == null)
             {
                 continue;
             }
             chapter.Index = t.Index;
-            ChapterRepo.Update(chapter);
+            ChapterRepository.Update(chapter);
         }
         input.Chapters = null;
         
@@ -84,7 +84,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     [AllowAnonymous]
     public ActionResult<ChapterOutputModel> GetChapter(string comicId, int index)
     {
-        Chapter? chapter = ChapterRepo.GetByComicIdAndIndex(comicId, index);
+        Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(comicId, index);
         CheckEntity(chapter);
 
         // check if user is logged in then add history
@@ -92,7 +92,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
         {
             string id = User.GetId();
             HistoryRecord history = new HistoryRecord { UserId = id, ChapterId = chapter.Id };
-            HistoryRepo.Add(history);
+            HistoryRepository.Add(history);
         }
 
         return Ok(Mapper.Map<ChapterOutputModel>(chapter));
@@ -109,7 +109,6 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
         }
         
         _ = entity.Chapters; // lazy load
-        _ = entity.ComicGenres; // lazy load
 
         return Ok(Mapper.Map<ComicOutputModel>(entity));
     }

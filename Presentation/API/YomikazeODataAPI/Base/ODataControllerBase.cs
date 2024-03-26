@@ -5,10 +5,10 @@ using Yomikaze.Domain.Abstracts;
 namespace Yomikaze.API.OData.Base;
 
 [EnableQuery]
-public abstract class ODataControllerBase<T, TKey>(IRepo<T, TKey> repository) : ControllerBase
+public abstract class ODataControllerBase<T, TKey>(IRepository<T, TKey> repository) : ControllerBase
     where T : class, IEntity<TKey>
 {
-    protected IRepo<T, TKey> Repository { get; set; } = repository;
+    protected IRepository<T, TKey> Repository { get; set; } = repository;
 
 
     public virtual ActionResult<IEnumerable<T>> Get()
@@ -29,6 +29,6 @@ public abstract class ODataControllerBase<T, TKey>(IRepo<T, TKey> repository) : 
     }
 }
 
-public abstract class ODataControllerBase<T>(IRepo<T> repository)
+public abstract class ODataControllerBase<T>(IRepository<T> repository)
     : ODataControllerBase<T, string>(repository)
     where T : class, IEntity;

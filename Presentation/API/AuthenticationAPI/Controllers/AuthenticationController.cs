@@ -8,7 +8,7 @@ using System.Security.Claims;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
-using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Authentication.Controllers;

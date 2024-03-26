@@ -8,6 +8,6 @@ namespace Yomikaze.API.OData.Controllers;
 
 [Authorize]
 public class CommentsController(DbContext dbContext)
-    : ODataControllerBase<Comment>(new CommentRepo(dbContext))
+    : ODataControllerBase<Comment>(new CommentRepository(dbContext))
 {
 }

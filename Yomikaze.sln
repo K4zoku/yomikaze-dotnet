@@ -13,17 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{8B89DE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{E90CE81C-F0E8-498A-8D23-33350A3ECEC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Presentation\Web\Web.csproj", "{9464068C-DDC4-48B0-94CC-A749BCBFA38D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Presentation.Web", "Presentation\Yomikaze.Presentation.Web\Yomikaze.Presentation.Web.csproj", "{9464068C-DDC4-48B0-94CC-A749BCBFA38D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessObjects", "Domain\BusinessObjects\BusinessObjects.csproj", "{C8E110D3-A250-4868-A82C-ADDF01530A1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Domain.BusinessObjects", "Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj", "{C8E110D3-A250-4868-A82C-ADDF01530A1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abstracts", "Domain\Abstracts\Abstracts.csproj", "{7DFC878D-7D42-4875-BEC4-C90C14D2F39F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Domain.Abstracts", "Domain\Yomikaze.Domain.Abstracts\Yomikaze.Domain.Abstracts.csproj", "{7DFC878D-7D42-4875-BEC4-C90C14D2F39F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Infrastructure\Database\Database.csproj", "{03E579DD-2359-4227-808A-5E38510DD094}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application\Application.csproj", "{B78435F8-9CA7-4E55-B320-339F9437434C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Application", "Application\Yomikaze.Application\Yomikaze.Application.csproj", "{B78435F8-9CA7-4E55-B320-339F9437434C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Application\Helpers\Helpers.csproj", "{593DF4CF-D514-4704-BF6A-F4F712197B85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Helpers", "Application\Yomikaze.Helpers\Yomikaze.Helpers.csproj", "{593DF4CF-D514-4704-BF6A-F4F712197B85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImagesAPI", "Presentation\API\ImagesAPI\ImagesAPI.csproj", "{CAD02D8E-4907-49E6-A4D6-8812FA0559E2}"
 EndProject
@@ -31,9 +31,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationAPI", "Presen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YomikazeAPI", "Presentation\API\YomikazeAPI\YomikazeAPI.csproj", "{E6479AF2-7EC5-4B8E-B5F4-A98F8FDB6E7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Presentation\Gateway\Gateway.csproj", "{C4910FAC-15BF-4AF3-A8A2-0D42E89711DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yomikaze.Presentation.Gateway", "Presentation\Yomikaze.Presentation.Gateway\Yomikaze.Presentation.Gateway.csproj", "{C4910FAC-15BF-4AF3-A8A2-0D42E89711DB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YomikazeODataAPI", "Presentation\API\YomikazeODataAPI\YomikazeODataAPI.csproj", "{B512E85C-4015-4F9D-83DF-8D3283F53E74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Context", "Context", "{E4ED7F0D-823D-4048-8568-B0EEAB66130C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Migrations", "Migrations", "{B462B1BA-A414-4A53-A143-8D8F986237DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Context.Identity", "Infrastructure\Context\Yomikaze.Infrastructure.Context.Identity\Yomikaze.Infrastructure.Context.Identity.csproj", "{D7B838F5-C394-4C95-A407-BDF2D4E38195}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Domain.Identity", "Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj", "{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Migrations.SQLServer", "Infrastructure\Migrations\Yomikaze.Infrastructure.Migrations.SQLServer\Yomikaze.Infrastructure.Migrations.SQLServer.csproj", "{A9FFEF98-4678-48CF-89E1-062C97687541}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Migrations.PostgreSQL", "Infrastructure\Migrations\Yomikaze.Infrastructure.Migrations.PostgreSQL\Yomikaze.Infrastructure.Migrations.PostgreSQL.csproj", "{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure", "Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj", "{EB54340E-23B4-40B8-B743-718F15FD3A55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Migrations.Sqlite", "Infrastructure\Migrations\Yomikaze.Infrastructure.Migrations.Sqlite\Yomikaze.Infrastructure.Migrations.Sqlite.csproj", "{DF481A9E-8521-4849-BEE7-FD521C881983}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Context", "Infrastructure\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj", "{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +103,34 @@ Global
 		{B512E85C-4015-4F9D-83DF-8D3283F53E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B512E85C-4015-4F9D-83DF-8D3283F53E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B512E85C-4015-4F9D-83DF-8D3283F53E74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7B838F5-C394-4C95-A407-BDF2D4E38195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7B838F5-C394-4C95-A407-BDF2D4E38195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7B838F5-C394-4C95-A407-BDF2D4E38195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7B838F5-C394-4C95-A407-BDF2D4E38195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FFEF98-4678-48CF-89E1-062C97687541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9FFEF98-4678-48CF-89E1-062C97687541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9FFEF98-4678-48CF-89E1-062C97687541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9FFEF98-4678-48CF-89E1-062C97687541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB54340E-23B4-40B8-B743-718F15FD3A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB54340E-23B4-40B8-B743-718F15FD3A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB54340E-23B4-40B8-B743-718F15FD3A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB54340E-23B4-40B8-B743-718F15FD3A55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF481A9E-8521-4849-BEE7-FD521C881983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF481A9E-8521-4849-BEE7-FD521C881983}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF481A9E-8521-4849-BEE7-FD521C881983}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF481A9E-8521-4849-BEE7-FD521C881983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +148,15 @@ Global
 		{E6479AF2-7EC5-4B8E-B5F4-A98F8FDB6E7D} = {DFF10A16-151F-4B31-9BD1-DCD35250BC7B}
 		{C4910FAC-15BF-4AF3-A8A2-0D42E89711DB} = {86BF01BC-CC60-4D96-9796-E5C58FE72B59}
 		{B512E85C-4015-4F9D-83DF-8D3283F53E74} = {DFF10A16-151F-4B31-9BD1-DCD35250BC7B}
+		{E4ED7F0D-823D-4048-8568-B0EEAB66130C} = {9EC8C6D6-6084-4233-B29F-A3365FF89725}
+		{B462B1BA-A414-4A53-A143-8D8F986237DD} = {9EC8C6D6-6084-4233-B29F-A3365FF89725}
+		{D7B838F5-C394-4C95-A407-BDF2D4E38195} = {E4ED7F0D-823D-4048-8568-B0EEAB66130C}
+		{BFFFA921-2037-4E9E-87E5-ADDA0D1AC4C2} = {8B89DE1E-BA1D-4F86-AE4F-0FE0DE1581EB}
+		{A9FFEF98-4678-48CF-89E1-062C97687541} = {B462B1BA-A414-4A53-A143-8D8F986237DD}
+		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3} = {B462B1BA-A414-4A53-A143-8D8F986237DD}
+		{EB54340E-23B4-40B8-B743-718F15FD3A55} = {9EC8C6D6-6084-4233-B29F-A3365FF89725}
+		{DF481A9E-8521-4849-BEE7-FD521C881983} = {B462B1BA-A414-4A53-A143-8D8F986237DD}
+		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23} = {E4ED7F0D-823D-4048-8568-B0EEAB66130C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A103C08F-D4A1-4C73-93E4-9FF053433E59}

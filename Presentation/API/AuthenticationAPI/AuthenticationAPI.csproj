@@ -25,7 +25,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Application\Application\Application.csproj"/>
+        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj" />
+        <ProjectReference Include="..\..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj" />
     </ItemGroup>
 
 </Project>

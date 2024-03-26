@@ -15,7 +15,7 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 [Authorize(Roles = "Administrator")]
 public class GenresController(DbContext dbContext, IMapper mapper)
-    : CrudControllerBase<Genre, GenreInputModel, GenreOutputModel>(dbContext, mapper, new GenreRepo(dbContext))
+    : CrudControllerBase<Genre, GenreInputModel, GenreOutputModel>(dbContext, mapper, new GenreRepository(dbContext))
 {
     [HttpPost]
     public override ActionResult<GenreOutputModel> Post(GenreInputModel input)

@@ -12,7 +12,7 @@ namespace Yomikaze.API.OData.Controllers;
 [Authorize]
 public class LibraryController(DbContext dbContext) : ControllerBase
 {
-    private LibraryRepo Repository { get; } = new(dbContext);
+    private LibraryRepository Repository { get; } = new(dbContext);
 
 
     public ActionResult<IEnumerable<LibraryEntry>> Get()

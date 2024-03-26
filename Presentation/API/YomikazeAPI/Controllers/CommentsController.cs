@@ -17,9 +17,9 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 [Authorize]
 public class CommentsController(DbContext dbContext, IMapper mapper)
-    : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepo(dbContext))
+    : CrudControllerBase<Comment, CommentInputModel, CommentOutputModel>(dbContext, mapper, new CommentRepository(dbContext))
 {
-    private new CommentRepo Repository => (CommentRepo)base.Repository;
+    private new CommentRepository Repository => (CommentRepository)base.Repository;
 
 
     [HttpPost]

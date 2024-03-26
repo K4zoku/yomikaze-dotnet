@@ -17,7 +17,7 @@ namespace Yomikaze.API.Main.Controllers;
 public class LibraryController(IMapper mapper, DbContext dbContext) : ControllerBase
 {
     protected IMapper Mapper { get; set; } = mapper;
-    protected LibraryRepo Repository { get; set; } = new(dbContext);
+    protected LibraryRepository Repository { get; set; } = new(dbContext);
 
     [HttpPost]
     public virtual ActionResult<ResponseModel> Post(string comicId)

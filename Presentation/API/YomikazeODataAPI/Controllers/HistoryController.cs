@@ -12,7 +12,7 @@ namespace Yomikaze.API.OData.Controllers;
 [Authorize]
 public class HistoryController(DbContext dbContext) : ControllerBase
 {
-    private HistoryRepo Repository { get; } = new(dbContext);
+    private HistoryRepository Repository { get; } = new(dbContext);
     
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
@@ -22,7 +22,7 @@ public class HistoryController(DbContext dbContext) : ControllerBase
 
         history = history
             .GroupBy(x => x.ChapterId)
-            .Select(x => x.OrderByDescending(y => y.CreatedAt).First());
+            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
         return Ok(history.ToList());
     }
 }

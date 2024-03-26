@@ -11,7 +11,7 @@ namespace Yomikaze.API.Main.Base;
 public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     DbContext dbContext,
     IMapper mapper,
-    IRepo<T, TKey> repository)
+    IRepository<T, TKey> repository)
     : ControllerBase
     where T : class, IEntity<TKey>
     where TInput : class
@@ -20,7 +20,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     protected DbContext DbContext { get; set; } = dbContext;
     protected IMapper Mapper { get; set; } = mapper;
 
-    protected IRepo<T, TKey> Repository { get; set; } = repository;
+    protected IRepository<T, TKey> Repository { get; set; } = repository;
 
 
     [HttpGet("{key}")]
@@ -92,7 +92,7 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
 public abstract class CrudControllerBase<T, TInput, TOutput>(
     DbContext dbContext,
     IMapper mapper,
-    IRepo<T> repository)
+    IRepository<T> repository)
     : CrudControllerBase<T, string, TInput, TOutput>(dbContext, mapper, repository)
     where T : class, IEntity
     where TInput : class

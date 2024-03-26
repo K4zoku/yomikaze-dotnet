@@ -13,6 +13,6 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 [Authorize(Roles = "Administrator")]
 public class ChaptersController(DbContext dbContext, IMapper mapper)
-    : CrudControllerBase<Chapter, ChapterInputModel, ChapterOutputModel>(dbContext, mapper, new ChapterRepo(dbContext))
+    : CrudControllerBase<Chapter, ChapterInputModel, ChapterOutputModel>(dbContext, mapper, new ChapterRepository(dbContext))
 {
 }

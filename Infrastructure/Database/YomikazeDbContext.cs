@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Infrastructure.Database;
 
-public partial class YomikazeDbContext : IdentityDbContext<User, Role, string>
+public partial class YomikazeDbContext : DbContext
 {
     public YomikazeDbContext() { }
 
@@ -20,7 +18,6 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, string>
     public virtual DbSet<Notification> Notifications { get; init; } = default!;
     public virtual DbSet<Page> Pages { get; init; } = default!;
     public virtual DbSet<LibraryEntry> LibraryEntries { get; init; } = default!;
-    public virtual DbSet<ComicGenre> ComicGenres { get; init; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -39,13 +36,6 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, string>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<User>().ToTable("Users");
-        builder.Entity<Role>().ToTable("Roles").HasData(Default.Roles);
-        builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
-        builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-        builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
-        builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-        builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
         builder.Entity<Genre>().HasData(Default.Genres);
         builder.ApplyConfigurationsFromAssembly(typeof(YomikazeDbContext).Assembly);
     }
