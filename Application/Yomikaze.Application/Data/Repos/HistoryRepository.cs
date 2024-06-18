@@ -2,6 +2,7 @@
 using Yomikaze.Application.Data.Access;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Application.Data.Repos;
 
@@ -10,8 +11,6 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
     public IQueryable<HistoryRecord> GetHistoryByUserId(string userId)
     {
         return Query()
-            .Include(x => x.Chapter)
-            .ThenInclude(x => x.Comic)
-            .Where(x => x.UserId == userId);
+            .Where(x => x.UserId.ToString() == userId);
     }
 }

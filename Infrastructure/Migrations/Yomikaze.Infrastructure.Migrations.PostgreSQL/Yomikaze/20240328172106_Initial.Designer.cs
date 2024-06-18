@@ -2,55 +2,65 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Yomikaze.Infrastructure.Context;
 
 #nullable disable
 
-namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
+namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Yomikaze
 {
     [DbContext(typeof(YomikazeDbContext))]
-    partial class YomikazeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240328172106_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Author", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Avatar")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("avatar")
                         .HasColumnOrder(3);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("description")
                         .HasColumnOrder(2);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("name")
                         .HasColumnOrder(1);
 
@@ -61,44 +71,45 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Chapter", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("ComicId")
-                        .IsRequired()
+                    b.Property<decimal>("ComicId")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id")
                         .HasColumnOrder(4);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("description")
                         .HasColumnOrder(3);
 
                     b.Property<int>("Index")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("index")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("title")
                         .HasColumnOrder(2);
 
@@ -111,118 +122,127 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comic", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("Aliases")
+                    b.Property<string[]>("Aliases")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("text[]")
                         .HasColumnName("aliases")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Banner")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("banner")
                         .HasColumnOrder(5);
 
                     b.Property<string>("Cover")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("cover")
                         .HasColumnOrder(4);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("description")
                         .HasColumnOrder(3);
 
                     b.Property<DateTimeOffset?>("Ended")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("ended")
                         .HasColumnOrder(7);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("name")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset?>("Published")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("published")
                         .HasColumnOrder(6);
 
+                    b.Property<decimal?>("PublisherId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("publisher_id")
+                        .HasColumnOrder(8);
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PublisherId");
 
                     b.ToTable("comics");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("ChapterId")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal?>("ChapterId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("chapter_id")
                         .HasColumnOrder(4);
 
-                    b.Property<string>("ComicId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("content")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
-                    b.Property<string>("ReplyToId")
+                    b.Property<decimal?>("ReplyToId")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("reply_to_id")
                         .HasColumnOrder(5);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id")
                         .HasColumnOrder(2);
+
+                    b.Property<decimal>("UserProfileId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("Id");
 
@@ -232,37 +252,41 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
 
                     b.HasIndex("ReplyToId");
 
+                    b.HasIndex("UserProfileId");
+
                     b.ToTable("comments");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Genre", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("description")
                         .HasColumnOrder(2);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("name")
                         .HasColumnOrder(1);
 
@@ -276,99 +300,99 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                     b.HasData(
                         new
                         {
-                            Id = "30868700449996800",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(7431), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746191597568m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 116, DateTimeKind.Unspecified).AddTicks(3710), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
                             Name = "Action"
                         },
                         new
                         {
-                            Id = "30868700449996801",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8052), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791872m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1671), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
                             Name = "Adventure"
                         },
                         new
                         {
-                            Id = "30868700449996802",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8059), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791873m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1710), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
                             Name = "Comedy"
                         },
                         new
                         {
-                            Id = "30868700449996803",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8062), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791874m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1714), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
                             Name = "Drama"
                         },
                         new
                         {
-                            Id = "30868700449996804",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8065), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791875m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1717), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
                             Name = "Fantasy"
                         },
                         new
                         {
-                            Id = "30868700449996805",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8067), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791876m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1719), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that evokes fear in both the characters and the audience.",
                             Name = "Horror"
                         },
                         new
                         {
-                            Id = "30868700449996806",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8069), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791877m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1722), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around solving a puzzle or a crime.",
                             Name = "Mystery"
                         },
                         new
                         {
-                            Id = "30868700449996807",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8072), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791878m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1725), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that emphasizes the psychology of its characters and their unstable emotional states.",
                             Name = "Psychological"
                         },
                         new
                         {
-                            Id = "30868700449996808",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8074), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791879m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1727), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story about love.",
                             Name = "Romance"
                         },
                         new
                         {
-                            Id = "30868700449996809",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8076), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791880m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1729), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
                             Name = "Slice of Life"
                         },
                         new
                         {
-                            Id = "30868700449996810",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8079), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791881m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1731), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around sports, such as baseball or basketball.",
                             Name = "Sports"
                         },
                         new
                         {
-                            Id = "30868700449996811",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8081), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791882m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1733), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that involves supernatural elements, such as ghosts or demons.",
                             Name = "Supernatural"
                         },
                         new
                         {
-                            Id = "30868700449996812",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8082), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791883m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1736), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is fast-paced and suspenseful, often involving a crime.",
                             Name = "Thriller"
                         },
                         new
                         {
-                            Id = "30868700449996813",
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 26, 4, 21, 11, 700, DateTimeKind.Unspecified).AddTicks(8084), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 31789746195791884m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 3, 28, 17, 21, 6, 118, DateTimeKind.Unspecified).AddTicks(1738), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that ends in a tragic or unhappy way.",
                             Name = "Tragedy"
                         });
@@ -376,171 +400,180 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.HistoryRecord", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("ChapterId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ChapterId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("chapter_id")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id")
                         .HasColumnOrder(2);
 
+                    b.Property<long>("Views")
+                        .HasColumnType("bigint")
+                        .HasColumnName("views")
+                        .HasColumnOrder(3);
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ChapterId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("history_records");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.LibraryEntry", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("ComicId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id")
                         .HasColumnOrder(2);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ComicId");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ComicId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("library_entries");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Notification", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("content")
                         .HasColumnOrder(2);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<bool>("Read")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasColumnName("read")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("title")
                         .HasColumnOrder(1);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("user_id")
                         .HasColumnOrder(4);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("notifications");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Page", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("ChapterId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ChapterId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("chapter_id")
                         .HasColumnOrder(4);
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("TEXT")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time")
                         .HasColumnOrder(98);
 
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("image")
                         .HasColumnOrder(3);
 
                     b.Property<int>("Index")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasColumnName("index")
                         .HasColumnOrder(1);
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .HasColumnType("TEXT")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified")
                         .HasColumnOrder(99);
 
                     b.Property<string>("Server")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("server")
                         .HasColumnOrder(2);
 
@@ -551,17 +584,60 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                     b.ToTable("pages");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.UserProfile", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Banner")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset?>("Birthday")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time")
+                        .HasColumnOrder(98);
+
+                    b.Property<DateTimeOffset?>("LastModified")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_modified")
+                        .HasColumnOrder(99);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("profiles");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicAuthor", b =>
                 {
-                    b.Property<string>("ComicId")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id")
                         .HasColumnOrder(1);
 
-                    b.Property<string>("AuthorId")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("AuthorId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("author_id")
                         .HasColumnOrder(2);
 
@@ -574,15 +650,13 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicGenre", b =>
                 {
-                    b.Property<string>("ComicId")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id")
                         .HasColumnOrder(1);
 
-                    b.Property<string>("GenreId")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
+                    b.Property<decimal>("GenreId")
+                        .HasColumnType("numeric(20,0)")
                         .HasColumnName("genre_id")
                         .HasColumnOrder(2);
 
@@ -604,6 +678,16 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                     b.Navigation("Comic");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Comic", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Entities.UserProfile", "Publisher")
+                        .WithMany()
+                        .HasForeignKey("PublisherId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Publisher");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Chapter", "Chapter")
@@ -621,11 +705,19 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                         .WithMany("Replies")
                         .HasForeignKey("ReplyToId");
 
+                    b.HasOne("Yomikaze.Domain.Entities.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Chapter");
 
                     b.Navigation("Comic");
 
                     b.Navigation("ReplyTo");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.HistoryRecord", b =>
@@ -636,7 +728,15 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Yomikaze.Domain.Entities.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Chapter");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.LibraryEntry", b =>
@@ -647,7 +747,26 @@ namespace Yomikaze.Infrastructure.Migrations.Sqlite.Yomikaze
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Yomikaze.Domain.Entities.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Comic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Entities.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Page", b =>

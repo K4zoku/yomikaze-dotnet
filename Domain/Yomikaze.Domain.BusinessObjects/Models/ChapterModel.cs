@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Yomikaze.Domain.Models;
 
-namespace Yomikaze.Domain.Models;
-
-public class ChapterInputModel
+public abstract class ChapterInputModel
 {
     public string ComicId { get; set; }
 

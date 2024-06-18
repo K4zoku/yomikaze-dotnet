@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Domain.Models;
+﻿namespace Yomikaze.Domain.Identity.Models;
 
 public class TokenModel(string? token)
 {

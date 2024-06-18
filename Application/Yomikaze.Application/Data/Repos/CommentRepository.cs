@@ -7,7 +7,7 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class CommentRepository(DbContext dbContext) : BaseRepository<Comment>(new CommentDao(dbContext))
 {
-    public IEnumerable<Comment> GetCommentByComicId(string comicId)
+    public IEnumerable<Comment> GetCommentByComicId(ulong comicId)
     {
         return Query().Where(comment => comment.ComicId == comicId);
     }

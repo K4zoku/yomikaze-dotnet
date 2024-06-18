@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Identity.Entities;
+using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
 
 namespace Yomikaze.Application.Data.Configs;
 
-public class MapperConfigs : Profile
+public class YomikazeMapper : Profile
 {
-    public MapperConfigs()
+    public YomikazeMapper()
     {
         CreateMap<ChapterInputModel, Chapter>()
             .ForMember(dest => dest.Pages, options => options.Condition(src => src.Pages?.Count > 0));
@@ -23,8 +25,8 @@ public class MapperConfigs : Profile
         CreateMap<CommentInputModel, Comment>();
         CreateMap<Comment, CommentOutputModel>();
 
-        CreateMap<GenreInputModel, Genre>();
-        CreateMap<Genre, GenreOutputModel>();
+        CreateMap<GenreInputModel, Tag>();
+        CreateMap<Tag, GenreOutputModel>();
 
         CreateMap<HistoryRecordInputModel, HistoryRecord>();
         CreateMap<HistoryRecord, HistoryRecordOutputModel>();

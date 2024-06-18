@@ -9,6 +9,11 @@ public class ComicRepository(DbContext dbContext) : BaseRepository<Comic>(new Co
 {
     public Comic? GetChaptersByComicId(string comicId)
     {
+        return Query().FirstOrDefault(comic => comic.Id.ToString() == comicId);
+    }
+    
+    public Comic? GetChaptersByComicId(ulong comicId)
+    {
         return Query().FirstOrDefault(comic => comic.Id == comicId);
     }
 }

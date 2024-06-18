@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-var provider = FromName(configuration.GetValue("provider", Sqlite.Name));
+var provider = FromName(configuration.GetValue("provider", Postgres.Name));
 
 services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity"); 
 

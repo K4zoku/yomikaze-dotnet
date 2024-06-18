@@ -9,6 +9,6 @@ public interface IRepository<T, in TKey> where T : class, IEntity<TKey>
     void Delete(T entity);
 }
 
-public interface IRepository<T> : IRepository<T, string> where T : class, IEntity
+public interface IRepository<T> : IRepository<T, ulong> where T : class, IEntity
 {
 }

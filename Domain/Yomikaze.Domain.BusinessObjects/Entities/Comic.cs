@@ -1,8 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
@@ -14,11 +9,10 @@ public class Comic : BaseEntity
 
     #region Fields
 
-    private ICollection<Genre> _genres = [];
-    private ICollection<ComicGenre> _comicGenres = [];
-    private ICollection<Author> _authors = [];
-    private ICollection<ComicAuthor> _comicAuthors = [];
-    private ICollection<Chapter> _chapters = [];
+    private ICollection<Tag> _genres = [];
+    private ICollection<ComicTags> _comicGenres = [];
+    private IEnumerable<Chapter> _chapters = [];
+    private UserProfile? _publisher;
 
     #endregion
 
@@ -58,27 +52,33 @@ public class Comic : BaseEntity
     public DateTimeOffset? Ended { get; set; }
 
     [DataMember(Name = "genres")]
-    public ICollection<Genre> Genres => LazyLoader.Load(this, ref _genres);
+    public ICollection<Tag> Genres => LazyLoader.Load(this, ref _genres);
     
-    public ICollection<ComicGenre> ComicGenres {
+    public ICollection<ComicTags> ComicGenres {
         get => LazyLoader.Load(this, ref _comicGenres);
         set => _comicGenres = value;
     }
 
     [DataMember(Name = "authors")]
-    public ICollection<Author> Authors => LazyLoader.Load(this, ref _authors);
-    
-    public ICollection<ComicAuthor> ComicAuthors {
-        get => LazyLoader.Load(this, ref _comicAuthors);
-        set => _comicAuthors = value;
-    }
+    public ICollection<string> Authors { get; set; }
 
     [DataMember(Name = "chapters")]
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public ICollection<Chapter> Chapters
+    public IEnumerable<Chapter> Chapters
     {
-        get => LazyLoader.Load(this, ref _chapters);
+        get => LazyLoader.Load(this, ref _chapters).OrderBy(x => x.Index);
         set => _chapters = value;
+    }
+    
+    [ForeignKey(nameof(Publisher))]
+    [DataMember(Name = "publisherId")]
+    [Column("publisher_id", Order = 8)]
+    public ulong? PublisherId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.SetNull)]
+    public UserProfile? Publisher { 
+        get => LazyLoader.LoadNullable(this, ref _publisher);
+        set => _publisher = value;
     }
 
     #endregion

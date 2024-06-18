@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Identity.Entities;
 
 namespace Yomikaze.Infrastructure.Context.Identity;
 
-public partial class YomikazeIdentityDbContext : IdentityDbContext<User, Role, string>
+public partial class YomikazeIdentityDbContext : IdentityDbContext<User, Role, ulong>
 {
     public YomikazeIdentityDbContext()
     {
@@ -25,14 +27,13 @@ public partial class YomikazeIdentityDbContext : IdentityDbContext<User, Role, s
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfigurationsFromAssembly(typeof(YomikazeIdentityDbContext).Assembly);
         builder.Entity<User>().ToTable("users");
         builder.Entity<Role>().ToTable("roles").HasData(Default.Roles);
-        builder.Entity<IdentityUserLogin<string>>().ToTable("user_logins");
-        builder.Entity<IdentityUserClaim<string>>().ToTable("user_claims");
-        builder.Entity<IdentityUserToken<string>>().ToTable("user_tokens");
-        builder.Entity<IdentityUserRole<string>>().ToTable("user_roles");
-        builder.Entity<IdentityRoleClaim<string>>().ToTable("role_claims");
+        builder.Entity<IdentityUserLogin<ulong>>().ToTable("user_logins");
+        builder.Entity<IdentityUserClaim<ulong>>().ToTable("user_claims");
+        builder.Entity<IdentityUserToken<ulong>>().ToTable("user_tokens");
+        builder.Entity<IdentityUserRole<ulong>>().ToTable("user_roles");
+        builder.Entity<IdentityRoleClaim<ulong>>().ToTable("role_claims");
     }
     
 }

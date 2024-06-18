@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using Yomikaze.API.Authentication;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
@@ -10,7 +13,7 @@ using Yomikaze.Infrastructure.Context.Identity;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
-Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.Postgres.Name));
 services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
 
 services
@@ -18,11 +21,14 @@ services
     {
         options.Filters.Add<HttpResponseExceptionFilter>();
     })
-    .ConfigureApiBehaviorOptionsYomikaze();
+    .ConfigureApiBehaviorOptionsYomikaze()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 services.AddPublicCors();
 
 services.AddYomikazeIdentity();
+services.UpgradePasswordSecurity().UseArgon2<User>();
 
 JwtConfiguration jwt = configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
@@ -30,6 +36,7 @@ JwtConfiguration jwt = configuration
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
+services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
 
@@ -63,7 +70,6 @@ if (!userManager.Users.Any())
     User admin = new()
     {
         UserName = configuration["Admin:Username"] ?? "administrator",
-        Fullname = configuration["Admin:Fullname"] ?? "Administrator",
         Email = configuration["Admin:Email"] ?? "administrator@yomikaze.org",
         EmailConfirmed = true
     };

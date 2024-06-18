@@ -28,7 +28,10 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     {
         T? entity = Repository.Get(key);
 
-        CheckEntity(entity);
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         return Ok(Mapper.Map<TOutput>(entity));
     }
@@ -49,7 +52,10 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
         CheckModelState();
 
         T? entityToUpdate = Repository.Get(key);
-        CheckEntity(entityToUpdate);
+        if (entityToUpdate == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
@@ -61,7 +67,10 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     {
         T? entity = Repository.Get(key);
 
-        CheckEntity(entity);
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         Repository.Delete(entity);
         return Ok();
@@ -77,23 +86,13 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
             throw new HttpResponseException(HttpStatusCode.BadRequest, ResponseModel.CreateError("Invalid input"));
         }
     }
-
-    [NonAction]
-    // check entity and throw exception if null
-    protected void CheckEntity(object? entity)
-    {
-        if (entity == null)
-        {
-            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
-        }
-    }
 }
 
 public abstract class CrudControllerBase<T, TInput, TOutput>(
     DbContext dbContext,
     IMapper mapper,
     IRepository<T> repository)
-    : CrudControllerBase<T, string, TInput, TOutput>(dbContext, mapper, repository)
+    : CrudControllerBase<T, ulong, TInput, TOutput>(dbContext, mapper, repository)
     where T : class, IEntity
     where TInput : class
     where TOutput : class;

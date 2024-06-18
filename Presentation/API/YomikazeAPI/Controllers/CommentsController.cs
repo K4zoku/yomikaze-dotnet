@@ -31,21 +31,24 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
         }
 
         Comment? entity = Mapper.Map<Comment>(input);
-        string id = User.GetId();
+        ulong id = User.GetId();
         entity.UserId = id;
         Repository.Add(entity);
         return Ok(Mapper.Map<CommentOutputModel>(entity));
     }
 
     [HttpPut("{key}")]
-    public override ActionResult<CommentOutputModel> Put(string key, CommentInputModel input)
+    public override ActionResult<CommentOutputModel> Put(ulong key, CommentInputModel input)
     {
         CheckModelState();
 
         Comment? entityToUpdate = Repository.Get(key);
-        CheckEntity(entityToUpdate);
+        if (entityToUpdate == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
-        string id = User.GetId();
+        ulong id = User.GetId();
         if (entityToUpdate.UserId != id)
         {
             throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
@@ -57,14 +60,17 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpDelete("{key}")]
-    public override ActionResult Delete(string key)
+    public override ActionResult Delete(ulong key)
     {
         Comment? entity = Repository.Get(key);
 
-        CheckEntity(entity);
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
 
-        string id = User.GetId();
+        ulong id = User.GetId();
         if (entity.UserId != id && !User.HasClaim(ClaimTypes.Role, "Administrator"))
         {
             throw new HttpResponseException(HttpStatusCode.Forbidden, ResponseModel.CreateError("Forbidden"));
@@ -76,10 +82,13 @@ public class CommentsController(DbContext dbContext, IMapper mapper)
 
     // get chapter by comic id
     [HttpGet("{comicId}/Comments")]
-    public ActionResult<IEnumerable<CommentOutputModel>> GetComments(string comicId)
+    public ActionResult<IEnumerable<CommentOutputModel>> GetComments(ulong comicId)
     {
         IEnumerable<Comment> comment = Repository.GetCommentByComicId(comicId);
-        CheckEntity(comment);
+        if (comment == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         return Ok(Mapper.Map<IEnumerable<CommentOutputModel>>(comment));
     }

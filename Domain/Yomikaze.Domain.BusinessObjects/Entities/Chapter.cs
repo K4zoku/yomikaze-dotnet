@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -40,7 +35,7 @@ public class Chapter : BaseEntity
     [ForeignKey(nameof(Comic))]
     [DataMember(Name = "comicId")]
     [Column("comic_id", Order = 4)]
-    public string ComicId { get; set; } = default!;
+    public ulong ComicId { get; set; } = default!;
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]

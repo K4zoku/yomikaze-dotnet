@@ -22,7 +22,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<ulong>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,9 +36,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.Property<string>("ClaimValue")
                         .HasColumnType("text");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("RoleId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("Id");
 
@@ -47,7 +46,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.ToTable("role_claims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<ulong>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,9 +60,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.Property<string>("ClaimValue")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("Id");
 
@@ -72,7 +70,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.ToTable("user_claims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<ulong>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text");
@@ -83,9 +81,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -94,13 +91,13 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.ToTable("user_logins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<ulong>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("text");
+                    b.Property<decimal>("RoleId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -109,10 +106,10 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.ToTable("user_roles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<ulong>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text");
@@ -130,8 +127,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
             modelBuilder.Entity("Yomikaze.Domain.Identity.Entities.Role", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -156,22 +153,22 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.HasData(
                         new
                         {
-                            Id = "30924123358142464",
-                            ConcurrencyStamp = "e74aebec-26a2-48d4-9dfd-2c4c258ea7db",
+                            Id = 31770195102048256m,
+                            ConcurrencyStamp = "17b99661-145c-4c93-a989-bce59d0223b8",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "30924123362336768",
-                            ConcurrencyStamp = "ad203093-1f91-4b51-9707-e386c7c0bb5c",
+                            Id = 31770195106242560m,
+                            ConcurrencyStamp = "058aae2a-d37b-4877-8790-c674c5258924",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = "30924123362336769",
-                            ConcurrencyStamp = "6145615d-7401-4bf2-8293-27c181f2a6fe",
+                            Id = 31770195106242561m,
+                            ConcurrencyStamp = "8e462154-3f1a-4116-8bff-17a8005674dc",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -179,26 +176,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
             modelBuilder.Entity("Yomikaze.Domain.Identity.Entities.User", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<decimal>("Id")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Avatar")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Banner")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Bio")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTimeOffset?>("Birthday")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -210,10 +192,6 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Fullname")
-                        .HasMaxLength(48)
-                        .HasColumnType("character varying(48)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -260,7 +238,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.Role", null)
                         .WithMany()
@@ -269,7 +247,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.User", null)
                         .WithMany()
@@ -278,7 +256,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.User", null)
                         .WithMany()
@@ -287,7 +265,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.Role", null)
                         .WithMany()
@@ -302,7 +280,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Identity
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<ulong>", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.User", null)
                         .WithMany()

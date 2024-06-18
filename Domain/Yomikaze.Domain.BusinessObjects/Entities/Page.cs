@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -28,17 +23,16 @@ public class Page : BaseEntity
     [StringLength(20)]
     [DataMember(Name = "server")]
     [Column("server", Order = 2)]
-    public string? Server { get; set; } = default!;
+    public string? Server { get; set; }
 
     [StringLength(512)]
     [DataMember(Name = "image")]
     [Column("image", Order = 3)]
     public string Image { get; set; } = default!;
     
-    [StringLength(20)]
     [ForeignKey(nameof(Chapter))]
     [Column("chapter_id", Order = 4)]
-    public string ChapterId { get; set; } = default!;
+    public ulong ChapterId { get; set; }
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]

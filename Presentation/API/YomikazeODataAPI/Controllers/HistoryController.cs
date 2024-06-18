@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.OData.Controllers;
 
@@ -16,13 +17,12 @@ public class HistoryController(DbContext dbContext) : ControllerBase
     
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
-        string id = User.GetId();
-        var history = Repository.GetHistoryByUserId(id);
+        string id = User.GetIdString();
+        IQueryable<HistoryRecord>? history = Repository.GetHistoryByUserId(id);
         // select distinct comic
-
-        history = history
-            .GroupBy(x => x.ChapterId)
-            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
+        // history = history
+        //     .GroupBy(x => x.ChapterId)
+        //     .Select(x => x.OrderByDescending(y => y.CreationTime).First());
         return Ok(history.ToList());
     }
 }

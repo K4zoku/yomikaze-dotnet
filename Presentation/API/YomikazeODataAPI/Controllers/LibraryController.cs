@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.OData.Controllers;
 
@@ -17,7 +18,7 @@ public class LibraryController(DbContext dbContext) : ControllerBase
 
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
-        string id = User.GetId();
+        string id = User.GetIdString();
         return Ok(Repository.GetLibraryByUserId(id));
     }
 }

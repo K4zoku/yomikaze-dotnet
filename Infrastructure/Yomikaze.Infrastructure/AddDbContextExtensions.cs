@@ -2,7 +2,7 @@
 
 namespace Yomikaze.Infrastructure;
 
-public static class ConfigureDbContext
+public static class AddDbContextExtensions
 {
     public static void AddDbContext<T>(this IServiceCollection services, Provider provider, IConfiguration configuration, string key) where T : DbContext
     {
@@ -17,9 +17,6 @@ public static class ConfigureDbContext
         {
             switch (provider.Name)
             {
-                case "Sqlite":
-                    options.UseSqlite(connectionString, x => x.MigrationsAssembly(provider.Assembly));
-                    break;
                 case "Postgres":
                     options.UseNpgsql(connectionString, x =>
                     {

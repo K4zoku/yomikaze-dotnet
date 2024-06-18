@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Yomikaze.Application.Helpers.Security;
 
@@ -34,8 +35,11 @@ public static class JwtExtensions
                     ValidateIssuer = configuration.ValidateIssuer,
                     ValidateAudience = configuration.ValidateAudience,
                     RequireExpirationTime = configuration.Expire,
-                    IssuerSigningKey = configuration.SecurityKey
+                    IssuerSigningKey = configuration.SecurityKey,
+                    RoleClaimType = "roles",
+                    NameClaimType = JwtRegisteredClaimNames.Name,
                 };
+                options.MapInboundClaims = false;
             });
         return services;
     }

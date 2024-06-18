@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-using Yomikaze.Domain.Abstracts;
+﻿using System.Text.Json.Serialization;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -14,6 +9,7 @@ public class Comment : BaseEntity
     #region Fields
 
     private Comic _comic = default!;
+    private UserProfile _userProfile = default!;
     private Chapter? _chapter;
     private Comment? _replyTo;
     private ICollection<Comment> _replies = [];
@@ -28,17 +24,21 @@ public class Comment : BaseEntity
     [DataMember(Name = "content")]
     [Column("content", Order = 1)]
     public string Content { get; set; } = default!;
-
-    [StringLength(20)]
+    
     [DataMember(Name = "userId")]
     [Column("user_id", Order = 2)]
-    public string UserId { get; set; } = default!;
-
-    [StringLength(20)] 
+    public ulong UserId { get; set; }
+    
+    [DataMember(Name = "user")]
+    public UserProfile UserProfile { 
+        get => LazyLoader.Load(this, ref _userProfile);
+        set => _userProfile = value;
+    }
+    
     [ForeignKey(nameof(Comic))]
     [DataMember(Name = "comicId")]
     [Column("comic_id", Order = 3)]
-    public string ComicId { get; set; } = default!;
+    public ulong ComicId { get; set; }
     
     [DeleteBehavior(DeleteBehavior.ClientCascade)]
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
@@ -48,10 +48,9 @@ public class Comment : BaseEntity
     }
     
     [ForeignKey(nameof(Chapter))]
-    [StringLength(20)]
     [DataMember(Name = "chapterId")]
     [Column("chapter_id", Order = 4)]
-    public string? ChapterId { get; set; }
+    public ulong? ChapterId { get; set; }
     
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
@@ -65,7 +64,7 @@ public class Comment : BaseEntity
     [StringLength(20)]
     [DataMember(Name = "replyToId")]
     [Column("reply_to_id", Order = 5)]
-    public string? ReplyToId { get; set; }
+    public ulong? ReplyToId { get; set; }
     
     [DataMember(Name = "replyTo")]
     public Comment? ReplyTo { 

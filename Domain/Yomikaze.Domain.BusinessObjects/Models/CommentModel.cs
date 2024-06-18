@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Yomikaze.Domain.Models;
+﻿namespace Yomikaze.Domain.Models;
 
 public class CommentInputModel
 {

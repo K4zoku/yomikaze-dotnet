@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using Yomikaze.Application.Helpers;
-using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Identity.Entities;
+using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Authentication.Controllers;
@@ -16,34 +16,64 @@ namespace Yomikaze.API.Authentication.Controllers;
 [ApiController]
 [Route("[controller]/[action]")]
 public class AuthenticationController(
-    UserManager<User> userManager,
     RoleManager<Role> roleManager,
+    SignInManager<User> signInManager,
+    ILogger<AuthenticationController> logger,
     JwtConfiguration jwtConfiguration)
     : ControllerBase
 {
-    private UserManager<User> UserManager { get; } = userManager;
+    private UserManager<User> UserManager { get; } = signInManager.UserManager;
+    private ClaimsIdentityOptions ClaimsIdentity { get; } = signInManager.Options.ClaimsIdentity;
     private RoleManager<Role> RoleManager { get; } = roleManager;
+    private SignInManager<User> SignInManager { get; } = signInManager;
+    private ILogger<AuthenticationController> Logger { get; } = logger;
 
     private JwtConfiguration Jwt { get; } = jwtConfiguration;
 
     [HttpPost]
-    public async Task<ActionResult<ResponseModel<TokenModel>>> SignIn([FromBody] SignInModel model)
+    public async Task<ActionResult<TokenModel>> SignIn([FromBody] SignInModel model)
     {
-        User user = await UserManager.FindByNameAsync(model.Username) ??
-                    throw new HttpResponseException(HttpStatusCode.NotFound,
-                        ResponseModel.CreateError("User not found"));
-
-        bool passwordMatched = await UserManager.CheckPasswordAsync(user, model.Password);
-        if (!passwordMatched)
+        if (!ModelState.IsValid)
         {
-            throw new HttpResponseException(HttpStatusCode.Unauthorized,
-                ResponseModel.CreateError("Password does not match"));
+            return BadRequest(ModelState);
         }
 
-        string token = (await GenerateToken(user)).ToTokenString();
-        await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
-        await UserManager.UpdateSecurityStampAsync(user);
-        return ResponseModel.CreateSuccess(new TokenModel(token));
+        User user = await SignInManager.UserManager.FindByNameAsync(model.Username) ??
+                    await SignInManager.UserManager.FindByEmailAsync(model.Username) ??
+        throw new HttpResponseException(HttpStatusCode.NotFound,
+                        ResponseModel.CreateError("User not found"));
+        
+        var result = await SignInManager.CheckPasswordSignInAsync(user, model.Password, true);
+        if (result.Succeeded)
+        { 
+            var token = await GenerateToken(user);
+            return new TokenModel(token.ToTokenString());   
+        }
+
+        if (result.IsNotAllowed)
+        {
+            Logger.LogWarning("User is not allowed to sign in.");
+            ModelState.AddModelError(nameof(model.Username), "User is not allowed to sign in.");
+        }
+        else if (result.RequiresTwoFactor)
+        {
+            Logger.LogWarning("Two factor authentication required.");
+            // TODO)) Implement two factor authentication
+            // response temporary token to be used for two factor authentication (contains user id)
+            return new TokenModel(user.Id.ToString());
+        }
+        else if (result.IsLockedOut)
+        {
+            Logger.LogWarning("User is locked out. Lockout end in: {}s", (user.LockoutEnd?.DateTime - DateTime.UtcNow)?.TotalSeconds);
+            ModelState.AddModelError(nameof(model.Username), "User is locked out.");
+        }
+        else
+        {
+            ModelState.AddModelError(nameof(model.Password), "Invalid password.");
+            Logger.LogWarning("Invalid login attempt.");
+        }
+
+        return ValidationProblem(ModelState);
     }
 
     [HttpPost]
@@ -59,16 +89,16 @@ public class AuthenticationController(
 
         user = new User
         {
-            Fullname = model.Fullname,
             UserName = model.Username,
             Email = model.Email,
-            Birthday = model.Birthday.Date
         };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
             string token = (await GenerateToken(user)).ToTokenString();
+            // TODO)) gRPC service call to create UserProfile on another service
+            await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
             return ResponseModel.CreateSuccess(new TokenModel(token));
         }
 
@@ -79,61 +109,63 @@ public class AuthenticationController(
         result.Errors.Where(e => e.Code.Contains("Username")).ToList()
             .ForEach(e => ModelState.AddModelError("Username", e.Description));
 
-        Dictionary<string, IEnumerable<string>> errors = new();
-        foreach ((string? key, ModelStateEntry? value) in ModelState)
-        {
-            IEnumerable<string> errorsToAdd = value.Errors
-                .Where(error => !string.IsNullOrEmpty(error.ErrorMessage))
-                .Select(error => error.ErrorMessage);
-            errors.Add(key, errorsToAdd);
-        }
-
-        ResponseModel<object, Dictionary<string, IEnumerable<string>>> problems =
-            ResponseModel.CreateError("Validation errors", errors);
-        throw new HttpResponseException(HttpStatusCode.BadRequest, problems);
+        return ValidationProblem(ModelState);
     }
 
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<ResponseModel>> Info()
     {
-        User? user = User.GetUser(userManager);
-        bool isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
-        object profile = new
+        User? user = await UserManager.GetUserAsync(User);
+        if (user is null)
         {
-            user.Id,
-            user.Fullname,
-            user.UserName,
-            user.Email,
-            user.Birthday,
-            user.Avatar,
-            IsAdmin = isAdmin
-        };
+            return Problem(detail: "User not found", statusCode: (int)HttpStatusCode.NotFound, title: "Not Found", type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
+        }
+        bool isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
         return Ok(ResponseModel.CreateSuccess("Authorized",
-            new { Profile = profile, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
+            new { User = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                IsAdmin = isAdmin
+            }, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
         ));
-    }
-
-    [HttpHead]
-    [Authorize]
-    public IActionResult Validate()
-    {
-        return Ok();
-    }
-
-    [HttpHead]
-    [Authorize(Roles = "Administrator")]
-    public IActionResult ValidateAdmin()
-    {
-        return Ok();
     }
 
     [NonAction]
     private async Task<JwtSecurityToken> GenerateToken(User user)
     {
-        List<Claim> claims = [new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())];
-        IEnumerable<Claim> roles = (await UserManager.GetRolesAsync(user)).Select(r => new Claim(ClaimTypes.Role, r));
-        claims.AddRange(roles);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        List<Claim> claims = [
+            new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+        ];
+        var claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
+        claims.AddRange(claimIdentity.Claims);
         return new JwtSecurityToken(signingCredentials: Jwt.SigningCredentials, claims: claims);
     }
+    
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Validate()
+    {
+        User? user = await SignInManager.ValidateSecurityStampAsync(User);
+        if (user is not null)
+        {
+            return Ok();
+        }
+        Logger.LogWarning("Invalid security stamp");
+        return Problem(detail: "Invalid security stamp", statusCode: (int)HttpStatusCode.Unauthorized, title: "Unauthorized", type: "https://tools.ietf.org/html/rfc7235#section-3.1");
+    }
+    
+    [Authorize(Roles = "Administrator")]
+    [HttpGet]
+    [ActionName("authorize-admin")]
+    public IActionResult Admin()
+    {
+        return Ok();
+    }
+    
 }

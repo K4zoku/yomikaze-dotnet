@@ -1,13 +1,9 @@
 ﻿namespace Yomikaze.Domain.Abstracts;
 
-public abstract class BaseRepository<T, TKey> : IRepository<T, TKey> where T : class, IEntity<TKey>
+public abstract class BaseRepository<T, TKey>(BaseDao<T, TKey> dao) : IRepository<T, TKey>
+    where T : class, IEntity<TKey>
 {
-    protected BaseRepository(BaseDao<T, TKey> dao)
-    {
-        Dao = dao;
-    }
-
-    protected BaseDao<T, TKey> Dao { get; }
+    protected BaseDao<T, TKey> Dao { get; } = dao;
 
     public virtual T? Get(TKey id)
     {
@@ -38,9 +34,5 @@ public abstract class BaseRepository<T, TKey> : IRepository<T, TKey> where T : c
     }
 }
 
-public abstract class BaseRepository<T> : BaseRepository<T, string>, IRepository<T> where T : class, IEntity
-{
-    protected BaseRepository(BaseDao<T> dao) : base(dao)
-    {
-    }
-}
+public abstract class BaseRepository<T>(BaseDao<T, ulong> dao) : BaseRepository<T, ulong>(dao), IRepository<T>
+    where T : class, IEntity;

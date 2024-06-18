@@ -7,10 +7,15 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(new ChapterDao(dbContext))
 {
+    public Chapter? Get(string id)
+    {
+        return Query().FirstOrDefault(chapter => chapter.Id.ToString() == id);
+    }
+    
     public Chapter? GetByComicIdAndIndex(string comicId, int index)
     {
         return Query()
             .Include(chapter => chapter.Pages)
-            .FirstOrDefault(chapter => chapter.ComicId == comicId && chapter.Index == index);
+            .FirstOrDefault(chapter => chapter.ComicId.ToString() == comicId && chapter.Index == index);
     }
 }

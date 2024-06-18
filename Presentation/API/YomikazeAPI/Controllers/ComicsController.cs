@@ -33,7 +33,7 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     }
 
     [HttpPut("{key}")]
-    public override ActionResult<ComicOutputModel> Put(string key, ComicInputModel input)
+    public override ActionResult<ComicOutputModel> Put(ulong key, ComicInputModel input)
     {
         CheckModelState();
         // update only index
@@ -50,7 +50,10 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
         input.Chapters = null;
         
         Comic? entityToUpdate = Repository.Get(key);
-        CheckEntity(entityToUpdate);
+        if (entityToUpdate == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
         Mapper.Map(input, entityToUpdate);
         Repository.Update(entityToUpdate);
 
@@ -59,11 +62,13 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
 
 
     [HttpDelete("{key}")]
-    public override ActionResult Delete(string key)
+    public override ActionResult Delete(ulong key)
     {
         Comic? entity = Repository.Get(key);
-        CheckEntity(entity);
-
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
         Repository.Delete(entity);
         return Ok();
     }
@@ -71,10 +76,13 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     // get chapter by comic id
     [HttpGet("{comicId}/Chapters")]
     [AllowAnonymous]
-    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(string comicId)
+    public ActionResult<IEnumerable<ChapterOutputModel>> GetChapters(ulong comicId)
     {
         Comic? comic = Repository.GetChaptersByComicId(comicId);
-        CheckEntity(comic);
+        if (comic == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         return Ok(Mapper.Map<IEnumerable<ChapterOutputModel>>(comic.Chapters));
     }
@@ -85,21 +93,26 @@ public class ComicsController(DbContext dbContext, IMapper mapper)
     public ActionResult<ChapterOutputModel> GetChapter(string comicId, int index)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(comicId, index);
-        CheckEntity(chapter);
+        if (chapter == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+        }
 
         // check if user is logged in then add history
-        if (User.Identity?.IsAuthenticated == true)
+        if (User.Identity?.IsAuthenticated != true)
         {
-            string id = User.GetId();
-            HistoryRecord history = new HistoryRecord { UserId = id, ChapterId = chapter.Id };
-            HistoryRepository.Add(history);
+            return Ok(Mapper.Map<ChapterOutputModel>(chapter));
         }
+
+        ulong id = User.GetId();
+        HistoryRecord history = new() { UserId = id, ChapterId = chapter.Id };
+        HistoryRepository.Add(history);
 
         return Ok(Mapper.Map<ChapterOutputModel>(chapter));
     }
     
     [HttpGet("{key}")]
-    public override ActionResult<ComicOutputModel> Get(string key)
+    public override ActionResult<ComicOutputModel> Get(ulong key)
     {
         Comic? entity = Repository.Get(key);
 

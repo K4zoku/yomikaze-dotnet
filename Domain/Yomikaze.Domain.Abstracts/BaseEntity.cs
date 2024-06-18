@@ -10,10 +10,13 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 {
     [DataMember(Name = "creationTime")]
     [Column("creation_time", Order = 98)]
-    public DateTimeOffset CreationTime { get; set; } = DateTime.UtcNow;
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.UtcNow;
 
     [DataMember(Name = "lastModified")]
     [Column("last_modified", Order = 99)]
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    [Timestamp]
     public DateTimeOffset? LastModified { get; set; }
 
     [Key]
@@ -24,12 +27,23 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 }
 
 [PrimaryKey(nameof(Id))]
-public abstract class BaseEntity : BaseEntity<string>, IEntity
+public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 {
     [Key]
-    [StringLength(20)]
     [DataMember(Name = "id")]
     [Column("id", Order = 0)]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public override string Id { get; set; } = SnowflakeGenerator.Generate();
+    public override ulong Id { get; set; }
+    
+    [NotMapped]
+    [DataMember(Name = "idStr")]
+    public string IdStr => Id.ToString();
+
+    [NotMapped]
+    public int WorkerId => 0;
+
+    protected BaseEntity()
+    {
+        Id = SnowflakeGenerator.Generate(WorkerId);
+    }
 }

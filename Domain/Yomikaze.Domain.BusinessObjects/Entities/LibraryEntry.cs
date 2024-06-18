@@ -1,18 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using Yomikaze.Domain.Abstracts;
-
-namespace Yomikaze.Domain.Entities;
+﻿namespace Yomikaze.Domain.Entities;
 
 [Table("library_entries")]
 [DataContract(Name = "libraryEntry")]
+[Index(nameof(ComicId), nameof(UserId), IsUnique = true)]
 public class LibraryEntry : BaseEntity
 {
     #region Fields
     
     private Comic _comic = default!;
+    private UserProfile _user = default!;
     
     #endregion
     
@@ -21,10 +17,9 @@ public class LibraryEntry : BaseEntity
     private Action<object, string>? LazyLoader { get; set; }
     
     [ForeignKey(nameof(Comic))] 
-    [StringLength(20)]
     [DataMember(Name = "comicId", Order = 1)]
     [Column("comic_id", Order = 1)]
-    public string ComicId { get; set; } = default!;
+    public ulong ComicId { get; set; }
 
     [DataMember(Name = "comic")]
     [DeleteBehavior(DeleteBehavior.Cascade)]
@@ -32,11 +27,18 @@ public class LibraryEntry : BaseEntity
         get => LazyLoader.Load(this, ref _comic);
         set => _comic = value;
     }
-
-    [StringLength(20)]
+    
+    [ForeignKey(nameof(User))]
     [DataMember(Name = "userId", Order = 2)]
     [Column("user_id", Order = 2)]
-    public string UserId { get; set; } = default!;
+    public ulong UserId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public UserProfile User { 
+        get => LazyLoader.Load(this, ref _user);
+        set => _user = value;
+    }
+    
     
     #endregion
     

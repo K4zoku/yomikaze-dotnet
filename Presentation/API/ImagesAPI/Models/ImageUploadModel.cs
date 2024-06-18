@@ -13,4 +13,12 @@ public class ImageUploadModel
         MediaTypeNames.Image.Gif
     ])]
     public IFormFile File { get; set; } = default!;
+    
+    [Required]
+    [Range(1, ulong.MaxValue)]
+    public ulong ComicId { get; set; }
+    
+    [Required]
+    [Range(1, int.MaxValue)]
+    public int ChapterIndex  { get; set; }
 }

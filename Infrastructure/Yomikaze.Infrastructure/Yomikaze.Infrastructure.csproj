@@ -22,7 +22,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Context\Yomikaze.Infrastructure.Context.Identity\Yomikaze.Infrastructure.Context.Identity.csproj" />
       <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.PostgreSQL\Yomikaze.Infrastructure.Migrations.PostgreSQL.csproj" />
-      <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.Sqlite\Yomikaze.Infrastructure.Migrations.Sqlite.csproj" />
       <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.SQLServer\Yomikaze.Infrastructure.Migrations.SQLServer.csproj" />
     </ItemGroup>
 

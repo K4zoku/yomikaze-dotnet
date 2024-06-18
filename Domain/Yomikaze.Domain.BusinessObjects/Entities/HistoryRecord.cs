@@ -1,18 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using Yomikaze.Domain.Abstracts;
-
 namespace Yomikaze.Domain.Entities;
 
 [Table("history_records")]
 [DataContract(Name = "historyRecord")]
+[Index(nameof(ChapterId), nameof(UserId), IsUnique = true)]
 public class HistoryRecord : BaseEntity
 {
     #region Fields
 
     private Chapter _chapter = default!;
+    private UserProfile _user = default!;
 
     #endregion
     
@@ -20,11 +16,10 @@ public class HistoryRecord : BaseEntity
     
     private Action<object, string>? LazyLoader { get; set; }
     
-    [StringLength(20)] 
     [ForeignKey(nameof(Chapter))]
     [DataMember(Name = "chapterId")]
     [Column("chapter_id", Order = 1)]
-    public string ChapterId { get; set; } = default!;
+    public ulong ChapterId { get; set; }
 
     [DataMember(Name = "chapter")]
     [DeleteBehavior(DeleteBehavior.Cascade)]
@@ -32,21 +27,36 @@ public class HistoryRecord : BaseEntity
         get => LazyLoader.Load(this, ref _chapter);
         set => _chapter = value;
     }
-
-    [StringLength(20)]
+    
     [DataMember(Name = "userId")]   
     [Column("user_id", Order = 2)]
-    public string UserId { get; set; } = default!;
+    [ForeignKey(nameof(User))]
+    public ulong UserId { get; set; }
     
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public UserProfile User { 
+        get => LazyLoader.Load(this, ref _user);
+        set => _user = value;
+    }
+
+    [DataMember(Name = "views")]
+    [Column("views", Order = 3)]
+    public long Views { get; set; } = 1;
+
     #endregion
     
     #region Constructors
-    
-    public HistoryRecord() { }
+
+    public HistoryRecord()
+    {
+        LastModified = DateTime.UtcNow;
+    }
     
     public HistoryRecord(Action<object, string>? lazyLoader)
     {
         LazyLoader = lazyLoader;
+        LastModified = DateTime.UtcNow;
     }
     
     #endregion

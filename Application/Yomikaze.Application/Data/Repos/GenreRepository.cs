@@ -5,6 +5,6 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Data.Repos;
 
-public class GenreRepository(DbContext dbContext) : BaseRepository<Genre>(new GenreDao(dbContext))
+public class GenreRepository(DbContext dbContext) : BaseRepository<Tag>(new GenreDao(dbContext))
 {
 }

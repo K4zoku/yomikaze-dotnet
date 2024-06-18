@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Models;
 using static System.IO.File;
 using static System.IO.Path;
@@ -11,26 +12,31 @@ namespace Yomikaze.API.CDN.Images.Controllers;
 [Route("API/[controller]")]
 public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBase
 {
+    private PhysicalFileProvider FileProvider => fileProvider;
+    
     [HttpPost]
-    public async Task<ActionResult<ResponseModel>> UploadImageAsync([FromForm] ImageUploadModel request)
+    public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request, CancellationToken cancellationToken = default)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return ValidationProblem(ModelState);
         }
 
         IFormFile file = request.File;
         string ext = GetExtension(file.FileName);
-        string fileName = Guid.NewGuid() + ext;
-        string filePath = Combine(fileProvider.Root, fileName);
+        string fileName = SnowflakeGenerator.Generate(30) + ext;
+        string comicPath = Combine(FileProvider.Root, request.ComicId.ToString());
+        string chapterPath = Combine(comicPath, request.ChapterIndex.ToString());
+        Directory.CreateDirectory(chapterPath);
+        string filePath = Combine(chapterPath, fileName);
 
         // Save file to disk
         await using FileStream stream = new(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
+        await file.CopyToAsync(stream, cancellationToken);
 
         // Generate URL
-        string url = Url.Content($"~/Images/{fileName}");
-        return Created(url, ResponseModel.CreateSuccess("Image Uploaded"));
+        string url = Url.Content($"~/Images/{request.ComicId}/{request.ChapterIndex}/{fileName}");
+        return Created(url, new { Url = url });
     }
 
     [HttpDelete("{file}")]

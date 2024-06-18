@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Yomikaze.Domain.Models;
+
+namespace Yomikaze.Domain.Identity.Models;
 
 public abstract class AuthenticationModel
 {
@@ -27,7 +28,6 @@ public class SignUpModel : AuthenticationModel
 
     [Required]
     [DataType(DataType.Date)]
-    // min date is 1900-01-01
     [CustomDateRange(ErrorMessage = "Birthday cannot be greater than current date.")]
     public DateTime Birthday { get; set; } = default!;
 }

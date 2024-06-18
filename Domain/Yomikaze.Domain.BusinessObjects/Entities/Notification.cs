@@ -1,9 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using Yomikaze.Domain.Abstracts;
-
-namespace Yomikaze.Domain.Entities;
+﻿namespace Yomikaze.Domain.Entities;
 
 [Table("notifications")]
 [DataContract(Name = "notification")]
@@ -24,11 +19,13 @@ public class Notification : BaseEntity
     [DataMember(Name = "read")]
     [Column("read", Order = 3)]
     public bool Read { get; set; }
-
-    [StringLength(20)]
+    
+    [ForeignKey(nameof(User))]
     [DataMember(Name = "userId")]
     [Column("user_id", Order = 4)]
-    public string UserId { get; set; } = default!;
+    public ulong UserId { get; set; }
+    
+    public UserProfile User { get; set; } = default!;
 
     #endregion
 }

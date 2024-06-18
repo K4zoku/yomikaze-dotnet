@@ -9,7 +9,7 @@ using Yomikaze.Infrastructure.Context.Identity;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
-ConfigurationManager configuration = builder.Configuration;
+IConfiguration configuration = builder.Configuration;
 
 Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
 services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
@@ -34,7 +34,7 @@ services.AddSwaggerGenWithJwt();
 services.AddPublicCors();
 
 // add auto-mapper
-services.AddAutoMapper(typeof(MapperConfigs));
+services.AddAutoMapper(typeof(YomikazeMapper));
 
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
