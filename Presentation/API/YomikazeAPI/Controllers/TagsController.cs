@@ -15,10 +15,10 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 [Authorize(Roles = "Administrator")]
 public class TagsController(DbContext dbContext, IMapper mapper)
-    : CrudControllerBase<Tag, GenreInputModel, GenreOutputModel>(dbContext, mapper, new GenreRepository(dbContext))
+    : CrudControllerBase<Tag, TagInputModel, TagOutputModel>(dbContext, mapper, new GenreRepository(dbContext))
 {
     [HttpPost]
-    public override ActionResult<GenreOutputModel> Post(GenreInputModel input)
+    public override ActionResult<TagOutputModel> Post(TagInputModel input)
     {
         CheckModelState();
 
@@ -28,11 +28,11 @@ public class TagsController(DbContext dbContext, IMapper mapper)
             throw new HttpResponseException(HttpStatusCode.Conflict, ResponseModel.CreateError("Genre already exists"));
         }
         Repository.Add(entity);
-        return Ok(Mapper.Map<GenreOutputModel>(entity));
+        return Ok(Mapper.Map<TagOutputModel>(entity));
     }
     
     [HttpPut("{key}")]
-    public override ActionResult<GenreOutputModel> Put(ulong key, GenreInputModel input)
+    public override ActionResult<TagOutputModel> Put(ulong key, TagInputModel input)
     {
         CheckModelState();
 
@@ -48,6 +48,6 @@ public class TagsController(DbContext dbContext, IMapper mapper)
             throw new HttpResponseException(HttpStatusCode.Conflict, ResponseModel.CreateError("Genre already exists"));
         }
         Repository.Update(entityToUpdate);
-        return Ok(Mapper.Map<GenreOutputModel>(entityToUpdate));
+        return Ok(Mapper.Map<TagOutputModel>(entityToUpdate));
     }
 }

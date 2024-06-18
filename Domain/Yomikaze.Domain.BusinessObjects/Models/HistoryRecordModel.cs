@@ -9,7 +9,8 @@ public class HistoryRecordInputModel
 
 public class HistoryRecordOutputModel
 {
-    public string Id { get; set; }
+    public ulong Id { get; set; }
+    public string IdStr { get; set; }
 
     public ChapterOutputModel Chapter { get; set; } = default!;
 

@@ -14,11 +14,12 @@ public class ImageUploadModel
     ])]
     public IFormFile File { get; set; } = default!;
     
-    [Required]
     [Range(1, ulong.MaxValue)]
-    public ulong ComicId { get; set; }
+    public ulong? ComicId { get; set; }
     
-    [Required]
     [Range(1, int.MaxValue)]
-    public int ChapterIndex  { get; set; }
+    public int? ChapterIndex  { get; set; }
+    
+    [Range(1, int.MaxValue)]
+    public ulong? UserId { get; set; }
 }

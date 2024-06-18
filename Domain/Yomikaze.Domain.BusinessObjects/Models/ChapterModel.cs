@@ -25,7 +25,9 @@ public class ChapterIndexInputModel
 
 public class ChapterOutputModel
 {
-    public string Id { get; set; }
+    public string IdString { get; set; }
+    
+    public ulong Id { get; set; }
 
     public int Index { get; set; }
 

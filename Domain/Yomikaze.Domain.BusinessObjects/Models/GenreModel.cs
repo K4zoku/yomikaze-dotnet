@@ -1,6 +1,6 @@
 ﻿namespace Yomikaze.Domain.Models;
 
-public class GenreInputModel
+public class TagInputModel
 {
     [Required]
     [Length(1, 50, ErrorMessage = "Genre's name must be between 1 and 100 characters")]
@@ -9,9 +9,11 @@ public class GenreInputModel
     public string? Description { get; set; }
 }
 
-public class GenreOutputModel
+public class TagOutputModel
 {
-    public string Id { get; set; }
+    public ulong Id { get; set; }
+    
+    public string IdStr { get; set; }
 
     public string Name { get; set; } = default!;
 

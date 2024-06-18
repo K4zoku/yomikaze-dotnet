@@ -25,17 +25,32 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         IFormFile file = request.File;
         string ext = GetExtension(file.FileName);
         string fileName = SnowflakeGenerator.Generate(30) + ext;
-        string comicPath = Combine(FileProvider.Root, request.ComicId.ToString());
-        string chapterPath = Combine(comicPath, request.ChapterIndex.ToString());
-        Directory.CreateDirectory(chapterPath);
-        string filePath = Combine(chapterPath, fileName);
+        string filePath = FileProvider.Root;
+        if (request.ComicId != null)
+        {
+            filePath = Combine(filePath, "Comics", request.ComicId.Value.ToString());
+            if (request.ChapterIndex != null)
+            {
+                filePath = Combine(filePath, "Chapters", request.ChapterIndex.Value.ToString());
+            }
+        } 
+        else if (request.UserId != null)
+        {
+            filePath = Combine(filePath, "Users", request.UserId.Value.ToString());
+        }
+        else
+        {
+            filePath = Combine(filePath, "Misc");
+        }
+        Directory.CreateDirectory(filePath);
+        filePath = Combine(filePath, fileName);
 
         // Save file to disk
         await using FileStream stream = new(filePath, FileMode.Create);
         await file.CopyToAsync(stream, cancellationToken);
 
         // Generate URL
-        string url = Url.Content($"~/Images/{request.ComicId}/{request.ChapterIndex}/{fileName}");
+        string url = Url.Content($"~/Images/{GetRelativePath(FileProvider.Root, filePath)}");
         return Created(url, new { Url = url });
     }
 

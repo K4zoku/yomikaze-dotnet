@@ -1,6 +1,6 @@
 ﻿namespace Yomikaze.Domain.Entities;
 
-[Table("users")]
+[Table("profiles")]
 [DataContract(Name = "Profile")]
 public class UserProfile : BaseEntity
 {

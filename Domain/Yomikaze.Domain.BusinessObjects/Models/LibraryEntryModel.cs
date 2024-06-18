@@ -11,7 +11,8 @@ public class LibraryEntryInputModel
 
 public class LibraryEntryOutputModel
 {
-    public string Id { get; set; }
+    public ulong Id { get; set; }
+    public string IdStr { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ComicOutputModel Comic { get; set; } = default!;

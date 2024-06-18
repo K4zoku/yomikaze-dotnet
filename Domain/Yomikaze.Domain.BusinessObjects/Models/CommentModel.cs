@@ -13,7 +13,9 @@ public class CommentInputModel
 
 public class CommentOutputModel
 {
-    public string Id { get; set; }
+    public ulong Id { get; set; }
+    
+    public string IdStr { get; set; }
 
     public string Content { get; set; } = default!;
 

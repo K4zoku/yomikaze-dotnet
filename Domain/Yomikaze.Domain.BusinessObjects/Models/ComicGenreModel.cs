@@ -1,11 +1,11 @@
 ﻿namespace Yomikaze.Domain.Models;
 
-public class ComicGenreInputModel
+public class ComicTagInputModel
 {
     public string GenreId { get; set; }
 }
 
-public class ComicGenreOutputModel
+public class ComicTagOutputModel
 {
-    public GenreOutputModel Genre { get; set; } = default!;
+    public TagOutputModel Tag { get; set; } = default!;
 }

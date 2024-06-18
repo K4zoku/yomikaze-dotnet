@@ -22,14 +22,16 @@ public class ComicInputModel
 
     [Length(0, 70, ErrorMessage = "Comic's authors must from 0 to 150 characters")]
     public string? Authors { get; set; }
-    public ICollection<ComicGenreInputModel> ComicGenres { get; set; } = new List<ComicGenreInputModel>();
+    public ICollection<ComicTagInputModel> ComicGenres { get; set; } = new List<ComicTagInputModel>();
     
     public IList<ChapterIndexInputModel> Chapters { get; set; } = new List<ChapterIndexInputModel>();
 }
 
 public class ComicOutputModel
 {
-    public string Id { get; set; }
+    public ulong Id { get; set; }
+    
+    public string IdStr { get; set; }
 
     public string Name { get; set; } = default!;
 
@@ -47,7 +49,7 @@ public class ComicOutputModel
 
     public string? Authors { get; set; }
     
-    public ICollection<ComicGenreOutputModel> ComicGenres { get; set; } = new List<ComicGenreOutputModel>();
+    public ICollection<ComicTagOutputModel> ComicGenres { get; set; } = new List<ComicTagOutputModel>();
     
     public ICollection<ChapterOutputModel> Chapters { get; set; } = new List<ChapterOutputModel>();
     
