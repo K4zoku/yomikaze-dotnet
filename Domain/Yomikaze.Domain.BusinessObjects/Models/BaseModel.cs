@@ -4,7 +4,7 @@ namespace Yomikaze.Domain.Models;
 
 public class BaseModel
 {
-    [SwaggerSchema(ReadOnly = true)] public string Id { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] public string? Id { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)]
     [JsonInclude]

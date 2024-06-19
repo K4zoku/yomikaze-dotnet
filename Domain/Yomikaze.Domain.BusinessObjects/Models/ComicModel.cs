@@ -26,7 +26,7 @@ public class ComicModel : BaseModel
     public string[]? Authors { get; set; } = [];
 
     [SwaggerSchema(ReadOnly = true)] 
-    public ProfileModel Publisher { get; set; } = default!;
+    public ProfileModel? Publisher { get; set; } = default!;
 
     [Required]
     [SwaggerSchema(WriteOnly = true)]
