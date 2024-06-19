@@ -33,13 +33,11 @@ public class YomikazeMapper : MapperProfile
         CreateMap<ComicModel, Comic>()
             .ForMember(dest => dest.ComicTags, options =>
             {
-                options.Condition(src => src.TagIds is { Count: > 0 });
+                options.Condition(src => src.TagIds.Length != 0);
                 options.MapFrom(src =>
-                    (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) }));
+                    src.TagIds.Select(id => new ComicTag { TagId = IdParse(id) }));
             });
-        CreateMap<Comic, ComicModel>()
-            .ForMember(dest => dest.TagIds,
-                options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())));
+        CreateMap<Comic, ComicModel>();
 
         CreateMap<CommentModel, Comment>()
             .ForMember(dest => dest.AuthorId, options =>

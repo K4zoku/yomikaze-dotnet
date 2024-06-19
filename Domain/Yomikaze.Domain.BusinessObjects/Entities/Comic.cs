@@ -6,8 +6,8 @@ public class Comic : BaseEntity
 {
     #region Fields
 
-    private ICollection<Tag> _tags = [];
-    private ICollection<ComicTag> _comicTags = [];
+    private Tag[] _tags = [];
+    private ComicTag[] _comicTags = [];
     private User? _publisher;
 
     #endregion
@@ -18,7 +18,7 @@ public class Comic : BaseEntity
 
     [StringLength(256)] public string Name { get; set; } = default!;
 
-    public ICollection<string> Aliases { get; set; } = [];
+    public string[] Aliases { get; set; } = [];
 
     [StringLength(512)] public string? Description { get; set; }
 
@@ -28,19 +28,19 @@ public class Comic : BaseEntity
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    public ICollection<Tag> Tags
+    public Tag[] Tags
     {
         get => LazyLoader.Load(this, ref _tags);
         set => _tags = value;
     }
 
-    public ICollection<ComicTag> ComicTags
+    public ComicTag[] ComicTags
     {
         get => LazyLoader.Load(this, ref _comicTags);
         set => _comicTags = value;
     }
 
-    public ICollection<string> Authors { get; set; } = [];
+    public string[] Authors { get; set; } = [];
 
     [ForeignKey(nameof(Publisher))] public ulong? PublisherId { get; set; }
 

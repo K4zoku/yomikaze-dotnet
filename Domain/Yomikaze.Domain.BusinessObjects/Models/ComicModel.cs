@@ -9,7 +9,7 @@ public class ComicModel : BaseModel
     public string? Name { get; set; } = default!;
 
     [StringLength(150, ErrorMessage = "Comic's aliases must from 0 to 150 characters")]
-    public ICollection<string>? Aliases { get; set; } = new List<string>();
+    public string[]? Aliases { get; set; } = [];
 
     [Length(0, 500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
     public string? Description { get; set; }
@@ -20,12 +20,12 @@ public class ComicModel : BaseModel
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = new List<TagModel>();
+    [SwaggerSchema(ReadOnly = true)] public TagModel[] Tags { get; set; } = [];
 
-    [SwaggerSchema(WriteOnly = true)] public ICollection<string>? TagIds { get; set; } = new List<string>();
+    [SwaggerSchema(WriteOnly = true)] public string[] TagIds { get; set; } = [];
 
     [StringLength(70, ErrorMessage = "Comic's authors must from 0 to 70 characters")]
-    public ICollection<string>? Authors { get; set; } = new List<string>();
+    public string[]? Authors { get; set; } = [];
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Publisher { get; set; } = default!;
 
@@ -33,9 +33,9 @@ public class ComicModel : BaseModel
     [Required]
     public string? PublisherId { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)] public ICollection<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
+    [SwaggerSchema(ReadOnly = true)] public ChapterModel[] Chapters { get; set; } = [];
 
-    [SwaggerSchema(WriteOnly = true)] public ICollection<string>? ChapterIds { get; set; } = new List<string>();
+    [SwaggerSchema(WriteOnly = true)] public string[]? ChapterIds { get; set; } = [];
 
     public ComicStatus? Status { get; set; }
 }
