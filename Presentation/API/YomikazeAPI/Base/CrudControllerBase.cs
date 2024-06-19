@@ -33,8 +33,10 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     
     
     [HttpGet]
-    public virtual async Task<ActionResult<ICollection<TModel>>> List(int page, int pageSize)
+    public virtual async Task<ActionResult<ICollection<TModel>>> List(int? page, int? pageSize)
     {
+        int actualPage = page ?? 0;
+        int actualPageSize = pageSize ?? 10;
         string keyName = $"{KeyPrefix}:list({page},{pageSize})";
         if (Cache.TryGet(keyName, out ICollection<TModel>? cachedModels))
         {
@@ -42,7 +44,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
             return Ok(cachedModels);
         }
         
-        T[] entities = await Repository.Query().Skip(page * pageSize).Take(pageSize).ToArrayAsync();
+        T[] entities = await Repository.Query().Skip(actualPage * actualPageSize).Take(actualPageSize).ToArrayAsync();
         TModel[] models = Mapper.Map<TModel[]>(entities);
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
         Cache.SetInBackground(keyName, models, new DistributedCacheEntryOptions
