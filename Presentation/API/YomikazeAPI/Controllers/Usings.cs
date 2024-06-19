@@ -1,0 +1,9 @@
+global using AutoMapper;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Caching.Distributed;
+global using Yomikaze.API.Main.Base;
+global using Yomikaze.Domain.Abstracts;
+global using Yomikaze.Domain.Entities;
+global using Yomikaze.Domain.Models;

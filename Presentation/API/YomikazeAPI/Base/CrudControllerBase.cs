@@ -1,59 +1,153 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Net;
+using System.Text.Json;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Domain.Abstracts;
-using Yomikaze.Domain.Models;
 
 namespace Yomikaze.API.Main.Base;
 
-public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
+public abstract class CrudControllerBase<T, TKey, TModel>(
     DbContext dbContext,
     IMapper mapper,
-    IRepo<T, TKey> repository)
+    IRepository<T, TKey> repository,
+    IDistributedCache cache,
+    ILogger<CrudControllerBase<T, TKey, TModel>> logger)
     : ControllerBase
     where T : class, IEntity<TKey>
-    where TInput : class
-    where TOutput : class
+    where TModel : class
 {
     protected DbContext DbContext { get; set; } = dbContext;
     protected IMapper Mapper { get; set; } = mapper;
 
-    protected IRepo<T, TKey> Repository { get; set; } = repository;
-
-
-    [HttpGet("{key}")]
-    public virtual ActionResult<TOutput> Get(TKey key)
+    protected IRepository<T, TKey> Repository { get; set; } = repository;
+    
+    protected IDistributedCache Cache { get; set; } = cache;
+    
+    protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
+    
+    private static readonly string KeyPrefix = typeof(T).Name + ":";
+    
+    
+    public virtual async Task<ActionResult<ICollection<TModel>>> List(int page, int pageSize)
     {
+        string keyName = $"{KeyPrefix}:list({page},{pageSize})";
+        if (Cache.TryGet(keyName, out ICollection<TModel>? cachedModels))
+        {
+            Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
+            return Ok(cachedModels);
+        }
+        
+        T[] entities = await Repository.Query().Skip(page * pageSize).Take(pageSize).ToArrayAsync();
+        TModel[] models = Mapper.Map<TModel[]>(entities);
+        Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
+        Cache.SetInBackground(keyName, models, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        });
+        Logger.LogDebug("Returning {key} data...", keyName);
+        return models;
+    }
+    
+    [HttpGet("{key}")]
+    public virtual ActionResult<TModel> Get(TKey key)
+    {
+        string keyName = KeyPrefix + key;
+        
+        if (Cache.TryGet(keyName, out TModel? cachedModel))
+        {
+            Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
+            return Ok(cachedModel);
+        }
+        
         T? entity = Repository.Get(key);
-
-        CheckEntity(entity);
-
-        return Ok(Mapper.Map<TOutput>(entity));
+        
+        if (entity == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+        }
+        
+        TModel model = Mapper.Map<TModel>(entity);
+        Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
+        Cache.SetInBackground(keyName, model, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        });
+        return Ok(model);
     }
 
     [HttpPost]
-    public virtual ActionResult<TOutput> Post(TInput input)
+    public virtual ActionResult<TModel> Post(TModel input)
     {
-        CheckModelState();
+        if (!ModelState.IsValid)
+        {
+            throw new HttpResponseException(HttpStatusCode.BadRequest, "Validation failed");
+        }
 
         T? entity = Mapper.Map<T>(input);
         Repository.Add(entity);
-        return Ok(Mapper.Map<TOutput>(entity));
+        return Ok(Mapper.Map<TModel>(entity));
     }
 
     [HttpPut("{key}")]
-    public virtual ActionResult<TOutput> Put(TKey key, TInput input)
+    public virtual ActionResult<TModel> Put(TKey key, TModel input)
     {
-        CheckModelState();
+        if (!ModelState.IsValid)
+        {
+            throw new HttpResponseException(HttpStatusCode.BadRequest, "Validation failed");
+        }
 
         T? entityToUpdate = Repository.Get(key);
-        CheckEntity(entityToUpdate);
-
+        if (entityToUpdate == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+        }
+        
         Mapper.Map(input, entityToUpdate);
-        Repository.Update(entityToUpdate);
-        return Ok(Mapper.Map<TOutput>(entityToUpdate));
+
+        try
+        {
+            Repository.Update(entityToUpdate);
+        } catch (DbUpdateException)
+        {
+            throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
+        }
+
+        // remove cache
+        string keyName = KeyPrefix + key;
+        Cache.Remove(keyName);
+        
+        return Ok(Mapper.Map<TModel>(entityToUpdate));
+    }
+    
+    [HttpPatch]
+    public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
+    {
+        T? entityToUpdate = Repository.Get(key);
+        if (entityToUpdate == null)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+        }
+        
+        TModel model = Mapper.Map<TModel>(entityToUpdate);
+        patch.ApplyTo(model);
+        Mapper.Map(model, entityToUpdate);
+        try
+        {
+            Repository.Update(entityToUpdate);
+        } catch (DbUpdateException)
+        {
+            throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
+        }
+        
+        // remove cache
+        string keyName = KeyPrefix + key;
+        Cache.Remove(keyName);
+        
+        return Ok(Mapper.Map<TModel>(entityToUpdate));
     }
 
     [HttpDelete("{key}")]
@@ -61,39 +155,51 @@ public abstract class CrudControllerBase<T, TKey, TInput, TOutput>(
     {
         T? entity = Repository.Get(key);
 
-        CheckEntity(entity);
-
-        Repository.Delete(entity);
-        return Ok();
-    }
-
-
-    [NonAction]
-    // check model state and throw exception if invalid
-    protected void CheckModelState()
-    {
-        if (!ModelState.IsValid)
-        {
-            throw new HttpResponseException(HttpStatusCode.BadRequest, ResponseModel.CreateError("Invalid input"));
-        }
-    }
-
-    [NonAction]
-    // check entity and throw exception if null
-    protected void CheckEntity(object? entity)
-    {
         if (entity == null)
         {
-            throw new HttpResponseException(HttpStatusCode.NotFound, ResponseModel.CreateError("Not found"));
+            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
         }
+
+        Repository.Delete(entity);
+        
+        // remove cache
+        string keyName = KeyPrefix + key;
+        Cache.Remove(keyName);
+
+        return NoContent();
+    }
+    
+}
+
+internal static class DistributedCacheExtension
+{
+    internal static bool TryGet<TC>(this IDistributedCache cache, string key, out TC? value)
+    {
+        byte[]? cachedData = cache.Get(key);
+        if (cachedData == null)
+        {
+            value = default;
+            return false;
+        }
+        TC? cachedValue = JsonSerializer.Deserialize<TC>(cachedData);
+        value = cachedValue;
+        return cachedValue != null;
+    }
+    
+    internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value, DistributedCacheEntryOptions options)
+    {
+        Task cacheTask = cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options);
+        cacheTask.ConfigureAwait(false);
+        cacheTask.Start();
     }
 }
 
-public abstract class CrudControllerBase<T, TInput, TOutput>(
+public abstract class CrudControllerBase<T, TModel>(
     DbContext dbContext,
     IMapper mapper,
-    IRepo<T> repository)
-    : CrudControllerBase<T, string, TInput, TOutput>(dbContext, mapper, repository)
+    IRepository<T> repository,
+    IDistributedCache cache,
+    ILogger<CrudControllerBase<T, TModel>> logger)
+    : CrudControllerBase<T, ulong, TModel>(dbContext, mapper, repository, cache, logger)
     where T : class, IEntity
-    where TInput : class
-    where TOutput : class;
+    where TModel : class;

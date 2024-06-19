@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.OData.Controllers;
 
@@ -12,12 +13,12 @@ namespace Yomikaze.API.OData.Controllers;
 [Authorize]
 public class LibraryController(DbContext dbContext) : ControllerBase
 {
-    private LibraryRepo Repository { get; } = new(dbContext);
+    private LibraryRepository Repository { get; } = new(dbContext);
 
 
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
-        string id = User.GetId();
+        string id = User.GetIdString();
         return Ok(Repository.GetLibraryByUserId(id));
     }
 }

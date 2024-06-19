@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Models;
 using static System.IO.File;
 using static System.IO.Path;
@@ -11,26 +12,46 @@ namespace Yomikaze.API.CDN.Images.Controllers;
 [Route("API/[controller]")]
 public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBase
 {
+    private PhysicalFileProvider FileProvider => fileProvider;
+    
     [HttpPost]
-    public async Task<ActionResult<ResponseModel>> UploadImageAsync([FromForm] ImageUploadModel request)
+    public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request, CancellationToken cancellationToken = default)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return ValidationProblem(ModelState);
         }
 
         IFormFile file = request.File;
         string ext = GetExtension(file.FileName);
-        string fileName = Guid.NewGuid() + ext;
-        string filePath = Combine(fileProvider.Root, fileName);
+        string fileName = SnowflakeGenerator.Generate(30) + ext;
+        string filePath = FileProvider.Root;
+        if (request.ComicId != null)
+        {
+            filePath = Combine(filePath, "Comics", request.ComicId.Value.ToString());
+            if (request.ChapterIndex != null)
+            {
+                filePath = Combine(filePath, "Chapters", request.ChapterIndex.Value.ToString());
+            }
+        } 
+        else if (request.UserId != null)
+        {
+            filePath = Combine(filePath, "Users", request.UserId.Value.ToString());
+        }
+        else
+        {
+            filePath = Combine(filePath, "Misc");
+        }
+        Directory.CreateDirectory(filePath);
+        filePath = Combine(filePath, fileName);
 
         // Save file to disk
         await using FileStream stream = new(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
+        await file.CopyToAsync(stream, cancellationToken);
 
         // Generate URL
-        string url = Url.Content($"~/Images/{fileName}");
-        return Created(url, ResponseModel.CreateSuccess("Image Uploaded"));
+        string url = Url.Content($"~/Images/{GetRelativePath(FileProvider.Root, filePath)}");
+        return Created(url, new { Url = url });
     }
 
     [HttpDelete("{file}")]

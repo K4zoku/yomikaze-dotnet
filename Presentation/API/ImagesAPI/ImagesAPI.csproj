@@ -25,6 +25,9 @@
 
     <ItemGroup>
         <Content Remove="Storage\**"/>
+        <Content Update="appsettings.Development.json">
+          <DependentUpon>appsettings.json</DependentUpon>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -32,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Application\Application\Application.csproj"/>
+        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj" />
     </ItemGroup>
 
 </Project>

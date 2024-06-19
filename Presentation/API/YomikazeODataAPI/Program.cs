@@ -1,15 +1,20 @@
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Batch;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
+using System.Reflection;
 using Yomikaze.API.OData.Helpers;
-using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Domain.Entities;
+using Yomikaze.Infrastructure;
+using Yomikaze.Infrastructure.Context;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 ConfigurationManager configuration = builder.Configuration;
-
-services.AddYomikazeDbContext(configuration);
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
+services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddYomikazeIdentity();
 
 JwtConfiguration jwt = configuration
@@ -19,13 +24,19 @@ JwtConfiguration jwt = configuration
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
 
-ODataConventionModelBuilder edm = new();
-edm.EntitySet<Chapter>("Chapters");
-edm.EntitySet<Comic>("Comics");
-edm.EntitySet<Comment>("Comments");
-edm.EntitySet<Genre>("Genres");
-edm.EntitySet<LibraryEntry>("Library");
-edm.EntitySet<HistoryRecord>("History");
+ODataConventionModelBuilder modelBuilder = new();
+modelBuilder.EntitySet<Chapter>("Chapters");
+modelBuilder.EntitySet<Comic>("Comics");
+modelBuilder.EntitySet<Comment>("Comments");
+modelBuilder.EntitySet<Tag>("Tags");
+modelBuilder.EntitySet<LibraryEntry>("Library");
+modelBuilder.EntitySet<HistoryRecord>("History");
+modelBuilder.EnableLowerCamelCase();
+foreach(StructuralTypeConfiguration? type in modelBuilder.StructuralTypes)
+{
+    PropertyInfo? property = type.ClrType.GetProperty("IdStr");
+    if (property is not null) type.AddProperty(property);
+}
 
 services.AddControllers()
     .AddOData(options =>
@@ -36,13 +47,15 @@ services.AddControllers()
             .Select()
             .OrderBy()
             .SetMaxTop(null)
-            .AddRouteComponents("API/OData", edm.GetEdmModel()
-            )
+            .AddRouteComponents("API/OData", modelBuilder.GetEdmModel(), new DefaultODataBatchHandler())
     );
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
-services.AddSwaggerGen(options => options.OperationFilter<ODataOperationFilter>());
+services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<ODataOperationFilter>();
+});
 services.AddPublicCors();
 
 WebApplication app = builder.Build();
@@ -56,6 +69,9 @@ if (env.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseODataBatching();
+app.UseODataQueryRequest();
 
 app.MapControllers();
 

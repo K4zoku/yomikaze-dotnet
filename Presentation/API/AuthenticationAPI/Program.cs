@@ -1,29 +1,34 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using Yomikaze.API.Authentication;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
-using Yomikaze.Application.Helpers.Database;
 using Yomikaze.Application.Helpers.Security;
-using Yomikaze.Domain.Entities;
-using Yomikaze.Infrastructure.Database;
+using Yomikaze.Domain.Identity.Entities;
+using Yomikaze.Infrastructure;
+using Yomikaze.Infrastructure.Context;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
-ConfigurationManager configuration = builder.Configuration;
-
-services.AddYomikazeDbContext(configuration);
-
+IConfiguration configuration = builder.Configuration;
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.Postgres.Name));
+services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
+services.AddRouting(options => options.LowercaseUrls = true);
 services
     .AddControllers(options =>
     {
         options.Filters.Add<HttpResponseExceptionFilter>();
     })
-    .ConfigureApiBehaviorOptionsYomikaze();
+    .ConfigureApiBehaviorOptionsYomikaze()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 services.AddPublicCors();
 
 services.AddYomikazeIdentity();
+services.UpgradePasswordSecurity().UseArgon2<User>();
 
 JwtConfiguration jwt = configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
@@ -31,6 +36,7 @@ JwtConfiguration jwt = configuration
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
+services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
 
@@ -53,21 +59,21 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Migrate and add default admin user if not exists
-var scope = app.Services.CreateScope();
-var serviceProvider = scope.ServiceProvider;
-var dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
+IServiceScope scope = app.Services.CreateScope();
+IServiceProvider serviceProvider = scope.ServiceProvider;
+configuration = app.Configuration;
+YomikazeDbContext dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
 await dbContext.Database.MigrateAsync();
-var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 if (!userManager.Users.Any())
 {
     User admin = new()
     {
-        UserName = "admin",
-        Fullname = "Administrator",
-        Email = "admin@yomikaze.org",
+        UserName = configuration["Admin:Username"] ?? "administrator",
+        Email = configuration["Admin:Email"] ?? "administrator@yomikaze.org",
         EmailConfirmed = true
     };
-    var result = await userManager.CreateAsync(admin, "Admin@123");
+    IdentityResult result = await userManager.CreateAsync(admin, configuration["Admin:Password"] ?? "Admin@123");
     if (!result.Succeeded)
     {
         throw new InvalidOperationException("Could not create default admin user");
