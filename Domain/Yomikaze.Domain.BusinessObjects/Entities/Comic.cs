@@ -6,8 +6,8 @@ public class Comic : BaseEntity
 {
     #region Fields
 
-    private Tag[] _tags = [];
-    private ComicTag[] _comicTags = [];
+    private ICollection<Tag> _tags = [];
+    private ICollection<ComicTag> _comicTags = [];
     private User? _publisher;
 
     #endregion
@@ -28,13 +28,13 @@ public class Comic : BaseEntity
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    public Tag[] Tags
+    public ICollection<Tag> Tags
     {
         get => LazyLoader.Load(this, ref _tags);
         set => _tags = value;
     }
 
-    public ComicTag[] ComicTags
+    public ICollection<ComicTag> ComicTags
     {
         get => LazyLoader.Load(this, ref _comicTags);
         set => _comicTags = value;
