@@ -19,7 +19,7 @@ services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
     options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
-}).AddJsonOptions(options =>
+}).AddNewtonsoftJson().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -42,7 +42,6 @@ services.AddJwtBearerAuthentication(jwt);
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
-services.AddSwaggerGen(options => options.DocumentFilter<JsonPatchDocumentFilter>());
 services.AddPublicCors();
 
 services.AddStackExchangeRedisCache(options =>
