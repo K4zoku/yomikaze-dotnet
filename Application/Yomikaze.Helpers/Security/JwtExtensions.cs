@@ -48,6 +48,7 @@ public static class JwtExtensions
     {
         services.AddSwaggerGen(options =>
         {
+            options.EnableAnnotations();
             options.AddSecurityDefinition("JWT",
                 new OpenApiSecurityScheme
                 {
