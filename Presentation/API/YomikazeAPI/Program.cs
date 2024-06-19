@@ -42,6 +42,7 @@ services.AddJwtBearerAuthentication(jwt);
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
+services.AddSwaggerGen(options => options.DocumentFilter<JsonPatchDocumentFilter>());
 services.AddPublicCors();
 
 services.AddStackExchangeRedisCache(options =>

@@ -27,15 +27,12 @@ public class ComicModel : BaseModel
     [StringLength(70, ErrorMessage = "Comic's authors must from 0 to 70 characters")]
     public string[]? Authors { get; set; } = [];
 
-    [SwaggerSchema(ReadOnly = true)] public ProfileModel Publisher { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] 
+    public ProfileModel Publisher { get; set; } = default!;
 
-    [SwaggerSchema(WriteOnly = true)]
     [Required]
+    [SwaggerSchema(WriteOnly = true)]
     public string? PublisherId { get; set; }
-
-    [SwaggerSchema(ReadOnly = true)] public ChapterModel[] Chapters { get; set; } = [];
-
-    [SwaggerSchema(WriteOnly = true)] public string[]? ChapterIds { get; set; } = [];
 
     public ComicStatus? Status { get; set; }
 }
