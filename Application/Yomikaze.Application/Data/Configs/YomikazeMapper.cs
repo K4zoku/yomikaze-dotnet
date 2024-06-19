@@ -1,5 +1,4 @@
-﻿using Yomikaze.Domain.Abstracts;
-using Yomikaze.Domain.Entities;
+﻿using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Identity.Models;
@@ -136,7 +135,9 @@ public class YomikazeMapper : MapperProfile
         
         CreateMap<Tag, TagModel>()
             .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category.Name));
-
+        
+        CreateMap<User, ProfileModel>();
+        
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
     }

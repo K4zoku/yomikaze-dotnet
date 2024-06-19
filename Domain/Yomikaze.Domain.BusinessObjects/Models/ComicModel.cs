@@ -19,7 +19,7 @@ public class ComicModel : BaseModel
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)] public TagModel[] Tags { get; set; } = [];
+    [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = [];
 
     [SwaggerSchema(WriteOnly = true)] public string[] TagIds { get; set; } = [];
     

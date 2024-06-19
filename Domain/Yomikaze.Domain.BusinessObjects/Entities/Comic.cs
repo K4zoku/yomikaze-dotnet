@@ -2,7 +2,7 @@ using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
 
-public class Comic : BaseEntity
+public sealed class Comic : BaseEntity
 {
     #region Fields
 
@@ -57,12 +57,15 @@ public class Comic : BaseEntity
 
     #region Constructors
 
-    public Comic()
+    [NotMapped]
+    public new int WorkerId => 3;
+    public Comic() : base()
     {
     }
 
     public Comic(Action<object, string> lazyLoader)
     {
+        Id = SnowflakeGenerator.Generate(WorkerId);
         LazyLoader = lazyLoader;
     }
 
