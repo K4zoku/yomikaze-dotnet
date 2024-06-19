@@ -128,7 +128,16 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
             .ForMember(dest => dest.CategoryId, options => options.MapFrom(src => src.CategoryId.ToString()));
-
+    
+        CreateMap<TagModel, Tag>()
+            .ForMember(dest => dest.CategoryId, options =>
+            {
+                options.Condition(src => src.CategoryId != null);
+                options.MapFrom(src => IdParse(src.CategoryId));
+            });
+        
+        CreateMap<Tag, TagModel>()
+            .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category.Name));
 
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
