@@ -31,7 +31,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     {
         int actualPage = page ?? 0;
         int actualPageSize = pageSize ?? 10;
-        string keyName = $"{KeyPrefix}:list({page},{pageSize})";
+        string keyName = $"{KeyPrefix}:list({actualPage}, {actualPageSize})";
         if (Cache.TryGet(keyName, out ICollection<TModel>? cachedModels))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
@@ -82,6 +82,8 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
         T? entity = Mapper.Map<T>(input);
         Repository.Add(entity);
+        cache.Remove($"{KeyPrefix}:list*");
+        
         return Ok(Mapper.Map<TModel>(entity));
     }
 
@@ -113,6 +115,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
+        cache.Remove($"{KeyPrefix}:list*");
 
         return Ok(Mapper.Map<TModel>(entityToUpdate));
     }
@@ -141,6 +144,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
+        cache.Remove($"{KeyPrefix}:list*");
 
         return Ok(Mapper.Map<TModel>(entityToUpdate));
     }
@@ -160,6 +164,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
+        cache.Remove($"{KeyPrefix}:list*");
 
         return NoContent();
     }
