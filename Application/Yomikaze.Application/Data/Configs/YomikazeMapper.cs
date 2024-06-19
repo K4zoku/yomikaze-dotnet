@@ -12,14 +12,6 @@ public class YomikazeMapper : MapperProfile
 {
     public YomikazeMapper()
     {
-        CreateMap<BaseModel, BaseEntity>()
-            .IncludeAllDerived()
-            .ForMember(dest => dest.Id, options => options.MapFrom(src => IdParse(src.Id)))
-            .ForAllMembers(options => options.Condition((_, _, srcMember) => srcMember != null));
-
-        CreateMap<BaseEntity, BaseModel>()
-            .IncludeAllDerived()
-            .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()));
 
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
