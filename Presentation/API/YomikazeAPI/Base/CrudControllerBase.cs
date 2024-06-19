@@ -184,9 +184,7 @@ internal static class DistributedCacheExtension
     internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
         DistributedCacheEntryOptions options)
     {
-        Task cacheTask = cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options);
-        cacheTask.ConfigureAwait(false);
-        cacheTask.Start();
+        Task.Run(async () => await cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options));
     }
 }
 
