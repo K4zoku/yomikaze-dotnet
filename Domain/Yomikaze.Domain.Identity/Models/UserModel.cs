@@ -17,7 +17,7 @@ public class UserInputModel
 
 public class UserOutputModel
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Fullname { get; set; }
