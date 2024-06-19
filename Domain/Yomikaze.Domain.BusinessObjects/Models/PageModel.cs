@@ -1,20 +1,24 @@
-﻿namespace Yomikaze.Domain.Models;
+﻿using Swashbuckle.AspNetCore.Annotations;
 
-public class PageInputModel
+namespace Yomikaze.Domain.Models;
+
+public class PageModel
 {
-    public int Index { get; set; }
+    #region ReadWriteProperties
 
-    public string Image { get; set; } = default!;
+    [Required]
+    public int? Number { get; set; }
+
+    [Required]
+    public string? Image { get; set; } = default!;
+
+    #endregion
     
-    public string ChapterId { get; set; } = default!;
-}
-
-public class PageOutputModel
-{
-    public ulong Id { get; set; }
-    public string IdStr { get; set; }
-
-    public int Index { get; set; }
-
-    public string Image { get; set; } = default!;
+    #region WriteOnlyProperties
+    
+    [Required]
+    [SwaggerSchema(WriteOnly = true)]
+    public string? ChapterId { get; set; }
+    
+    #endregion
 }

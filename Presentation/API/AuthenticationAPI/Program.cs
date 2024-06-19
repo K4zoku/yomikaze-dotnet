@@ -8,14 +8,14 @@ using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Infrastructure;
-using Yomikaze.Infrastructure.Context.Identity;
+using Yomikaze.Infrastructure.Context;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
 Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.Postgres.Name));
-services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
-
+services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
+services.AddRouting(options => options.LowercaseUrls = true);
 services
     .AddControllers(options =>
     {
@@ -59,12 +59,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Migrate and add default admin user if not exists
-var scope = app.Services.CreateScope();
-var serviceProvider = scope.ServiceProvider;
+IServiceScope scope = app.Services.CreateScope();
+IServiceProvider serviceProvider = scope.ServiceProvider;
 configuration = app.Configuration;
-var dbContext = serviceProvider.GetRequiredService<YomikazeIdentityDbContext>();
+YomikazeDbContext dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
 await dbContext.Database.MigrateAsync();
-var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 if (!userManager.Users.Any())
 {
     User admin = new()
@@ -73,7 +73,7 @@ if (!userManager.Users.Any())
         Email = configuration["Admin:Email"] ?? "administrator@yomikaze.org",
         EmailConfirmed = true
     };
-    var result = await userManager.CreateAsync(admin, configuration["Admin:Password"] ?? "Admin@123");
+    IdentityResult result = await userManager.CreateAsync(admin, configuration["Admin:Password"] ?? "Admin@123");
     if (!result.Succeeded)
     {
         throw new InvalidOperationException("Could not create default admin user");

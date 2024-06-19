@@ -1,13 +1,12 @@
 namespace Yomikaze.Domain.Entities;
 
-[Table("Tags")]
-[DataContract(Name = "Tag")]
-[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(Name), nameof(CategoryId), IsUnique = true)]
 public class Tag : BaseEntity
 {
     #region Fields
 
     private ICollection<Comic> _comics = [];
+    private TagCategory _category = default!;
 
     #endregion
 
@@ -16,19 +15,24 @@ public class Tag : BaseEntity
     private Action<object, string>? LazyLoader { get; set; }
     
     [StringLength(64)]
-    [DataMember(Name = "name")]
-    [Column("name", Order = 1)]
     public string Name { get; set; } = default!;
     
     [StringLength(512)]
-    [DataMember(Name = "description")]
-    [Column("description", Order = 2)]
     public string? Description { get; set; }
 
     public ICollection<Comic> Comics
     {
         get => LazyLoader.Load(this, ref _comics);
         set => _comics = value;
+    }
+    
+    [ForeignKey(nameof(Category))]
+    public ulong CategoryId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public TagCategory Category { 
+        get => LazyLoader.Load(this, ref _category);
+        init => _category = value;
     }
     
     #endregion

@@ -1,14 +1,12 @@
 ﻿namespace Yomikaze.Domain.Entities;
 
-[Table("library_entries")]
-[DataContract(Name = "libraryEntry")]
 [Index(nameof(ComicId), nameof(UserId), IsUnique = true)]
 public class LibraryEntry : BaseEntity
 {
     #region Fields
     
     private Comic _comic = default!;
-    private UserProfile _user = default!;
+    private LibraryCategory? _category;
     
     #endregion
     
@@ -34,11 +32,21 @@ public class LibraryEntry : BaseEntity
     public ulong UserId { get; set; }
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public UserProfile User { 
-        get => LazyLoader.Load(this, ref _user);
-        set => _user = value;
+    public User User { get; set; }
+    
+    [ForeignKey(nameof(Category))]
+    [DataMember(Name = "categoryId", Order = 3)]
+    [Column("category_id", Order = 3)]
+    public ulong? CategoryId { get; set; }
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public LibraryCategory? Category { 
+        get => LazyLoader.LoadNullable(this, ref _category);
+        set => _category = value;
     }
     
+    [NotMapped]
+    public string CategoryName => Category?.Name ?? "Uncategorized";
     
     #endregion
     

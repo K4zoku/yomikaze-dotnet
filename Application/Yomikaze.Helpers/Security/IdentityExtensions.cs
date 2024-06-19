@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Yomikaze.Domain.Identity.Entities;
-using Yomikaze.Infrastructure.Context.Identity;
+using Yomikaze.Infrastructure.Context;
 
 namespace Yomikaze.Application.Helpers.Security;
 
@@ -19,7 +19,7 @@ public static class IdentityExtensions
                 options.ClaimsIdentity.EmailClaimType = JwtRegisteredClaimNames.Email;
                 options.ClaimsIdentity.RoleClaimType = "roles";
             })
-            .AddEntityFrameworkStores<YomikazeIdentityDbContext>()
+            .AddEntityFrameworkStores<YomikazeDbContext>()
             .AddDefaultTokenProviders();
         return services;
     }

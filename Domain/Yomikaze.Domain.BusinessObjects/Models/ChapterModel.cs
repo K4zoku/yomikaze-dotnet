@@ -1,41 +1,33 @@
 ﻿namespace Yomikaze.Domain.Models;
 
-public abstract class ChapterInputModel
+public abstract class ChapterModel : BaseModel
 {
-    public string ComicId { get; set; }
-
-    public int Index { get; set; }
+    #region ReadWriteProperties
 
     [Required]
-    [Length(0, 50, ErrorMessage = "Tittle must from 0 to 50 characters")]
-    public string Title { get; set; } = default!;
+    public int? Number { get; set; }
+
+    [Required]
+    [Length(0, 50, ErrorMessage = "Chapter name must from 0 to 50 characters")]
+    public string? Name { get; set; } = default!;
 
     [Length(0, 250, ErrorMessage = "Description must from 0 to 250 characters")]
     public string? Description { get; set; }
 
-    public ICollection<PageInputModel> Pages { get; set; } = new List<PageInputModel>();
+    public IList<string>? Pages { get; set; } = new List<string>();
+
+    #endregion
     
-}
-
-public class ChapterIndexInputModel
-{
-    public string Id { get; set; } = default!;
-    public int Index { get; set; }
-}
-
-public class ChapterOutputModel
-{
-    public string IdString { get; set; }
+    #region ReadOnlyProperties
     
-    public ulong Id { get; set; }
+    public ComicModel? Comic { get; set; }
+    
+    #endregion
 
-    public int Index { get; set; }
+    #region WriteOnlyProperties
 
-    public string Title { get; set; } = default!;
+    [Required]
+    public string? ComicId { get; set; } = default!;
 
-    public string? Description { get; set; }
-
-    public DateTimeOffset? Available { get; set; }
-
-    public ICollection<PageOutputModel>? Pages { get; set; } = new List<PageOutputModel>();
+    #endregion
 }

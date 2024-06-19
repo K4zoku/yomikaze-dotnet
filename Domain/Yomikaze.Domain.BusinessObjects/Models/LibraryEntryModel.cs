@@ -1,21 +1,25 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace Yomikaze.Domain.Models;
 
-namespace Yomikaze.Domain.Models;
-
-public class LibraryEntryInputModel
+public class LibraryEntryModel : BaseModel
 {
-    [Required] public string UserId { get; set; }
+    #region ReadOnlyProperties
 
-    [Required] public string ComicId { get; set; }
-}
+    public ComicModel? Comic { get; set; }
+    
+    public string? Category { get; set; }
 
-public class LibraryEntryOutputModel
-{
-    public ulong Id { get; set; }
-    public string IdStr { get; set; }
+    #endregion
+    
+    #region WriteOnlyProperties
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ComicOutputModel Comic { get; set; } = default!;
+    [Required] 
+    public string? UserId { get; set; }
 
-    public DateTimeOffset CreatedAt { get; set; }
+    [Required] 
+    public string? ComicId { get; set; }
+    
+    [Required]
+    public string? CategoryId { get; set; }
+
+    #endregion
 }

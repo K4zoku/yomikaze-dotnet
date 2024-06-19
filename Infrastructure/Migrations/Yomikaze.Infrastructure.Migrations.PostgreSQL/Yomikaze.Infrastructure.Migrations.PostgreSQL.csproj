@@ -16,13 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Context\Yomikaze.Infrastructure.Context.Identity\Yomikaze.Infrastructure.Context.Identity.csproj" />
       <ProjectReference Include="..\..\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Identity\" />
-      <Folder Include="Yomikaze\" />
     </ItemGroup>
 
 </Project>

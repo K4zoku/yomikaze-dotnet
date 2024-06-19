@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference
       Include="..\..\..\Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj" />
+    <ProjectReference Include="..\..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,11 +21,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Genres.cs">
+    <Compile Update="Tags.cs">
       <DependentUpon>Default.cs</DependentUpon>
     </Compile>
     <Compile Update="Default.cs">
       <DependentUpon>YomikazeDbContext.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Roles.cs">
+      <DependentUpon>Default.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

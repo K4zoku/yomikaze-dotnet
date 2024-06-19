@@ -1,24 +1,31 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Infrastructure;
 using Yomikaze.Infrastructure.Context;
-using Yomikaze.Infrastructure.Context.Identity;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
 
 Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
-services.AddDbContext<YomikazeIdentityDbContext>(provider, configuration, "YomikazeIdentity");
 services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
 services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
-}).ConfigureApiBehaviorOptionsYomikaze();
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+    // .ConfigureApiBehaviorOptionsYomikaze();
+services.AddRouting(options => options.LowercaseUrls = true);
 
 services.AddYomikazeIdentity();
 
@@ -32,6 +39,12 @@ services.AddJwtBearerAuthentication(jwt);
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddPublicCors();
+
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = configuration.GetSection("Redis").GetConnectionString("Yomikaze");
+    options.InstanceName = "Yomikaze";
+});
 
 // add auto-mapper
 services.AddAutoMapper(typeof(YomikazeMapper));
@@ -51,6 +64,5 @@ app.UseAuthorization();
 app.UseCors("Public");
 
 app.MapControllers();
-
 
 app.Run();

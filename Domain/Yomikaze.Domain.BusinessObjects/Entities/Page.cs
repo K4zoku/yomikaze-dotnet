@@ -15,27 +15,15 @@ public class Page : BaseEntity
     #region Properties
     
     private Action<object, string>? LazyLoader { get; set; }
-
-    [DataMember(Name = "index")]
-    [Column("index", Order = 1)]
-    public int Index { get; set; }
-    
-    [StringLength(20)]
-    [DataMember(Name = "server")]
-    [Column("server", Order = 2)]
-    public string? Server { get; set; }
+    public int Number { get; set; }
 
     [StringLength(512)]
-    [DataMember(Name = "image")]
-    [Column("image", Order = 3)]
     public string Image { get; set; } = default!;
     
     [ForeignKey(nameof(Chapter))]
-    [Column("chapter_id", Order = 4)]
     public ulong ChapterId { get; set; }
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public Chapter Chapter { 
         get => LazyLoader.Load(this, ref _chapter);
         set => _chapter = value;

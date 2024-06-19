@@ -11,10 +11,57 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.3" />
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.3"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Yomikaze.Domain.Abstracts\Yomikaze.Domain.Abstracts.csproj" />
+        <ProjectReference Include="..\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Entities\ComicComment.cs">
+        <DependentUpon>Comment.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\ChapterComment.cs">
+        <DependentUpon>Comment.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\ProfileComment.cs">
+        <DependentUpon>Comment.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\ComicReport.cs">
+        <DependentUpon>Report.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\ChapterReport.cs">
+        <DependentUpon>Report.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\TranslationReport.cs">
+        <DependentUpon>Report.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Entities\ProfileReport.cs">
+        <DependentUpon>Report.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ChapterCommentModel.cs">
+        <DependentUpon>CommentModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ComicCommentModel.cs">
+        <DependentUpon>CommentModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ProfileCommentModel.cs">
+        <DependentUpon>CommentModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ChapterReportModel.cs">
+        <DependentUpon>ReportModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ComicReportModel.cs">
+        <DependentUpon>ReportModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\ProfileReportModel.cs">
+        <DependentUpon>ReportModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\TranslationReportModel.cs">
+        <DependentUpon>ReportModel.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -1,18 +1,32 @@
 ﻿namespace Yomikaze.Domain.Models;
 
-public class HistoryRecordInputModel
+public class HistoryRecordModel
 {
-    [Required] public string ChapterId { get; set; }
+    #region ReadWriteProperties
+    
+    public int PageNumber { get; set; } = 1;
+    
+    #endregion
+    
+    #region ReadOnlyProperties
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public ChapterModel Chapter { get; set; } = default!;
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public ProfileModel User { get; set; } = default!;
+    
+    #endregion
 
-    [Required] public string UserId { get; set; }
-}
+    #region WriteOnlyProperties
 
-public class HistoryRecordOutputModel
-{
-    public ulong Id { get; set; }
-    public string IdStr { get; set; }
+    [Required] 
+    [SwaggerSchema(WriteOnly = true)]
+    public string? ChapterId { get; set; }
 
-    public ChapterOutputModel Chapter { get; set; } = default!;
+    [Required]
+    [SwaggerSchema(WriteOnly = true)]
+    public string? UserId { get; set; }
 
-    public DateTimeOffset CreatedAt { get; set; }
+    #endregion
 }

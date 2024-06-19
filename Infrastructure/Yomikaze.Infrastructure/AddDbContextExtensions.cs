@@ -22,10 +22,12 @@ public static class AddDbContextExtensions
                     {
                         x.MigrationsAssembly(provider.Assembly);
                         x.EnableRetryOnFailure();
-                    });
+                        x.MigrationsHistoryTable("migrations_history", "efcore");
+                    }).UseSnakeCaseNamingConvention();
                     break;
                 case "SqlServer":
-                    options.UseSqlServer(connectionString, x => x.MigrationsAssembly(provider.Assembly));
+                    options
+                        .UseSqlServer(connectionString, x => x.MigrationsAssembly(provider.Assembly));
                     break;
                 default:
                     throw new ArgumentException("Invalid provider");

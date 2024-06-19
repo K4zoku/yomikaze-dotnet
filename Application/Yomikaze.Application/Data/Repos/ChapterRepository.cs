@@ -16,6 +16,6 @@ public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(ne
     {
         return Query()
             .Include(chapter => chapter.Pages)
-            .FirstOrDefault(chapter => chapter.ComicId.ToString() == comicId && chapter.Index == index);
+            .FirstOrDefault(chapter => chapter.ComicId.ToString() == comicId && chapter.Number == index);
     }
 }

@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Context\Yomikaze.Infrastructure.Context.Identity\Yomikaze.Infrastructure.Context.Identity.csproj" />
       <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.PostgreSQL\Yomikaze.Infrastructure.Migrations.PostgreSQL.csproj" />
       <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.SQLServer\Yomikaze.Infrastructure.Migrations.SQLServer.csproj" />
     </ItemGroup>

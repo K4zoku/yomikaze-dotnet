@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace Yomikaze.Application.Helpers;
 
@@ -12,9 +13,10 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
+        if (context.Exception is null) return;
         if (context.Exception is not HttpResponseException httpResponseException)
         {
-            return;
+            throw context.Exception;
         }
 
         context.Result = new ObjectResult(httpResponseException.Value)

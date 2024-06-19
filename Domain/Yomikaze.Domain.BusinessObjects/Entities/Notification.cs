@@ -1,31 +1,20 @@
 ﻿namespace Yomikaze.Domain.Entities;
 
-[Table("notifications")]
-[DataContract(Name = "notification")]
 public class Notification : BaseEntity
 {
     #region Properties
 
     [StringLength(256)]
-    [DataMember(Name = "title")]
-    [Column("title", Order = 1)]    
     public string Title { get; set; } = default!;
 
     [StringLength(512)]
-    [DataMember(Name = "content")]
-    [Column("content", Order = 2)]
-    public string Content { get; set; } = default!;
-
-    [DataMember(Name = "read")]
-    [Column("read", Order = 3)]
+    public string? Content { get; set; }
+    
     public bool Read { get; set; }
     
     [ForeignKey(nameof(User))]
-    [DataMember(Name = "userId")]
-    [Column("user_id", Order = 4)]
     public ulong UserId { get; set; }
-    
-    public UserProfile User { get; set; } = default!;
+    public User User { get; set; } = default!;
 
     #endregion
 }

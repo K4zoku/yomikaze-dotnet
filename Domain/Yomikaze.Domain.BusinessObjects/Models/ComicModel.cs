@@ -1,10 +1,16 @@
-﻿namespace Yomikaze.Domain.Models;
+﻿using Swashbuckle.AspNetCore.Annotations;
+using Yomikaze.Domain.Entities;
 
-public class ComicInputModel
+namespace Yomikaze.Domain.Models;
+
+public class ComicModel : BaseModel
 {
     [Required]
     [Length(0, 150, ErrorMessage = "Comic's name must from 0 to 150 characters")]
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; } = default!;
+
+    [StringLength(150, ErrorMessage = "Comic's aliases must from 0 to 150 characters")]
+    public IList<string>? Aliases { get; set; } = new List<string>();
 
     [Length(0, 500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
     public string? Description { get; set; }
@@ -13,47 +19,29 @@ public class ComicInputModel
 
     public string? Banner { get; set; }
 
-    public DateTimeOffset? Published { get; set; }
-
-    public DateTimeOffset? Ended { get; set; }
-
-    [Length(0, 150, ErrorMessage = "Comic's aliases must from 0 to 150 characters")]
-    public string? Aliases { get; set; }
-
-    [Length(0, 70, ErrorMessage = "Comic's authors must from 0 to 150 characters")]
-    public string? Authors { get; set; }
-    public ICollection<ComicTagInputModel> ComicGenres { get; set; } = new List<ComicTagInputModel>();
+    public DateTimeOffset? PublicationDate { get; set; }
     
-    public IList<ChapterIndexInputModel> Chapters { get; set; } = new List<ChapterIndexInputModel>();
-}
-
-public class ComicOutputModel
-{
-    public ulong Id { get; set; }
+    [SwaggerSchema(ReadOnly = true)]
+    public ICollection<TagModel> Tags { get; set; } = new List<TagModel>();
     
-    public string IdStr { get; set; }
+    [SwaggerSchema(WriteOnly = true)]
+    public ICollection<string>? TagIds { get; set; } = new List<string>();
 
-    public string Name { get; set; } = default!;
-
-    public string? Description { get; set; }
-
-    public string? Cover { get; set; }
-
-    public string? Banner { get; set; }
-
-    public DateTimeOffset? Published { get; set; }
-
-    public DateTimeOffset? Ended { get; set; }
-
-    public string? Aliases { get; set; }
-
-    public string? Authors { get; set; }
+    [StringLength(70, ErrorMessage = "Comic's authors must from 0 to 70 characters")]
+    public ICollection<string>? Authors { get; set; } = new List<string>();
     
-    public ICollection<ComicTagOutputModel> ComicGenres { get; set; } = new List<ComicTagOutputModel>();
+    [SwaggerSchema(ReadOnly = true)]
+    public ProfileModel Publisher { get; set; }
     
-    public ICollection<ChapterOutputModel> Chapters { get; set; } = new List<ChapterOutputModel>();
-    
-    public DateTimeOffset LastUpdated { get; set; }
+    [SwaggerSchema(WriteOnly = true)]
+    [Required]
+    public string? PublisherId { get; set; }
 
-    public DateTimeOffset CreatedAt { get; set; }
+    [SwaggerSchema(ReadOnly = true)]
+    public ICollection<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
+    
+    [SwaggerSchema(WriteOnly = true)]
+    public ICollection<string>? ChapterIds { get; set; } = new List<string>();
+    
+    public ComicStatus? Status { get; set; }
 }

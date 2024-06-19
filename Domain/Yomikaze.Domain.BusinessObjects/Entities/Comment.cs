@@ -1,16 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace Yomikaze.Domain.Entities;
 
-namespace Yomikaze.Domain.Entities;
-
-[Table("comments")]
-[DataContract(Name = "comment")]
 public class Comment : BaseEntity
 {
     #region Fields
-
-    private Comic _comic = default!;
-    private UserProfile _userProfile = default!;
-    private Chapter? _chapter;
+    
+    private User _author = default!;
     private Comment? _replyTo;
     private ICollection<Comment> _replies = [];
 
@@ -18,55 +12,23 @@ public class Comment : BaseEntity
 
     #region Properties
 
-    private Action<object, string>? LazyLoader { get; set; }
+    protected Action<object, string>? LazyLoader { get; }
 
     [StringLength(256)]
-    [DataMember(Name = "content")]
-    [Column("content", Order = 1)]
     public string Content { get; set; } = default!;
     
-    [DataMember(Name = "userId")]
-    [Column("user_id", Order = 2)]
-    public ulong UserId { get; set; }
     
-    [DataMember(Name = "user")]
-    public UserProfile UserProfile { 
-        get => LazyLoader.Load(this, ref _userProfile);
-        set => _userProfile = value;
-    }
+    [ForeignKey(nameof(Author))]
+    public ulong AuthorId { get; set; }
     
-    [ForeignKey(nameof(Comic))]
-    [DataMember(Name = "comicId")]
-    [Column("comic_id", Order = 3)]
-    public ulong ComicId { get; set; }
-    
-    [DeleteBehavior(DeleteBehavior.ClientCascade)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-    public Comic Comic { 
-        get => LazyLoader.Load(this, ref _comic);
-        set => _comic = value;
-    }
-    
-    [ForeignKey(nameof(Chapter))]
-    [DataMember(Name = "chapterId")]
-    [Column("chapter_id", Order = 4)]
-    public ulong? ChapterId { get; set; }
-    
-    
-    [DeleteBehavior(DeleteBehavior.Cascade)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-    public Chapter? Chapter { 
-        get => LazyLoader.LoadNullable(this, ref _chapter);
-        set => _chapter = value;
+    public User Author { 
+        get => LazyLoader.Load(this, ref _author);
+        set => _author = value;
     }
     
     [ForeignKey(nameof(ReplyTo))]
-    [StringLength(20)]
-    [DataMember(Name = "replyToId")]
-    [Column("reply_to_id", Order = 5)]
     public ulong? ReplyToId { get; set; }
     
-    [DataMember(Name = "replyTo")]
     public Comment? ReplyTo { 
         get => LazyLoader.LoadNullable(this, ref _replyTo);
         set => _replyTo = value;
@@ -83,11 +45,11 @@ public class Comment : BaseEntity
     
     #region Constructors
     
-    public Comment()
+    protected Comment()
     {
     }
     
-    public Comment(Action<object, string> lazyLoader)
+    protected Comment(Action<object, string> lazyLoader)
     {
         LazyLoader = lazyLoader;
     }
