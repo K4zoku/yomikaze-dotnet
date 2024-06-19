@@ -17,13 +17,13 @@ public class TranslationModel
     public int Height { get; set; }
     
     [Required]
-    public string Content { get; set; }
+    public string Content { get; set; } = default!;
     
     [Required]
-    public string Language { get; set; }
+    public string Language { get; set; } = default!;
     
-    [Required]
-    public string Alignment { get; set; }
+    [Required] 
+    public string Alignment { get; set; } = default!;
 
     #endregion
     

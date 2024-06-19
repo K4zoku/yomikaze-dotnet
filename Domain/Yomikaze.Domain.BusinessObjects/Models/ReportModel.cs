@@ -27,10 +27,11 @@ public class ReportModel : BaseModel
     #endregion
     
     #region WriteOnlyProperties
+    [SwaggerSchema(WriteOnly = true)]
+    [Required] public string CategoryId { get; set; } = default!;
     
-    [Required] public string CategoryId { get; set; }
-    
-    [Required] public string ReporterId { get; set; }
+    [SwaggerSchema(WriteOnly = true)]
+    [Required] public string ReporterId { get; set; } = default!;
     
     #endregion
 }

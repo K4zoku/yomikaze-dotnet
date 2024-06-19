@@ -4,7 +4,6 @@ public class HistoryRecord : BaseEntity
     #region Fields
     
     private Chapter _chapter = default!;
-    private User _user = default!;
 
     #endregion
     
@@ -28,7 +27,7 @@ public class HistoryRecord : BaseEntity
     
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public User User { get; set; }
+    public User User { get; set; } = default!;
 
     #endregion
     

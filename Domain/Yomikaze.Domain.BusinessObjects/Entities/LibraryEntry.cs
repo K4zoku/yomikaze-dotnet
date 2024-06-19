@@ -32,7 +32,7 @@ public class LibraryEntry : BaseEntity
     public ulong UserId { get; set; }
     
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public User User { get; set; }
+    public User User { get; set; } = default!;
     
     [ForeignKey(nameof(Category))]
     [DataMember(Name = "categoryId", Order = 3)]

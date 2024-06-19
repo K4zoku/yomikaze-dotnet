@@ -13,6 +13,7 @@
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
     </ItemGroup>
 
     <ItemGroup>

@@ -31,7 +31,7 @@ public class ComicModel : BaseModel
     public ICollection<string>? Authors { get; set; } = new List<string>();
     
     [SwaggerSchema(ReadOnly = true)]
-    public ProfileModel Publisher { get; set; }
+    public ProfileModel Publisher { get; set; } = default!;
     
     [SwaggerSchema(WriteOnly = true)]
     [Required]

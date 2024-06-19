@@ -16,7 +16,8 @@ public class NotificationModel
     #region WriteOnlyProperties
     
     [Required]  
-    public string UserId { get; set; }
+    [SwaggerSchema(WriteOnly = true)]
+    public string UserId { get; set; } = default!; 
     
     #endregion
 }

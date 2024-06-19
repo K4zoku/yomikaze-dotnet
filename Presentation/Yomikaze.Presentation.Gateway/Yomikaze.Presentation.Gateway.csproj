@@ -9,9 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MMLib.SwaggerForOcelot" Version="8.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6" />
+        <PackageReference Include="MMLib.SwaggerForOcelot" Version="8.2.0" />
         <PackageReference Include="Ocelot" Version="23.1.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
     </ItemGroup>
 
     <ItemGroup>

@@ -8,7 +8,7 @@ public class TransactionModel : BaseModel
     public long Amount { get; set; }
     
     [Required]
-    public string Description { get; set; }
+    public string Description { get; set; } = default!;
 
     #endregion
 
