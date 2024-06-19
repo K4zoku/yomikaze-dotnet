@@ -27,12 +27,12 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
 
     [HttpGet]
-    public virtual async Task<ActionResult<ICollection<TModel>>> List(int? page, int? pageSize)
+    public virtual async Task<ActionResult<TModel[]>> List(int? page, int? pageSize)
     {
         int actualPage = page ?? 0;
         int actualPageSize = pageSize ?? 10;
         string keyName = $"{KeyPrefix}:list({actualPage}, {actualPageSize})";
-        if (Cache.TryGet(keyName, out ICollection<TModel>? cachedModels))
+        if (Cache.TryGet(keyName, out TModel[]? cachedModels))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModels);
