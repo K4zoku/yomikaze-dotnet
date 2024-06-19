@@ -32,6 +32,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     private static readonly string KeyPrefix = typeof(T).Name + ":";
     
     
+    [HttpGet]
     public virtual async Task<ActionResult<ICollection<TModel>>> List(int page, int pageSize)
     {
         string keyName = $"{KeyPrefix}:list({page},{pageSize})";

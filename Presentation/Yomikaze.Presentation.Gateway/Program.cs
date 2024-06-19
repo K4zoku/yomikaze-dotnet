@@ -19,6 +19,7 @@ JwtConfiguration jwt = builder.Configuration
                            .Get<JwtConfiguration>()
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
+services.AddRouting(options => options.LowercaseUrls = true);
 
 services.AddSwaggerGenWithJwt();
 
