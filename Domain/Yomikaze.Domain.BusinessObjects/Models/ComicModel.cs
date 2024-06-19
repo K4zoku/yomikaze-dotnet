@@ -8,7 +8,7 @@ public class ComicModel : BaseModel
     [Length(0, 150, ErrorMessage = "Comic's name must from 0 to 150 characters")]
     public string? Name { get; set; } = default!;
     
-    public string[]? Aliases { get; set; } = [];
+    public ICollection<string>? Aliases { get; set; } = [];
 
     [Length(0, 500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
     public string? Description { get; set; }
@@ -21,9 +21,9 @@ public class ComicModel : BaseModel
 
     [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = [];
 
-    [SwaggerSchema(WriteOnly = true)] public string[] TagIds { get; set; }
+    [SwaggerSchema(WriteOnly = true)] public ICollection<string> TagIds { get; set; }
     
-    public string[]? Authors { get; set; } = [];
+    public ICollection<string>? Authors { get; set; } = [];
 
     [SwaggerSchema(ReadOnly = true)] 
     public ProfileModel? Publisher { get; set; } = default!;

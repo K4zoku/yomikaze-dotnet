@@ -132,7 +132,9 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
+        Logger.LogDebug("Patching model: {model}", new string(JsonSerializer.Serialize(model)));
         patch.ApplyTo(model);
+        Logger.LogDebug("Patched model: {model}", new string(JsonSerializer.Serialize(model)));
         Mapper.Map(model, entityToUpdate);
         try
         {

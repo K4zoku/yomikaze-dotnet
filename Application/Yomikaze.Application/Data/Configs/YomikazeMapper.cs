@@ -35,11 +35,15 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.Id, options => options.Ignore())
             .ForMember(dest => dest.ComicTags, options =>
             {
-                options.Condition(src => src.TagIds.Length != 0);
-                options.MapFrom(src =>
-                    src.TagIds.Select(id => new ComicTag { TagId = IdParse(id) }));
-            });
+                options.Condition(src => src.TagIds.Count != 0 || src.Tags.Count != 0);
+                options.MapFrom(src => src.TagIds.Count != 0
+                        ? src.TagIds.Select(id => new ComicTag { TagId = IdParse(id) })
+                        : src.Tags.Select(tag => new ComicTag { TagId = IdParse(tag.Id) }));
+            })
+            .ForMember(dest => dest.Publisher, options => options.Ignore())
+            .ForMember(dest => dest.Tags, options => options.Ignore());
         CreateMap<Comic, ComicModel>()
+            .ForMember(dest => dest.TagIds, options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())))
             .ForMember(dest => dest.PublisherId, options => options.Ignore());
 
         CreateMap<CommentModel, Comment>()

@@ -24,7 +24,10 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError
             };
-            Console.WriteLine(context.Exception.StackTrace);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(context.Exception.Message);
+            Console.Error.WriteLine(context.Exception.StackTrace);
+            Console.ResetColor();
             context.ExceptionHandled = true;
             return;
         }
