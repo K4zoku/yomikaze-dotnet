@@ -9,7 +9,7 @@ public class ComicModel : BaseModel
     public string? Name { get; set; } = default!;
 
     [StringLength(150, ErrorMessage = "Comic's aliases must from 0 to 150 characters")]
-    public IList<string>? Aliases { get; set; } = new List<string>();
+    public ICollection<string>? Aliases { get; set; } = new List<string>();
 
     [Length(0, 500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
     public string? Description { get; set; }
