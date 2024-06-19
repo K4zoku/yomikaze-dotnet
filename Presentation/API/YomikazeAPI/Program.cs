@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Yomikaze.API.Main;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
-using Yomikaze.Application.Helpers.API;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Infrastructure;
 using Yomikaze.Infrastructure.Context;
@@ -18,6 +18,7 @@ services.AddScoped<DbContext, YomikazeDbContext>();
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
 }).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -25,7 +26,10 @@ services.AddControllers(options =>
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
     // .ConfigureApiBehaviorOptionsYomikaze();
-services.AddRouting(options => options.LowercaseUrls = true);
+services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+});
 
 services.AddYomikazeIdentity();
 
