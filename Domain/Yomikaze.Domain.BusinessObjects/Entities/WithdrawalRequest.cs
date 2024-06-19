@@ -15,34 +15,33 @@ public class WithdrawalRequest : BaseEntity
     #endregion
 
     #region Properties
-    
+
     public string UserId { get; set; } = default!;
 
     #endregion
-    
+
     #region Navigation Properties
-    
+
     public User Profile
     {
         get => LazyLoader.Load(this, ref _profile);
         set => _profile = value;
     }
-    
+
     #endregion
-    
+
     #region Constructors
-    
+
     public WithdrawalRequest()
     {
     }
-    
+
     public WithdrawalRequest(Action<object, string>? lazyLoader)
     {
         LazyLoader = lazyLoader;
     }
-    
+
     #endregion
-    
 }
 
 public enum WithdrawalRequestStatus

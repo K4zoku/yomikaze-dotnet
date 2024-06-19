@@ -32,10 +32,13 @@ modelBuilder.EntitySet<Tag>("Tags");
 modelBuilder.EntitySet<LibraryEntry>("Library");
 modelBuilder.EntitySet<HistoryRecord>("History");
 modelBuilder.EnableLowerCamelCase();
-foreach(StructuralTypeConfiguration? type in modelBuilder.StructuralTypes)
+foreach (StructuralTypeConfiguration? type in modelBuilder.StructuralTypes)
 {
     PropertyInfo? property = type.ClrType.GetProperty("IdStr");
-    if (property is not null) type.AddProperty(property);
+    if (property is not null)
+    {
+        type.AddProperty(property);
+    }
 }
 
 services.AddControllers()

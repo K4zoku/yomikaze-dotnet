@@ -79,6 +79,7 @@ if (!userManager.Users.Any())
     {
         throw new InvalidOperationException("Could not create default admin user");
     }
+
     result = await userManager.AddToRoleAsync(admin, "Administrator");
     if (!result.Succeeded)
     {

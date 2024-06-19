@@ -6,12 +6,8 @@ public partial class YomikazeDbContext
 {
     private static partial class Default
     {
-        public static readonly TagCategory[] TagCategories =
-        {
-            new TagCategory { Name = "Genre" },
-            new TagCategory { Name = "Theme" }
-        };
-        
+        public static readonly TagCategory[] TagCategories = { new() { Name = "Genre" }, new() { Name = "Theme" } };
+
         public static readonly Tag[] Tags =
         [
             new Tag
@@ -50,11 +46,16 @@ public partial class YomikazeDbContext
             },
             new Tag
             {
-                Name = "Horror", Description = "A story that evokes fear in both the characters and the audience.",
+                Name = "Horror",
+                Description = "A story that evokes fear in both the characters and the audience.",
                 CategoryId = TagCategories[0].Id
             },
-            new Tag { Name = "Mystery", Description = "A story that revolves around solving a puzzle or a crime.",
-                CategoryId = TagCategories[0].Id },
+            new Tag
+            {
+                Name = "Mystery",
+                Description = "A story that revolves around solving a puzzle or a crime.",
+                CategoryId = TagCategories[0].Id
+            },
             new Tag
             {
                 Name = "Psychological",
@@ -62,8 +63,7 @@ public partial class YomikazeDbContext
                     "A story that emphasizes the psychology of its characters and their unstable emotional states.",
                 CategoryId = TagCategories[0].Id
             },
-            new Tag { Name = "Romance", Description = "A story about love.",
-                CategoryId = TagCategories[0].Id },
+            new Tag { Name = "Romance", Description = "A story about love.", CategoryId = TagCategories[0].Id },
             new Tag
             {
                 Name = "Slice of Life",
@@ -88,8 +88,12 @@ public partial class YomikazeDbContext
                 Description = "A story that is fast-paced and suspenseful, often involving a crime.",
                 CategoryId = TagCategories[0].Id
             },
-            new Tag { Name = "Tragedy", Description = "A story that ends in a tragic or unhappy way.",
-                CategoryId = TagCategories[0].Id }
+            new Tag
+            {
+                Name = "Tragedy",
+                Description = "A story that ends in a tragic or unhappy way.",
+                CategoryId = TagCategories[0].Id
+            }
         ];
     }
 }

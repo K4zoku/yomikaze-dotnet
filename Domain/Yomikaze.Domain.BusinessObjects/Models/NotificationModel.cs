@@ -1,23 +1,22 @@
 namespace Yomikaze.Domain.Models;
 
-public class NotificationModel
+public class NotificationModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region WriteOnlyProperties
 
     [Required]
-    public string? Title { get; set; }
-    
-    public string? Content { get; set; }
-    
-    public bool Read { get; set; }
+    [SwaggerSchema(WriteOnly = true)]
+    public string UserId { get; set; } = default!;
 
     #endregion
-    
-    #region WriteOnlyProperties
-    
-    [Required]  
-    [SwaggerSchema(WriteOnly = true)]
-    public string UserId { get; set; } = default!; 
-    
+
+    #region ReadWriteProperties
+
+    [Required] public string? Title { get; set; }
+
+    public string? Content { get; set; }
+
+    public bool Read { get; set; }
+
     #endregion
 }

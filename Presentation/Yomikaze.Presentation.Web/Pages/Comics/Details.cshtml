@@ -159,8 +159,7 @@
     <div class="shrink-0 flex-grow-0 mx-auto">
         <img alt="thumbnail" class="w-[190px] h-[280px] object-cover object-center rounded-box shadow-2xl"
              src=""
-             data-src="/placeholder.png" :src="comic?.Cover || $el.dataset.src"
-        />
+             data-src="/placeholder.png" :src="comic?.Cover || $el.dataset.src"/>
     </div>
     <!-- Detail -->
     <div class="flex-grow flex flex-col gap-4">
@@ -170,7 +169,9 @@
                 <div class="flex flex-col">
                     <div class="indicator">
                         <span class="indicator-item badge badge-secondary badge-sm"
-                              x-show="moment().diff(comic?.CreatedAt, 'hours') < 2">New</span>
+                              x-show="moment().diff(comic?.CreatedAt, 'hours') < 2">
+                            New
+                        </span>
                         <h2 class="text-3xl title-font font-medium" x-text="comic?.Name">Name</h2>
                     </div>
                     <span class="text-sm text-neutral italic" x-text="comic?.Aliases">Aliases</span>
@@ -256,7 +257,7 @@
 
             <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : 'Read'">
                 <a class="btn btn-primary gap-2" :disabled="chapters.length === 0"
-                        :href="`/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
+                   :href="`/Comics/${comic?.Id}/Chapters/${chapters[0]?.Index}`">
                     <i data-feather="book-open"></i>
                     Read
                 </a>
@@ -266,9 +267,9 @@
 
             <div class="tooltip" :data-tip="chapters.length === 0 ? 'Comic currently has no chapters' : lastReadChapter ? 'Continue reading' : 'You have not read any chapters yet'">
                 <a class="btn btn-accent gap-2" :disabled="chapters.length === 0 || !lastReadChapter"
-                        :href="`/Comics/${comic?.Id}/Chapters/${lastReadChapter}`">
+                   :href="`/Comics/${comic?.Id}/Chapters/${lastReadChapter}`">
                     <i data-feather="navigation"></i>
-                Continue reading
+                    Continue reading
                 </a>
             </div>
 

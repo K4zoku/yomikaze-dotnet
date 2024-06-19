@@ -29,21 +29,20 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 {
+    protected BaseEntity()
+    {
+        Id = SnowflakeGenerator.Generate(WorkerId);
+    }
+
+    [NotMapped]
+    [DataMember(Name = "idStr")]
+    public string IdStr => Id.ToString();
+
     [Key]
     [DataMember(Name = "id")]
     [Column("id", Order = 0)]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public override ulong Id { get; set; }
-    
-    [NotMapped]
-    [DataMember(Name = "idStr")]
-    public string IdStr => Id.ToString();
 
-    [NotMapped]
-    public int WorkerId => 0;
-
-    protected BaseEntity()
-    {
-        Id = SnowflakeGenerator.Generate(WorkerId);
-    }
+    [NotMapped] public int WorkerId => 0;
 }

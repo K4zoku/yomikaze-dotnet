@@ -14,7 +14,6 @@ public interface IEntity : IEntity<ulong>
     [NotMapped]
     [DataMember(Name = "idStr")]
     public string IdString => Id.ToString();
-    
-    [NotMapped]
-    public int WorkerId => 0;
+
+    [NotMapped] public int WorkerId => 0;
 }

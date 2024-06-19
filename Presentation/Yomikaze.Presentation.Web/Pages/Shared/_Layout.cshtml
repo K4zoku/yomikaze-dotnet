@@ -21,7 +21,8 @@
 <!-- Section for Alpine.js scripts -->
 @if (IsSectionDefined("AlpineScripts"))
 {
-    @await RenderSectionAsync("AlpineScripts", true);
+    @await RenderSectionAsync("AlpineScripts", true)
+    ;
 }
 <!-- End of Section for Alpine.js scripts -->
 
@@ -39,7 +40,7 @@
                     th:fragment="theme-switcher">
                 <i :data-feather="themeIcon" class="text-xl text-base-content" aria-hidden="true"></i>
             </button>
-            
+
             <a asp-page="/Search" class="btn btn-ghost">
                 <i data-feather="search" class="text-base-content" aria-hidden="true"></i>
                 Advanced Search

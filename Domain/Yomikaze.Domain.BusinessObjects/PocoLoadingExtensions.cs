@@ -15,7 +15,7 @@ public static class PocoLoadingExtensions
 
         return navigationField;
     }
-    
+
     public static TRelated? LoadNullable<TRelated>(
         this Action<object, string>? loader,
         object entity,

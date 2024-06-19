@@ -4,8 +4,7 @@ public class TagCategoryModel : BaseModel
 {
     #region ReadWriteProperties
 
-    [Required]
-    public string Name { get; set; } = default!;
+    [Required] public string Name { get; set; } = default!;
 
     #endregion
 }

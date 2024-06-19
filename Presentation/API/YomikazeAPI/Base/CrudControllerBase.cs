@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.AspNetCore.JsonPatch;
 using System.Net;
 using System.Text.Json;
 using Yomikaze.Application.Helpers;
-using Yomikaze.Domain.Abstracts;
 
 namespace Yomikaze.API.Main.Base;
 
@@ -20,18 +15,17 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     where T : class, IEntity<TKey>
     where TModel : class
 {
+    private static readonly string KeyPrefix = typeof(T).Name + ":";
     protected DbContext DbContext { get; set; } = dbContext;
     protected IMapper Mapper { get; set; } = mapper;
 
     protected IRepository<T, TKey> Repository { get; set; } = repository;
-    
+
     protected IDistributedCache Cache { get; set; } = cache;
-    
+
     protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
-    
-    private static readonly string KeyPrefix = typeof(T).Name + ":";
-    
-    
+
+
     [HttpGet]
     public virtual async Task<ActionResult<ICollection<TModel>>> List(int? page, int? pageSize)
     {
@@ -43,42 +37,38 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModels);
         }
-        
+
         T[] entities = await Repository.Query().Skip(actualPage * actualPageSize).Take(actualPageSize).ToArrayAsync();
         TModel[] models = Mapper.Map<TModel[]>(entities);
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, models, new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-        });
+        Cache.SetInBackground(keyName, models,
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         Logger.LogDebug("Returning {key} data...", keyName);
         return models;
     }
-    
+
     [HttpGet("{key}")]
     public virtual ActionResult<TModel> Get(TKey key)
     {
         string keyName = KeyPrefix + key;
-        
+
         if (Cache.TryGet(keyName, out TModel? cachedModel))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModel);
         }
-        
+
         T? entity = Repository.Get(key);
-        
+
         if (entity == null)
         {
             throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
         }
-        
+
         TModel model = Mapper.Map<TModel>(entity);
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, model, new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-        });
+        Cache.SetInBackground(keyName, model,
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         return Ok(model);
     }
 
@@ -108,13 +98,14 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         {
             throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
         }
-        
+
         Mapper.Map(input, entityToUpdate);
 
         try
         {
             Repository.Update(entityToUpdate);
-        } catch (DbUpdateException)
+        }
+        catch (DbUpdateException)
         {
             throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
         }
@@ -122,10 +113,10 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
-        
+
         return Ok(Mapper.Map<TModel>(entityToUpdate));
     }
-    
+
     [HttpPatch]
     public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
     {
@@ -134,22 +125,23 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         {
             throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
         }
-        
+
         TModel model = Mapper.Map<TModel>(entityToUpdate);
         patch.ApplyTo(model);
         Mapper.Map(model, entityToUpdate);
         try
         {
             Repository.Update(entityToUpdate);
-        } catch (DbUpdateException)
+        }
+        catch (DbUpdateException)
         {
             throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
         }
-        
+
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
-        
+
         return Ok(Mapper.Map<TModel>(entityToUpdate));
     }
 
@@ -164,14 +156,13 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         Repository.Delete(entity);
-        
+
         // remove cache
         string keyName = KeyPrefix + key;
         Cache.Remove(keyName);
 
         return NoContent();
     }
-    
 }
 
 internal static class DistributedCacheExtension
@@ -184,12 +175,14 @@ internal static class DistributedCacheExtension
             value = default;
             return false;
         }
+
         TC? cachedValue = JsonSerializer.Deserialize<TC>(cachedData);
         value = cachedValue;
         return cachedValue != null;
     }
-    
-    internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value, DistributedCacheEntryOptions options)
+
+    internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
+        DistributedCacheEntryOptions options)
     {
         Task cacheTask = cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options);
         cacheTask.ConfigureAwait(false);

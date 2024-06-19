@@ -7,23 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Update="appsettings.Development.json">
-        <DependentUpon>appsettings.json</DependentUpon>
-      </Content>
+        <Content Update="appsettings.Development.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
+        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.PostgreSQL\Yomikaze.Infrastructure.Migrations.PostgreSQL.csproj" />
-      <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.SQLServer\Yomikaze.Infrastructure.Migrations.SQLServer.csproj" />
+        <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.PostgreSQL\Yomikaze.Infrastructure.Migrations.PostgreSQL.csproj"/>
+        <ProjectReference Include="..\Migrations\Yomikaze.Infrastructure.Migrations.SQLServer\Yomikaze.Infrastructure.Migrations.SQLServer.csproj"/>
     </ItemGroup>
 
 </Project>

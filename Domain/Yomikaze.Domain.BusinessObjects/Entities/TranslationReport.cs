@@ -9,11 +9,11 @@ public class TranslationReport : Report
     #endregion
 
     #region Properties
-    
-    [ForeignKey(nameof(Translation))]
-    public ulong TranslationId { get; set; }
-    
-    public Translation Translation { 
+
+    [ForeignKey(nameof(Translation))] public ulong TranslationId { get; set; }
+
+    public Translation Translation
+    {
         get => LazyLoader.Load(this, ref _translation);
         set => _translation = value;
     }
@@ -25,7 +25,7 @@ public class TranslationReport : Report
     public TranslationReport()
     {
     }
-    
+
     public TranslationReport(Action<object, string> lazyLoader) : base(lazyLoader)
     {
     }

@@ -4,12 +4,13 @@ namespace Yomikaze.Infrastructure;
 
 public static class AddDbContextExtensions
 {
-    public static void AddDbContext<T>(this IServiceCollection services, Provider provider, IConfiguration configuration, string key) where T : DbContext
+    public static void AddDbContext<T>(this IServiceCollection services, Provider provider,
+        IConfiguration configuration, string key) where T : DbContext
     {
-        var connectionString = provider.GetConnectionString(configuration, key);
+        string connectionString = provider.GetConnectionString(configuration, key);
         services.AddDbContext<T>(provider, connectionString);
     }
-    
+
     public static void AddDbContext<T>(this IServiceCollection services, Provider provider, string connectionString)
         where T : DbContext
     {

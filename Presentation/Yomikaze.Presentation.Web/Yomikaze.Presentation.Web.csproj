@@ -8,19 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="Pages\Shared\PaginationModel.cs">
-        <DependentUpon>_PaginationScriptPartial.cshtml</DependentUpon>
-      </Compile>
+        <Compile Update="Pages\Shared\PaginationModel.cs">
+            <DependentUpon>_PaginationScriptPartial.cshtml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Pages\Shared\_PaginationScriptPartial.cshtml">
-        <DependentUpon>_PaginationPartial.cshtml</DependentUpon>
-      </Content>
+        <Content Update="Pages\Shared\_PaginationScriptPartial.cshtml">
+            <DependentUpon>_PaginationPartial.cshtml</DependentUpon>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
     </ItemGroup>
 
 </Project>

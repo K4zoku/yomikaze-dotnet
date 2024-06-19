@@ -18,6 +18,7 @@ public static class SnowflakeGenerator
         {
             return generator.GetCode();
         }
+
         lock (Lock)
         {
             generator = new SnowflakeIDGenerator(workerId, Epoch);

@@ -11,7 +11,7 @@ public class ComicRepository(DbContext dbContext) : BaseRepository<Comic>(new Co
     {
         return Query().FirstOrDefault(comic => comic.Id.ToString() == comicId);
     }
-    
+
     public Comic? GetChaptersByComicId(ulong comicId)
     {
         return Query().FirstOrDefault(comic => comic.Id == comicId);

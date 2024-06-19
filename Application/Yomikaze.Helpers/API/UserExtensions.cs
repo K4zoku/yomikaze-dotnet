@@ -9,9 +9,9 @@ public static class UserExtensions
     public static string GetIdString(this ClaimsPrincipal user)
     {
         return user.FindFirstValue(ClaimTypes.NameIdentifier) ??
-                       throw new HttpResponseException(500, "Cannot get user ID");
+               throw new HttpResponseException(500, "Cannot get user ID");
     }
-    
+
     public static ulong GetId(this ClaimsPrincipal user)
     {
         string idStr = GetIdString(user);
@@ -19,6 +19,7 @@ public static class UserExtensions
         {
             return id;
         }
+
         throw new HttpResponseException(500, "Cannot parse user ID");
     }
 

@@ -10,6 +10,7 @@ using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Yomikaze.API.Authentication.Controllers;
 
@@ -40,14 +41,14 @@ public class AuthenticationController(
 
         User user = await SignInManager.UserManager.FindByNameAsync(model.Username) ??
                     await SignInManager.UserManager.FindByEmailAsync(model.Username) ??
-        throw new HttpResponseException(HttpStatusCode.NotFound,
+                    throw new HttpResponseException(HttpStatusCode.NotFound,
                         ResponseModel.CreateError("User not found"));
-        
-        var result = await SignInManager.CheckPasswordSignInAsync(user, model.Password, true);
+
+        SignInResult result = await SignInManager.CheckPasswordSignInAsync(user, model.Password, true);
         if (result.Succeeded)
-        { 
-            var token = await GenerateToken(user);
-            return new TokenModel(token.ToTokenString());   
+        {
+            JwtSecurityToken token = await GenerateToken(user);
+            return new TokenModel(token.ToTokenString());
         }
 
         if (result.IsNotAllowed)
@@ -64,7 +65,8 @@ public class AuthenticationController(
         }
         else if (result.IsLockedOut)
         {
-            Logger.LogWarning("User is locked out. Lockout end in: {}s", (user.LockoutEnd?.DateTime - DateTime.UtcNow)?.TotalSeconds);
+            Logger.LogWarning("User is locked out. Lockout end in: {}s",
+                (user.LockoutEnd?.DateTime - DateTime.UtcNow)?.TotalSeconds);
             ModelState.AddModelError(nameof(model.Username), "User is locked out.");
         }
         else
@@ -87,11 +89,7 @@ public class AuthenticationController(
                 ResponseModel.CreateError("Username or email already exists"));
         }
 
-        user = new User
-        {
-            UserName = model.Username,
-            Email = model.Email,
-        };
+        user = new User { UserName = model.Username, Email = model.Email };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
@@ -119,17 +117,17 @@ public class AuthenticationController(
         User? user = await UserManager.GetUserAsync(User);
         if (user is null)
         {
-            return Problem(detail: "User not found", statusCode: (int)HttpStatusCode.NotFound, title: "Not Found", type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
+            return Problem("User not found", statusCode: (int)HttpStatusCode.NotFound, title: "Not Found",
+                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
         }
+
         bool isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
         return Ok(ResponseModel.CreateSuccess("Authorized",
-            new { User = new
+            new
             {
-                user.Id,
-                user.UserName,
-                user.Email,
-                IsAdmin = isAdmin
-            }, Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value) }
+                User = new { user.Id, user.UserName, user.Email, IsAdmin = isAdmin },
+                Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value)
+            }
         ));
     }
 
@@ -137,16 +135,18 @@ public class AuthenticationController(
     private async Task<JwtSecurityToken> GenerateToken(User user)
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        List<Claim> claims = [
+        List<Claim> claims =
+        [
             new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-            new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64)
         ];
-        var claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
+        ClaimsPrincipal claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
         claims.AddRange(claimIdentity.Claims);
         return new JwtSecurityToken(signingCredentials: Jwt.SigningCredentials, claims: claims);
     }
-    
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Validate()
@@ -156,10 +156,12 @@ public class AuthenticationController(
         {
             return Ok();
         }
+
         Logger.LogWarning("Invalid security stamp");
-        return Problem(detail: "Invalid security stamp", statusCode: (int)HttpStatusCode.Unauthorized, title: "Unauthorized", type: "https://tools.ietf.org/html/rfc7235#section-3.1");
+        return Problem("Invalid security stamp", statusCode: (int)HttpStatusCode.Unauthorized, title: "Unauthorized",
+            type: "https://tools.ietf.org/html/rfc7235#section-3.1");
     }
-    
+
     [Authorize(Roles = "Administrator")]
     [HttpGet]
     [ActionName("authorize-admin")]
@@ -167,5 +169,4 @@ public class AuthenticationController(
     {
         return Ok();
     }
-    
 }

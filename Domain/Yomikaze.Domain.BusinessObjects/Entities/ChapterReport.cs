@@ -9,11 +9,11 @@ public class ChapterReport : Report
     #endregion
 
     #region Properties
-    
-    [ForeignKey(nameof(Chapter))]
-    public ulong ChapterId { get; set; }
-    
-    public Chapter Chapter { 
+
+    [ForeignKey(nameof(Chapter))] public ulong ChapterId { get; set; }
+
+    public Chapter Chapter
+    {
         get => LazyLoader.Load(this, ref _chapter);
         set => _chapter = value;
     }
@@ -25,7 +25,7 @@ public class ChapterReport : Report
     public ChapterReport()
     {
     }
-    
+
     public ChapterReport(Action<object, string> lazyLoader) : base(lazyLoader)
     {
     }

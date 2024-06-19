@@ -3,11 +3,12 @@
 //! author : Dominika Kruk : https://github.com/amaranthrose
 
 ;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined'
+    && typeof require === 'function' ? factory(require('../moment')) :
+        typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+            factory(global.moment)
+}(this, (function (moment) {
+    'use strict';
 
     //! moment.js locale configuration
 
@@ -19,10 +20,10 @@
             output.indexOf('jaj') !== -1
                 ? time.slice(0, -3) + 'leS'
                 : output.indexOf('jar') !== -1
-                  ? time.slice(0, -3) + 'waQ'
-                  : output.indexOf('DIS') !== -1
-                    ? time.slice(0, -3) + 'nem'
-                    : time + ' pIq';
+                    ? time.slice(0, -3) + 'waQ'
+                    : output.indexOf('DIS') !== -1
+                        ? time.slice(0, -3) + 'nem'
+                        : time + ' pIq';
         return time;
     }
 
@@ -32,10 +33,10 @@
             output.indexOf('jaj') !== -1
                 ? time.slice(0, -3) + 'Hu’'
                 : output.indexOf('jar') !== -1
-                  ? time.slice(0, -3) + 'wen'
-                  : output.indexOf('DIS') !== -1
-                    ? time.slice(0, -3) + 'ben'
-                    : time + ' ret';
+                    ? time.slice(0, -3) + 'wen'
+                    : output.indexOf('DIS') !== -1
+                        ? time.slice(0, -3) + 'ben'
+                        : time + ' ret';
         return time;
     }
 

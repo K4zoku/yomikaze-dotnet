@@ -6,6 +6,5 @@ public class _404 : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

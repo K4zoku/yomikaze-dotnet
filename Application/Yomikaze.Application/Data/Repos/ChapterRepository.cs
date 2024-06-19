@@ -11,7 +11,7 @@ public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(ne
     {
         return Query().FirstOrDefault(chapter => chapter.Id.ToString() == id);
     }
-    
+
     public Chapter? GetByComicIdAndIndex(string comicId, int index)
     {
         return Query()

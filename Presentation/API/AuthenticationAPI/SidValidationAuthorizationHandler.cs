@@ -9,7 +9,7 @@ namespace Yomikaze.API.Authentication;
 public class SidValidationAuthorizationHandler(SignInManager<User> signInManager) : IAuthorizationHandler
 {
     private SignInManager<User> SignInManager => signInManager;
-    
+
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
         ClaimsPrincipal principal = context.User;
@@ -17,11 +17,13 @@ public class SidValidationAuthorizationHandler(SignInManager<User> signInManager
         {
             return;
         }
+
         User? user = await SignInManager.ValidateSecurityStampAsync(principal);
         if (user is null)
         {
             context.Fail();
         }
+
         context.Succeed(new OperationAuthorizationRequirement());
     }
 }

@@ -13,9 +13,10 @@ namespace Yomikaze.API.CDN.Images.Controllers;
 public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBase
 {
     private PhysicalFileProvider FileProvider => fileProvider;
-    
+
     [HttpPost]
-    public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request,
+        CancellationToken cancellationToken = default)
     {
         if (!ModelState.IsValid)
         {
@@ -33,7 +34,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
             {
                 filePath = Combine(filePath, "Chapters", request.ChapterIndex.Value.ToString());
             }
-        } 
+        }
         else if (request.UserId != null)
         {
             filePath = Combine(filePath, "Users", request.UserId.Value.ToString());
@@ -42,6 +43,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         {
             filePath = Combine(filePath, "Misc");
         }
+
         Directory.CreateDirectory(filePath);
         filePath = Combine(filePath, fileName);
 

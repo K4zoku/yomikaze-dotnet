@@ -10,10 +10,10 @@ public class ProfileComment : Comment
 
     #region Properties
 
-    [ForeignKey(nameof(Profile))]
-    public ulong ProfileId { get; set; }
-    
-    public User Profile { 
+    [ForeignKey(nameof(Profile))] public ulong ProfileId { get; set; }
+
+    public User Profile
+    {
         get => LazyLoader.Load(this, ref _profile);
         set => _profile = value;
     }
@@ -25,7 +25,7 @@ public class ProfileComment : Comment
     public ProfileComment()
     {
     }
-    
+
     public ProfileComment(Action<object, string> lazyLoader) : base(lazyLoader)
     {
     }

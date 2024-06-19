@@ -22,6 +22,6 @@ logger.LogInformation("Migrating databases...");
 logger.LogInformation($"Migrating {nameof(YomikazeDbContext)}...");
 YomikazeDbContext yomikazeDbContext = servicesProvider.GetRequiredService<YomikazeDbContext>();
 await yomikazeDbContext.Database.MigrateAsync();
-logger.LogInformation("Databases migrated successfully.");  
+logger.LogInformation("Databases migrated successfully.");
 
 logger.LogInformation("Done.");

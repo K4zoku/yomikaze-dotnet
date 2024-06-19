@@ -11,7 +11,6 @@ namespace Yomikaze.Infrastructure.Context;
 
 public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
 {
-
     public YomikazeDbContext()
     {
         SaveChangesEvent += OnSaveChanges;
@@ -21,7 +20,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     {
         SaveChangesEvent += OnSaveChanges;
     }
-    
+
     public DbSet<Chapter> Chapters { get; init; } = default!;
     public DbSet<CoinPricing> CoinPricings { get; init; } = default!;
     public DbSet<Comic> Comics { get; init; } = default!;
@@ -47,10 +46,14 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        if (optionsBuilder.IsConfigured) return;
+        if (optionsBuilder.IsConfigured)
+        {
+            return;
+        }
+
         throw new InvalidOperationException("No database connection string provided.");
     }
-    
+
     private event Action? SaveChangesEvent;
 
     public override int SaveChanges()
@@ -75,7 +78,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         modelBuilder.Entity<Role>().ToTable("roles");
         modelBuilder.Entity<IdentityUserRole<ulong>>().ToTable("user_roles");
         modelBuilder.Entity<IdentityRoleClaim<ulong>>().ToTable("role_claims");
-        
+
         modelBuilder.Entity<Comment>()
             .HasDiscriminator<string>("type")
             .IsComplete(false)
@@ -83,7 +86,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .HasValue<ChapterComment>("chapter_comment")
             .HasValue<ComicComment>("comic_comment")
             .HasValue<ProfileComment>("profile_comment");
-        
+
         modelBuilder.Entity<Report>()
             .HasDiscriminator<string>("type")
             .IsComplete(false)
@@ -92,7 +95,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .HasValue<ComicReport>("comic_report")
             .HasValue<ProfileReport>("profile_report")
             .HasValue<TranslationReport>("translation_report");
-        
+
         modelBuilder.Entity<TagCategory>().HasData(Default.TagCategories);
         modelBuilder.Entity<Tag>().HasData(Default.Tags);
         modelBuilder.Entity<Role>().HasData(Default.Roles);
@@ -101,12 +104,12 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .WithMany(e => e.Comics)
             .UsingEntity<ComicTag>();
     }
-    
+
     private void OnSaveChanges()
     {
         IEnumerable<EntityEntry> entries = ChangeTracker.Entries()
             .Where(e => e is { State: EntityState.Added or EntityState.Modified, Entity: BaseEntity });
-        
+
         foreach (EntityEntry entry in entries)
         {
             BaseEntity entity = (BaseEntity)entry.Entity;

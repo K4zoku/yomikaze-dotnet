@@ -37,7 +37,7 @@ public static class JwtExtensions
                     RequireExpirationTime = configuration.Expire,
                     IssuerSigningKey = configuration.SecurityKey,
                     RoleClaimType = "roles",
-                    NameClaimType = JwtRegisteredClaimNames.Name,
+                    NameClaimType = JwtRegisteredClaimNames.Name
                 };
                 options.MapInboundClaims = false;
             });

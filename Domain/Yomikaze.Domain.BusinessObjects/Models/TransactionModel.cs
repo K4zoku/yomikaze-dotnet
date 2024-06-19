@@ -2,20 +2,17 @@ namespace Yomikaze.Domain.Models;
 
 public class TransactionModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region WriteOnlyProperties
 
-    [Required]
-    public long Amount { get; set; }
-    
-    [Required]
-    public string Description { get; set; } = default!;
+    [SwaggerSchema(WriteOnly = true)] public string? UserId { get; set; }
 
     #endregion
 
-    #region WriteOnlyProperties
+    #region ReadWriteProperties
 
-    [SwaggerSchema(WriteOnly = true)]
-    public string? UserId { get; set; }
+    [Required] public long Amount { get; set; }
+
+    [Required] public string Description { get; set; } = default!;
 
     #endregion
 }

@@ -10,25 +10,21 @@ namespace Yomikaze.Application.Data.Configs;
 
 public class YomikazeMapper : MapperProfile
 {
-    private static ulong IdParse(string? id)
-    {
-        return ulong.TryParse(id, out ulong result) ? result : 0;
-    }
     public YomikazeMapper()
     {
         CreateMap<BaseModel, BaseEntity>()
             .ForMember(dest => dest.Id, options => options.MapFrom(src => IdParse(src.Id)))
             .ForAllMembers(options => options.Condition((_, _, srcMember) => srcMember != null));
-        
+
         CreateMap<BaseEntity, BaseModel>()
             .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()));
-        
+
         CreateMap<ChapterModel, Chapter>()
             .IncludeBase<BaseModel, BaseEntity>()
             .ForMember(dest => dest.Pages, options =>
             {
                 options.Condition(src => src.Pages is { Count: > 0 });
-                options.MapFrom(src => (src.Pages  ?? new List<string>()).Select(page => new Page { Image = page }));
+                options.MapFrom(src => (src.Pages ?? new List<string>()).Select(page => new Page { Image = page }));
             })
             .ForMember(dest => dest.ComicId, options =>
             {
@@ -47,11 +43,13 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.ComicTags, options =>
             {
                 options.Condition(src => src.TagIds is { Count: > 0 });
-                options.MapFrom(src => (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) }));
+                options.MapFrom(src =>
+                    (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) }));
             });
         CreateMap<Comic, ComicModel>()
             .IncludeBase<BaseEntity, BaseModel>()
-            .ForMember(dest => dest.TagIds, options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())));
+            .ForMember(dest => dest.TagIds,
+                options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())));
 
         CreateMap<CommentModel, Comment>()
             .IncludeBase<BaseModel, BaseEntity>()
@@ -80,7 +78,7 @@ public class YomikazeMapper : MapperProfile
         CreateMap<ChapterComment, ChapterCommentModel>()
             .IncludeBase<BaseEntity, BaseModel>()
             .ForMember(dest => dest.ChapterId, options => options.MapFrom(src => src.ChapterId.ToString()));
-        
+
         CreateMap<ComicCommentModel, ComicComment>()
             .IncludeBase<BaseModel, BaseEntity>()
             .ForMember(dest => dest.ComicId, options =>
@@ -91,7 +89,7 @@ public class YomikazeMapper : MapperProfile
         CreateMap<ComicComment, ComicCommentModel>()
             .IncludeBase<BaseEntity, BaseModel>()
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()));
-        
+
         CreateMap<ProfileCommentModel, ProfileComment>()
             .IncludeBase<BaseModel, BaseEntity>()
             .ForMember(dest => dest.ProfileId, options =>
@@ -119,7 +117,7 @@ public class YomikazeMapper : MapperProfile
             .IncludeBase<BaseEntity, BaseModel>()
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ChapterId, options => options.MapFrom(src => src.ChapterId.ToString()));
-        
+
         CreateMap<LibraryCategoryModel, LibraryCategory>()
             .IncludeBase<BaseModel, BaseEntity>()
             .ForMember(dest => dest.UserId, options =>
@@ -127,11 +125,11 @@ public class YomikazeMapper : MapperProfile
                 options.Condition(src => src.UserId != null);
                 options.MapFrom(src => IdParse(src.UserId));
             });
-        
+
         CreateMap<LibraryCategory, LibraryCategoryModel>()
             .IncludeBase<BaseEntity, BaseModel>()
-            .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()));  
-        
+            .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()));
+
         CreateMap<LibraryEntryModel, LibraryEntry>()
             .IncludeBase<BaseModel, BaseEntity>()
             .ForMember(dest => dest.UserId, options =>
@@ -154,10 +152,14 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
             .ForMember(dest => dest.CategoryId, options => options.MapFrom(src => src.CategoryId.ToString()));
-        
-        
+
 
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
+    }
+
+    private static ulong IdParse(string? id)
+    {
+        return ulong.TryParse(id, out ulong result) ? result : 0;
     }
 }

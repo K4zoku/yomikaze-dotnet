@@ -11,14 +11,14 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.3"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj" />
-        <ProjectReference Include="..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj" />
-        <ProjectReference Include="..\..\Infrastructure\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj" />
+        <ProjectReference Include="..\..\Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj"/>
+        <ProjectReference Include="..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj"/>
     </ItemGroup>
 
 </Project>

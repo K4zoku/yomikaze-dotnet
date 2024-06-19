@@ -91,10 +91,10 @@
     </div>
     <div class="w-full mt-8">
         <table class="table w-full max-w-full rounded-box" aria-describedby="comics_info" :class="{ 'min-h-[538px]': loading }">
-             <colgroup>
-                   <col span="1" class="w-[55%]">
-                   <col span="1" class="w-[25%]">
-                   <col span="1" class="w-[20%]">
+            <colgroup>
+                <col span="1" class="w-[55%]">
+                <col span="1" class="w-[25%]">
+                <col span="1" class="w-[20%]">
             </colgroup>
             <thead>
             <tr>
@@ -118,7 +118,7 @@
                         <a asp-page="/Comics/Details" asp-route-id="-1" :href="$el.href.replace('-1', comic.Id)"
                            class="card card-side hover:scale-[1.01] transition-transform duration-500">
                             <figure class="max-w-[95px] max-h-[140px]">
-                                <img class="w-[95px] h-[140px] object-cover object-center rounded-box" 
+                                <img class="w-[95px] h-[140px] object-cover object-center rounded-box"
                                      data-src="/placeholder.png" :src="comic.Cover || $el.dataset.src" src="" alt="Cover"/>
                             </figure>
                             <div class="card-body">

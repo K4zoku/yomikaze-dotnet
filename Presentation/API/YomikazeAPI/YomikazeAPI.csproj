@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
             <PrivateAssets>all</PrivateAssets>
@@ -22,18 +22,18 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj" />
-        <ProjectReference Include="..\..\..\Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj"/>
+        <ProjectReference Include="..\..\..\Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="appsettings.Development.json">
-        <DependentUpon>appsettings.json</DependentUpon>
-      </Content>
+        <Content Update="appsettings.Development.json">
+            <DependentUpon>appsettings.json</DependentUpon>
+        </Content>
     </ItemGroup>
 
 </Project>

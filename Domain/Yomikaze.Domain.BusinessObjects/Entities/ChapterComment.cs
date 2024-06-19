@@ -10,10 +10,10 @@ public class ChapterComment : Comment
 
     #region Properties
 
-    [ForeignKey(nameof(Chapter))]
-    public ulong ChapterId { get; set; }
-    
-    public Chapter Chapter { 
+    [ForeignKey(nameof(Chapter))] public ulong ChapterId { get; set; }
+
+    public Chapter Chapter
+    {
         get => LazyLoader.Load(this, ref _chapter);
         set => _chapter = value;
     }
@@ -25,7 +25,7 @@ public class ChapterComment : Comment
     public ChapterComment()
     {
     }
-    
+
     public ChapterComment(Action<object, string> lazyLoader) : base(lazyLoader)
     {
     }

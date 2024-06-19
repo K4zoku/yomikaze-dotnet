@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Yomikaze.Domain.Abstracts;
@@ -29,7 +28,7 @@ public abstract class ODataControllerBase<T, TKey>(IRepository<T, TKey> reposito
 
         return Ok(entity);
     }
-    
+
     // public IActionResult Post(T entity)
     // {
     //     if (!ModelState.IsValid)
@@ -54,8 +53,8 @@ public abstract class ODataControllerBase<T, TKey>(IRepository<T, TKey> reposito
     //     Repository.Update(entity);
     //     return Updated(entity);
     // }
-    
-    
+
+
     // public IActionResult Patch([FromRoute] TKey key, Delta<T> delta)
     // {
     //     if (!ModelState.IsValid)
@@ -71,7 +70,7 @@ public abstract class ODataControllerBase<T, TKey>(IRepository<T, TKey> reposito
     //     Repository.Update(existing);
     //     return Updated(existing);
     // }
-    
+
     // public IActionResult Delete([FromRoute] TKey key)
     // {
     //     T? existing = Repository.Get(key);

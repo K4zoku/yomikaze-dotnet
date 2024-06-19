@@ -4,16 +4,18 @@
 //! author : Peter Viszt  : https://github.com/passatgt
 
 ;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined'
+    && typeof require === 'function' ? factory(require('../moment')) :
+        typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+            factory(global.moment)
+}(this, (function (moment) {
+    'use strict';
 
     //! moment.js locale configuration
 
     var weekEndings =
         'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
+
     function translate(number, withoutSuffix, key, isFuture) {
         var num = number;
         switch (key) {
@@ -48,6 +50,7 @@
         }
         return '';
     }
+
     function week(isFuture) {
         return (
             (isFuture ? '' : '[múlt] ') +

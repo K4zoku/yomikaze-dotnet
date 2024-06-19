@@ -9,11 +9,11 @@ public class ProfileReport : Report
     #endregion
 
     #region Properties
-    
-    [ForeignKey(nameof(Profile))]
-    public ulong ProfileId { get; set; }
-    
-    public User Profile { 
+
+    [ForeignKey(nameof(Profile))] public ulong ProfileId { get; set; }
+
+    public User Profile
+    {
         get => LazyLoader.Load(this, ref _profile);
         set => _profile = value;
     }
@@ -25,7 +25,7 @@ public class ProfileReport : Report
     public ProfileReport()
     {
     }
-    
+
     public ProfileReport(Action<object, string> lazyLoader) : base(lazyLoader)
     {
     }

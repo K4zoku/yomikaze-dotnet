@@ -9,11 +9,11 @@ public class CommentModel : BaseModel
     #endregion
 
     #region ReadOnlyProperties
-    
+
     public ProfileModel Author { get; set; } = default!;
-    
+
     public ICollection<CommentModel> Replies { get; set; } = new List<CommentModel>();
-    
+
     #endregion
 
     #region WriteOnlyProperties

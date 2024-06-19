@@ -1,5 +1,4 @@
-﻿using Swashbuckle.AspNetCore.Annotations;
-using Yomikaze.Domain.Entities;
+﻿using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Domain.Models;
 
@@ -20,28 +19,23 @@ public class ComicModel : BaseModel
     public string? Banner { get; set; }
 
     public DateTimeOffset? PublicationDate { get; set; }
-    
-    [SwaggerSchema(ReadOnly = true)]
-    public ICollection<TagModel> Tags { get; set; } = new List<TagModel>();
-    
-    [SwaggerSchema(WriteOnly = true)]
-    public ICollection<string>? TagIds { get; set; } = new List<string>();
+
+    [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = new List<TagModel>();
+
+    [SwaggerSchema(WriteOnly = true)] public ICollection<string>? TagIds { get; set; } = new List<string>();
 
     [StringLength(70, ErrorMessage = "Comic's authors must from 0 to 70 characters")]
     public ICollection<string>? Authors { get; set; } = new List<string>();
-    
-    [SwaggerSchema(ReadOnly = true)]
-    public ProfileModel Publisher { get; set; } = default!;
-    
+
+    [SwaggerSchema(ReadOnly = true)] public ProfileModel Publisher { get; set; } = default!;
+
     [SwaggerSchema(WriteOnly = true)]
     [Required]
     public string? PublisherId { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)]
-    public ICollection<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
-    
-    [SwaggerSchema(WriteOnly = true)]
-    public ICollection<string>? ChapterIds { get; set; } = new List<string>();
-    
+    [SwaggerSchema(ReadOnly = true)] public ICollection<ChapterModel> Chapters { get; set; } = new List<ChapterModel>();
+
+    [SwaggerSchema(WriteOnly = true)] public ICollection<string>? ChapterIds { get; set; } = new List<string>();
+
     public ComicStatus? Status { get; set; }
 }

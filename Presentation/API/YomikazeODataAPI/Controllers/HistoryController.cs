@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities;
-using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.OData.Controllers;
 
@@ -14,7 +13,7 @@ namespace Yomikaze.API.OData.Controllers;
 public class HistoryController(DbContext dbContext) : ControllerBase
 {
     private HistoryRepository Repository { get; } = new(dbContext);
-    
+
     public ActionResult<IEnumerable<LibraryEntry>> Get()
     {
         string id = User.GetIdString();

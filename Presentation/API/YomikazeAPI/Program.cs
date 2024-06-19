@@ -25,7 +25,7 @@ services.AddControllers(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
-    // .ConfigureApiBehaviorOptionsYomikaze();
+// .ConfigureApiBehaviorOptionsYomikaze();
 services.AddRouting(options =>
 {
     options.LowercaseUrls = true;

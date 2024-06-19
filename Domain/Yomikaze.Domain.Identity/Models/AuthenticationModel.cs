@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Yomikaze.Domain.Identity.Models;
+﻿namespace Yomikaze.Domain.Identity.Models;
 
 public abstract class AuthenticationModel
 {

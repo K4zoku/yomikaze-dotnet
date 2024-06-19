@@ -1,24 +1,20 @@
-﻿using Swashbuckle.AspNetCore.Annotations;
+﻿namespace Yomikaze.Domain.Models;
 
-namespace Yomikaze.Domain.Models;
-
-public class PageModel
+public class PageModel : BaseModel
 {
-    #region ReadWriteProperties
-
-    [Required]
-    public int? Number { get; set; }
-
-    [Required]
-    public string? Image { get; set; } = default!;
-
-    #endregion
-    
     #region WriteOnlyProperties
-    
+
     [Required]
     [SwaggerSchema(WriteOnly = true)]
     public string? ChapterId { get; set; }
-    
+
+    #endregion
+
+    #region ReadWriteProperties
+
+    [Required] public int? Number { get; set; }
+
+    [Required] public string? Image { get; set; } = default!;
+
     #endregion
 }
