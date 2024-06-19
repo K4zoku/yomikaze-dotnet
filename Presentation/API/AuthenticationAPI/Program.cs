@@ -70,6 +70,7 @@ if (!userManager.Users.Any())
     User admin = new()
     {
         UserName = configuration["Admin:Username"] ?? "administrator",
+        Name = "Administrator",
         Email = configuration["Admin:Email"] ?? "administrator@yomikaze.org",
         EmailConfirmed = true
     };
