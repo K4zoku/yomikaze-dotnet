@@ -29,9 +29,9 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 {
-    protected BaseEntity(int workerId = 0)
+    protected BaseEntity()
     {
-        Id = SnowflakeGenerator.Generate(workerId);
+        Id = SnowflakeGenerator.Generate(WorkerId);
     }
 
     [NotMapped]
@@ -44,5 +44,5 @@ public abstract class BaseEntity : BaseEntity<ulong>, IEntity
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public new ulong Id { get; set; }
 
-    [NotMapped] public int WorkerId => 0;
+    [NotMapped] public virtual int WorkerId => 0;
 }

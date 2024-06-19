@@ -81,7 +81,9 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         T? entity = Mapper.Map<T>(input);
+        Logger.LogInformation("After mapped {id}", entity.Id);
         Repository.Add(entity);
+        Logger.LogInformation("After added {id}", entity.Id);
         cache.Remove($"{KeyPrefix}:list*");
         
         return Ok(Mapper.Map<TModel>(entity));

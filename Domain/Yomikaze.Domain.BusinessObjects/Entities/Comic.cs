@@ -58,14 +58,13 @@ public sealed class Comic : BaseEntity
     #region Constructors
 
     [NotMapped]
-    public new int WorkerId => 3;
-    public Comic() : base()
+    public override int WorkerId => 3;
+    public Comic()
     {
     }
 
-    public Comic(Action<object, string> lazyLoader)
+    public Comic(Action<object, string> lazyLoader) : this()
     {
-        Id = SnowflakeGenerator.Generate(WorkerId);
         LazyLoader = lazyLoader;
     }
 

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Yomikaze.API.Main;
@@ -19,11 +22,13 @@ services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
     options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
-}).AddNewtonsoftJson().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+}).AddNewtonsoftJson(options => {
+        options.SerializerSettings.ContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        };
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
 // .ConfigureApiBehaviorOptionsYomikaze();
 services.AddRouting(options =>

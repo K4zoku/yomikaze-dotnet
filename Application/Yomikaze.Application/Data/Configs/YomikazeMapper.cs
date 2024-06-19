@@ -1,4 +1,5 @@
-﻿using Yomikaze.Domain.Entities;
+﻿using Yomikaze.Domain.Abstracts;
+using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Identity.Models;
@@ -11,7 +12,8 @@ public class YomikazeMapper : MapperProfile
 {
     public YomikazeMapper()
     {
-
+        CreateMap<BaseModel, BaseEntity>()
+            .ForMember(dest => dest.Id, options => options.Ignore());
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
             {
@@ -30,13 +32,15 @@ public class YomikazeMapper : MapperProfile
         CreateMap<CoinPricingModel, CoinPricing>().ReverseMap();
 
         CreateMap<ComicModel, Comic>()
+            .ForMember(dest => dest.Id, options => options.Ignore())
             .ForMember(dest => dest.ComicTags, options =>
             {
                 options.Condition(src => src.TagIds.Length != 0);
                 options.MapFrom(src =>
                     src.TagIds.Select(id => new ComicTag { TagId = IdParse(id) }));
             });
-        CreateMap<Comic, ComicModel>();
+        CreateMap<Comic, ComicModel>()
+            .ForMember(dest => dest.PublisherId, options => options.Ignore());
 
         CreateMap<CommentModel, Comment>()
             .ForMember(dest => dest.AuthorId, options =>

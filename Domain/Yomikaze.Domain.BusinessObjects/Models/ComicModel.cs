@@ -21,7 +21,7 @@ public class ComicModel : BaseModel
 
     [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = [];
 
-    [SwaggerSchema(WriteOnly = true)] public string[] TagIds { get; set; } = [];
+    [SwaggerSchema(WriteOnly = true)] public string[] TagIds { get; set; }
     
     public string[]? Authors { get; set; } = [];
 
