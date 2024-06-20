@@ -26,8 +26,6 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     protected IDistributedCache Cache { get; set; } = cache;
 
     protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
-    
-    protected JsonSerializer JsonSerializer { get; set; } = new();
 
     public class PagedResult
     {
@@ -55,7 +53,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     public virtual ActionResult<PagedResult> List([FromQuery] PaginationModel pagination)
     {
         string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
-        if (Cache.TryGet(keyName, out PagedResult<TModel>? cachedModels))
+        if (Cache.TryGet(keyName, out PagedResult? cachedModels))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModels);
@@ -154,18 +152,11 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
-        using (StringWriter writer = new())
-        {
-            JsonSerializer.Serialize(writer, model);
-            Logger.LogDebug("Patching model: {model}", writer.ToString());
-        }
         
+        Logger.LogDebug("Patching model: {model}", JsonConvert.SerializeObject(model));
         patch.ApplyTo(model);
-        using (StringWriter writer = new())
-        {
-            JsonSerializer.Serialize(writer, model);
-            Logger.LogDebug("Patched model: {model}", writer.ToString());
-        }
+        Logger.LogDebug("Patched model: {model}", JsonConvert.SerializeObject(model));
+        
         Mapper.Map(model, entityToUpdate);
         try
         {
@@ -215,9 +206,7 @@ internal static class DistributedCacheExtension
             value = default;
             return false;
         }
-        StringReader reader = new StringReader(Encoding.UTF8.GetString(cachedData));
-        JsonReader jsonReader = new JsonTextReader(reader);
-        TC? cachedValue = Newtonsoft.Json.JsonSerializer.Create().Deserialize<TC>(jsonReader);
+        TC? cachedValue = JsonConvert.DeserializeObject<TC>(Encoding.UTF8.GetString(cachedData));
         value = cachedValue;
         return cachedValue != null;
     }
@@ -227,9 +216,7 @@ internal static class DistributedCacheExtension
     {
         Task.Run(async () =>
         {
-            await using StringWriter writer = new();
-            JsonSerializer.Create().Serialize(writer, value);
-            await cache.SetAsync(key, writer.Encoding.GetBytes(writer.ToString()), options);
+            await cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options);
         });
     }
 }
