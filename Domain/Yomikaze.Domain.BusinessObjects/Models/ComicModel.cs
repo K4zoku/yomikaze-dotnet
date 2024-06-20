@@ -35,7 +35,7 @@ public class ComicModel : BaseModel
     public ICollection<TagModel> Tags { get; set; } = [];
 
     [SwaggerSchema(ReadOnly = true)] 
-    public ProfileModel Publisher { get; set; } = default!;
+    public ProfileModel? Publisher { get; set; } = default!;
 
     #endregion
 
@@ -44,8 +44,7 @@ public class ComicModel : BaseModel
     [Required]
     [SwaggerSchema(WriteOnly = true)]
     public ICollection<string>? TagIds { get; set; } = [];
-
-    [Required]
+    
     [SwaggerSchema(WriteOnly = true)]
     public string? PublisherId { get; set; }
 

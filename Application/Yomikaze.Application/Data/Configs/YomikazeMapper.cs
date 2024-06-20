@@ -35,15 +35,18 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.Id, options => options.Ignore())
             .ForMember(dest => dest.ComicTags, options =>
             {
-                options.Condition(src => src.TagIds?.Count != 0 || src.Tags?.Count != 0);
+                options.Condition(src => src.TagIds?.Count != 0 || src.Tags.Count != 0);
                 options.MapFrom(src => (src.TagIds ?? new List<string>()).Count != 0
                     ? (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) })
-                    : (src.Tags ?? new List<TagModel>()).Select(tag => new ComicTag { TagId = IdParse(tag.Id) }));
+                    : src.Tags.Select(tag => new ComicTag { TagId = IdParse(tag.Id) }));
             })
             .ForMember(dest => dest.Publisher, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
+        CreateProjection<Comic, ComicModel>()
+            .ForMember(dest => dest.TagIds, options => options.Ignore())
+            .ForMember(dest => dest.PublisherId, options => options.Ignore());
         CreateMap<Comic, ComicModel>()
-            .ForMember(dest => dest.TagIds, options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())))
+            .ForMember(dest => dest.TagIds, options => options.Ignore())
             .ForMember(dest => dest.PublisherId, options => options.Ignore());
 
         CreateMap<CommentModel, Comment>()
@@ -140,11 +143,13 @@ public class YomikazeMapper : MapperProfile
                 options.Condition(src => src.CategoryId != null);
                 options.MapFrom(src => IdParse(src.CategoryId));
             });
-        
+
         CreateMap<Tag, TagModel>()
-            .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category.Name));
-        
-        CreateMap<User, ProfileModel>();
+            .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category.Name))
+            .ForMember(dest => dest.CategoryId, options => options.Ignore());
+
+        CreateMap<User, ProfileModel>()
+            .ForMember(dest => dest.Balance, options => options.Ignore());
         
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();

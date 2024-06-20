@@ -56,12 +56,6 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
 
     private event Action? SaveChangesEvent;
 
-    public override int SaveChanges()
-    {
-        SaveChangesEvent?.Invoke();
-        return base.SaveChanges();
-    }
-
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         SaveChangesEvent?.Invoke();

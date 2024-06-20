@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Yomikaze.Domain.Identity.Entities;
 
@@ -8,7 +9,7 @@ public static class UserExtensions
 {
     public static string GetIdString(this ClaimsPrincipal user)
     {
-        return user.FindFirstValue(ClaimTypes.NameIdentifier) ??
+        return user.FindFirstValue(JwtRegisteredClaimNames.NameId) ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub) ??
                throw new HttpResponseException(500, "Cannot get user ID");
     }
 

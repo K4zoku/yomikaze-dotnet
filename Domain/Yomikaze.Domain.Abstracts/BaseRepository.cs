@@ -30,7 +30,8 @@ public abstract class BaseRepository<T, TKey>(BaseDao<T, TKey> dao) : IRepositor
 
     public virtual IQueryable<T> Query()
     {
-        return Dao.Query();
+        // default order by creation time desc (latest first) which is using snowflake id
+        return Dao.Query().OrderByDescending(entity => entity.Id);
     }
 }
 

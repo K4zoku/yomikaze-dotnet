@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Extensions.Options;
+using System.Linq.Dynamic.Core;
 using System.Net;
 using System.Text.Json;
 using Yomikaze.Application.Helpers;
@@ -25,21 +27,39 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
     protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
 
+    public class PagedResult
+    {
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int RowCount { get; set; }
+        public int PageCount { get; set; }
+        public IEnumerable<TModel> Results { get; set; } = [];
+    }
+
+    protected PagedResult GetPaged(IQueryable<T> query, PaginationModel pagination)
+    {
+        int skip = (pagination.Page - 1) * pagination.Size;
+        return new PagedResult
+        {
+            CurrentPage = pagination.Page, 
+            PageSize = pagination.Size, 
+            RowCount = query.Count(),
+            PageCount = (int)Math.Ceiling((double) query.Count() / pagination.Size),
+            Results = Mapper.Map<TModel[]>(query.Skip(skip).Take(pagination.Size))
+        };
+    }
 
     [HttpGet]
-    public virtual async Task<ActionResult<TModel[]>> List(int? page, int? pageSize)
+    public virtual ActionResult<PagedResult> List([FromQuery] PaginationModel pagination)
     {
-        int actualPage = page ?? 0;
-        int actualPageSize = pageSize ?? 10;
-        string keyName = $"{KeyPrefix}:list({actualPage}, {actualPageSize})";
+        string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
         if (Cache.TryGet(keyName, out TModel[]? cachedModels))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModels);
         }
 
-        T[] entities = await Repository.Query().Skip(actualPage * actualPageSize).Take(actualPageSize).ToArrayAsync();
-        TModel[] models = Mapper.Map<TModel[]>(entities);
+        PagedResult models = GetPaged(Repository.Query(), pagination);
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
         Cache.SetInBackground(keyName, models,
             new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });

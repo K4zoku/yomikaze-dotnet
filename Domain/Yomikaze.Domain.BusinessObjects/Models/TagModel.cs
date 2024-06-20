@@ -12,7 +12,7 @@ public class TagModel : BaseModel
 
     [SwaggerSchema(WriteOnly = true)]
     [Required]
-    public string? CategoryId { get; set; } = default!;
+    public string? CategoryId { get; set; }
 
     #endregion
 
@@ -20,7 +20,7 @@ public class TagModel : BaseModel
 
     [Required]
     [Length(1, 50, ErrorMessage = "Genre's name must be between 1 and 100 characters")]
-    public string? Name { get; set; } = default!;
+    public string? Name { get; set; }
 
     public string? Description { get; set; }
 
