@@ -9,7 +9,8 @@ public static class UserExtensions
 {
     public static string GetIdString(this ClaimsPrincipal user)
     {
-        return user.FindFirstValue(JwtRegisteredClaimNames.NameId) ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub) ??
+        return user.FindFirstValue(JwtRegisteredClaimNames.NameId) ??
+               user.FindFirstValue(JwtRegisteredClaimNames.Sub) ??
                throw new HttpResponseException(500, "Cannot get user ID");
     }
 

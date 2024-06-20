@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
-using System.Linq.Dynamic.Core;
 using System.Net;
 using System.Text;
 using Yomikaze.Application.Helpers;
@@ -27,26 +26,17 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
     protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
 
-    public class PagedResult
-    {
-        public int CurrentPage { get; set; }
-        public int PageSize { get; set; }
-        public int RowCount { get; set; }
-        public int PageCount { get; set; }
-        public IEnumerable<TModel> Results { get; set; } = [];
-    }
-
     protected PagedResult GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
         query = query.Skip(skip).Take(pagination.Size);
         return new PagedResult
         {
-            CurrentPage = pagination.Page, 
-            PageSize = pagination.Size, 
+            CurrentPage = pagination.Page,
+            PageSize = pagination.Size,
             RowCount = query.Count(),
-            PageCount = (int)Math.Ceiling((double) query.Count() / pagination.Size),
-            Results = Mapper.Map<TModel[]>(query),
+            PageCount = (int)Math.Ceiling((double)query.Count() / pagination.Size),
+            Results = Mapper.Map<TModel[]>(query)
         };
     }
 
@@ -106,7 +96,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         Repository.Add(entity);
         Logger.LogInformation("After added {id}", entity.Id);
         Cache.Remove($"{KeyPrefix}:list*");
-        
+
         return Ok(Mapper.Map<TModel>(entity));
     }
 
@@ -153,11 +143,11 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
-        
+
         Logger.LogDebug("Patching model: {model}", JsonConvert.SerializeObject(model));
         patch.ApplyTo(model);
         Logger.LogDebug("Patched model: {model}", JsonConvert.SerializeObject(model));
-        
+
         Mapper.Map(model, entityToUpdate);
         try
         {
@@ -195,6 +185,15 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
         return NoContent();
     }
+
+    public class PagedResult
+    {
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int RowCount { get; set; }
+        public int PageCount { get; set; }
+        public IEnumerable<TModel> Results { get; set; } = [];
+    }
 }
 
 internal static class DistributedCacheExtension
@@ -207,6 +206,7 @@ internal static class DistributedCacheExtension
             value = default;
             return false;
         }
+
         TC? cachedValue = JsonConvert.DeserializeObject<TC>(Encoding.UTF8.GetString(cachedData));
         value = cachedValue;
         return cachedValue != null;

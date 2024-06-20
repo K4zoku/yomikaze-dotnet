@@ -57,8 +57,8 @@ public sealed class Comic : BaseEntity
 
     #region Constructors
 
-    [NotMapped]
-    public override int WorkerId => 3;
+    [NotMapped] public override int WorkerId => 3;
+
     public Comic()
     {
     }

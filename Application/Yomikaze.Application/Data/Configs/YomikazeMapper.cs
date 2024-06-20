@@ -136,7 +136,7 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
             .ForMember(dest => dest.CategoryId, options => options.MapFrom(src => src.CategoryId.ToString()));
-    
+
         CreateMap<TagModel, Tag>()
             .ForMember(dest => dest.CategoryId, options =>
             {
@@ -150,7 +150,7 @@ public class YomikazeMapper : MapperProfile
 
         CreateMap<User, ProfileModel>()
             .ForMember(dest => dest.Balance, options => options.Ignore());
-        
+
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
     }

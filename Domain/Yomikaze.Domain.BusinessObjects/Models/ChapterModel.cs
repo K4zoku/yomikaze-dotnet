@@ -26,7 +26,7 @@ public abstract class ChapterModel : BaseModel
     public string? Description { get; set; }
 
     public IList<string>? Pages { get; set; } = new List<string>();
-    
+
     public int? Views { get; set; }
 
     #endregion

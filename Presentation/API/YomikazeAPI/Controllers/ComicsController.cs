@@ -23,11 +23,13 @@ public class ComicsController(
         {
             return Ok(cachedModels);
         }
+
         PagedResult paged = GetPaged(Repository.Query(), pagination);
 
         paged.Results = paged.Results.Select(QueryExtraComicData).ToList();
-        
-        Cache.SetInBackground(keyName, paged, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
+
+        Cache.SetInBackground(keyName, paged,
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         return paged;
     }
 
@@ -49,25 +51,29 @@ public class ComicsController(
 
         ComicModel model = Mapper.Map<ComicModel>(entity);
         model = QueryExtraComicData(model);
-        
-        Cache.SetInBackground(keyName, model, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
+
+        Cache.SetInBackground(keyName, model,
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
         return Ok(model);
     }
 
     private ComicModel QueryExtraComicData(ComicModel comic)
     {
-        IList<int> ratings = DbContext.Set<ComicRating>().Where(r => r.ComicId.ToString() == comic.Id).Select(r => r.Rating).ToList();
-        IList<int> views = DbContext.Set<Chapter>().Where(c => c.ComicId.ToString() == comic.Id).Select(c => c.Views).ToList();
-        
+        IList<int> ratings = DbContext.Set<ComicRating>().Where(r => r.ComicId.ToString() == comic.Id)
+            .Select(r => r.Rating).ToList();
+        IList<int> views = DbContext.Set<Chapter>().Where(c => c.ComicId.ToString() == comic.Id).Select(c => c.Views)
+            .ToList();
+
         comic.TotalRatings = ratings.Count;
         comic.AverageRating = comic.TotalRatings > 0 ? ratings.Average() : 0;
         comic.TotalChapters = views.Count;
         comic.TotalViews = views.Sum();
-        
+
         return comic;
     }
 
-    public override ActionResult<ComicModel> Post([Bind("Name,Description,Cover,Banner,PublicationDate,Authors,Status,TagIds")] ComicModel input)
+    public override ActionResult<ComicModel> Post(
+        [Bind("Name,Description,Cover,Banner,PublicationDate,Authors,Status,TagIds")] ComicModel input)
     {
         input.PublisherId = User.GetIdString();
         return base.Post(input);

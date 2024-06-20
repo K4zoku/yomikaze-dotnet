@@ -10,7 +10,6 @@ using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
-using Yomikaze.Infrastructure.Context;
 using static Yomikaze.Infrastructure.Context.YomikazeDbContext.Default;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -93,9 +92,9 @@ public class AuthenticationController(
 
         user = new User
         {
-            UserName = model.Username, 
-            Email = model.Email, 
-            Name = model.Fullname, 
+            UserName = model.Username,
+            Email = model.Email,
+            Name = model.Fullname,
             Birthday = model.Birthday.ToUniversalTime()
         };
 
@@ -103,7 +102,11 @@ public class AuthenticationController(
         if (result.Succeeded)
         {
             string token = (await GenerateToken(user)).ToTokenString();
-            if (!string.IsNullOrWhiteSpace(DefaulRole.Name)) await UserManager.AddToRoleAsync(user, DefaulRole.Name);
+            if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
+            {
+                await UserManager.AddToRoleAsync(user, DefaulRole.Name);
+            }
+
             await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
             return ResponseModel.CreateSuccess(new TokenModel(token));
         }
@@ -146,9 +149,9 @@ public class AuthenticationController(
         List<Claim> claims =
         [
             new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             // new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(),
-                // ClaimValueTypes.Integer64)
+            // ClaimValueTypes.Integer64)
         ];
         ClaimsPrincipal claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
         claims.AddRange(claimIdentity.Claims);
