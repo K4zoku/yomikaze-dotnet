@@ -31,6 +31,7 @@ services.AddControllers(options =>
         options.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
 // .ConfigureApiBehaviorOptionsYomikaze();
+
 services.AddRouting(options =>
 {
     options.LowercaseUrls = true;
@@ -47,6 +48,7 @@ services.AddJwtBearerAuthentication(jwt);
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
+services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
 
 services.AddStackExchangeRedisCache(options =>
