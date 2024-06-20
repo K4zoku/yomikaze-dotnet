@@ -4,7 +4,7 @@ namespace Yomikaze.Infrastructure.Context;
 
 public partial class YomikazeDbContext
 {
-    private static partial class Default
+    public static partial class Default
     {
         public static readonly TagCategory[] TagCategories = { new() { Name = "Genre" }, new() { Name = "Theme" } };
 

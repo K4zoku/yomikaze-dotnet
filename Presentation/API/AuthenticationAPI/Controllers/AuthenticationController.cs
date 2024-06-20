@@ -10,6 +10,8 @@ using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
+using Yomikaze.Infrastructure.Context;
+using static Yomikaze.Infrastructure.Context.YomikazeDbContext.Default;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Yomikaze.API.Authentication.Controllers;
@@ -101,7 +103,7 @@ public class AuthenticationController(
         if (result.Succeeded)
         {
             string token = (await GenerateToken(user)).ToTokenString();
-            // TODO)) gRPC service call to create UserProfile on another service
+            if (!string.IsNullOrWhiteSpace(DefaulRole.Name)) await UserManager.AddToRoleAsync(user, DefaulRole.Name);
             await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
             return ResponseModel.CreateSuccess(new TokenModel(token));
         }
