@@ -139,8 +139,8 @@ public class AuthenticationController(
         [
             new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-            new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(),
-                ClaimValueTypes.Integer64)
+            // new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(),
+                // ClaimValueTypes.Integer64)
         ];
         ClaimsPrincipal claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
         claims.AddRange(claimIdentity.Claims);
