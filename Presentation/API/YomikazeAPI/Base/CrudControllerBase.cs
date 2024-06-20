@@ -53,7 +53,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     public virtual ActionResult<PagedResult> List([FromQuery] PaginationModel pagination)
     {
         string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
-        if (Cache.TryGet(keyName, out TModel[]? cachedModels))
+        if (Cache.TryGet(keyName, out PagedResult<TModel>? cachedModels))
         {
             Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
             return Ok(cachedModels);
