@@ -1,6 +1,6 @@
 namespace Yomikaze.Domain.Entities.Weak;
 
-[Index(nameof(UserId), nameof(ChapterId), IsUnique = true)]
+[PrimaryKey(nameof(UserId), nameof(ChapterId))]
 public class UnlockedChapter
 {
     [ForeignKey(nameof(User))] public ulong UserId { get; set; }

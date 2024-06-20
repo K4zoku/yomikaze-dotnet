@@ -1,6 +1,6 @@
 namespace Yomikaze.Domain.Entities.Weak;
 
-[Index(nameof(ComicId), nameof(UserId), IsUnique = true)]
+[PrimaryKey(nameof(ComicId), nameof(UserId))]
 public class ComicRating
 {
     [ForeignKey(nameof(Comic))] public ulong ComicId { get; set; }

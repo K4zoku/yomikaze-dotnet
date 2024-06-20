@@ -24,9 +24,11 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<Chapter> Chapters { get; init; } = default!;
     public DbSet<CoinPricing> CoinPricings { get; init; } = default!;
     public DbSet<Comic> Comics { get; init; } = default!;
+    public DbSet<ComicRating> ComicRatings { get; init; } = default!;
     public DbSet<ChapterComment> ChapterComments { get; init; } = default!;
     public DbSet<ComicComment> ComicComments { get; init; } = default!;
     public DbSet<ProfileComment> ProfileComments { get; init; } = default!;
+    public DbSet<CommentReaction> CommentReactions { get; init; } = default!;
     public DbSet<HistoryRecord> HistoryRecords { get; init; } = default!;
     public DbSet<LibraryCategory> LibraryCategories { get; init; } = default!;
     public DbSet<LibraryEntry> LibraryEntries { get; init; } = default!;
@@ -41,6 +43,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<TagCategory> TagCategories { get; init; } = default!;
     public DbSet<Transaction> Transactions { get; init; } = default!;
     public DbSet<Translation> Translations { get; init; } = default!;
+    public DbSet<UnlockedChapter> UnlockedChapters { get; init; } = default!;
     public DbSet<WithdrawalRequest> WithdrawalRequests { get; init; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

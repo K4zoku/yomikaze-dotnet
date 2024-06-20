@@ -22,6 +22,8 @@ public class Chapter : BaseEntity
     [StringLength(20)]
     [ForeignKey(nameof(Comic))]
     public ulong ComicId { get; set; }
+    
+    public int Views { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public Comic Comic

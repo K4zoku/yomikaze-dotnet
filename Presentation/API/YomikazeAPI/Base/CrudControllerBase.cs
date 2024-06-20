@@ -17,7 +17,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     where T : class, IEntity<TKey>
     where TModel : class
 {
-    private static readonly string KeyPrefix = typeof(T).Name + ":";
+    protected static readonly string KeyPrefix = typeof(T).Name + ":";
     protected DbContext DbContext { get; set; } = dbContext;
     protected IMapper Mapper { get; set; } = mapper;
 
@@ -39,13 +39,14 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     protected PagedResult GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
+        query = query.Skip(skip).Take(pagination.Size);
         return new PagedResult
         {
             CurrentPage = pagination.Page, 
             PageSize = pagination.Size, 
             RowCount = query.Count(),
             PageCount = (int)Math.Ceiling((double) query.Count() / pagination.Size),
-            Results = Mapper.Map<TModel[]>(query.Skip(skip).Take(pagination.Size))
+            Results = Mapper.Map<TModel[]>(query),
         };
     }
 
