@@ -73,7 +73,8 @@ public class ComicsController(
     }
 
     public override ActionResult<ComicModel> Post(
-        [Bind("Name,Description,Cover,Banner,PublicationDate,Authors,Status,TagIds")] ComicModel input)
+        [Bind($"{nameof(ComicModel.Name)},{nameof(ComicModel.Description)},{nameof(ComicModel.Cover)},{nameof(ComicModel.Banner)},{nameof(ComicModel.PublicationDate)},{nameof(ComicModel.Authors)},{nameof(ComicModel.Status)},{nameof(ComicModel.TagIds)}")]
+        ComicModel input)
     {
         input.PublisherId = User.GetIdString();
         return base.Post(input);
