@@ -89,7 +89,13 @@ public class AuthenticationController(
                 ResponseModel.CreateError("Username or email already exists"));
         }
 
-        user = new User { UserName = model.Username, Email = model.Email };
+        user = new User
+        {
+            UserName = model.Username, 
+            Email = model.Email, 
+            Name = model.Fullname, 
+            Birthday = model.Birthday
+        };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
