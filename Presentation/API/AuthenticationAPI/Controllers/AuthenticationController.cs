@@ -94,7 +94,7 @@ public class AuthenticationController(
             UserName = model.Username, 
             Email = model.Email, 
             Name = model.Fullname, 
-            Birthday = model.Birthday
+            Birthday = model.Birthday.ToUniversalTime()
         };
 
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
