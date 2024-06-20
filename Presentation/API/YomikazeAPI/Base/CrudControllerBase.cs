@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Linq.Dynamic.Core;
 using System.Net;
-using System.Text.Json;
+using System.Text;
 using Yomikaze.Application.Helpers;
 
 namespace Yomikaze.API.Main.Base;
@@ -26,6 +26,8 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     protected IDistributedCache Cache { get; set; } = cache;
 
     protected ILogger<CrudControllerBase<T, TKey, TModel>> Logger { get; set; } = logger;
+    
+    protected JsonSerializer JsonSerializer { get; set; } = new();
 
     public class PagedResult
     {
@@ -152,9 +154,18 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
-        Logger.LogDebug("Patching model: {model}", new string(JsonSerializer.Serialize(model)));
+        using (StringWriter writer = new())
+        {
+            JsonSerializer.Serialize(writer, model);
+            Logger.LogDebug("Patching model: {model}", writer.ToString());
+        }
+        
         patch.ApplyTo(model);
-        Logger.LogDebug("Patched model: {model}", new string(JsonSerializer.Serialize(model)));
+        using (StringWriter writer = new())
+        {
+            JsonSerializer.Serialize(writer, model);
+            Logger.LogDebug("Patched model: {model}", writer.ToString());
+        }
         Mapper.Map(model, entityToUpdate);
         try
         {
@@ -204,8 +215,9 @@ internal static class DistributedCacheExtension
             value = default;
             return false;
         }
-
-        TC? cachedValue = JsonSerializer.Deserialize<TC>(cachedData);
+        StringReader reader = new StringReader(Encoding.UTF8.GetString(cachedData));
+        JsonReader jsonReader = new JsonTextReader(reader);
+        TC? cachedValue = Newtonsoft.Json.JsonSerializer.Create().Deserialize<TC>(jsonReader);
         value = cachedValue;
         return cachedValue != null;
     }
@@ -213,7 +225,12 @@ internal static class DistributedCacheExtension
     internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
         DistributedCacheEntryOptions options)
     {
-        Task.Run(async () => await cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options));
+        Task.Run(async () =>
+        {
+            await using StringWriter writer = new();
+            JsonSerializer.Create().Serialize(writer, value);
+            await cache.SetAsync(key, writer.Encoding.GetBytes(writer.ToString()), options);
+        });
     }
 }
 
