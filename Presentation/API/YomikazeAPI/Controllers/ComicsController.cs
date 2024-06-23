@@ -8,7 +8,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "Administrator, Publisher")]
+[Authorize(Roles = "Administrator,Publisher")]
 public class ComicsController(
     DbContext dbContext,
     IMapper mapper,
