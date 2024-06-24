@@ -21,7 +21,7 @@ public class SidValidationAuthorizationHandler(SignInManager<User> signInManager
         User? user = await SignInManager.ValidateSecurityStampAsync(principal);
         if (user is null)
         {
-            context.Fail();
+            context.Fail(new AuthorizationFailureReason(this, "Invalid security stamp"));
         }
 
         context.Succeed(new OperationAuthorizationRequirement());

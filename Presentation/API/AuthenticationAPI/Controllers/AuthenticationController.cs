@@ -40,10 +40,14 @@ public class AuthenticationController(
             return BadRequest(ModelState);
         }
 
-        User user = await SignInManager.UserManager.FindByNameAsync(model.Username) ??
-                    await SignInManager.UserManager.FindByEmailAsync(model.Username) ??
-                    throw new HttpResponseException(HttpStatusCode.NotFound,
-                        ResponseModel.CreateError("User not found"));
+        User? user = await SignInManager.UserManager.FindByNameAsync(model.Username) ??
+                    await SignInManager.UserManager.FindByEmailAsync(model.Username);
+        
+        if (user is null)
+        {
+            ModelState.AddModelError(nameof(model.Username), "User not found.");
+            return ValidationProblem(ModelState);
+        }
 
         SignInResult result = await SignInManager.CheckPasswordSignInAsync(user, model.Password, true);
         if (result.Succeeded)
@@ -62,7 +66,7 @@ public class AuthenticationController(
             Logger.LogWarning("Two factor authentication required.");
             // TODO)) Implement two factor authentication
             // response temporary token to be used for two factor authentication (contains user id)
-            return new TokenModel(user.Id.ToString());
+            throw new NotImplementedException();
         }
         else if (result.IsLockedOut)
         {
@@ -171,13 +175,5 @@ public class AuthenticationController(
         Logger.LogWarning("Invalid security stamp");
         return Problem("Invalid security stamp", statusCode: (int)HttpStatusCode.Unauthorized, title: "Unauthorized",
             type: "https://tools.ietf.org/html/rfc7235#section-3.1");
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpGet]
-    [ActionName("authorize-admin")]
-    public IActionResult Admin()
-    {
-        return Ok();
     }
 }
