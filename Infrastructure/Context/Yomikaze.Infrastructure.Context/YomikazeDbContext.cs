@@ -100,6 +100,18 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .HasMany(e => e.Tags)
             .WithMany(e => e.Comics)
             .UsingEntity<ComicTag>();
+        modelBuilder.Entity<Comic>()
+            .HasMany(e => e.Chapters)
+            .WithOne(e => e.Comic);
+        modelBuilder.Entity<Comic>()
+            .HasMany(e=> e.Ratings)
+            .WithOne(e => e.Comic);
+        modelBuilder.Entity<Comic>()
+            .HasMany(e => e.Follows)
+            .WithOne(e => e.Comic);
+        modelBuilder.Entity<Comic>()
+            .HasMany(e => e.Comments)
+            .WithOne(e => e.Comic);
     }
 
     private void OnSaveChanges()

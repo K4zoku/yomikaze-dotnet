@@ -4,17 +4,10 @@ namespace Yomikaze.Domain.Entities;
 
 public sealed class Comic : BaseEntity
 {
-    #region Fields
-
-    private ICollection<Tag> _tags = [];
-    private ICollection<ComicTag> _comicTags = [];
-    private User? _publisher;
-
-    #endregion
 
     #region Properties
-
-    private Action<object, string>? LazyLoader { get; }
+    
+    [NotMapped] public override int WorkerId => HashCode.Combine(GetType());
 
     [StringLength(256)] public string Name { get; set; } = default!;
 
@@ -28,45 +21,44 @@ public sealed class Comic : BaseEntity
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    public ICollection<Tag> Tags
-    {
-        get => LazyLoader.Load(this, ref _tags);
-        set => _tags = value;
-    }
+    public ICollection<Tag> Tags { get; set; }
 
-    public ICollection<ComicTag> ComicTags
-    {
-        get => LazyLoader.Load(this, ref _comicTags);
-        set => _comicTags = value;
-    }
+    public ICollection<ComicTag> ComicTags { get; set; }
+    
+    public ICollection<Chapter> Chapters { get; set; }
+    
+    [NotMapped]
+    public int TotalChapters => Chapters.Count;
+    
+    [NotMapped]
+    public int TotalViews => Chapters.Sum(chapter => chapter.Views);
+    
+    public ICollection<ComicRating> Ratings { get; set; }
+    
+    [NotMapped]
+    public int TotalRatings => Ratings.Count;
+    
+    [NotMapped]
+    public double AverageRating => TotalRatings > 0 ? Ratings.Average(rating => rating.Rating) : 0;
+    
+    public ICollection<LibraryEntry> Follows { get; set; }
+    
+    [NotMapped]
+    public int TotalFollows => Follows.Count;
+    
+    public ICollection<ComicComment> Comments { get; set; }
+    
+    [NotMapped]
+    public int TotalComments => Comments.Count;
 
     public string[] Authors { get; set; } = [];
 
     [ForeignKey(nameof(Publisher))] public ulong? PublisherId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public User? Publisher
-    {
-        get => LazyLoader.LoadNullable(this, ref _publisher);
-        set => _publisher = value;
-    }
+    public User Publisher { get; set; } = default!;
 
     public ComicStatus Status { get; set; }
-
-    #endregion
-
-    #region Constructors
-
-    [NotMapped] public override int WorkerId => 3;
-
-    public Comic()
-    {
-    }
-
-    public Comic(Action<object, string> lazyLoader) : this()
-    {
-        LazyLoader = lazyLoader;
-    }
 
     #endregion
 }

@@ -29,7 +29,7 @@ public class ComicModel : BaseModel
 
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; } = [];
+    [SwaggerSchema(ReadOnly = true)] public ICollection<TagModel> Tags { get; set; }
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel? Publisher { get; set; }
 
@@ -39,7 +39,7 @@ public class ComicModel : BaseModel
 
     [Required]
     [SwaggerSchema(WriteOnly = true)]
-    public ICollection<string>? TagIds { get; set; } = [];
+    public ICollection<string>? TagIds { get; set; }
 
     [SwaggerSchema(WriteOnly = true)] public string? PublisherId { get; set; }
 
@@ -54,6 +54,10 @@ public class ComicModel : BaseModel
     [SwaggerSchema(ReadOnly = true)] public double AverageRating { get; set; }
 
     [SwaggerSchema(ReadOnly = true)] public int? TotalRatings { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)] public int? TotalFollows { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)] public int? TotalComments { get; set; }
 
     #endregion
 }
