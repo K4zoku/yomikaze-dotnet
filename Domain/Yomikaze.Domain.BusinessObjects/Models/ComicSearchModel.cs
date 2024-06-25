@@ -2,7 +2,7 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Domain.Models;
 
-public class ComicSearchModel : SearchModel
+public class ComicSearchModel : PaginationModel
 {
     
     private string? _name;
@@ -47,6 +47,28 @@ public class ComicSearchModel : SearchModel
     public LogicalOperator InclusionMode { get; set; } = LogicalOperator.And;
 
     public LogicalOperator ExclusionMode { get; set; } = LogicalOperator.Or;
+    
+    public ComicOrderBy[] OrderBy { get; set; } = [];
+}
+
+public enum ComicOrderBy
+{
+    Name,
+    NameDesc,
+    PublicationDate,
+    PublicationDateDesc,
+    TotalChapters,
+    TotalChaptersDesc,
+    TotalViews,
+    TotalViewsDesc,
+    AverageRating,
+    AverageRatingDesc,
+    TotalRatings,
+    TotalRatingsDesc,
+    TotalFollows,
+    TotalFollowsDesc,
+    TotalComments,
+    TotalCommentsDesc
 }
 
 public enum LogicalOperator

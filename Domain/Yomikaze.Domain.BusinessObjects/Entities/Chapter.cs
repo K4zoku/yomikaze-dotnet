@@ -1,3 +1,5 @@
+using EntityFrameworkCore.Projectables;
+
 namespace Yomikaze.Domain.Entities;
 
 public class Chapter : BaseEntity
@@ -38,6 +40,12 @@ public class Chapter : BaseEntity
         get => LazyLoader.Load(this, ref _pages).OrderBy(page => page.Number).ToList();
         set => _pages = value;
     }
+
+    public ICollection<ChapterComment> Comments { get; set; } = new List<ChapterComment>();
+    
+    [NotMapped]
+    [Projectable]
+    public int TotalComments => Comments.Count;
 
     #endregion
 

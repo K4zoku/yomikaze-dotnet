@@ -70,7 +70,28 @@ public class ComicsController(
         new(searchModel => searchModel.FromTotalFollows.HasValue,
             (query, search) => query.Where(comic => comic.TotalFollows >= search.FromTotalFollows)),
         new(searchModel => searchModel.ToTotalFollows.HasValue,
-            (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows))
+            (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows)),
+        new(searchModel => searchModel.OrderBy.Length != 0,
+            (query, search) => search.OrderBy.Aggregate(query, (current, orderBy) => orderBy switch
+            {
+                ComicOrderBy.Name => current.OrderBy(comic => comic.Name),
+                ComicOrderBy.NameDesc => current.OrderByDescending(comic => comic.Name),
+                ComicOrderBy.PublicationDate => current.OrderBy(comic => comic.PublicationDate),
+                ComicOrderBy.PublicationDateDesc => current.OrderByDescending(comic => comic.PublicationDate),
+                ComicOrderBy.TotalChapters => current.OrderBy(comic => comic.TotalChapters),
+                ComicOrderBy.TotalChaptersDesc => current.OrderByDescending(comic => comic.TotalChapters),
+                ComicOrderBy.TotalViews => current.OrderBy(comic => comic.TotalViews),
+                ComicOrderBy.TotalViewsDesc => current.OrderByDescending(comic => comic.TotalViews),
+                ComicOrderBy.AverageRating => current.OrderBy(comic => comic.AverageRating),
+                ComicOrderBy.AverageRatingDesc => current.OrderByDescending(comic => comic.AverageRating),
+                ComicOrderBy.TotalRatings => current.OrderBy(comic => comic.TotalRatings),
+                ComicOrderBy.TotalRatingsDesc => current.OrderByDescending(comic => comic.TotalRatings),
+                ComicOrderBy.TotalFollows => current.OrderBy(comic => comic.TotalFollows),
+                ComicOrderBy.TotalFollowsDesc => current.OrderByDescending(comic => comic.TotalFollows),
+                ComicOrderBy.TotalComments => current.OrderBy(comic => comic.TotalComments),
+                ComicOrderBy.TotalCommentsDesc => current.OrderByDescending(comic => comic.TotalComments),
+                _ => current
+            }))
     };
     
     [HttpGet("[action]")]

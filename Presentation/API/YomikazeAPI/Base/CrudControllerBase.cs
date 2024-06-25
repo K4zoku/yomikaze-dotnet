@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
@@ -36,7 +37,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
             PageSize = pagination.Size,
             RowCount = query.Count(),
             PageCount = (int)Math.Ceiling((double)query.Count() / pagination.Size),
-            Results = Mapper.Map<TModel[]>(query)
+            Results = Mapper.Map<TModel[]>(query.AsEnumerable())
         };
     }
 
@@ -73,7 +74,8 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
         if (entity == null)
         {
-            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+            Logger.LogWarning("Entity with key {key} not found", key);
+            return NotFound();
         }
 
         TModel model = Mapper.Map<TModel>(entity);
@@ -88,7 +90,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     {
         if (!ModelState.IsValid)
         {
-            throw new HttpResponseException(HttpStatusCode.BadRequest, "Validation failed");
+            return ValidationProblem(ModelState);
         }
 
         T? entity = Mapper.Map<T>(input);
@@ -96,8 +98,10 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         Repository.Add(entity);
         Logger.LogInformation("After added {id}", entity.Id);
         Cache.Remove($"{KeyPrefix}:list*");
-
-        return Ok(Mapper.Map<TModel>(entity));
+        entity = Repository.Get(entity.Id); // load navigation properties
+        string id = entity?.Id?.ToString() ?? "-1"; 
+        string url = Url.Action("Get", new { key = id }) ?? string.Empty; 
+        return Created(url, Mapper.Map<TModel>(entity));
     }
 
     [HttpPut("{key}")]
@@ -105,13 +109,13 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
     {
         if (!ModelState.IsValid)
         {
-            throw new HttpResponseException(HttpStatusCode.BadRequest, "Validation failed");
+            return ValidationProblem(ModelState);
         }
 
         T? entityToUpdate = Repository.Get(key);
         if (entityToUpdate == null)
         {
-            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+            return NotFound();
         }
 
         Mapper.Map(input, entityToUpdate);
@@ -122,7 +126,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
         catch (DbUpdateException)
         {
-            throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
+            return Conflict();
         }
 
         // remove cache
@@ -130,7 +134,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         Cache.Remove(keyName);
         Cache.Remove($"{KeyPrefix}:list*");
 
-        return Ok(Mapper.Map<TModel>(entityToUpdate));
+        return NoContent();
     }
 
     [HttpPatch]
@@ -139,7 +143,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         T? entityToUpdate = Repository.Get(key);
         if (entityToUpdate == null)
         {
-            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+            return NotFound();
         }
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
@@ -155,7 +159,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
         catch (DbUpdateException)
         {
-            throw new HttpResponseException(HttpStatusCode.Conflict, "Entity already exists");
+            return Conflict();
         }
 
         // remove cache
@@ -163,7 +167,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         Cache.Remove(keyName);
         Cache.Remove($"{KeyPrefix}:list*");
 
-        return Ok(Mapper.Map<TModel>(entityToUpdate));
+        return NoContent();
     }
 
     [HttpDelete("{key}")]
@@ -173,7 +177,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
         if (entity == null)
         {
-            throw new HttpResponseException(HttpStatusCode.NotFound, "Not found");
+            return NotFound();
         }
 
         Repository.Delete(entity);

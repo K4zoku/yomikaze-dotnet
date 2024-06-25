@@ -12,7 +12,7 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    [Migration("20240619175911_Initial")]
+    [Migration("20240625044957_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -195,6 +195,10 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("number");
 
+                    b.Property<int>("Views")
+                        .HasColumnType("integer")
+                        .HasColumnName("views");
+
                     b.HasKey("Id")
                         .HasName("pk_chapters");
 
@@ -302,7 +306,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("publication_date");
 
-                    b.Property<decimal?>("PublisherId")
+                    b.Property<decimal>("PublisherId")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("publisher_id");
 
@@ -747,113 +751,113 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 61877523696320516m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(2947), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939331m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2240), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
                             Name = "Action"
                         },
                         new
                         {
-                            Id = 61877523696320517m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3483), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939332m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2743), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
                             Name = "Adventure"
                         },
                         new
                         {
-                            Id = 61877523696320518m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3487), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939333m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2747), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
                             Name = "Comedy"
                         },
                         new
                         {
-                            Id = 61877523696320519m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3489), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939334m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2749), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
                             Name = "Drama"
                         },
                         new
                         {
-                            Id = 61877523696320520m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3491), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939335m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2751), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
                             Name = "Fantasy"
                         },
                         new
                         {
-                            Id = 61877523696320521m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3494), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939336m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2754), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that evokes fear in both the characters and the audience.",
                             Name = "Horror"
                         },
                         new
                         {
-                            Id = 61877523696320522m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3496), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939337m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2805), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around solving a puzzle or a crime.",
                             Name = "Mystery"
                         },
                         new
                         {
-                            Id = 61877523696320523m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3498), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939338m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2807), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that emphasizes the psychology of its characters and their unstable emotional states.",
                             Name = "Psychological"
                         },
                         new
                         {
-                            Id = 61877523696320524m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3501), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939339m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2809), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story about love.",
                             Name = "Romance"
                         },
                         new
                         {
-                            Id = 61877523696320525m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3503), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939340m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
                             Name = "Slice of Life"
                         },
                         new
                         {
-                            Id = 61877523696320526m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3505), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939341m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that revolves around sports, such as baseball or basketball.",
                             Name = "Sports"
                         },
                         new
                         {
-                            Id = 61877523696320527m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3507), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939342m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2816), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that involves supernatural elements, such as ghosts or demons.",
                             Name = "Supernatural"
                         },
                         new
                         {
-                            Id = 61877523696320528m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3509), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939343m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2818), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that is fast-paced and suspenseful, often involving a crime.",
                             Name = "Thriller"
                         },
                         new
                         {
-                            Id = 61877523696320529m,
-                            CategoryId = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3511), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939344m,
+                            CategoryId = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2820), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "A story that ends in a tragic or unhappy way.",
                             Name = "Tragedy"
                         });
@@ -893,14 +897,14 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 61877523696320514m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(1831), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939329m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(1113), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Genre"
                         },
                         new
                         {
-                            Id = 61877523696320515m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(2271), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = 63853233939939330m,
+                            CreationTime = new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(1532), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Theme"
                         });
                 });
@@ -1018,6 +1022,29 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.ToTable("translations", (string)null);
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicRating", b =>
+                {
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("comic_id");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating");
+
+                    b.HasKey("ComicId", "UserId")
+                        .HasName("pk_comic_ratings");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_comic_ratings_user_id");
+
+                    b.ToTable("comic_ratings", (string)null);
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicTag", b =>
                 {
                     b.Property<decimal>("ComicId")
@@ -1039,6 +1066,45 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasDatabaseName("ix_comic_tag_comic_id_tag_id");
 
                     b.ToTable("comic_tag", (string)null);
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.CommentReaction", b =>
+                {
+                    b.Property<decimal>("CommentId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("comment_id");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("ReactionType")
+                        .HasColumnType("integer")
+                        .HasColumnName("reaction_type");
+
+                    b.HasKey("CommentId", "UserId")
+                        .HasName("pk_comment_reactions");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_comment_reactions_user_id");
+
+                    b.ToTable("comment_reactions", (string)null);
+                });
+
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.UnlockedChapter", b =>
+                {
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("user_id");
+
+                    b.Property<decimal>("ChapterId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("chapter_id");
+
+                    b.HasKey("UserId", "ChapterId")
+                        .HasName("pk_unlocked_chapters");
+
+                    b.ToTable("unlocked_chapters", (string)null);
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.WithdrawalRequest", b =>
@@ -1112,22 +1178,22 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 61877523687972864m,
-                            ConcurrencyStamp = "e7eed162-5fea-4356-b40f-38d567e21369",
+                            Id = 63853233931591680m,
+                            ConcurrencyStamp = "280cde96-1153-446a-bf9c-aafab2906f37",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = 61877523696361472m,
-                            ConcurrencyStamp = "3811b64b-f8ab-4c5b-8eac-fe47caf50440",
+                            Id = 63853233935785984m,
+                            ConcurrencyStamp = "590f3802-0591-4407-9717-77706c8e2b2c",
                             Name = "Publisher",
                             NormalizedName = "PUBLISHER"
                         },
                         new
                         {
-                            Id = 61877523696361473m,
-                            ConcurrencyStamp = "cda6e8dc-b574-4710-b20f-35fe4a682d9d",
+                            Id = 63853233939980288m,
+                            ConcurrencyStamp = "da309417-4deb-48a4-9bbf-6d4a720d6f2d",
                             Name = "Reader",
                             NormalizedName = "READER"
                         });
@@ -1424,7 +1490,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Chapter", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Comic", "Comic")
-                        .WithMany()
+                        .WithMany("Chapters")
                         .HasForeignKey("ComicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1439,6 +1505,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .WithMany()
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_comics_users_publisher_id");
 
                     b.Navigation("Publisher");
@@ -1505,7 +1572,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasConstraintName("fk_library_entries_library_categories_category_id");
 
                     b.HasOne("Yomikaze.Domain.Entities.Comic", "Comic")
-                        .WithMany()
+                        .WithMany("Follows")
                         .HasForeignKey("ComicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1594,6 +1661,27 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicRating", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Entities.Comic", "Comic")
+                        .WithMany("Ratings")
+                        .HasForeignKey("ComicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_comic_ratings_comics_comic_id");
+
+                    b.HasOne("Yomikaze.Domain.Identity.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_comic_ratings_users_user_id");
+
+                    b.Navigation("Comic");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.ComicTag", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Comic", null)
@@ -1611,6 +1699,27 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasConstraintName("fk_comic_tag_tags_tag_id");
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.CommentReaction", b =>
+                {
+                    b.HasOne("Yomikaze.Domain.Entities.Comment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_comment_reactions_comment_comment_id");
+
+                    b.HasOne("Yomikaze.Domain.Identity.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_comment_reactions_users_user_id");
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.WithdrawalRequest", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Identity.Entities.User", "Profile")
@@ -1626,7 +1735,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.ChapterComment", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Chapter", "Chapter")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("ChapterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1638,7 +1747,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.ComicComment", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Comic", "Comic")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("ComicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1781,12 +1890,22 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Chapter", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Pages");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comic", b =>
                 {
+                    b.Navigation("Chapters");
+
                     b.Navigation("ComicTags");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("Follows");
+
+                    b.Navigation("Ratings");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>

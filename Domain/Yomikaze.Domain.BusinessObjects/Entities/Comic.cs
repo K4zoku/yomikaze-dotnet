@@ -1,3 +1,4 @@
+using EntityFrameworkCore.Projectables;
 using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
@@ -21,39 +22,46 @@ public sealed class Comic : BaseEntity
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
-    public ICollection<ComicTag> ComicTags { get; set; }
+    public ICollection<ComicTag> ComicTags { get; set; } = new List<ComicTag>();
     
-    public ICollection<Chapter> Chapters { get; set; }
+    public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
     
     [NotMapped]
+    [Projectable]
     public int TotalChapters => Chapters.Count;
     
     [NotMapped]
+    [Projectable]
     public int TotalViews => Chapters.Sum(chapter => chapter.Views);
     
-    public ICollection<ComicRating> Ratings { get; set; }
+    public ICollection<ComicRating> Ratings { get; set; } = new List<ComicRating>();
     
     [NotMapped]
+    [Projectable]
     public int TotalRatings => Ratings.Count;
     
     [NotMapped]
+    [Projectable]
     public double AverageRating => TotalRatings > 0 ? Ratings.Average(rating => rating.Rating) : 0;
     
-    public ICollection<LibraryEntry> Follows { get; set; }
+    public ICollection<LibraryEntry> Follows { get; set; } = new List<LibraryEntry>();
     
     [NotMapped]
+    [Projectable]
     public int TotalFollows => Follows.Count;
     
-    public ICollection<ComicComment> Comments { get; set; }
+    public ICollection<ComicComment> Comments { get; set; } = new List<ComicComment>();
     
     [NotMapped]
+    [Projectable]
     public int TotalComments => Comments.Count;
 
     public string[] Authors { get; set; } = [];
 
-    [ForeignKey(nameof(Publisher))] public ulong? PublisherId { get; set; }
+    [ForeignKey(nameof(Publisher))] 
+    public ulong PublisherId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public User Publisher { get; set; } = default!;

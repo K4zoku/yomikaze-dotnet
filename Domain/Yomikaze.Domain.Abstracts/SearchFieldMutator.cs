@@ -6,9 +6,15 @@ public class SearchFieldMutator<TItem, TSearch>(Predicate<TSearch> condition, Qu
 {
     private Predicate<TSearch> Condition { get; set; } = condition;
     private QueryMutator<TItem, TSearch> Mutator { get; set; } = mutator;
+    
+    public string? Name { get; set; }
 
     public IQueryable<TItem> Apply(TSearch search, IQueryable<TItem> query)
     {
+        if (Name is not null)
+        {
+            Console.WriteLine($"Applying {Name}...");
+        }
         return Condition(search) ? Mutator(query, search) : query;
     }
 }

@@ -75,6 +75,18 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "unlocked_chapters",
+                columns: table => new
+                {
+                    user_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    chapter_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_unlocked_chapters", x => new { x.user_id, x.chapter_id });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -162,7 +174,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     banner = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     publication_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     authors = table.Column<string[]>(type: "text[]", nullable: false),
-                    publisher_id = table.Column<decimal>(type: "numeric(20,0)", nullable: true),
+                    publisher_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -358,7 +370,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     number = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     description = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    comic_id = table.Column<decimal>(type: "numeric(20,0)", maxLength: 20, nullable: false)
+                    comic_id = table.Column<decimal>(type: "numeric(20,0)", maxLength: 20, nullable: false),
+                    views = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -367,6 +380,31 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         name: "fk_chapters_comics_comic_id",
                         column: x => x.comic_id,
                         principalTable: "comics",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "comic_ratings",
+                columns: table => new
+                {
+                    comic_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    user_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    rating = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_comic_ratings", x => new { x.comic_id, x.user_id });
+                    table.ForeignKey(
+                        name: "fk_comic_ratings_comics_comic_id",
+                        column: x => x.comic_id,
+                        principalTable: "comics",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_comic_ratings_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -529,6 +567,31 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "comment_reactions",
+                columns: table => new
+                {
+                    comment_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    user_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    reaction_type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_comment_reactions", x => new { x.comment_id, x.user_id });
+                    table.ForeignKey(
+                        name: "fk_comment_reactions_comment_comment_id",
+                        column: x => x.comment_id,
+                        principalTable: "comment",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_comment_reactions_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "translations",
                 columns: table => new
                 {
@@ -627,9 +690,9 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 columns: new[] { "id", "concurrency_stamp", "name", "normalized_name" },
                 values: new object[,]
                 {
-                    { 61877523687972864m, "e7eed162-5fea-4356-b40f-38d567e21369", "Administrator", "ADMINISTRATOR" },
-                    { 61877523696361472m, "3811b64b-f8ab-4c5b-8eac-fe47caf50440", "Publisher", "PUBLISHER" },
-                    { 61877523696361473m, "cda6e8dc-b574-4710-b20f-35fe4a682d9d", "Reader", "READER" }
+                    { 63853233931591680m, "280cde96-1153-446a-bf9c-aafab2906f37", "Administrator", "ADMINISTRATOR" },
+                    { 63853233935785984m, "590f3802-0591-4407-9717-77706c8e2b2c", "Publisher", "PUBLISHER" },
+                    { 63853233939980288m, "da309417-4deb-48a4-9bbf-6d4a720d6f2d", "Reader", "READER" }
                 });
 
             migrationBuilder.InsertData(
@@ -637,8 +700,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 columns: new[] { "id", "creation_time", "name" },
                 values: new object[,]
                 {
-                    { 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(1831), new TimeSpan(0, 0, 0, 0, 0)), "Genre" },
-                    { 61877523696320515m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(2271), new TimeSpan(0, 0, 0, 0, 0)), "Theme" }
+                    { 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(1113), new TimeSpan(0, 0, 0, 0, 0)), "Genre" },
+                    { 63853233939939330m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(1532), new TimeSpan(0, 0, 0, 0, 0)), "Theme" }
                 });
 
             migrationBuilder.InsertData(
@@ -646,26 +709,31 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 columns: new[] { "id", "category_id", "creation_time", "description", "name" },
                 values: new object[,]
                 {
-                    { 61877523696320516m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(2947), new TimeSpan(0, 0, 0, 0, 0)), "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
-                    { 61877523696320517m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3483), new TimeSpan(0, 0, 0, 0, 0)), "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
-                    { 61877523696320518m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3487), new TimeSpan(0, 0, 0, 0, 0)), "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
-                    { 61877523696320519m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3489), new TimeSpan(0, 0, 0, 0, 0)), "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
-                    { 61877523696320520m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3491), new TimeSpan(0, 0, 0, 0, 0)), "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
-                    { 61877523696320521m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3494), new TimeSpan(0, 0, 0, 0, 0)), "A story that evokes fear in both the characters and the audience.", "Horror" },
-                    { 61877523696320522m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3496), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around solving a puzzle or a crime.", "Mystery" },
-                    { 61877523696320523m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3498), new TimeSpan(0, 0, 0, 0, 0)), "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
-                    { 61877523696320524m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3501), new TimeSpan(0, 0, 0, 0, 0)), "A story about love.", "Romance" },
-                    { 61877523696320525m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3503), new TimeSpan(0, 0, 0, 0, 0)), "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
-                    { 61877523696320526m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3505), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around sports, such as baseball or basketball.", "Sports" },
-                    { 61877523696320527m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3507), new TimeSpan(0, 0, 0, 0, 0)), "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
-                    { 61877523696320528m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3509), new TimeSpan(0, 0, 0, 0, 0)), "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
-                    { 61877523696320529m, 61877523696320514m, new DateTimeOffset(new DateTime(2024, 6, 19, 17, 59, 11, 278, DateTimeKind.Unspecified).AddTicks(3511), new TimeSpan(0, 0, 0, 0, 0)), "A story that ends in a tragic or unhappy way.", "Tragedy" }
+                    { 63853233939939331m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2240), new TimeSpan(0, 0, 0, 0, 0)), "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.", "Action" },
+                    { 63853233939939332m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2743), new TimeSpan(0, 0, 0, 0, 0)), "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.", "Adventure" },
+                    { 63853233939939333m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2747), new TimeSpan(0, 0, 0, 0, 0)), "A story with humorous narration or dialogue, intended to amuse the audience.", "Comedy" },
+                    { 63853233939939334m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2749), new TimeSpan(0, 0, 0, 0, 0)), "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.", "Drama" },
+                    { 63853233939939335m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2751), new TimeSpan(0, 0, 0, 0, 0)), "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.", "Fantasy" },
+                    { 63853233939939336m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2754), new TimeSpan(0, 0, 0, 0, 0)), "A story that evokes fear in both the characters and the audience.", "Horror" },
+                    { 63853233939939337m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2805), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around solving a puzzle or a crime.", "Mystery" },
+                    { 63853233939939338m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2807), new TimeSpan(0, 0, 0, 0, 0)), "A story that emphasizes the psychology of its characters and their unstable emotional states.", "Psychological" },
+                    { 63853233939939339m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2809), new TimeSpan(0, 0, 0, 0, 0)), "A story about love.", "Romance" },
+                    { 63853233939939340m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)), "A story that portrays a \"cut-out\" sequence of events in a character's life.", "Slice of Life" },
+                    { 63853233939939341m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)), "A story that revolves around sports, such as baseball or basketball.", "Sports" },
+                    { 63853233939939342m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2816), new TimeSpan(0, 0, 0, 0, 0)), "A story that involves supernatural elements, such as ghosts or demons.", "Supernatural" },
+                    { 63853233939939343m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2818), new TimeSpan(0, 0, 0, 0, 0)), "A story that is fast-paced and suspenseful, often involving a crime.", "Thriller" },
+                    { 63853233939939344m, 63853233939939329m, new DateTimeOffset(new DateTime(2024, 6, 25, 4, 49, 57, 307, DateTimeKind.Unspecified).AddTicks(2820), new TimeSpan(0, 0, 0, 0, 0)), "A story that ends in a tragic or unhappy way.", "Tragedy" }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "ix_chapters_comic_id",
                 table: "chapters",
                 column: "comic_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_comic_ratings_user_id",
+                table: "comic_ratings",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_comic_tag_comic_id_tag_id",
@@ -707,6 +775,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 name: "ix_comment_reply_to_id",
                 table: "comment",
                 column: "reply_to_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_comment_reactions_user_id",
+                table: "comment_reactions",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_history_records_chapter_id",
@@ -856,10 +929,13 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 name: "coin_pricings");
 
             migrationBuilder.DropTable(
+                name: "comic_ratings");
+
+            migrationBuilder.DropTable(
                 name: "comic_tag");
 
             migrationBuilder.DropTable(
-                name: "comment");
+                name: "comment_reactions");
 
             migrationBuilder.DropTable(
                 name: "history_records");
@@ -880,6 +956,9 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 name: "transactions");
 
             migrationBuilder.DropTable(
+                name: "unlocked_chapters");
+
+            migrationBuilder.DropTable(
                 name: "user_claims");
 
             migrationBuilder.DropTable(
@@ -896,6 +975,9 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 
             migrationBuilder.DropTable(
                 name: "tags");
+
+            migrationBuilder.DropTable(
+                name: "comment");
 
             migrationBuilder.DropTable(
                 name: "library_categories");
