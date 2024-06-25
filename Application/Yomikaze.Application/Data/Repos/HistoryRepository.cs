@@ -12,4 +12,9 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
         return Query()
             .Where(x => x.UserId.ToString() == userId);
     }
+
+    public void Clear(string userId)
+    {
+        Dao.Delete(GetHistoryByUserId(userId).ToArray());
+    }
 }

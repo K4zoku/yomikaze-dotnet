@@ -16,7 +16,7 @@ public class LibraryEntryModel : BaseModel
 
     [Required] public string? ComicId { get; set; }
 
-    [Required] public string? CategoryId { get; set; }
+    public string? CategoryId { get; set; }
 
     #endregion
 }

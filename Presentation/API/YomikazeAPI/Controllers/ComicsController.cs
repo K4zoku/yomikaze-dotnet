@@ -1,4 +1,6 @@
-﻿using Yomikaze.Application.Data.Repos;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using System.Linq.Dynamic.Core;
+using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
@@ -15,7 +17,12 @@ public class ComicsController(
 {
     
     private ComicRepository ComicRepository => (ComicRepository)Repository;
+
+    private ChapterRepository ChapterRepository { get; } = new(dbContext);
     
+    private HistoryRepository HistoryRepository { get; } = new(dbContext);
+    
+    [AllowAnonymous]
     public override ActionResult<PagedResult> List(PaginationModel pagination)
     {
         string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
@@ -95,6 +102,7 @@ public class ComicsController(
     };
     
     [HttpGet("[action]")]
+    [Authorize(Roles = "Reader")]
     public ActionResult<PagedResult> Search([FromQuery] ComicSearchModel searchModel)
     {
         var queryable = ComicRepository.QueryWithExtras();
@@ -108,5 +116,122 @@ public class ComicsController(
     {
         input.PublisherId = User.GetIdString();
         return base.Post(input);
+    }
+
+    [HttpPost("[action]")]
+    public ActionResult<ICollection<ComicModel>> Batch([FromBody] ICollection<ComicModel> comics)
+    {
+        Comic[] entities = Mapper.Map<Comic[]>(comics);
+        Repository.Add(entities);
+        return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
+    }
+
+    [HttpPost("{key}/chapters")]
+    public ActionResult<ChapterModel> PostChapter(ulong key, ChapterModel model)
+    {
+        Comic? comic = ComicRepository.Get(key);
+        if (comic == null)
+        {
+            return NotFound();
+        }
+        
+        if (comic.PublisherId != User.GetId())
+        {
+            return Forbid();
+        }
+        
+        Chapter chapter = Mapper.Map<Chapter>(model);
+        chapter.ComicId = key;
+        
+        ChapterRepository.Add(chapter);
+        
+        return CreatedAtAction(nameof(GetChapter), new { key, number = chapter.Number }, Mapper.Map<ChapterModel>(chapter));
+    }
+    
+    
+    [HttpGet("{key}/chapters")]
+    [AllowAnonymous]
+    public ActionResult<ICollection<ChapterModel>> GetChapters(ulong key)
+    {
+        Comic? entity = Repository.Query().Include(c => c.Chapters).FirstOrDefault(c => c.Id == key);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+        return Ok(Mapper.Map<ICollection<ChapterModel>>(entity.Chapters));
+    }
+    
+    [HttpGet("{key}/chapters/{number}")]
+    [AllowAnonymous]
+    public ActionResult<ChapterModel> GetChapter(ulong key, int number)
+    {
+        Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
+        if (chapter == null)
+        {
+            return NotFound();
+        }
+
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            HistoryRepository.Add(new HistoryRecord() { ChapterId = chapter.Id, UserId = User.GetId() });
+        }
+        return Ok(Mapper.Map<ChapterModel>(chapter));
+    }
+
+    [HttpPatch("{key}/chapters/{number}")]
+    public ActionResult<ChapterModel> UpdateChapter(ulong key, int number,
+        JsonPatchDocument<ChapterModel> patchDocument)
+    {
+        Comic? comic = ComicRepository.Get(key);
+
+        if (comic == null)
+        {
+            return NotFound();
+        }
+
+        if (comic.PublisherId != User.GetId())
+        {
+            return Forbid();
+        }
+
+        Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
+
+        if (chapter == null)
+        {
+            return NotFound();
+        }
+
+        ChapterModel model = Mapper.Map<ChapterModel>(chapter);
+        patchDocument.ApplyTo(model);
+        Mapper.Map(model, chapter);
+        ChapterRepository.Update(chapter);
+        return Ok(Mapper.Map<ChapterModel>(chapter));
+    }
+
+    [HttpDelete("{key}/chapters/{number}")]
+    public ActionResult<ChapterModel> DeleteChapter(ulong key, int number,
+        JsonPatchDocument<ChapterModel> patchDocument)
+    {
+        Comic? comic = ComicRepository.Get(key);
+
+        if (comic == null)
+        {
+            return NotFound();
+        }
+
+        if (comic.PublisherId != User.GetId())
+        {
+            return Forbid();
+        }
+
+        Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
+
+        if (chapter == null)
+        {
+            return NotFound();
+        }
+
+        ChapterRepository.Delete(chapter);
+        return NoContent();
     }
 }

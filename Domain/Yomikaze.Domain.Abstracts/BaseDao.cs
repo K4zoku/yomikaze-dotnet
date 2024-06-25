@@ -18,6 +18,11 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     {
         DbSet.Add(entity);
     }
+    
+    public virtual void Add(params TEntity[] entities)
+    {
+        DbSet.AddRange(entities);
+    }
 
     public virtual void Update(TEntity entity)
     {
@@ -27,6 +32,11 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     public virtual void Delete(TEntity entity)
     {
         DbSet.Remove(entity);
+    }
+    
+    public virtual void Delete(params TEntity[] entity)
+    {
+        DbSet.RemoveRange(entity);
     }
 
     public virtual void DeleteById(TId id)

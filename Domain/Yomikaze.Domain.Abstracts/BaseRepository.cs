@@ -15,6 +15,12 @@ public abstract class BaseRepository<T, TKey>(BaseDao<T, TKey> dao) : IRepositor
         Dao.Add(entity);
         Dao.Save();
     }
+    
+    public virtual void Add(params T[] entities)
+    {
+        Dao.Add(entities);
+        Dao.Save();
+    }
 
     public virtual void Update(T entity)
     {
