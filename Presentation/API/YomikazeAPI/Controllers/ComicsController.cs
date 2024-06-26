@@ -102,7 +102,7 @@ public class ComicsController(
     };
     
     [HttpGet("[action]")]
-    [Authorize(Roles = "Reader")]
+    [Authorize] // Only authenticated users (any role) can access this endpoint
     public ActionResult<PagedResult> Search([FromQuery] ComicSearchModel searchModel)
     {
         var queryable = ComicRepository.QueryWithExtras();
