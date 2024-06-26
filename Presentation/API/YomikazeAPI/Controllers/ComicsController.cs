@@ -2,12 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using Yomikaze.Application.Helpers.API;
 using static Newtonsoft.Json.JsonConvert;
+
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Administrator,Publisher")]
-[SuppressMessage("Performance", "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
+[SuppressMessage("Performance",
+    "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
 public class ComicsController(
     ComicRepository repository,
     ChapterRepository chapterRepository,
@@ -17,16 +19,9 @@ public class ComicsController(
     ILogger<ComicsController> logger)
     : CrudControllerBase<Comic, ComicModel, ComicRepository>(repository, mapper, cache, logger)
 {
-
     private ChapterRepository ChapterRepository { get; } = chapterRepository;
 
     private HistoryRepository HistoryRepository { get; } = historyRepository;
-
-    [NonAction]
-    public override ActionResult<PagedList<ComicModel>> List(PaginationModel pagination)
-    {
-        return NotFound();
-    }
 
     private IList<SearchFieldMutator<Comic, ComicSearchModel>> SearchFieldMutators { get; } =
         new List<SearchFieldMutator<Comic, ComicSearchModel>>
@@ -75,34 +70,34 @@ public class ComicsController(
             new(searchModel => searchModel.ToTotalFollows.HasValue,
                 (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows)),
             new(searchModel => searchModel.OrderBy.Length != 0,
-            (query, search) =>
-            {
-                var firstMutator = search.OrderBy.First();
-                IOrderedQueryable<Comic> orderedQuery = firstMutator switch
+                (query, search) =>
                 {
-                    ComicOrderBy.Name => query.OrderBy(comic => comic.Name),
-                    ComicOrderBy.NameDesc => query.OrderByDescending(comic => comic.Name),
-                    ComicOrderBy.PublicationDate => query.OrderBy(comic => comic.PublicationDate),
-                    ComicOrderBy.PublicationDateDesc => query.OrderByDescending(comic => comic.PublicationDate),
-                    ComicOrderBy.CreationTime => query.OrderBy(comic => comic.CreationTime),
-                    ComicOrderBy.CreationTimeDesc => query.OrderByDescending(comic => comic.CreationTime),
-                    ComicOrderBy.LastModified => query.OrderBy(comic => comic.LastModified),
-                    ComicOrderBy.LastModifiedDesc => query.OrderByDescending(comic => comic.LastModified),
-                    ComicOrderBy.TotalChapters => query.OrderBy(comic => comic.TotalChapters),
-                    ComicOrderBy.TotalChaptersDesc => query.OrderByDescending(comic => comic.TotalChapters),
-                    ComicOrderBy.TotalViews => query.OrderBy(comic => comic.TotalViews),
-                    ComicOrderBy.TotalViewsDesc => query.OrderByDescending(comic => comic.TotalViews),
-                    ComicOrderBy.AverageRating => query.OrderBy(comic => comic.AverageRating),
-                    ComicOrderBy.AverageRatingDesc => query.OrderByDescending(comic => comic.AverageRating),
-                    ComicOrderBy.TotalRatings => query.OrderBy(comic => comic.TotalRatings),
-                    ComicOrderBy.TotalRatingsDesc => query.OrderByDescending(comic => comic.TotalRatings),
-                    ComicOrderBy.TotalFollows => query.OrderBy(comic => comic.TotalFollows),
-                    ComicOrderBy.TotalFollowsDesc => query.OrderByDescending(comic => comic.TotalFollows),
-                    ComicOrderBy.TotalComments => query.OrderBy(comic => comic.TotalComments),
-                    ComicOrderBy.TotalCommentsDesc => query.OrderByDescending(comic => comic.TotalComments),
-                    _ => query.OrderByDescending(comic => comic.Id)
-                };
-                return search.OrderBy.Skip(1).Aggregate(orderedQuery, (ordered, orderBy) => orderBy switch
+                    ComicOrderBy firstMutator = search.OrderBy.First();
+                    IOrderedQueryable<Comic> orderedQuery = firstMutator switch
+                    {
+                        ComicOrderBy.Name => query.OrderBy(comic => comic.Name),
+                        ComicOrderBy.NameDesc => query.OrderByDescending(comic => comic.Name),
+                        ComicOrderBy.PublicationDate => query.OrderBy(comic => comic.PublicationDate),
+                        ComicOrderBy.PublicationDateDesc => query.OrderByDescending(comic => comic.PublicationDate),
+                        ComicOrderBy.CreationTime => query.OrderBy(comic => comic.CreationTime),
+                        ComicOrderBy.CreationTimeDesc => query.OrderByDescending(comic => comic.CreationTime),
+                        ComicOrderBy.LastModified => query.OrderBy(comic => comic.LastModified),
+                        ComicOrderBy.LastModifiedDesc => query.OrderByDescending(comic => comic.LastModified),
+                        ComicOrderBy.TotalChapters => query.OrderBy(comic => comic.TotalChapters),
+                        ComicOrderBy.TotalChaptersDesc => query.OrderByDescending(comic => comic.TotalChapters),
+                        ComicOrderBy.TotalViews => query.OrderBy(comic => comic.TotalViews),
+                        ComicOrderBy.TotalViewsDesc => query.OrderByDescending(comic => comic.TotalViews),
+                        ComicOrderBy.AverageRating => query.OrderBy(comic => comic.AverageRating),
+                        ComicOrderBy.AverageRatingDesc => query.OrderByDescending(comic => comic.AverageRating),
+                        ComicOrderBy.TotalRatings => query.OrderBy(comic => comic.TotalRatings),
+                        ComicOrderBy.TotalRatingsDesc => query.OrderByDescending(comic => comic.TotalRatings),
+                        ComicOrderBy.TotalFollows => query.OrderBy(comic => comic.TotalFollows),
+                        ComicOrderBy.TotalFollowsDesc => query.OrderByDescending(comic => comic.TotalFollows),
+                        ComicOrderBy.TotalComments => query.OrderBy(comic => comic.TotalComments),
+                        ComicOrderBy.TotalCommentsDesc => query.OrderByDescending(comic => comic.TotalComments),
+                        _ => query.OrderByDescending(comic => comic.Id)
+                    };
+                    return search.OrderBy.Skip(1).Aggregate(orderedQuery, (ordered, orderBy) => orderBy switch
                     {
                         ComicOrderBy.Name => ordered.ThenBy(comic => comic.Name),
                         ComicOrderBy.NameDesc => ordered.ThenByDescending(comic => comic.Name),
@@ -126,21 +121,29 @@ public class ComicsController(
                         ComicOrderBy.TotalCommentsDesc => ordered.ThenByDescending(comic => comic.TotalComments),
                         _ => ordered
                     });
-            })
+                })
         };
-        
+
+    [NonAction]
+    public override ActionResult<PagedList<ComicModel>> List(PaginationModel pagination)
+    {
+        return NotFound();
+    }
+
 
     [HttpGet]
-    public ActionResult<PagedList<ComicModel>> List([FromQuery] ComicSearchModel search, [FromQuery] PaginationModel pagination)
+    public ActionResult<PagedList<ComicModel>> List([FromQuery] ComicSearchModel search,
+        [FromQuery] PaginationModel pagination)
     {
-        var key = $"comics:{SerializeObject(search)}:{SerializeObject(pagination)}";
+        string key = $"comics:{SerializeObject(search)}:{SerializeObject(pagination)}";
         if (Cache.TryGet(key, out PagedList<ComicModel> cached))
         {
             return Ok(cached);
         }
-        var queryable = Repository.QueryWithExtras();
+
+        IQueryable<Comic> queryable = Repository.QueryWithExtras();
         queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
-        var paged = GetPaged(queryable, pagination);
+        PagedList<ComicModel> paged = GetPaged(queryable, pagination);
         Cache.SetInBackground(key, paged);
         return Ok(paged);
     }
@@ -216,7 +219,7 @@ public class ComicsController(
 
         if (User.Identity?.IsAuthenticated ?? false)
         {
-            HistoryRepository.Add(new HistoryRecord() { ChapterId = chapter.Id, UserId = User.GetId() });
+            HistoryRepository.Add(new HistoryRecord { ChapterId = chapter.Id, UserId = User.GetId() });
         }
 
         return Ok(Mapper.Map<ChapterModel>(chapter));

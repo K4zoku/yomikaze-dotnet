@@ -5,10 +5,13 @@ namespace Yomikaze.API.Main.Controllers;
 [Authorize(Roles = "Administrator,Publisher,Reader")]
 [Route("[controller]")]
 [ApiController]
-public class HistoryController(HistoryRepository repository, IMapper mapper, IDistributedCache cache, ILogger<HistoryController> logger) : 
+public class HistoryController(
+    HistoryRepository repository,
+    IMapper mapper,
+    IDistributedCache cache,
+    ILogger<HistoryController> logger) :
     CrudControllerBase<HistoryRecord, HistoryRecordModel, HistoryRepository>(repository, mapper, cache, logger)
 {
-    
     [NonAction]
     public override ActionResult<HistoryRecordModel> Post(HistoryRecordModel input)
     {
@@ -20,7 +23,7 @@ public class HistoryController(HistoryRepository repository, IMapper mapper, IDi
     {
         return NotFound();
     }
-    
+
     [HttpDelete]
     public IActionResult Clear()
     {

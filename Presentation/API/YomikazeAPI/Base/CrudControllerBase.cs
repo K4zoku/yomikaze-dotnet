@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
-using System.Net;
 using System.Text;
-using Yomikaze.Application.Helpers;
 
 namespace Yomikaze.API.Main.Base;
 
@@ -26,6 +23,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
 
     protected ILogger<CrudControllerBase<T, TKey, TModel, TRepository>> Logger { get; set; } = logger;
 
+    [NonAction]
     protected PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
@@ -96,8 +94,8 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         Logger.LogInformation("After added {id}", entity.Id);
         Cache.Remove($"{KeyPrefix}:list*");
         entity = Repository.Get(entity.Id); // load navigation properties
-        string id = entity?.Id?.ToString() ?? "-1"; 
-        string url = Url.Action("Get", new { key = id }) ?? string.Empty; 
+        string id = entity?.Id?.ToString() ?? "-1";
+        string url = Url.Action("Get", new { key = id }) ?? string.Empty;
         return Created(url, Mapper.Map<TModel>(entity));
     }
 
@@ -205,6 +203,7 @@ internal static class DistributedCacheExtension
         {
             return false;
         }
+
         value = cachedValue;
         return true;
     }
@@ -212,7 +211,7 @@ internal static class DistributedCacheExtension
     internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
         DistributedCacheEntryOptions? options = default!)
     {
-        options ??= new DistributedCacheEntryOptions() { SlidingExpiration = TimeSpan.FromMinutes(5) };
+        options ??= new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };
         Task.Run(async () =>
         {
             await cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options);
