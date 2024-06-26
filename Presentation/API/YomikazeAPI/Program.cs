@@ -18,11 +18,17 @@ services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
 services.AddScoped<DbContext, YomikazeDbContext>();
 
 services.AddScoped<IRepository<Comic>, ComicRepository>();
+services.AddScoped<ComicRepository>();
 services.AddScoped<IRepository<Tag>, TagRepository>();
+services.AddScoped<TagRepository>();
 services.AddScoped<IRepository<TagCategory>, TagCategoryRepository>();
+services.AddScoped<TagCategoryRepository>();
 services.AddScoped<IRepository<HistoryRecord>, HistoryRepository>();
+services.AddScoped<HistoryRepository>();
 services.AddScoped<IRepository<LibraryEntry>, LibraryRepository>();
+services.AddScoped<LibraryRepository>();
 services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
+services.AddScoped<LibraryCategoryRepository>();
 
 services.AddControllers(options =>
 {
