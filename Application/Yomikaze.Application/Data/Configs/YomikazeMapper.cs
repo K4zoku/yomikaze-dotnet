@@ -13,7 +13,8 @@ public class YomikazeMapper : MapperProfile
     public YomikazeMapper()
     {
         CreateMap<BaseModel, BaseEntity>()
-            .ForMember(dest => dest.Id, options => options.Ignore());
+            .ForMember(dest => dest.Id, options => options.Ignore())
+            .ForAllMembers(options => options.Condition((_, _, member) => member != null));
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
             {
