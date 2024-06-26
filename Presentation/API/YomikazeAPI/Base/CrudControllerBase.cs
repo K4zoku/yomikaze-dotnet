@@ -157,8 +157,10 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         {
             Repository.Update(entityToUpdate);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException e)
         {
+            Logger.LogError("Error updating entity: {error}", e.Message);
+            Logger.LogError("Stacktrace: {}", e.StackTrace);
             return Conflict();
         }
 
