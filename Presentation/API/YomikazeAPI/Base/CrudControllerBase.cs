@@ -137,7 +137,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         return NoContent();
     }
 
-    [HttpPatch]
+    [HttpPatch("{key}")]
     public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
     {
         T? entityToUpdate = Repository.Get(key);
@@ -148,9 +148,9 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
 
-        Logger.LogDebug("Patching model: {model}", JsonConvert.SerializeObject(model));
+        Logger.LogInformation("Patching model: {model}", JsonConvert.SerializeObject(model));
         patch.ApplyTo(model);
-        Logger.LogDebug("Patched model: {model}", JsonConvert.SerializeObject(model));
+        Logger.LogInformation("Patched model: {model}", JsonConvert.SerializeObject(model));
 
         Mapper.Map(model, entityToUpdate);
         try
@@ -159,8 +159,7 @@ public abstract class CrudControllerBase<T, TKey, TModel>(
         }
         catch (DbUpdateException e)
         {
-            Logger.LogError("Error updating entity: {error}", e.Message);
-            Logger.LogError("Stacktrace: {}", e.StackTrace);
+            Logger.LogTrace(e, "Error updating entity {key}", key);
             return Conflict();
         }
 
