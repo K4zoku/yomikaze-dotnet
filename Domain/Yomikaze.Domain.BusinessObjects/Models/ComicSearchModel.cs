@@ -2,7 +2,7 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Domain.Models;
 
-public class ComicSearchModel : PaginationModel
+public class ComicSearchModel
 {
     
     private string? _name;

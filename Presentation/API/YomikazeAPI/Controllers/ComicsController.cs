@@ -1,28 +1,29 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.JsonPatch;
-using Yomikaze.Application.Data.Repos;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using System.Diagnostics.CodeAnalysis;
 using Yomikaze.Application.Helpers.API;
-
+using static Newtonsoft.Json.JsonConvert;
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Administrator,Publisher")]
+[SuppressMessage("Performance", "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
 public class ComicsController(
-    DbContext dbContext,
+    ComicRepository repository,
+    ChapterRepository chapterRepository,
+    HistoryRepository historyRepository,
     IMapper mapper,
     IDistributedCache cache,
     ILogger<ComicsController> logger)
-    : CrudControllerBase<Comic, ComicModel>(dbContext, mapper, new ComicRepository(dbContext), cache, logger)
+    : CrudControllerBase<Comic, ComicModel, ComicRepository>(repository, mapper, cache, logger)
 {
-    private ComicRepository ComicRepository => (ComicRepository)Repository;
 
-    private ChapterRepository ChapterRepository { get; } = new(dbContext);
+    private ChapterRepository ChapterRepository { get; } = chapterRepository;
 
-    private HistoryRepository HistoryRepository { get; } = new(dbContext);
+    private HistoryRepository HistoryRepository { get; } = historyRepository;
 
     [NonAction]
-    public override ActionResult<PagedResult> List(PaginationModel pagination)
+    public override ActionResult<PagedList<ComicModel>> List(PaginationModel pagination)
     {
         return NotFound();
     }
@@ -130,14 +131,21 @@ public class ComicsController(
         
 
     [HttpGet]
-    [Authorize] // Only authenticated users (any role) can access this endpoint
-    public ActionResult<PagedResult> Search([FromQuery] ComicSearchModel searchModel)
+    public ActionResult<PagedList<ComicModel>> List([FromQuery] ComicSearchModel search, [FromQuery] PaginationModel pagination)
     {
-        var queryable = ComicRepository.QueryWithExtras();
-        queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(searchModel, current));
-        return Ok(GetPaged(queryable, searchModel));
+        var key = $"comics:{SerializeObject(search)}:{SerializeObject(pagination)}";
+        if (Cache.TryGet(key, out PagedList<ComicModel> cached))
+        {
+            return Ok(cached);
+        }
+        var queryable = Repository.QueryWithExtras();
+        queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
+        var paged = GetPaged(queryable, pagination);
+        Cache.SetInBackground(key, paged);
+        return Ok(paged);
     }
 
+    [HttpPost]
     public override ActionResult<ComicModel> Post(
         [Bind(
             $"{nameof(ComicModel.Name)},{nameof(ComicModel.Description)},{nameof(ComicModel.Cover)},{nameof(ComicModel.Banner)},{nameof(ComicModel.PublicationDate)},{nameof(ComicModel.Authors)},{nameof(ComicModel.Status)},{nameof(ComicModel.TagIds)}")]
@@ -150,7 +158,11 @@ public class ComicsController(
     [HttpPost("[action]")]
     public ActionResult<ICollection<ComicModel>> Batch([FromBody] ICollection<ComicModel> comics)
     {
-        Comic[] entities = Mapper.Map<Comic[]>(comics);
+        Comic[] entities = Mapper.Map<Comic[]>(comics.Select(comic =>
+        {
+            comic.PublisherId = User.GetIdString();
+            return comic;
+        }));
         Repository.Add(entities);
         return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
     }
@@ -158,7 +170,7 @@ public class ComicsController(
     [HttpPost("{key}/chapters")]
     public ActionResult<ChapterModel> PostChapter(ulong key, ChapterModel model)
     {
-        Comic? comic = ComicRepository.Get(key);
+        Comic? comic = Repository.Get(key);
         if (comic == null)
         {
             return NotFound();
@@ -192,7 +204,7 @@ public class ComicsController(
         return Ok(Mapper.Map<ICollection<ChapterModel>>(entity.Chapters));
     }
 
-    [HttpGet("{key}/chapters/{number}")]
+    [HttpGet("{key}/chapters/{number:int}")]
     [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
     {
@@ -210,11 +222,11 @@ public class ComicsController(
         return Ok(Mapper.Map<ChapterModel>(chapter));
     }
 
-    [HttpPatch("{key}/chapters/{number}")]
+    [HttpPatch("{key}/chapters/{number:int}")]
     public ActionResult<ChapterModel> UpdateChapter(ulong key, int number,
         JsonPatchDocument<ChapterModel> patchDocument)
     {
-        Comic? comic = ComicRepository.Get(key);
+        Comic? comic = Repository.Get(key);
 
         if (comic == null)
         {
@@ -240,11 +252,10 @@ public class ComicsController(
         return Ok(Mapper.Map<ChapterModel>(chapter));
     }
 
-    [HttpDelete("{key}/chapters/{number}")]
-    public ActionResult<ChapterModel> DeleteChapter(ulong key, int number,
-        JsonPatchDocument<ChapterModel> patchDocument)
+    [HttpDelete("{key}/chapters/{number:int}")]
+    public ActionResult<ChapterModel> DeleteChapter(ulong key, int number)
     {
-        Comic? comic = ComicRepository.Get(key);
+        Comic? comic = Repository.Get(key);
 
         if (comic == null)
         {

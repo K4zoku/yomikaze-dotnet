@@ -7,3 +7,4 @@ global using Yomikaze.API.Main.Base;
 global using Yomikaze.Domain.Abstracts;
 global using Yomikaze.Domain.Entities;
 global using Yomikaze.Domain.Models;
+global using Yomikaze.Application.Data.Repos;

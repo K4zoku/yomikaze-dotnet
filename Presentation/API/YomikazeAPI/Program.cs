@@ -16,6 +16,14 @@ IConfiguration configuration = builder.Configuration;
 Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
 services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
 services.AddScoped<DbContext, YomikazeDbContext>();
+
+services.AddScoped<IRepository<Comic>, ComicRepository>();
+services.AddScoped<IRepository<Tag>, TagRepository>();
+services.AddScoped<IRepository<TagCategory>, TagCategoryRepository>();
+services.AddScoped<IRepository<HistoryRecord>, HistoryRepository>();
+services.AddScoped<IRepository<LibraryEntry>, LibraryRepository>();
+services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
+
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();

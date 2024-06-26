@@ -5,6 +5,6 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.API.OData.Controllers;
 
-public class TagsController(DbContext dbContext) : ODataControllerBase<Tag>(new GenreRepository(dbContext))
+public class TagsController(DbContext dbContext) : ODataControllerBase<Tag>(new TagRepository(dbContext))
 {
 }
