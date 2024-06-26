@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using System.Linq.Dynamic.Core;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 
@@ -84,61 +85,60 @@ public class ComicsController(
             new(searchModel => searchModel.ToTotalFollows.HasValue,
                 (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows)),
             new(searchModel => searchModel.OrderBy.Length != 0,
-                (query, search) =>
+            (query, search) =>
+            {
+                var firstMutator = search.OrderBy.First();
+                IOrderedQueryable<Comic> orderedQuery = firstMutator switch
                 {
-                    if (query is IOrderedQueryable<Comic> ordered)
+                    ComicOrderBy.Name => query.OrderBy(comic => comic.Name),
+                    ComicOrderBy.NameDesc => query.OrderByDescending(comic => comic.Name),
+                    ComicOrderBy.PublicationDate => query.OrderBy(comic => comic.PublicationDate),
+                    ComicOrderBy.PublicationDateDesc => query.OrderByDescending(comic => comic.PublicationDate),
+                    ComicOrderBy.CreationTime => query.OrderBy(comic => comic.CreationTime),
+                    ComicOrderBy.CreationTimeDesc => query.OrderByDescending(comic => comic.CreationTime),
+                    ComicOrderBy.LastModified => query.OrderBy(comic => comic.LastModified),
+                    ComicOrderBy.LastModifiedDesc => query.OrderByDescending(comic => comic.LastModified),
+                    ComicOrderBy.TotalChapters => query.OrderBy(comic => comic.TotalChapters),
+                    ComicOrderBy.TotalChaptersDesc => query.OrderByDescending(comic => comic.TotalChapters),
+                    ComicOrderBy.TotalViews => query.OrderBy(comic => comic.TotalViews),
+                    ComicOrderBy.TotalViewsDesc => query.OrderByDescending(comic => comic.TotalViews),
+                    ComicOrderBy.AverageRating => query.OrderBy(comic => comic.AverageRating),
+                    ComicOrderBy.AverageRatingDesc => query.OrderByDescending(comic => comic.AverageRating),
+                    ComicOrderBy.TotalRatings => query.OrderBy(comic => comic.TotalRatings),
+                    ComicOrderBy.TotalRatingsDesc => query.OrderByDescending(comic => comic.TotalRatings),
+                    ComicOrderBy.TotalFollows => query.OrderBy(comic => comic.TotalFollows),
+                    ComicOrderBy.TotalFollowsDesc => query.OrderByDescending(comic => comic.TotalFollows),
+                    ComicOrderBy.TotalComments => query.OrderBy(comic => comic.TotalComments),
+                    ComicOrderBy.TotalCommentsDesc => query.OrderByDescending(comic => comic.TotalComments),
+                    _ => query.OrderByDescending(comic => comic.Id)
+                };
+                return search.OrderBy.Skip(1).Aggregate(orderedQuery, (ordered, orderBy) => orderBy switch
                     {
-                        return search.OrderBy.Aggregate(query, (current, orderBy) => orderBy switch
-                        {
-                            ComicOrderBy.Name => ordered.ThenBy(comic => comic.Name),
-                            ComicOrderBy.NameDesc => ordered.ThenByDescending(comic => comic.Name),
-                            ComicOrderBy.PublicationDate => ordered.ThenBy(comic => comic.PublicationDate),
-                            ComicOrderBy.PublicationDateDesc => ordered.ThenByDescending(comic => comic.PublicationDate),
-                            ComicOrderBy.CreationTime => ordered.ThenBy(comic => comic.CreationTime),
-                            ComicOrderBy.CreationTimeDesc => ordered.ThenByDescending(comic => comic.CreationTime),
-                            ComicOrderBy.LastModified => ordered.ThenBy(comic => comic.LastModified),
-                            ComicOrderBy.LastModifiedDesc => ordered.ThenByDescending(comic => comic.LastModified),
-                            ComicOrderBy.TotalChapters => ordered.ThenBy(comic => comic.TotalChapters),
-                            ComicOrderBy.TotalChaptersDesc => ordered.ThenByDescending(comic => comic.TotalChapters),
-                            ComicOrderBy.TotalViews => ordered.ThenBy(comic => comic.TotalViews),
-                            ComicOrderBy.TotalViewsDesc => ordered.ThenByDescending(comic => comic.TotalViews),
-                            ComicOrderBy.AverageRating => ordered.ThenBy(comic => comic.AverageRating),
-                            ComicOrderBy.AverageRatingDesc => ordered.ThenByDescending(comic => comic.AverageRating),
-                            ComicOrderBy.TotalRatings => ordered.ThenBy(comic => comic.TotalRatings),
-                            ComicOrderBy.TotalRatingsDesc => ordered.ThenByDescending(comic => comic.TotalRatings),
-                            ComicOrderBy.TotalFollows => ordered.ThenBy(comic => comic.TotalFollows),
-                            ComicOrderBy.TotalFollowsDesc => ordered.ThenByDescending(comic => comic.TotalFollows),
-                            ComicOrderBy.TotalComments => ordered.ThenBy(comic => comic.TotalComments),
-                            ComicOrderBy.TotalCommentsDesc => ordered.ThenByDescending(comic => comic.TotalComments),
-                            _ => current
-                        });
-                    }
-                    return search.OrderBy.Aggregate(query, (current, orderBy) => orderBy switch
-                        {
-                            ComicOrderBy.Name => query.OrderBy(comic => comic.Name),
-                            ComicOrderBy.NameDesc => query.OrderByDescending(comic => comic.Name),
-                            ComicOrderBy.PublicationDate => query.OrderBy(comic => comic.PublicationDate),
-                            ComicOrderBy.PublicationDateDesc => query.OrderByDescending(comic => comic.PublicationDate),
-                            ComicOrderBy.CreationTime => query.OrderBy(comic => comic.CreationTime),
-                            ComicOrderBy.CreationTimeDesc => query.OrderByDescending(comic => comic.CreationTime),
-                            ComicOrderBy.LastModified => query.OrderBy(comic => comic.LastModified),
-                            ComicOrderBy.LastModifiedDesc => query.OrderByDescending(comic => comic.LastModified),
-                            ComicOrderBy.TotalChapters => query.OrderBy(comic => comic.TotalChapters),
-                            ComicOrderBy.TotalChaptersDesc => query.OrderByDescending(comic => comic.TotalChapters),
-                            ComicOrderBy.TotalViews => query.OrderBy(comic => comic.TotalViews),
-                            ComicOrderBy.TotalViewsDesc => query.OrderByDescending(comic => comic.TotalViews),
-                            ComicOrderBy.AverageRating => query.OrderBy(comic => comic.AverageRating),
-                            ComicOrderBy.AverageRatingDesc => query.OrderByDescending(comic => comic.AverageRating),
-                            ComicOrderBy.TotalRatings => query.OrderBy(comic => comic.TotalRatings),
-                            ComicOrderBy.TotalRatingsDesc => query.OrderByDescending(comic => comic.TotalRatings),
-                            ComicOrderBy.TotalFollows => query.OrderBy(comic => comic.TotalFollows),
-                            ComicOrderBy.TotalFollowsDesc => query.OrderByDescending(comic => comic.TotalFollows),
-                            ComicOrderBy.TotalComments => query.OrderBy(comic => comic.TotalComments),
-                            ComicOrderBy.TotalCommentsDesc => query.OrderByDescending(comic => comic.TotalComments),
-                            _ => current
-                        });
-                })
+                        ComicOrderBy.Name => ordered.ThenBy(comic => comic.Name),
+                        ComicOrderBy.NameDesc => ordered.ThenByDescending(comic => comic.Name),
+                        ComicOrderBy.PublicationDate => ordered.ThenBy(comic => comic.PublicationDate),
+                        ComicOrderBy.PublicationDateDesc => ordered.ThenByDescending(comic => comic.PublicationDate),
+                        ComicOrderBy.CreationTime => ordered.ThenBy(comic => comic.CreationTime),
+                        ComicOrderBy.CreationTimeDesc => ordered.ThenByDescending(comic => comic.CreationTime),
+                        ComicOrderBy.LastModified => ordered.ThenBy(comic => comic.LastModified),
+                        ComicOrderBy.LastModifiedDesc => ordered.ThenByDescending(comic => comic.LastModified),
+                        ComicOrderBy.TotalChapters => ordered.ThenBy(comic => comic.TotalChapters),
+                        ComicOrderBy.TotalChaptersDesc => ordered.ThenByDescending(comic => comic.TotalChapters),
+                        ComicOrderBy.TotalViews => ordered.ThenBy(comic => comic.TotalViews),
+                        ComicOrderBy.TotalViewsDesc => ordered.ThenByDescending(comic => comic.TotalViews),
+                        ComicOrderBy.AverageRating => ordered.ThenBy(comic => comic.AverageRating),
+                        ComicOrderBy.AverageRatingDesc => ordered.ThenByDescending(comic => comic.AverageRating),
+                        ComicOrderBy.TotalRatings => ordered.ThenBy(comic => comic.TotalRatings),
+                        ComicOrderBy.TotalRatingsDesc => ordered.ThenByDescending(comic => comic.TotalRatings),
+                        ComicOrderBy.TotalFollows => ordered.ThenBy(comic => comic.TotalFollows),
+                        ComicOrderBy.TotalFollowsDesc => ordered.ThenByDescending(comic => comic.TotalFollows),
+                        ComicOrderBy.TotalComments => ordered.ThenBy(comic => comic.TotalComments),
+                        ComicOrderBy.TotalCommentsDesc => ordered.ThenByDescending(comic => comic.TotalComments),
+                        _ => ordered
+                    });
+            })
         };
+        
 
     [HttpGet("[action]")]
     [Authorize] // Only authenticated users (any role) can access this endpoint
