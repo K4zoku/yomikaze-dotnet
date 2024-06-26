@@ -19,6 +19,8 @@ services.AddScoped<DbContext, YomikazeDbContext>();
 
 services.AddScoped<IRepository<Comic>, ComicRepository>();
 services.AddScoped<ComicRepository>();
+services.AddScoped<IRepository<Chapter>, ChapterRepository>();
+services.AddScoped<ChapterRepository>();
 services.AddScoped<IRepository<Tag>, TagRepository>();
 services.AddScoped<TagRepository>();
 services.AddScoped<IRepository<TagCategory>, TagCategoryRepository>();
