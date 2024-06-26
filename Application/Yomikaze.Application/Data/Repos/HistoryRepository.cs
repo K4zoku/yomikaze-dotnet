@@ -15,6 +15,6 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
 
     public void Clear(string userId)
     {
-        Dao.Delete(GetHistoryByUserId(userId).ToArray());
+        Dao.DeleteAll(x => x.UserId.ToString() == userId);
     }
 }

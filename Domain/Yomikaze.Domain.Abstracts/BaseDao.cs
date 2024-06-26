@@ -47,6 +47,16 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
             Delete(entity);
         }
     }
+    
+    public virtual void DeleteByIds(params TId[] ids)
+    {
+        DbSet.Where(e => ids.Contains(e.Id)).ExecuteDeleteAsync();
+    }
+    
+    public virtual void DeleteAll(Predicate<TEntity> predicate)
+    {
+        DbSet.Where(e => predicate(e)).ExecuteDeleteAsync();
+    }
 
     public virtual long Count()
     {

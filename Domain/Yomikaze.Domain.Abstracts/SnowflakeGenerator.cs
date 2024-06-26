@@ -1,8 +1,10 @@
-﻿using SnowflakeID;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using SnowflakeID;
 
 namespace Yomikaze.Domain.Abstracts;
 
-public static class SnowflakeGenerator
+public class SnowflakeGenerator : ValueGenerator<ulong>
 {
     private static readonly DateTime Epoch = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -27,4 +29,15 @@ public static class SnowflakeGenerator
             return generator.GetCode();
         }
     }
+
+    public override ulong Next(EntityEntry entry)
+    {
+        if (entry.Entity is BaseEntity entity)
+        {
+            return Generate(entity.WorkerId);
+        }
+        return Generate();
+    }
+
+    public override bool GeneratesTemporaryValues => false;
 }
