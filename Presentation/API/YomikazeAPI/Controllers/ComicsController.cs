@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using System.Linq.Dynamic.Core;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
 using Yomikaze.Application.Data.Repos;
 using Yomikaze.Application.Helpers.API;
 
@@ -21,21 +21,10 @@ public class ComicsController(
 
     private HistoryRepository HistoryRepository { get; } = new(dbContext);
 
-    [AllowAnonymous]
+    [NonAction]
     public override ActionResult<PagedResult> List(PaginationModel pagination)
     {
-        string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
-        if (Cache.TryGet(keyName, out PagedResult? cachedModels))
-        {
-            return Ok(cachedModels);
-        }
-
-        var query = ComicRepository.QueryWithExtras();
-        PagedResult paged = GetPaged(query, pagination);
-
-        Cache.SetInBackground(keyName, paged,
-            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) });
-        return paged;
+        return NotFound();
     }
 
     private IList<SearchFieldMutator<Comic, ComicSearchModel>> SearchFieldMutators { get; } =
@@ -140,7 +129,7 @@ public class ComicsController(
         };
         
 
-    [HttpGet("[action]")]
+    [HttpGet]
     [Authorize] // Only authenticated users (any role) can access this endpoint
     public ActionResult<PagedResult> Search([FromQuery] ComicSearchModel searchModel)
     {
