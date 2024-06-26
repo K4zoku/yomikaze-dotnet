@@ -1,4 +1,5 @@
-﻿using Yomikaze.Domain.Abstracts;
+﻿using AutoMapper;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Identity.Entities;
@@ -14,7 +15,7 @@ public class YomikazeMapper : MapperProfile
     {
         CreateMap<BaseModel, BaseEntity>()
             .ForMember(dest => dest.Id, options => options.Ignore())
-            .ForAllMembers(options => options.Condition((_, _, member) => member != null));
+            .ForAllMembers(options => options.Condition((_,_,member) => member != null));
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
             {
@@ -40,6 +41,11 @@ public class YomikazeMapper : MapperProfile
                 options.MapFrom(src => (src.TagIds ?? new List<string>()).Count != 0
                     ? (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) })
                     : (src.Tags ?? new List<TagModel>()).Select(tag => new ComicTag { TagId = IdParse(tag.Id) }));
+            })
+            .ForMember(dest => dest.PublisherId, options =>
+            {
+                options.Condition(src => src.Publisher != null);
+                options.MapFrom(src => src.Publisher!.Id);
             })
             .ForMember(dest => dest.Publisher, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
