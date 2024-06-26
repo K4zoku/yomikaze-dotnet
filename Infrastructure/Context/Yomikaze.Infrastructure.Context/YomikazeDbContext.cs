@@ -49,6 +49,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
+        optionsBuilder.UseProjectables();
         if (optionsBuilder.IsConfigured)
         {
             return;

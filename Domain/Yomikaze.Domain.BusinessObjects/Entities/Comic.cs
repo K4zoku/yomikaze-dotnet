@@ -28,33 +28,27 @@ public sealed class Comic : BaseEntity
     
     public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
     
-    [NotMapped]
     [Projectable]
     public int TotalChapters => Chapters.Count;
     
-    [NotMapped]
     [Projectable]
     public int TotalViews => Chapters.Sum(chapter => chapter.Views);
     
     public ICollection<ComicRating> Ratings { get; set; } = new List<ComicRating>();
     
-    [NotMapped]
     [Projectable]
     public int TotalRatings => Ratings.Count;
     
-    [NotMapped]
     [Projectable]
     public double AverageRating => TotalRatings > 0 ? Ratings.Average(rating => rating.Rating) : 0;
     
     public ICollection<LibraryEntry> Follows { get; set; } = new List<LibraryEntry>();
     
-    [NotMapped]
     [Projectable]
     public int TotalFollows => Follows.Count;
     
     public ICollection<ComicComment> Comments { get; set; } = new List<ComicComment>();
     
-    [NotMapped]
     [Projectable]
     public int TotalComments => Comments.Count;
 
