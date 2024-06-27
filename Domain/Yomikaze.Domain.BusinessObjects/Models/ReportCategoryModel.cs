@@ -2,7 +2,7 @@ namespace Yomikaze.Domain.Models;
 
 public class ReportCategoryModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public string Name { get; set; } = default!;
 

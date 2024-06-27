@@ -2,7 +2,7 @@
 
 public class CommentModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     public string? Content { get; set; } = default!;
 

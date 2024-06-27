@@ -1,33 +1,31 @@
 ﻿namespace Yomikaze.Domain.Models;
 
-public abstract class ChapterModel : BaseModel
+public class ChapterModel : BaseModel
 {
     #region ReadOnlyProperties
 
-    public ComicModel? Comic { get; set; }
+    [SwaggerSchema(ReadOnly = true)]
+    public int? Views { get; set; }
 
     #endregion
 
     #region WriteOnlyProperties
 
-    [Required] public string? ComicId { get; set; } = default!;
+    [WriteOnly]
+    public string? ComicId { get; set; }
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public int? Number { get; set; }
 
     [Required]
     [Length(0, 50, ErrorMessage = "Chapter name must from 0 to 50 characters")]
-    public string? Name { get; set; } = default!;
+    public string? Name { get; set; }
 
-    [Length(0, 250, ErrorMessage = "Description must from 0 to 250 characters")]
-    public string? Description { get; set; }
-
+    [MinLength(1, ErrorMessage = "Chapter must have at least 1 page")]
     public IList<string>? Pages { get; set; } = new List<string>();
-
-    public int? Views { get; set; }
 
     #endregion
 }

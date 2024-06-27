@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using System.Reflection;
 using System.Text;
+using Yomikaze.Domain;
 
 namespace Yomikaze.API.Main.Base;
 
@@ -15,28 +17,34 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     where TRepository : IRepository<T, TKey>
 {
     protected static readonly string KeyPrefix = typeof(T).Name + ":";
-    protected IMapper Mapper { get; set; } = mapper;
+    protected IMapper Mapper { get; } = mapper;
 
-    protected virtual TRepository Repository { get; set; } = repository;
+    protected TRepository Repository { get; } = repository;
 
-    protected IDistributedCache Cache { get; set; } = cache;
+    protected IDistributedCache Cache { get; } = cache;
 
-    protected ILogger<CrudControllerBase<T, TKey, TModel, TRepository>> Logger { get; set; } = logger;
+    protected ILogger<CrudControllerBase<T, TKey, TModel, TRepository>> Logger { get; } = logger;
 
     [NonAction]
     protected PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
         query = query.Skip(skip).Take(pagination.Size);
+        var results = Mapper.Map<List<TModel>>(query.AsEnumerable());
+        results.ForEach(model => ModelWriteOnlyProperties.ForEach(property => property.SetValue(model, default)));
         return new PagedList<TModel>
         {
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
             RowCount = query.Count(),
             PageCount = (int)Math.Ceiling((double)query.Count() / pagination.Size),
-            Results = Mapper.Map<TModel[]>(query.AsEnumerable())
+            Results = results
         };
     }
+
+    protected List<PropertyInfo> ModelWriteOnlyProperties { get; } = typeof(TModel).GetProperties()
+        .Where(x => x.GetCustomAttribute<WriteOnlyAttribute>() != null)
+        .ToList();
 
     [HttpGet]
     public virtual ActionResult<PagedList<TModel>> List([FromQuery] PaginationModel pagination)
@@ -75,6 +83,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         }
 
         TModel model = Mapper.Map<TModel>(entity);
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
         Cache.SetInBackground(keyName, model);
         return Ok(model);
@@ -89,13 +98,27 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         }
 
         T? entity = Mapper.Map<T>(input);
-        Logger.LogInformation("After mapped {id}", entity.Id);
-        Repository.Add(entity);
-        Logger.LogInformation("After added {id}", entity.Id);
+        Logger.LogDebug("After mapped {entity}", JsonConvert.SerializeObject(entity));
+        try
+        {
+            Repository.Add(entity);
+        } catch (DbUpdateException e)
+        {
+            Logger.LogWarning(e, "Error when adding entity");
+            return Conflict();
+        } catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when adding entity");
+            return Problem();
+        }
+
+        Logger.LogDebug("After added {entity}", JsonConvert.SerializeObject(entity));
         Cache.Remove($"{KeyPrefix}:list*");
         entity = Repository.Get(entity.Id); // load navigation properties
         string id = entity?.Id?.ToString() ?? "-1";
         string url = Url.Action("Get", new { key = id }) ?? string.Empty;
+        var model = Mapper.Map<TModel>(entity);
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         return Created(url, Mapper.Map<TModel>(entity));
     }
 
@@ -119,9 +142,14 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             Repository.Update(entityToUpdate);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException e)
         {
+            Logger.LogWarning(e, "DbRelation error when updating entity {key}", key);
             return Conflict();
+        } catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when updating entity {key}", key);
+            return Problem();
         }
 
         // remove cache
@@ -143,9 +171,9 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
 
         TModel model = Mapper.Map<TModel>(entityToUpdate);
 
-        Logger.LogInformation("Patching model: {model}", JsonConvert.SerializeObject(model));
+        Logger.LogDebug("Patching model: {model}", JsonConvert.SerializeObject(model));
         patch.ApplyTo(model);
-        Logger.LogInformation("Patched model: {model}", JsonConvert.SerializeObject(model));
+        Logger.LogDebug("Patched model: {model}", JsonConvert.SerializeObject(model));
 
         Mapper.Map(model, entityToUpdate);
         try
@@ -154,8 +182,12 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         }
         catch (DbUpdateException e)
         {
-            Logger.LogTrace(e, "Error updating entity {key}", key);
+            Logger.LogWarning(e, "DbRelation error when updating entity {key}", key);
             return Conflict();
+        } catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when updating entity {key}", key);
+            return Problem();
         }
 
         // remove cache

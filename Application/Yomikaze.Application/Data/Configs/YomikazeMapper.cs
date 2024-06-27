@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
@@ -11,11 +12,18 @@ namespace Yomikaze.Application.Data.Configs;
 
 public class YomikazeMapper : MapperProfile
 {
-    public YomikazeMapper()
+    public YomikazeMapper() 
     {
+        
+        CreateMap<string, ulong>().ConvertUsing((src) => IdParse(src));
+        CreateMap<ulong, string>().ConvertUsing((src) => src.ToString());
         CreateMap<BaseModel, BaseEntity>()
-            .ForMember(dest => dest.Id, options => options.Ignore())
-            .ForAllMembers(options => options.Condition((_,_,member) => member != null));
+            .ForMember(dest => dest.Id, options => options.UseDestinationValue())
+            .ForMember(dest => dest.CreationTime, options => options.UseDestinationValue())
+            .ForMember(dest => dest.LastModified, options => options.UseDestinationValue())
+            .ForMember(dest => dest.WorkerId, options => options.Ignore())
+            .ForAllMembers(options => options.Condition((_, _, member) => member != null));
+        
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
             {
@@ -34,27 +42,28 @@ public class YomikazeMapper : MapperProfile
         CreateMap<CoinPricingModel, CoinPricing>().ReverseMap();
 
         CreateMap<ComicModel, Comic>()
-            .ForMember(dest => dest.Id, options => options.Ignore())
+            .ForMember(dest => dest.Id, options => options.Condition(src => src.Id != null))
             .ForMember(dest => dest.ComicTags, options =>
             {
-                options.Condition(src => src.TagIds?.Count != 0 || src.Tags?.Count != 0);
-                options.MapFrom(src => (src.TagIds ?? new List<string>()).Count != 0
-                    ? (src.TagIds ?? new List<string>()).Select(id => new ComicTag { TagId = IdParse(id) })
-                    : (src.Tags ?? new List<TagModel>()).Select(tag => new ComicTag { TagId = IdParse(tag.Id) }));
+                options.Condition(src => src.TagIds != null && src.TagIds.Count != 0);
+                options.MapFrom((src, dest) =>
+                {
+                    HashSet<ComicTag> newTags = src.TagIds?
+                        .Select(tagId => new ComicTag { TagId = IdParse(tagId), ComicId = dest.Id })
+                        .ToHashSet() ?? [];
+                    return newTags;
+                });
             })
             .ForMember(dest => dest.PublisherId, options =>
             {
-                options.Condition(src => src.Publisher != null);
-                options.MapFrom(src => src.Publisher!.Id);
+                options.Condition(src => src.PublisherId != null);
+                options.MapFrom(src => IdParse(src.PublisherId));
             })
             .ForMember(dest => dest.Publisher, options => options.Ignore())
-            .ForMember(dest => dest.Tags, options => options.Ignore());
-        CreateProjection<Comic, ComicModel>()
-            .ForMember(dest => dest.TagIds, options => options.Ignore())
-            .ForMember(dest => dest.PublisherId, options => options.Ignore());
-        CreateMap<Comic, ComicModel>()
-            .ForMember(dest => dest.TagIds, options => options.Ignore())
-            .ForMember(dest => dest.PublisherId, options => options.Ignore());
+            .ForMember(dest => dest.Tags, options => options.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.TagIds,
+                options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())));
 
         CreateMap<CommentModel, Comment>()
             .ForMember(dest => dest.AuthorId, options =>

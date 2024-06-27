@@ -19,8 +19,6 @@ public class Chapter : BaseEntity
 
     [StringLength(256)] public string Name { get; set; } = default!;
 
-    [StringLength(512)] public string? Description { get; set; }
-
     [StringLength(20)]
     [ForeignKey(nameof(Comic))]
     public ulong ComicId { get; set; }

@@ -72,6 +72,42 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     {
         return DbSet.AsQueryable();
     }
+    
+    public virtual void Detach(TEntity entity)
+    {
+        DbContext.Entry(entity).State = EntityState.Detached;
+    }
+    
+    public virtual void Detach(params TEntity[] entities)
+    {
+        foreach (var entity in entities)
+        {
+            Detach(entity);
+        }
+    }
+    
+    public virtual void DetachAll()
+    {
+        foreach (var entity in DbSet.Local)
+        {
+            Detach(entity);
+        }
+    }
+    
+    public virtual void Attach(TEntity entity)
+    {
+        DbSet.Attach(entity);
+    }
+    
+    public virtual void Attach(params TEntity[] entities)
+    {
+        DbSet.AttachRange(entities);
+    }
+    
+    public virtual void AttachAll()
+    {
+        DbSet.AttachRange(DbSet.Local);
+    }
 
     public virtual void Save()
     {

@@ -44,8 +44,8 @@ services.AddControllers(options =>
     };
     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
     options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    JsonConvert.DefaultSettings = () => options.SerializerSettings;
 });
-// .ConfigureApiBehaviorOptionsYomikaze();
 
 services.AddRouting(options =>
 {

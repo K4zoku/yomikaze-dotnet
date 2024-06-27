@@ -22,9 +22,9 @@ public sealed class Comic : BaseEntity
 
     public DateTimeOffset? PublicationDate { get; set; }
 
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
 
-    public ICollection<ComicTag> ComicTags { get; set; } = new List<ComicTag>();
+    public ISet<ComicTag> ComicTags { get; set; } = new HashSet<ComicTag>();
     
     public ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
     

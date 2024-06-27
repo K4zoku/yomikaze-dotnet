@@ -38,4 +38,10 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Controllers\ChaptersController.cs">
+        <DependentUpon>ComicsController.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

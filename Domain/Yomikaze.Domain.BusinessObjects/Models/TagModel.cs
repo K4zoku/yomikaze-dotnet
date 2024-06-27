@@ -16,7 +16,7 @@ public class TagModel : BaseModel
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required]
     [Length(1, 50, ErrorMessage = "Genre's name must be between 1 and 100 characters")]

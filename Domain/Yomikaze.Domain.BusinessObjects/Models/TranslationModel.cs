@@ -2,7 +2,7 @@ namespace Yomikaze.Domain.Models;
 
 public class TranslationModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public int X { get; set; }
 

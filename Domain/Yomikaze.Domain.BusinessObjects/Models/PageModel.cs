@@ -10,7 +10,7 @@ public class PageModel : BaseModel
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public int? Number { get; set; }
 

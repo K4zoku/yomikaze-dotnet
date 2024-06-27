@@ -8,7 +8,7 @@ public class TransactionModel : BaseModel
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public long Amount { get; set; }
 

@@ -2,7 +2,7 @@
 
 public class HistoryRecordModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     public int PageNumber { get; set; } = 1;
 

@@ -2,7 +2,7 @@ namespace Yomikaze.Domain.Models;
 
 public class LibraryCategoryModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public string? Name { get; set; } = default!;
 
@@ -10,6 +10,7 @@ public class LibraryCategoryModel : BaseModel
 
     #region WriteOnlyProperties
 
+    [WriteOnly]
     public string? UserId { get; set; } = default!;
 
     #endregion

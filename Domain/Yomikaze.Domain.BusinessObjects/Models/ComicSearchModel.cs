@@ -14,7 +14,7 @@ public class ComicSearchModel
         set => _name = value?.Trim().ToLower();
     }
     
-    public string[] Authors { get; set; } = [];
+    public string[]? Authors { get; set; }
     
     public string? Publisher { get => _publisher; set => _publisher = value?.Trim().ToLower(); }
     
@@ -40,15 +40,15 @@ public class ComicSearchModel
     
     public int? ToTotalFollows { get; set; }
     
-    public string[] IncludeTags { get; set; } = [];
+    public string[]? IncludeTags { get; set; }
     
-    public string[] ExcludeTags { get; set; } = [];
+    public string[]? ExcludeTags { get; set; }
 
-    public LogicalOperator InclusionMode { get; set; } = LogicalOperator.And;
+    public LogicalOperator? InclusionMode { get; set; }
 
-    public LogicalOperator ExclusionMode { get; set; } = LogicalOperator.Or;
+    public LogicalOperator? ExclusionMode { get; set; }
     
-    public ComicOrderBy[] OrderBy { get; set; } = [];
+    public ComicOrderBy[]? OrderBy { get; set; }
 }
 
 public enum ComicOrderBy

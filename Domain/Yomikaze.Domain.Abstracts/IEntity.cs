@@ -6,7 +6,7 @@ namespace Yomikaze.Domain.Abstracts;
 
 public interface IEntity<TId>
 {
-    [Key] public TId Id { get; set; }
+    [Key] public TId Id { get; }
 }
 
 public interface IEntity : IEntity<ulong>

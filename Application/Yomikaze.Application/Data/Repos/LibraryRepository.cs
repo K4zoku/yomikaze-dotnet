@@ -16,4 +16,9 @@ public class LibraryRepository(DbContext dbContext) : BaseRepository<LibraryEntr
     {
         return Query().FirstOrDefault(x => x.UserId == userId && x.ComicId == comicId);
     }
+
+    public bool IsFollowing(ulong userId, ulong comicId)
+    {
+        return Query().Any(x => x.UserId == userId && x.ComicId == comicId);
+    }
 }

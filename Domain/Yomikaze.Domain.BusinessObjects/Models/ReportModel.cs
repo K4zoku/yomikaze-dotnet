@@ -4,7 +4,7 @@ namespace Yomikaze.Domain.Models;
 
 public class ReportModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     public string? Description { get; set; } = default!;
 

@@ -4,7 +4,7 @@ namespace Yomikaze.Domain.Models;
 
 public class ComicModel : BaseModel
 {
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required]
     [StringLength(150, ErrorMessage = "Comic's name must from 0 to 150 characters")]
@@ -39,8 +39,10 @@ public class ComicModel : BaseModel
 
     [Required]
     [SwaggerSchema(WriteOnly = true)]
+    [WriteOnly]
     public ICollection<string>? TagIds { get; set; }
 
+    [WriteOnly]
     [SwaggerSchema(WriteOnly = true)] public string? PublisherId { get; set; }
 
     #endregion
@@ -58,6 +60,8 @@ public class ComicModel : BaseModel
     [SwaggerSchema(ReadOnly = true)] public int? TotalFollows { get; set; }
     
     [SwaggerSchema(ReadOnly = true)] public int? TotalComments { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)] public bool? IsFollowing { get; set; }
 
     #endregion
 }

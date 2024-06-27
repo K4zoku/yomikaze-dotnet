@@ -10,7 +10,7 @@ public class NotificationModel : BaseModel
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public string? Title { get; set; }
 

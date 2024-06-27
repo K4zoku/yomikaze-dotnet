@@ -16,7 +16,7 @@ public class WithdrawalRequestModel : BaseModel
 
     #endregion
 
-    #region ReadWriteProperties
+    #region CommonProperties
 
     [Required] public long Amount { get; set; }
 

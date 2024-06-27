@@ -1,48 +1,49 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Yomikaze.Domain.Abstracts;
 
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity<TId> : IEntity<TId>
 {
-    [DataMember(Name = "creationTime")]
-    [Column("creation_time", Order = 98)]
+    [Column( Order = 98)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.UtcNow;
-
-    [DataMember(Name = "lastModified")]
-    [Column("last_modified", Order = 99)]
+    
+    [Column(Order = 99)]
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Timestamp]
     public DateTimeOffset? LastModified { get; set; }
 
     [Key]
-    [DataMember(Name = "id")]
-    [Column("id", Order = 0)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public virtual TId Id { get; set; } = default!;
+    public virtual TId Id { get; } = default!;
+
+    public override bool Equals(object? obj)
+    {
+        return obj is BaseEntity<TId> other && Equals(Id, other.Id);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id);
+    }
 }
 
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 {
+    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
     protected BaseEntity()
     {
         Id = SnowflakeGenerator.Generate(WorkerId);
     }
 
-    [NotMapped]
-    [DataMember(Name = "idStr")]
-    public string IdStr => Id.ToString();
-
     [Key]
-    [DataMember(Name = "id")]
-    [Column("id", Order = 0)]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public new ulong Id { get; set; }
+    public new ulong Id { get; }
 
     [NotMapped] public virtual int WorkerId => 0;
 }
