@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Models;
 using static System.IO.File;
@@ -50,6 +52,22 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         // Save file to disk
         await using FileStream stream = new(filePath, FileMode.Create);
         await file.CopyToAsync(stream, cancellationToken);
+
+        try
+        {
+            using var image = await Image.LoadAsync(filePath, cancellationToken);
+            await image.SaveAsWebpAsync(ChangeExtension(filePath, "webp"), cancellationToken);
+        }
+        catch (Exception exception) when(exception is NotSupportedException or InvalidImageContentException)
+        {
+            Delete(filePath);
+            return BadRequest();
+        } 
+        catch (Exception exception)
+        {
+            Delete(filePath);
+            return StatusCode(500, exception.Message);
+        }
 
         // Generate URL
         string url = Url.Content($"~/Images/{GetRelativePath(FileProvider.Root, filePath)}");
