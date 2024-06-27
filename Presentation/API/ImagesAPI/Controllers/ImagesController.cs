@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Models;
 using static System.IO.File;
@@ -31,19 +30,19 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         string filePath = FileProvider.Root;
         if (request.ComicId != null)
         {
-            filePath = Combine(filePath, "Comics", request.ComicId.Value.ToString());
+            filePath = Combine(filePath, "comics", request.ComicId.Value.ToString());
             if (request.ChapterIndex != null)
             {
-                filePath = Combine(filePath, "Chapters", request.ChapterIndex.Value.ToString());
+                filePath = Combine(filePath, "chapters", request.ChapterIndex.Value.ToString());
             }
         }
         else if (request.UserId != null)
         {
-            filePath = Combine(filePath, "Users", request.UserId.Value.ToString());
+            filePath = Combine(filePath, "users", request.UserId.Value.ToString());
         }
         else
         {
-            filePath = Combine(filePath, "Misc");
+            filePath = Combine(filePath, "misc");
         }
 
         Directory.CreateDirectory(filePath);
@@ -61,12 +60,13 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         catch (Exception exception) when(exception is NotSupportedException or InvalidImageContentException)
         {
             Delete(filePath);
-            return BadRequest();
+            ModelState.AddModelError(nameof(request.File), "Invalid image format.");
+            return BadRequest(ModelState);
         } 
-        catch (Exception exception)
+        catch (Exception)
         {
             Delete(filePath);
-            return StatusCode(500, exception.Message);
+            return Problem();
         }
 
         // Generate URL
