@@ -18,5 +18,5 @@ public class ImageUploadModel
 
     [Range(1, int.MaxValue)] public int? ChapterIndex { get; set; }
 
-    [Range(1, int.MaxValue)] public ulong? UserId { get; set; }
+    [Range(1, ulong.MaxValue)] public ulong? UserId { get; set; }
 }
