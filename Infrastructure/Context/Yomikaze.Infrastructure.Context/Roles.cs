@@ -1,4 +1,4 @@
-﻿using Yomikaze.Domain.Identity.Entities;
+﻿using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Infrastructure.Context;
 

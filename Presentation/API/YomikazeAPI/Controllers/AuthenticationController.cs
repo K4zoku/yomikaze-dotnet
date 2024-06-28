@@ -4,8 +4,6 @@ using System.Net;
 using System.Security.Claims;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
-using Yomikaze.Domain.Identity.Entities;
-using Yomikaze.Domain.Identity.Models;
 using static Yomikaze.Infrastructure.Context.YomikazeDbContext.Default;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 

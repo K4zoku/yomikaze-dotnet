@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Domain.Identity.Entities;
+﻿namespace Yomikaze.Domain.Entities;
 
 [PrimaryKey(nameof(Id))]
 public sealed class User : IdentityUser<ulong>, IEntity

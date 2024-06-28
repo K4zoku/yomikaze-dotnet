@@ -9,7 +9,6 @@ using Yomikaze.API.Main.Configurations;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
-using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Infrastructure;
 using Yomikaze.Infrastructure.Context;
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using Yomikaze.Domain.Identity.Entities;
 
 namespace Yomikaze.API.Main.Configurations;
 

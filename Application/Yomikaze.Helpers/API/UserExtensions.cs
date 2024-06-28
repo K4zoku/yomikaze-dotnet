@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Yomikaze.Domain.Identity.Entities;
+using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Application.Helpers.API;
 

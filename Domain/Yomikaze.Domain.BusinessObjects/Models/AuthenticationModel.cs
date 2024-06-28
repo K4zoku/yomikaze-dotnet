@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Domain.Identity.Models;
+﻿namespace Yomikaze.Domain.Models;
 
 public abstract class AuthenticationModel
 {

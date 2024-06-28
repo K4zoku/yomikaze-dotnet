@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Yomikaze.Domain.Identity.Models;
+namespace Yomikaze.Domain.Models;
 
 public class UserInputModel
 {

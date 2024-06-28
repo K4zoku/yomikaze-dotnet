@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
-using Yomikaze.Domain.Identity.Entities;
 
 namespace Yomikaze.Infrastructure.Context;
 

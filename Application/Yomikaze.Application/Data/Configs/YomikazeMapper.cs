@@ -3,8 +3,6 @@ using System.Text.Json.Serialization;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
-using Yomikaze.Domain.Identity.Entities;
-using Yomikaze.Domain.Identity.Models;
 using Yomikaze.Domain.Models;
 using MapperProfile = AutoMapper.Profile;
 

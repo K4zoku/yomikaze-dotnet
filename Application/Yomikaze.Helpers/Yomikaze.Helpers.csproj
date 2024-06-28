@@ -18,7 +18,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj"/>
-        <ProjectReference Include="..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj"/>
         <ProjectReference Include="..\..\Infrastructure\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj"/>
     </ItemGroup>
 

@@ -9,7 +9,6 @@
     <ItemGroup>
         <ProjectReference
                 Include="..\..\..\Domain\Yomikaze.Domain.BusinessObjects\Yomikaze.Domain.BusinessObjects.csproj"/>
-        <ProjectReference Include="..\..\..\Domain\Yomikaze.Domain.Identity\Yomikaze.Domain.Identity.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

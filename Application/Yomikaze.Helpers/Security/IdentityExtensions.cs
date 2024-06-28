@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
-using Yomikaze.Domain.Identity.Entities;
+using Yomikaze.Domain.Entities;
 using Yomikaze.Infrastructure.Context;
 
 namespace Yomikaze.Application.Helpers.Security;

@@ -42,7 +42,7 @@ public class CheckoutController : ControllerBase
                             {
                                 Name = "Yomikaze Coin",
                             },
-                        UnitAmount = 12,    // 1 coin = $0.12   
+                        UnitAmount = 12,    // 1 coin = $0.12           
                     },
                     Quantity = coins,
                 }

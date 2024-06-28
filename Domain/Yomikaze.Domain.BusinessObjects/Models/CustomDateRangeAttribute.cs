@@ -1,4 +1,4 @@
-﻿namespace Yomikaze.Domain.Identity.Models;
+﻿namespace Yomikaze.Domain.Models;
 
 public class CustomDateRangeAttribute() : RangeAttribute(typeof(DateTime), "1900-01-01", "")
 {
