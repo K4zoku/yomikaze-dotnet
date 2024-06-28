@@ -6,6 +6,7 @@ public partial class YomikazeDbContext
 {
     public static partial class Default
     {
+        public static readonly Role Super = new("Super");
         public static readonly Role Administrator = new("Administrator");
         public static readonly Role Publisher = new("Publisher");
         public static readonly Role Reader = new("Reader");

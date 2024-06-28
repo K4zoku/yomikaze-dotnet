@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Stripe;
 using Yomikaze.API.Main;
+using Yomikaze.API.Main.Configurations;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
+using Yomikaze.Domain.Identity.Entities;
 using Yomikaze.Infrastructure;
 using Yomikaze.Infrastructure.Context;
 
@@ -13,7 +17,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
 
-Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.SqlServer.Name));
+Provider provider = Provider.FromName(configuration.GetValue("provider", Provider.Postgres.Name));
 services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
 services.AddScoped<DbContext, YomikazeDbContext>();
 
@@ -32,6 +36,13 @@ services.AddScoped<LibraryRepository>();
 services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
 
+services.AddRouting(options => options.LowercaseUrls = true);
+services.AddMvc(options =>
+{
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+});
+services.AddRazorPages();
+
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
@@ -47,12 +58,8 @@ services.AddControllers(options =>
     JsonConvert.DefaultSettings = () => options.SerializerSettings;
 });
 
-services.AddRouting(options =>
-{
-    options.LowercaseUrls = true;
-});
-
 services.AddYomikazeIdentity();
+services.UpgradePasswordSecurity().UseArgon2<User>();
 
 JwtConfiguration jwt = configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
@@ -60,6 +67,7 @@ JwtConfiguration jwt = configuration
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
+services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
@@ -75,6 +83,8 @@ services.AddStackExchangeRedisCache(options =>
 // add auto-mapper
 services.AddAutoMapper(typeof(YomikazeMapper));
 
+StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe secret key not found");
+
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
 
@@ -82,13 +92,43 @@ if (env.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("Public");
+}
+else
+{
+    app.UseCors("Yomikaze");
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("Public");
-
 app.MapControllers();
+
+IServiceScope scope = app.Services.CreateScope();
+IServiceProvider serviceProvider = scope.ServiceProvider;
+YomikazeDbContext dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
+await dbContext.Database.MigrateAsync();
+UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+if (!userManager.Users.Any())
+{
+    User admin = new()
+    {
+        UserName = app.Configuration["Admin:Username"] ?? "administrator",
+        Name = "Administrator",
+        Email = app.Configuration["Admin:Email"] ?? "administrator@yomikaze.org",
+        EmailConfirmed = true
+    };
+    IdentityResult result = await userManager.CreateAsync(admin, app.Configuration["Admin:Password"] ?? "Admin@123");
+    if (!result.Succeeded)
+    {
+        throw new InvalidOperationException("Could not create default admin user");
+    }
+    result = await userManager.AddToRoleAsync(admin, "Super");
+    result = await userManager.AddToRoleAsync(admin, "Administrator");
+    if (!result.Succeeded)
+    {
+        throw new InvalidOperationException("Could not add default admin user to Administrator role");
+    }
+}
 
 app.Run();

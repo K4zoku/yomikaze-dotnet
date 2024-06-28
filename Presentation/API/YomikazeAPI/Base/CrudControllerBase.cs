@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using Yomikaze.Domain;
@@ -47,6 +49,10 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         .ToList();
 
     [HttpGet]
+    [SwaggerResponse((int)HttpStatusCode.OK, $"List of entity", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
     public virtual ActionResult<PagedList<TModel>> List([FromQuery] PaginationModel pagination)
     {
         string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
@@ -64,6 +70,11 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpGet("{key}")]
+    [SwaggerResponse((int)HttpStatusCode.OK, "Entity found", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Get(TKey key)
     {
         string keyName = KeyPrefix + key;
@@ -90,6 +101,13 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpPost]
+    [SwaggerResponse((int)HttpStatusCode.Created, "Entity created", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Problem when creating entity", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Conflict, "Entity may already exists or some relationship does not exists",
+        ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Post(TModel input)
     {
         if (!ModelState.IsValid)
@@ -160,7 +178,14 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         return NoContent();
     }
 
-    [HttpPatch("{key}")]
+    [HttpPatch("{key}")]    
+    [SwaggerResponse((int)HttpStatusCode.NoContent, "Entity updated", ContentTypes = ["application/json"])] 
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Problem when updating entity", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Conflict, "Entity may already exists or some relationship does not exists",
+        ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
     {
         T? entityToUpdate = Repository.Get(key);
@@ -199,6 +224,11 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpDelete("{key}")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent, "Entity deleted", ContentTypes = ["application/json"])] 
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
     public virtual ActionResult Delete(TKey key)
     {
         T? entity = Repository.Get(key);

@@ -87,7 +87,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         return NoContent();
     }
 
-    [HttpGet("Statistics")]
+    [HttpGet("statistics")]
     public ActionResult<ResponseModel> GetStatistics()
     {
         IFileInfo[] files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();

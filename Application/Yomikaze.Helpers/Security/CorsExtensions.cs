@@ -15,6 +15,11 @@ public static class CorsExtensions
                     .AllowCredentials()
                     .SetIsOriginAllowed(_ => true);
             });
+            options.AddPolicy("Yomikaze", cors =>
+            {
+                cors.WithOrigins("yomikaze.org", "*.yomikaze.org")
+                    .SetIsOriginAllowedToAllowWildcardSubdomains();
+            });
         });
         return services;
     }

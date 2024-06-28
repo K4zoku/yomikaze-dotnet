@@ -14,7 +14,9 @@ public class PaginationModel
         Size = pageSize is < 1 or > 1000 ? 25 : pageSize;
     }
 
+    [SwaggerParameter("The page number to retrieve.")]
     public int Page { get; set; }
 
+    [SwaggerParameter("The number of items per page.")]
     public int Size { get; set; }
 }
