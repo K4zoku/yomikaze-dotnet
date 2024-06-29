@@ -87,7 +87,7 @@ services.AddJwtBearerAuthentication(jwt)
         options.ClientSecret = googleClientSecret;
         options.CallbackPath = "/google";
     });
-// services.AddTransient<GoogleHandler, ReplacedGoogleHandler>();
+
 services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
@@ -101,7 +101,6 @@ services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "Yomikaze";
 });
 
-// add auto-mapper
 services.AddAutoMapper(typeof(YomikazeMapper));
 
 StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe secret key not found");
