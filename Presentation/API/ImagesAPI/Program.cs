@@ -36,13 +36,14 @@ JwtConfiguration jwt = builder.Configuration
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
 
-string storagePath = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
+string storagePath = builder.Configuration["StoragePath"] ?? Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
 if (!Directory.Exists(storagePath))
 {
     Directory.CreateDirectory(storagePath);
 }
 
 PhysicalFileProvider fileProvider = new(storagePath);
+
 services.AddSingleton(fileProvider);
 
 services.Configure<ForwardedHeadersOptions>(options =>
@@ -63,7 +64,7 @@ if (env.IsDevelopment())
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = fileProvider, RequestPath = new PathString("/Images"), ServeUnknownFileTypes = false
+    FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false
 });
 
 app.UseCors("Public");

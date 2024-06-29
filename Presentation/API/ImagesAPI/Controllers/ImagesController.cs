@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.ImageSharp;
 using Yomikaze.Domain.Abstracts;
-using Yomikaze.Domain.Models;
 using static System.IO.File;
 using static System.IO.Path;
 using ImageUploadModel = Yomikaze.API.CDN.Images.Models.ImageUploadModel;
@@ -76,7 +75,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     }
 
     [HttpDelete("{file}")]
-    [Authorize(Roles = "Super,Administrator,Publisher")]
+    [Authorize(Roles = "Super,Administrator")]
     public IActionResult DeleteImage(string file)
     {
         IFileInfo info = fileProvider.GetFileInfo(file);
@@ -88,16 +87,38 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         Delete(info.PhysicalPath);
         return NoContent();
     }
+    
+    [HttpDelete("batch")]
+    [Authorize(Roles = "Super,Administrator")]
+    public IActionResult BatchDeleteImage(string[]? files)
+    {
+        if (files == null || files.Length == 0)
+        {
+            ModelState.AddModelError(nameof(files), "No files to delete.");
+            return BadRequest(ModelState);
+        }
 
-    [HttpGet("statistics")]
-    public ActionResult<ResponseModel> GetStatistics()
+        var willDelete = new HashSet<string>(files ?? []);
+        
+        foreach (string file in willDelete)
+        {
+            Delete(file);
+        }
+    
+        return NoContent();
+    }
+    
+    private static readonly string[] Units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+
+    [HttpGet("[action]")]
+    [Authorize(Roles = "Super,Administrator")]
+    public ActionResult Statistics()
     {
         IFileInfo[] files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();
-        string[] suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
         long bytes = files.Sum(f => f.Length);
         int i = (int)Math.Floor(Math.Log(bytes, 1024));
         double value = bytes / Math.Pow(1024, i);
-        string size = $"{value:0.##} {suffixes[i]}";
-        return Ok(ResponseModel.CreateSuccess("OK", new { TotalFiles = files.Length, TotalSize = size }));
+        string size = $"{value:0.##} {Units[i]}";
+        return Ok(new { TotalFiles = files.Length, TotalSize = size });
     }
 }
