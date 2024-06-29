@@ -68,14 +68,20 @@ JwtConfiguration jwt = configuration
                            .Get<JwtConfiguration>()
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
-GoogleOptions googleOptions = new();
-configuration.GetRequiredSection("Authentication:Google").Bind(googleOptions);
+var googleClientId = configuration["Authentication:Google:ClientId"];
+var googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googleClientSecret))
+{
+    throw new InvalidOperationException("Google authentication configuration not found");
+}
+
 services.AddJwtBearerAuthentication(jwt)
     .AddGoogle(options =>
     {
-        options.ClientId = googleOptions.ClientId;
-        options.ClientSecret = googleOptions.ClientSecret;
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
     });
+services.AddTransient<GoogleHandler, ReplacedGoogleHandler>();
 services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
