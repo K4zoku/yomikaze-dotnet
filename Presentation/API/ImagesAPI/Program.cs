@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
@@ -44,9 +45,16 @@ if (!Directory.Exists(storagePath))
 PhysicalFileProvider fileProvider = new(storagePath);
 services.AddSingleton(fileProvider);
 
+services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+});
+
+
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
-
+app.UseForwardedHeaders();
 if (env.IsDevelopment())
 {
     app.UseSwagger();
