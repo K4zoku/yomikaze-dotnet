@@ -1,6 +1,7 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
@@ -74,7 +75,11 @@ if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googl
 {
     throw new InvalidOperationException("Google authentication configuration not found");
 }
-
+services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+});
 services.AddJwtBearerAuthentication(jwt)
     .AddGoogle(options =>
     {
@@ -82,7 +87,7 @@ services.AddJwtBearerAuthentication(jwt)
         options.ClientSecret = googleClientSecret;
         options.CallbackPath = "/google";
     });
-services.AddTransient<GoogleHandler, ReplacedGoogleHandler>();
+// services.AddTransient<GoogleHandler, ReplacedGoogleHandler>();
 services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
@@ -109,7 +114,7 @@ services.AddSingleton(FirebaseApp.Create(new AppOptions()
 
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
-
+app.UseForwardedHeaders();
 if (env.IsDevelopment())
 {
     app.UseSwagger();
