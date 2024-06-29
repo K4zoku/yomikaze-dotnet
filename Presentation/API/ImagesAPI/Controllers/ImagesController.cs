@@ -17,7 +17,6 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     private PhysicalFileProvider FileProvider => fileProvider;
 
     [HttpPost]
-    [Authorize(Roles = "Super,Administrator,Publisher")]
     public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request,
         CancellationToken cancellationToken = default)
     {
@@ -91,7 +90,6 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     }
 
     [HttpGet("statistics")]
-    [Authorize(Roles = "Super,Administrator")]
     public ActionResult<ResponseModel> GetStatistics()
     {
         IFileInfo[] files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();
