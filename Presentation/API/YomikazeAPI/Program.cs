@@ -100,7 +100,7 @@ services.AddStackExchangeRedisCache(options =>
     options.Configuration = configuration.GetSection("Redis").GetConnectionString("Yomikaze");
     options.InstanceName = "Yomikaze";
 });
-
+services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 services.AddAutoMapper(typeof(YomikazeMapper));
 
 StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe secret key not found");

@@ -273,11 +273,69 @@ internal static class DistributedCacheExtension
     internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
         DistributedCacheEntryOptions? options = default!)
     {
+        if (cache is NoCache) { return; }
         options ??= new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };
         Task.Run(async () =>
         {
             await cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options);
         });
+    }
+}
+
+internal class NoCache : IDistributedCache
+{
+    private static NoCache? _instance;
+    private static readonly object Lock = new();
+    
+    public static NoCache Instance
+    {
+        get
+        {
+            lock (Lock)
+            {
+                return _instance ??= new NoCache();
+            }
+        }
+    }
+    public byte[]? Get(string key)
+    {
+        return null;
+    }
+
+    public Task<byte[]?> GetAsync(string key, CancellationToken token = new CancellationToken())
+    {
+        return Task.FromResult<byte[]?>(null);
+    }
+
+    public void Refresh(string key)
+    {
+        // do nothing
+    }
+
+    public Task RefreshAsync(string key, CancellationToken token = new CancellationToken())
+    {
+        return Task.CompletedTask;
+    }
+
+    public void Remove(string key)
+    {
+        // do nothing
+    }
+
+    public Task RemoveAsync(string key, CancellationToken token = new CancellationToken())
+    {
+        return Task.CompletedTask;
+    }
+
+    public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
+    {
+        // do nothing
+    }
+
+    public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options,
+        CancellationToken token = new CancellationToken())
+    {
+        return Task.CompletedTask;
     }
 }
 
@@ -289,4 +347,10 @@ public abstract class CrudControllerBase<T, TModel, TRepository>(
     : CrudControllerBase<T, ulong, TModel, TRepository>(repository, mapper, cache, logger)
     where T : class, IEntity
     where TModel : class
-    where TRepository : IRepository<T>;
+    where TRepository : IRepository<T>
+{
+    protected CrudControllerBase(TRepository repository, IMapper mapper, ILogger<CrudControllerBase<T, TModel, TRepository>> logger)
+        : this(repository, mapper, NoCache.Instance, logger)
+    {
+    }
+}

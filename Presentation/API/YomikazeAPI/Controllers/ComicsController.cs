@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Domain.Entities.Weak;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles = "Administrator,Publisher")]
 [SuppressMessage("Performance",
     "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
 public partial class ComicsController(
@@ -170,6 +169,7 @@ public partial class ComicsController(
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrator,Publisher")]
     public override ActionResult<ComicModel> Post(
         [Bind(
             $"{nameof(ComicModel.Name)},{nameof(ComicModel.Description)},{nameof(ComicModel.Cover)},{nameof(ComicModel.Banner)},{nameof(ComicModel.PublicationDate)},{nameof(ComicModel.Authors)},{nameof(ComicModel.Status)},{nameof(ComicModel.TagIds)}")]
@@ -210,6 +210,8 @@ public partial class ComicsController(
         if (isAuthorized)
         {
             model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
+            model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
+            model.IsRated = model.MyRating != null;
         }
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
@@ -218,6 +220,7 @@ public partial class ComicsController(
     }
 
     [HttpPost("[action]")]
+    [Authorize(Roles = "Administrator,Publisher")]
     public ActionResult<ICollection<ComicModel>> Batch([FromBody] ICollection<ComicModel> comics)
     {
         Comic[] entities = Mapper.Map<Comic[]>(comics.Select(comic =>
@@ -229,9 +232,9 @@ public partial class ComicsController(
         return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
     }
     
-    [Authorize(Roles = "Super,Administrator,Publisher,Reader")]
-    [HttpPost("{key}/follow")]
-    public ActionResult Follow(ulong key, [FromBody] string? category)
+    [Authorize]
+    [HttpPut("{key}/follow")]
+    public ActionResult Follow(ulong key)
     {
         ulong userId = User.GetId();
         Comic? comic = Repository.Get(key);
@@ -244,6 +247,8 @@ public partial class ComicsController(
         if (entry != null)
         {
             LibraryRepository.Delete(entry);
+            Cache.Remove($"{KeyPrefix}{key}:{userId}");
+            Cache.Remove($"{KeyPrefix}list*:{userId}");
             return NoContent();
         } 
         
@@ -252,19 +257,53 @@ public partial class ComicsController(
             UserId = userId,
             ComicId = key
         };
-        
-        if (category != null)
-        {
-            LibraryCategory? lc = LibraryCategoryRepository.GetByNameAndUserId(category, userId);
-            if (lc == null)
-            {
-                lc = new LibraryCategory { Name = category, UserId = userId };
-                LibraryCategoryRepository.Add(lc);
-            }
-            entry.CategoryId = lc.Id;
-        }
-        LibraryRepository.Add(entry);
 
+        LibraryRepository.Add(entry);
+        Cache.Remove($"{KeyPrefix}{key}:{userId}");
+        Cache.Remove($"{KeyPrefix}list*:{userId}");
         return Ok();
     }
+    
+    [Authorize]
+    [HttpPut("{key}/rate")]
+    public ActionResult Rate(ulong key, [FromBody] ComicRatingModel rating)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        ulong userId = User.GetId();
+        Comic? comic = Repository.Get(key);
+        if (comic == null)
+        {
+            return NotFound();
+        }
+        
+        ComicRating? existingRating = comic.Ratings.FirstOrDefault(r => r.UserId == userId);
+        
+        if (existingRating != null)
+        {
+            existingRating.Rating = rating.Rating!.Value;
+            Repository.Update(comic);   
+            Cache.Remove($"{KeyPrefix}{key}:{userId}");
+            Cache.Remove($"{KeyPrefix}list*:{userId}");
+            return Ok();
+        }
+
+        ComicRating newRating = new()
+        {
+            UserId = userId,
+            ComicId = key,
+            Rating = rating.Rating!.Value
+        };
+        
+        comic.Ratings.Add(newRating);
+        Repository.Update(comic);
+        Cache.Remove($"{KeyPrefix}{key}:{userId}");
+        Cache.Remove($"{KeyPrefix}list*:{userId}");
+        return Ok();
+    }
+    
+    
 }

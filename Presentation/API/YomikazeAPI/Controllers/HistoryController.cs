@@ -8,9 +8,8 @@ namespace Yomikaze.API.Main.Controllers;
 public class HistoryController(
     HistoryRepository repository,
     IMapper mapper,
-    IDistributedCache cache,
     ILogger<HistoryController> logger) :
-    CrudControllerBase<HistoryRecord, HistoryRecordModel, HistoryRepository>(repository, mapper, cache, logger)
+    CrudControllerBase<HistoryRecord, HistoryRecordModel, HistoryRepository>(repository, mapper, logger)
 {
     [NonAction]
     public override ActionResult<HistoryRecordModel> Post(HistoryRecordModel input)
