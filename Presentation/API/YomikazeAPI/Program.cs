@@ -1,5 +1,6 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
@@ -67,7 +68,14 @@ JwtConfiguration jwt = configuration
                            .Get<JwtConfiguration>()
                        ?? throw new InvalidOperationException("Could not read JWT Configuration");
 services.AddSingleton(jwt);
-services.AddJwtBearerAuthentication(jwt);
+GoogleOptions googleOptions = new();
+configuration.GetRequiredSection("Authentication:Google").Bind(googleOptions);
+services.AddJwtBearerAuthentication(jwt)
+    .AddGoogle(options =>
+    {
+        options.ClientId = googleOptions.ClientId;
+        options.ClientSecret = googleOptions.ClientSecret;
+    });
 services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();

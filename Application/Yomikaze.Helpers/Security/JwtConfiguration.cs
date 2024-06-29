@@ -25,7 +25,7 @@ public class JwtConfiguration
 
     public bool Expire { get; set; } = false;
 
-    public double ExpireMinutes { get; set; } = 30;
+    public double ExpireMinutes { get; set; } = 60;
 
     public SecurityKey SecurityKey => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
     public SigningCredentials SigningCredentials => new(SecurityKey, SecurityAlgorithms.HmacSha256);

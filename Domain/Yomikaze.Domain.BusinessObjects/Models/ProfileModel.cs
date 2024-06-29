@@ -1,3 +1,5 @@
+using Yomikaze.Domain.Entities;
+
 namespace Yomikaze.Domain.Models;
 
 public class ProfileModel : BaseModel
@@ -13,4 +15,19 @@ public class ProfileModel : BaseModel
     public DateTimeOffset? Birthday { get; set; }
 
     public long? Balance { get; set; }
+    
+    // cast from User
+    public static explicit operator ProfileModel(User user)
+    {
+        return new ProfileModel
+        {
+            Id = user.Id.ToString(),
+            Avatar = user.Avatar,
+            Banner = user.Banner,
+            Bio = user.Bio,
+            Name = user.Name,
+            Birthday = user.Birthday,
+            Balance = user.Balance,
+        };
+    }
 }

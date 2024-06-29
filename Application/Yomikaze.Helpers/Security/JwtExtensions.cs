@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -14,10 +15,10 @@ public static class JwtExtensions
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services,
+    public static AuthenticationBuilder AddJwtBearerAuthentication(this IServiceCollection services,
         JwtConfiguration configuration)
     {
-        services.AddAuthentication(options =>
+        return services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,7 +42,6 @@ public static class JwtExtensions
                 };
                 options.MapInboundClaims = false;
             });
-        return services;
     }
 
     public static IServiceCollection AddSwaggerGenWithJwt(this IServiceCollection services)

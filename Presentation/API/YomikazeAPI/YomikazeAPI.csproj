@@ -6,33 +6,35 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>false</InvariantGlobalization>
         <RootNamespace>Yomikaze.API.Main</RootNamespace>
-    </PropertyGroup>
+      <UserSecretsId>8537b8a2-1a57-4d5c-b7ff-371c6df53816</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="FirebaseAdmin" Version="3.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.6"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NetDevPack.Security.PasswordHasher.Argon2" Version="7.1.0" />
         <PackageReference Include="Stripe.net" Version="45.1.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.2"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.2" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj"/>
-        <ProjectReference Include="..\..\..\Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\Application\Yomikaze.Application\Yomikaze.Application.csproj" />
+        <ProjectReference Include="..\..\..\Infrastructure\Yomikaze.Infrastructure\Yomikaze.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

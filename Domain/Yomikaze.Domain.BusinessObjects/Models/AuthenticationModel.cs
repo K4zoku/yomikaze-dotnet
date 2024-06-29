@@ -9,11 +9,12 @@ public abstract class AuthenticationModel
     [Required] public string Password { get; set; } = default!;
 }
 
-public class SignInModel : AuthenticationModel
+public class LoginModel : AuthenticationModel
 {
+    public string? TwoFactorCode { get; set; }
 }
 
-public class SignUpModel : AuthenticationModel
+public class RegisterModel : AuthenticationModel
 {
     [Required]
     [Length(3, 40, ErrorMessage = "FullName must be between 3 and 40 characters")]
