@@ -80,6 +80,7 @@ services.AddJwtBearerAuthentication(jwt)
     {
         options.ClientId = googleClientId;
         options.ClientSecret = googleClientSecret;
+        options.CallbackPath = "/google";
     });
 services.AddTransient<GoogleHandler, ReplacedGoogleHandler>();
 services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();

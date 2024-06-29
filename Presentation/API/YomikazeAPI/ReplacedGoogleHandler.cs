@@ -18,7 +18,7 @@ public class ReplacedGoogleHandler : GoogleHandler
 
     protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
     {
-        UriBuilder builder = new(redirectUri) { Scheme = "https", Host = "yomikaze.org", Port = 443 };
+        UriBuilder builder = new(redirectUri) { Scheme = "https", Host = "api.yomikaze.org", Port = 443 };
         return base.BuildChallengeUrl(properties, builder.Uri.ToString());
     }
 }
