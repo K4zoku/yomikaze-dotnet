@@ -1,6 +1,5 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -8,7 +7,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Stripe;
-using Yomikaze.API.Main;
 using Yomikaze.API.Main.Configurations;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
@@ -40,12 +38,6 @@ services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
 
 services.AddRouting(options => options.LowercaseUrls = true);
-services.AddMvc(options =>
-{
-    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
-});
-services.AddRazorPages();
-
 services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
@@ -64,11 +56,6 @@ services.AddControllers(options =>
 services.AddYomikazeIdentity();
 services.UpgradePasswordSecurity().UseArgon2<User>();
 
-JwtConfiguration jwt = configuration
-                           .GetRequiredSection(JwtConfiguration.SectionName)
-                           .Get<JwtConfiguration>()
-                       ?? throw new InvalidOperationException("Could not read JWT Configuration");
-services.AddSingleton(jwt);
 var googleClientId = configuration["Authentication:Google:ClientId"];
 var googleClientSecret = configuration["Authentication:Google:ClientSecret"];
 if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googleClientSecret))
@@ -80,6 +67,12 @@ services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
 });
+
+JwtConfiguration jwt = configuration
+                           .GetRequiredSection(JwtConfiguration.SectionName)
+                           .Get<JwtConfiguration>()
+                       ?? throw new InvalidOperationException("Could not read JWT Configuration");
+services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt)
     .AddGoogle(options =>
     {
@@ -149,12 +142,8 @@ if (!userManager.Users.Any())
     {
         throw new InvalidOperationException("Could not create default admin user");
     }
-    result = await userManager.AddToRoleAsync(admin, "Super");
-    result = await userManager.AddToRoleAsync(admin, "Administrator");
-    if (!result.Succeeded)
-    {
-        throw new InvalidOperationException("Could not add default admin user to Administrator role");
-    }
+    await userManager.AddToRoleAsync(admin, "Super");
+    await userManager.AddToRoleAsync(admin, "Administrator");
 }
 
-app.Run();
+await app.RunAsync();

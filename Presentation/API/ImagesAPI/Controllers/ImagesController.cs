@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.ImageSharp;
 using Yomikaze.Domain.Abstracts;
@@ -16,6 +17,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     private PhysicalFileProvider FileProvider => fileProvider;
 
     [HttpPost]
+    [Authorize(Roles = "Super,Administrator,Publisher")]
     public async Task<IActionResult> UploadImageAsync([FromForm] ImageUploadModel request,
         CancellationToken cancellationToken = default)
     {
@@ -71,10 +73,11 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
 
         // Generate URL
         string url = Url.Content($"~/Images/{GetRelativePath(FileProvider.Root, filePath)}");
-        return Created(url, new { Url = url });
+        return Created(url, new { Images = new[]{ ChangeExtension(url, "webp"), url}});
     }
 
     [HttpDelete("{file}")]
+    [Authorize(Roles = "Super,Administrator,Publisher")]
     public IActionResult DeleteImage(string file)
     {
         IFileInfo info = fileProvider.GetFileInfo(file);
@@ -88,6 +91,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
     }
 
     [HttpGet("statistics")]
+    [Authorize(Roles = "Super,Administrator")]
     public ActionResult<ResponseModel> GetStatistics()
     {
         IFileInfo[] files = fileProvider.GetDirectoryContents("").Where(f => !f.IsDirectory).ToArray();

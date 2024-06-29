@@ -1,14 +1,39 @@
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.FileProviders;
-using Yomikaze.Application.Helpers.API;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Yomikaze.API.CDN.Images.Configurations;
+using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
-services.AddControllers().ConfigureApiBehaviorOptionsYomikaze();
+services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+}).AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+    {
+        NamingStrategy = new CamelCaseNamingStrategy()
+    };
+    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    JsonConvert.DefaultSettings = () => options.SerializerSettings;
+});
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGenWithJwt();
+services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
+JwtConfiguration jwt = builder.Configuration
+                           .GetRequiredSection(JwtConfiguration.SectionName)
+                           .Get<JwtConfiguration>()
+                       ?? throw new InvalidOperationException("Could not read JWT Configuration");
+services.AddSingleton(jwt);
+services.AddJwtBearerAuthentication(jwt);
 
 string storagePath = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
 if (!Directory.Exists(storagePath))

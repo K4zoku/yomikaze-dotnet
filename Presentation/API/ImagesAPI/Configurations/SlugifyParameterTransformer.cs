@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Yomikaze.API.Main.Configurations;
+namespace Yomikaze.API.CDN.Images.Configurations;
 
 public partial class SlugifyParameterTransformer : IOutboundParameterTransformer
 {
