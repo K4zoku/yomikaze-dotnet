@@ -229,7 +229,7 @@ public partial class ComicsController(
         return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
     }
     
-    [Authorize]
+    [Authorize(Roles = "Super,Administrator,Publisher,Reader")]
     [HttpPost("{key}/follow")]
     public ActionResult Follow(ulong key, [FromBody] string? category)
     {
