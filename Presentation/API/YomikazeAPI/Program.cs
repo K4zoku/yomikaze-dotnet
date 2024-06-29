@@ -1,3 +1,5 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
@@ -83,6 +85,12 @@ services.AddStackExchangeRedisCache(options =>
 services.AddAutoMapper(typeof(YomikazeMapper));
 
 StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe secret key not found");
+
+services.AddSingleton(FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.GetApplicationDefault(),
+    ProjectId = "yomikaze-fcm",
+}));
 
 WebApplication app = builder.Build();
 IWebHostEnvironment env = app.Environment;
