@@ -11,7 +11,7 @@ using ImageUploadModel = Yomikaze.API.CDN.Images.Models.ImageUploadModel;
 namespace Yomikaze.API.CDN.Images.Controllers;
 
 [ApiController]
-[Route("API/[controller]")]
+[Route("[controller]")]
 public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBase
 {
     private PhysicalFileProvider FileProvider => fileProvider;

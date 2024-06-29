@@ -60,6 +60,9 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseCors("Public");
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 await app.RunAsync();
