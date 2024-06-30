@@ -70,7 +70,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         }
 
         // Generate URL
-        string url = Url.Content($"~/Images/{GetRelativePath(FileProvider.Root, filePath)}");
+        string url = Url.Content($"~/images/{GetRelativePath(FileProvider.Root, filePath)}");
         return Created(url, new { Images = new[]{ ChangeExtension(url, "webp"), url}});
     }
 
