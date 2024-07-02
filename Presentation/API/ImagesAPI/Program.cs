@@ -28,7 +28,7 @@ services.AddControllers(options =>
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
-services.AddPublicCors();
+services.AddPublicCors();   
 JwtConfiguration jwt = builder.Configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
                            .Get<JwtConfiguration>()

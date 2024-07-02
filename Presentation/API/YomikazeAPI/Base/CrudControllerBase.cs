@@ -31,6 +31,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     protected PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
+        long count = query.LongCount();
         query = query.Skip(skip).Take(pagination.Size);
         var results = Mapper.Map<List<TModel>>(query.AsEnumerable());
         results.ForEach(model => ModelWriteOnlyProperties.ForEach(property => property.SetValue(model, default)));
@@ -38,8 +39,8 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
-            RowCount = query.Count(),
-            PageCount = (int)Math.Ceiling((double)query.Count() / pagination.Size),
+            Totals = count,
+            TotalPages = (int)Math.Ceiling((double)count / pagination.Size),
             Results = results
         };
     }

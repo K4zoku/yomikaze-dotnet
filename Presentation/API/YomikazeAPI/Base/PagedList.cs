@@ -2,9 +2,9 @@ namespace Yomikaze.API.Main.Base;
 
 public class PagedList<T>
 {
-    public int CurrentPage { get; set; }
-    public int PageSize { get; set; }
-    public int RowCount { get; set; }
-    public int PageCount { get; set; }
-    public IEnumerable<T> Results { get; set; } = [];
+    public int CurrentPage { get; init; } = 1;
+    public int PageSize { get; init; } = 25;
+    public long Totals { get; init; } = 0;
+    public int TotalPages { get; init; } = 1;
+    public IEnumerable<T> Results { get; init; } = [];
 }
