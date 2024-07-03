@@ -4,32 +4,26 @@ using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Web;
 using Yomikaze.Application.Helpers.Security;
 using static Yomikaze.Infrastructure.Context.YomikazeDbContext.Default;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using AuthenticationService = Yomikaze.API.Main.Services.AuthenticationService;
 
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class AuthenticationController(
-    RoleManager<Role> roleManager,
     SignInManager<User> signInManager,
-    AuthenticatorTokenProvider<User> authenticatorTokenProvider,
-                
-    ILogger<AuthenticationController> logger,
-    JwtConfiguration jwtConfiguration)
+    AuthenticationService service,
+    ILogger<AuthenticationController> logger)
     : ControllerBase
 {
     private UserManager<User> UserManager { get; } = signInManager.UserManager;
-    private ClaimsIdentityOptions ClaimsIdentity { get; } = signInManager.Options.ClaimsIdentity;
-    private RoleManager<Role> RoleManager { get; } = roleManager;
-    private AuthenticatorTokenProvider<User> AuthenticatorTokenProvider { get; } = authenticatorTokenProvider;
     private SignInManager<User> SignInManager { get; } = signInManager;
+    
+    private AuthenticationService Service { get; } = service;
     private ILogger<AuthenticationController> Logger { get; } = logger;
-
-    private JwtConfiguration Jwt { get; } = jwtConfiguration;
 
     [HttpPost]
     [Route("[action]")]
@@ -37,11 +31,10 @@ public class AuthenticationController(
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return ValidationProblem(ModelState);
         }
 
-        User? user = await SignInManager.UserManager.FindByNameAsync(model.Username) ??
-                    await SignInManager.UserManager.FindByEmailAsync(model.Username);
+        User? user = await Service.FindUser(model.Username);
         
         if (user is null)
         {
@@ -50,46 +43,39 @@ public class AuthenticationController(
         }
 
         SignInResult result = await SignInManager.CheckPasswordSignInAsync(user, model.Password, true);
-        if (result.Succeeded)
+        if (HandleSignInResult(result))
         {
-            JwtSecurityToken token = await GenerateToken(user);
+            JwtSecurityToken token = await Service.GenerateAccessToken(user);
             return new TokenModel(token.ToTokenString());
         }
 
-        if (result.IsNotAllowed)
+        if (!result.RequiresTwoFactor)
         {
-            Logger.LogWarning("User is not allowed to sign in.");
-            ModelState.AddModelError(nameof(model.Username), "User is not allowed to sign in.");
+            return ValidationProblem(ModelState);
         }
-        else if (result.RequiresTwoFactor)
+
+        if (string.IsNullOrEmpty(model.TwoFactorCode))
         {
-            if (!string.IsNullOrEmpty(model.TwoFactorCode))
-            {
-                result = await SignInManager.TwoFactorSignInAsync("default", model.TwoFactorCode, false, false);
-                if (result.Succeeded)
-                {
-                    JwtSecurityToken token = await GenerateToken(user);
-                    return new TokenModel(token.ToTokenString());
-                }
-                Logger.LogWarning("Invalid two factor code.");
-                ModelState.AddModelError(nameof(model.TwoFactorCode), "Invalid two factor code.");
-            }
-            else
-            {
-                Logger.LogWarning("User requires two factor authentication.");
-                ModelState.AddModelError(nameof(model.TwoFactorCode), "User requires two factor authentication.");
-            }
-        }
-        else if (result.IsLockedOut)
-        {
-            Logger.LogWarning("User is locked out. Lockout end in: {}s",
-                (user.LockoutEnd?.DateTime - DateTime.UtcNow)?.TotalSeconds);
-            ModelState.AddModelError(nameof(model.Username), "User is locked out.");
+            Logger.LogWarning("User requires two factor authentication.");
+            ModelState.AddModelError(nameof(model.TwoFactorCode), "User requires two factor authentication.");
         }
         else
         {
-            ModelState.AddModelError(nameof(model.Password), "Invalid password.");
-            Logger.LogWarning("Invalid login attempt.");
+            result = await SignInManager.TwoFactorSignInAsync("default", model.TwoFactorCode, false, false);
+            ModelState.Clear(); 
+            if (HandleSignInResult(result))
+            {
+                JwtSecurityToken token = await Service.GenerateAccessToken(user);
+                return new TokenModel(token.ToTokenString());
+            }
+
+            if (!result.RequiresTwoFactor)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            Logger.LogWarning("Invalid two factor code.");
+            ModelState.AddModelError(nameof(model.TwoFactorCode), "Invalid two factor code.");
         }
 
         return ValidationProblem(ModelState);
@@ -119,86 +105,24 @@ public class AuthenticationController(
         ExternalLoginInfo? info = await SignInManager.GetExternalLoginInfoAsync();
         if (info is null)
         {
-            return Problem("External login info not found.", statusCode: (int)HttpStatusCode.NotFound, title: "Not Found",
-                type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
-        }
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            ModelState.AddModelError("Email", "Email not found.");
+            ModelState.AddModelError("Provider", "External login info not found.");
+            return ValidationProblem(ModelState);
         }
 
-        var name = info.Principal.FindFirstValue(ClaimTypes.Name);
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            ModelState.AddModelError("Name", "Name not found.");
-        }
-        if (!ModelState.IsValid)
+        User user = await Service.GetOrCreateUser(info);
+        
+        SignInResult result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+
+        if (!HandleSignInResult(result))
         {
             return ValidationProblem(ModelState);
         }
 
-        User? user = await UserManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-        if (user is null) // if we find by login provider failed, try to find by email
-        {
-            user = await UserManager.FindByEmailAsync(email!); 
-            if (user is null) // if user by email not found, create new user and add login
-            {
-                user = new User
-                {
-                    UserName = email,
-                    Email = email,
-                    Name = name!,
-                    EmailConfirmed = true,
-                };
-                IdentityResult result = await UserManager.CreateAsync(user);
-                if (!result.Succeeded)
-                {
-                    result.Errors.Where(e => e.Code.Contains("Email")).ToList()
-                        .ForEach(e => ModelState.AddModelError("Email", e.Description));
-                    result.Errors.Where(e => e.Code.Contains("Username")).ToList()
-                        .ForEach(e => ModelState.AddModelError("Username", e.Description));
-                    return ValidationProblem(ModelState);
-                }    
-                if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
-                {
-                    await UserManager.AddToRoleAsync(user, DefaulRole.Name);
-                }
-            }
-            
-            await UserManager.AddLoginAsync(user, info);
-        }
-        
-        if (await UserManager.IsLockedOutAsync(user))
-        {
-            ModelState.AddModelError("Username", "User is locked out.");
-            return ValidationProblem(ModelState);   
-        }
-            
-        await SignInManager.SignInAsync(user, false, info.LoginProvider);
-    
-        JwtSecurityToken token = await GenerateToken(user);
-        if (string.IsNullOrWhiteSpace(returnUrl))
-        {
-            return Ok(new TokenModel(token.ToTokenString()));
-        }
-
-        try
-        {
-            UriBuilder builder = new(returnUrl);
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query.Set("token", token.ToTokenString());
-            builder.Query = query.ToString();
-            return Redirect(builder.ToString());
-        }
-        catch (UriFormatException)
-        {
-            ModelState.AddModelError("ReturnUrl", "Invalid return url.");
-            return BadRequest(ModelState);
-        }
+        JwtSecurityToken token = await Service.GenerateAccessToken(user);
+        return Service.CallbackOrResult(returnUrl, token);
     }
     
-    [HttpPost($"{nameof(Login)}/external/Google/token")]
+    [HttpPost($"{nameof(Login)}/external/Google")]
     public async Task<ActionResult> LoginWithGoogleToken([FromBody] GoogleTokenModel model)
     {
         if (!ModelState.IsValid)
@@ -211,56 +135,51 @@ public class AuthenticationController(
             ModelState.AddModelError("Token", "Invalid token.");
             return ValidationProblem(ModelState);
         }
-        
-        User? user = await UserManager.FindByLoginAsync("Google", payload.Subject);
-        if (user is null)
+        ClaimsPrincipal? principal = new(new ClaimsIdentity(new[]
         {
-            user = await UserManager.FindByEmailAsync(payload.Email);
-            if (user is null)
-            {
-                user = new User
-                {
-                    UserName = payload.Email,
-                    Email = payload.Email,
-                    Name = payload.Name,
-                    EmailConfirmed = true,
-                };
-                IdentityResult result = await UserManager.CreateAsync(user);
-                if (!result.Succeeded)
-                {
-                    result.Errors.Where(e => e.Code.Contains("Email")).ToList()
-                        .ForEach(e => ModelState.AddModelError("Email", e.Description));
-                    result.Errors.Where(e => e.Code.Contains("Username")).ToList()
-                        .ForEach(e => ModelState.AddModelError("Username", e.Description));
-                    return ValidationProblem(ModelState);
-                }    
-                if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
-                {
-                    await UserManager.AddToRoleAsync(user, DefaulRole.Name);
-                }
-            }
-            await UserManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
-        }
+            new Claim(ClaimTypes.Email, payload.Email),
+            new Claim(ClaimTypes.Name, payload.Name),
+        }, "Google"));
+        ExternalLoginInfo info = new(principal, "Google", payload.Subject, "Google");
+        User user = await Service.GetOrCreateUser(info);
         
-        if (await UserManager.IsLockedOutAsync(user))
+        SignInResult result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+
+        if (!HandleSignInResult(result))
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        JwtSecurityToken token = await Service.GenerateAccessToken(user);
+        return Ok(new TokenModel(token.ToTokenString()));
+    }
+
+    private bool HandleSignInResult(SignInResult result)
+    {
+        if (result.Succeeded)
+        {
+            return true;
+        }
+        if (result.IsLockedOut)
         {
             ModelState.AddModelError("Username", "User is locked out.");
-            return ValidationProblem(ModelState);   
+        } 
+        else if (result.IsNotAllowed)
+        {
+            ModelState.AddModelError("Username", "User is not allowed to sign in.");
         }
-        
-        await SignInManager.SignInAsync(user, false, "Google");
-        
-        JwtSecurityToken token = await GenerateToken(user);
-        
-        return Ok(new TokenModel(token.ToTokenString()));
+        else
+        {
+            ModelState.AddModelError("Password", "Password is incorrect.");
+        }
+        return false;
     }
 
     [HttpPost]
     [Route("[action]")]
     public async Task<ActionResult<TokenModel>> Register([FromBody] RegisterModel model)
     {
-        User? user = await UserManager.FindByNameAsync(model.Username) ??
-                     await UserManager.FindByEmailAsync(model.Email);
+        User? user = await Service.FindUser(model.Username);
         if (user is not null)
         {
             ModelState.AddModelError("Username", "Username may already exists.");
@@ -279,12 +198,8 @@ public class AuthenticationController(
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
-            if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
-            {
-                await UserManager.AddToRoleAsync(user, DefaulRole.Name);
-            }
-            string token = (await GenerateToken(user)).ToTokenString();
-            
+            await UserManager.AddToRoleAsync(user, DefaulRole.Name!);
+            string token = (await Service.GenerateAccessToken(user)).ToTokenString();
             return Ok(new TokenModel(token));
         }
 
@@ -314,24 +229,9 @@ public class AuthenticationController(
             new
             {
                 User = (ProfileModel)user,
-                Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value)
+                Claims = User.Claims.GroupBy(c => c.Type).ToDictionary(g => g.Key, g => g.Select(c => c.Value))
             }
         );
-    }
-
-    [NonAction]
-    private async Task<JwtSecurityToken> GenerateToken(User user)
-    {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        List<Claim> claims =
-        [
-            new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-            new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(Jwt.ExpireMinutes).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
-        ];
-        ClaimsPrincipal claimIdentity = await SignInManager.CreateUserPrincipalAsync(user);
-        claims.AddRange(claimIdentity.Claims);
-        return new JwtSecurityToken(signingCredentials: Jwt.SigningCredentials, claims: claims);
     }
 
 }

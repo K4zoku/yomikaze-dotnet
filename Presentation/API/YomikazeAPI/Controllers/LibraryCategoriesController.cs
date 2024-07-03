@@ -11,7 +11,7 @@ public class LibraryCategoriesController(
     ILogger<CrudControllerBase<LibraryCategory, LibraryCategoryModel, LibraryCategoryRepository>> logger)
     : CrudControllerBase<LibraryCategory, LibraryCategoryModel, LibraryCategoryRepository>(repository, mapper, logger)
 {
-    protected override IQueryable<LibraryCategory> GetQuery()
+    protected override IQueryable<LibraryCategory> ListQuery()
     {
         return Repository.GetAllByUserId(User.GetIdString());
     }

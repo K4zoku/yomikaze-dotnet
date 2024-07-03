@@ -39,7 +39,7 @@ public class LibraryController(
         }),
     };
 
-    protected override IQueryable<LibraryEntry> GetQuery()
+    protected override IQueryable<LibraryEntry> ListQuery()
     {
         return Repository.GetAllByUserId(User.GetIdString());
     }

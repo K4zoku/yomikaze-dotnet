@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Reflection;
-using System.Text;
+using Yomikaze.API.Main.Helpers;
 using Yomikaze.Domain;
 
 namespace Yomikaze.API.Main.Base;
@@ -19,7 +19,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     where TModel : class
     where TRepository : IRepository<T, TKey>
 {
-    protected static readonly string KeyPrefix = typeof(T).Name + ":";
+    protected static readonly string CacheKeyPrefix = typeof(T).Name + ":";
     protected IMapper Mapper { get; } = mapper;
 
     protected TRepository Repository { get; } = repository;
@@ -45,6 +45,8 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Results = results
         };
     }
+    
+    protected string GetCacheKey(TKey key) => CacheKeyPrefix + key;
 
     protected List<PropertyInfo> ModelWriteOnlyProperties { get; } = typeof(TModel).GetProperties()
         .Where(x => x.GetCustomAttribute<WriteOnlyAttribute>() != null)
@@ -61,21 +63,17 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
-        string keyName = $"{KeyPrefix}:list({pagination.Page}, {pagination.Size})";
-        if (Cache.TryGet(keyName, out PagedList<TModel> cachedModels))
+        string keyName = $"{CacheKeyPrefix}{nameof(List)}:[{pagination.Page}, {pagination.Size}]";
+        var result = Cache.GetOrSet(keyName, () =>
         {
-            Logger.LogDebug("Cache hit for {Key}, returning cached data...", keyName);
-            return Ok(cachedModels);
-        }
-        var query = GetQuery();
-        PagedList<TModel> models = GetPaged(query, pagination);
-        Logger.LogDebug("Cache miss for {Key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, models);
-        Logger.LogDebug("Returning {Key} data...", keyName);
-        return models;
+            var query = ListQuery();
+            PagedList<TModel> models = GetPaged(query, pagination);
+            return models;
+        }, logger: Logger);
+        return Ok(result);
     }
     
-    protected virtual IQueryable<T> GetQuery()
+    protected virtual IQueryable<T> ListQuery()
     {
         return Repository.Query();
     }
@@ -92,27 +90,24 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
-        string keyName = KeyPrefix + key;
 
-        if (Cache.TryGet(keyName, out TModel cachedModel))
+        var result = Cache.GetOrSet(GetCacheKey(key), () =>
         {
-            Logger.LogDebug("Cache hit for {Key}, returning cached data...", keyName);
-            return Ok(cachedModel);
-        }
-
-        T? entity = Repository.Get(key);
-
-        if (entity == null)
+            T? entity = Repository.Get(key);
+            if (entity == null)
+            {
+                return null;
+            }
+            TModel model = Mapper.Map<TModel>(entity);
+            ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+            return model;
+        }, logger: Logger);
+        if (result == null)
         {
-            Logger.LogWarning("Entity with key {Key} not found", key);
             return NotFound();
         }
-
-        TModel model = Mapper.Map<TModel>(entity);
-        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
-        Logger.LogDebug("Cache miss for {Key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, model);
-        return Ok(model);
+         
+        return Ok(result);
     }
 
     [HttpPost]
@@ -130,7 +125,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             return ValidationProblem(ModelState);
         }
 
-        T? entity = Mapper.Map<T>(input);
+        T entity = Mapper.Map<T>(input);
         Logger.LogDebug("After mapped {Entity}", JsonConvert.SerializeObject(entity));
         try
         {
@@ -146,51 +141,15 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         }
 
         Logger.LogDebug("After added {Entity}", JsonConvert.SerializeObject(entity));
-        Cache.Remove($"{KeyPrefix}:list*");
-        entity = Repository.Get(entity.Id); // load navigation properties
-        string id = entity?.Id?.ToString() ?? "-1";
-        string url = Url.Action("Get", new { key = id }) ?? string.Empty;
+        RemoveListCache();
+        if (Equals(entity.Id, default(TKey)))
+        {
+            return Problem("Id is null");
+        }
+        entity = Repository.Get(entity.Id) ?? entity;
         var model = Mapper.Map<TModel>(entity);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
-        return Created(url, Mapper.Map<TModel>(entity));
-    }
-
-    [HttpPut("{key}")]
-    public virtual ActionResult<TModel> Put(TKey key, TModel input)
-    {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        T? entityToUpdate = Repository.Get(key);
-        if (entityToUpdate == null)
-        {
-            return NotFound();
-        }
-
-        Mapper.Map(input, entityToUpdate);
-
-        try
-        {
-            Repository.Update(entityToUpdate);
-        }
-        catch (DbUpdateException e)
-        {
-            Logger.LogWarning(e, "DbRelation error when updating entity {Key}", key);
-            return Conflict();
-        } catch (Exception e)
-        {
-            Logger.LogCritical(e, "Critical error when updating entity {Key}", key);
-            return Problem();
-        }
-
-        // remove cache
-        string keyName = KeyPrefix + key;
-        Cache.Remove(keyName);
-        Cache.Remove($"{KeyPrefix}:list*");
-
-        return NoContent();
+        return CreatedAtAction("Get", new { key = entity.Id }, model);
     }
 
     [HttpPatch("{key}")]    
@@ -233,12 +192,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Logger.LogCritical(e, "Critical error when updating entity {Key}", key);
             return Problem();
         }
-
-        // remove cache
-        string keyName = KeyPrefix + key;
-        Cache.Remove(keyName);
-        Cache.Remove($"{KeyPrefix}:list*");
-
+        RemoveCache(key);
         return NoContent();
     }
 
@@ -255,110 +209,24 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             return ValidationProblem(ModelState);
         }
         T? entity = Repository.Get(key);
-
         if (entity == null)
         {
             return NotFound();
         }
-
         Repository.Delete(entity);
-
-        // remove cache
-        string keyName = KeyPrefix + key;
-        Cache.Remove(keyName);
-        Cache.Remove($"{KeyPrefix}:list*");
-
+        RemoveCache(key);
         return NoContent();
     }
-}
-
-internal static class DistributedCacheExtension
-{
-    internal static bool TryGet<TC>(this IDistributedCache cache, string key, out TC value)
-    {
-        byte[]? cachedData = cache.Get(key);
-        value = default!;
-        if (cachedData == null)
-        {
-            return false;
-        }
-
-        TC? cachedValue = JsonConvert.DeserializeObject<TC>(Encoding.UTF8.GetString(cachedData));
-        if (Equals(cachedValue, default(TC)))
-        {
-            return false;
-        }
-
-        value = cachedValue!; // checked above
-        return true;
-    }
-
-    internal static void SetInBackground<TC>(this IDistributedCache cache, string key, TC value,
-        DistributedCacheEntryOptions? options = default!)
-    {
-        if (cache is NoCache) { return; }
-        options ??= new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };
-        Task.Run(async () =>
-        {
-            await cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options);
-        });
-    }
-}
-
-internal class NoCache : IDistributedCache
-{
-    private static NoCache? _instance;
-    private static readonly object Lock = new();
     
-    public static NoCache Instance
+    protected virtual void RemoveCache(TKey key)
     {
-        get
-        {
-            lock (Lock)
-            {
-                return _instance ??= new NoCache();
-            }
-        }
-    }
-    public byte[]? Get(string key)
-    {
-        return null;
+        Cache.Remove(GetCacheKey(key));
+        RemoveListCache();
     }
 
-    public Task<byte[]?> GetAsync(string key, CancellationToken token = new CancellationToken())
+    protected virtual void RemoveListCache()
     {
-        return Task.FromResult<byte[]?>(null);
-    }
-
-    public void Refresh(string key)
-    {
-        // do nothing
-    }
-
-    public Task RefreshAsync(string key, CancellationToken token = new CancellationToken())
-    {
-        return Task.CompletedTask;
-    }
-
-    public void Remove(string key)
-    {
-        // do nothing
-    }
-
-    public Task RemoveAsync(string key, CancellationToken token = new CancellationToken())
-    {
-        return Task.CompletedTask;
-    }
-
-    public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
-    {
-        // do nothing
-    }
-
-    public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options,
-        CancellationToken token = new CancellationToken())
-    {
-        return Task.CompletedTask;
+        Cache.Remove($"{CacheKeyPrefix}{nameof(List)}:*");
     }
 }
 
@@ -404,7 +272,7 @@ public abstract class SearchControllerBase<T, TModel, TRepository, TSearch>(
     [NonAction]
     public override ActionResult<PagedList<TModel>> List(PaginationModel pagination)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException($"Use {nameof(List)} with search parameter");
     }
     
     [HttpGet]
@@ -418,20 +286,14 @@ public abstract class SearchControllerBase<T, TModel, TRepository, TSearch>(
         {
             return ValidationProblem(ModelState);
         }
-        string keyName = $"{KeyPrefix}{nameof(List)}:{JsonConvert.SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
-        if (Cache.TryGet(keyName, out PagedList<TModel> cachedModels))
-        { 
-            Logger.LogDebug("Cache hit for {Key}, returning cached data...", keyName);
-            return Ok(cachedModels);
-        }
-
-        IQueryable<T> query = Repository.Query();
-        query = ApplySearch(query, search);
-        PagedList<TModel> models = GetPaged(query, pagination);
-        Logger.LogDebug("Cache miss for {Key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, models);
-        Logger.LogDebug("Returning {Key} data...", keyName);
-        return models;
+        string keyName = $"{CacheKeyPrefix}{nameof(List)}:{JsonConvert.SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
+        
+        return Cache.GetOrSet(keyName, () =>
+        {
+            IQueryable<T> query = ListQuery();
+            query = ApplySearch(query, search);
+            return GetPaged(query, pagination);    
+        }, logger: Logger);
     }
 }
 

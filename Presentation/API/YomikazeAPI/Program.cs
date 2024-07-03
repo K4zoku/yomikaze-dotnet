@@ -1,11 +1,13 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using StackExchange.Redis;
 using Stripe;
 using Yomikaze.API.Main.Configurations;
 using Yomikaze.Application.Data.Configs;
@@ -36,6 +38,7 @@ services.AddScoped<IRepository<LibraryEntry>, LibraryRepository>();
 services.AddScoped<LibraryRepository>();
 services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
+services.AddScoped<Yomikaze.API.Main.Services.AuthenticationService>();
 
 services.AddRouting(options => options.LowercaseUrls = true);
 services.AddControllers(options =>
@@ -87,11 +90,11 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
-
+var redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ?? throw new InvalidOperationException("Redis configuration not found");
 services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = configuration.GetSection("Redis").GetConnectionString("Yomikaze");
-    options.InstanceName = "Yomikaze";
+    options.Configuration = redis;
+    options.InstanceName = "Yomikaze:";
 });
 services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 services.AddAutoMapper(typeof(YomikazeMapper));
@@ -100,7 +103,7 @@ StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new Inva
 
 services.AddSingleton(FirebaseApp.Create(new AppOptions()
 {
-    Credential = GoogleCredential.GetApplicationDefault(),
+    Credential = await GoogleCredential.GetApplicationDefaultAsync(),
     ProjectId = "yomikaze-fcm",
 }));
 
@@ -128,7 +131,7 @@ IServiceProvider serviceProvider = scope.ServiceProvider;
 YomikazeDbContext dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
 await dbContext.Database.MigrateAsync();
 UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-if (!userManager.Users.Any())
+if (!await userManager.Users.AnyAsync())
 {
     User admin = new()
     {

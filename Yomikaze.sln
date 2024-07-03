@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yomikaze.Infrastructure.Context", "Infrastructure\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj", "{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YomikazeAPI.Tests", "Presentation\API\YomikazeAPI.Tests\YomikazeAPI.Tests.csproj", "{37949830-5261-4FC5-9109-D8BD061E4ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37949830-5261-4FC5-9109-D8BD061E4ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37949830-5261-4FC5-9109-D8BD061E4ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37949830-5261-4FC5-9109-D8BD061E4ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37949830-5261-4FC5-9109-D8BD061E4ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{EB54340E-23B4-40B8-B743-718F15FD3A55} = {9EC8C6D6-6084-4233-B29F-A3365FF89725}
 		{BE0B85DD-03FD-4073-A67A-D77EBA1D0D23} = {E4ED7F0D-823D-4048-8568-B0EEAB66130C}
 		{E46B0775-9C1D-4DBD-9E67-A1A37E610CD3} = {B462B1BA-A414-4A53-A143-8D8F986237DD}
+		{37949830-5261-4FC5-9109-D8BD061E4ADE} = {DFF10A16-151F-4B31-9BD1-DCD35250BC7B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A103C08F-D4A1-4C73-93E4-9FF053433E59}

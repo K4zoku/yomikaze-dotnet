@@ -13,6 +13,7 @@ public partial class YomikazeDbContext
 
         public static readonly Role[] Roles =
         [
+            Super,
             Administrator,
             Publisher,
             Reader

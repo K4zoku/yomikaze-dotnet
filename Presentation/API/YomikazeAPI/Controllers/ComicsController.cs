@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
 using static Newtonsoft.Json.JsonConvert;
@@ -77,7 +78,7 @@ public partial class ComicsController(
             new(searchModel => searchModel.OrderBy != null && searchModel.OrderBy.Length != 0,
                 (query, search) =>
                 {
-                    ComicOrderBy firstMutator = search.OrderBy!.First();
+                    ComicOrderBy firstMutator = search.OrderBy![0];
                     IOrderedQueryable<Comic> orderedQuery = firstMutator switch
                     {
                         ComicOrderBy.Name => query.OrderBy(comic => comic.Name),
@@ -129,43 +130,45 @@ public partial class ComicsController(
                 })
         };
 
+    private static List<string> ListCacheKeys { get; } = [];
+    private static object ListCacheKeyLock { get; } = new();
+    
     [NonAction]
     public override ActionResult<PagedList<ComicModel>> List(PaginationModel pagination)
     {
         return NotFound();
     }
-
+    
 
     [HttpGet]
     [AllowAnonymous]
-    public ActionResult<PagedList<ComicModel>> List([FromQuery] ComicSearchModel search,
+    public async Task<ActionResult<PagedList<ComicModel>>> List([FromQuery] ComicSearchModel search,
         [FromQuery] PaginationModel pagination)
     {
-        string key = $"{KeyPrefix}{nameof(List)}:{SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
+        string key = $"{CacheKeyPrefix}{nameof(List)}:{SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
         bool isAuthorized = User.Identity is { IsAuthenticated: true };
         if (isAuthorized)
         {
             key += $":{User.GetId()}";
         }
-        if (Cache.TryGet(key, out PagedList<ComicModel> cached))
+        return await Cache.GetOrSetAsync(key, valueFactory: () =>
         {
-            return Ok(cached);
-        }
-
-        IQueryable<Comic> queryable = Repository.QueryWithExtras();
-        queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
-        PagedList<ComicModel> paged = GetPaged(queryable, pagination);
-        if (isAuthorized)
-        {
+            lock (ListCacheKeyLock)
+            {
+                ListCacheKeys.Add(key);
+            }
+            IQueryable<Comic> queryable = Repository.QueryWithExtras();
+            queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
+            PagedList<ComicModel> paged = GetPaged(queryable, pagination);
+            if (!isAuthorized) return paged;
             ulong userId = User.GetId();
             foreach (var model in paged.Results)
             {
                 model.IsFollowing = LibraryRepository.IsFollowing(userId, ulong.Parse(model.Id ?? "0"));
             }
-        }
 
-        Cache.SetInBackground(key, paged);
-        return Ok(paged);
+            return paged;
+        }, logger: Logger);
     }
 
     [HttpPost]
@@ -183,7 +186,7 @@ public partial class ComicsController(
     [AllowAnonymous]
     public override ActionResult<ComicModel> Get(ulong key)
     {
-        string keyName = KeyPrefix + key;
+        string keyName = CacheKeyPrefix + key;
         
         bool isAuthorized = User.Identity is { IsAuthenticated: true };
         
@@ -192,31 +195,31 @@ public partial class ComicsController(
             keyName += $":{User.GetId()}";
         }
 
-        if (Cache.TryGet(keyName, out ComicModel cachedModel))
+        var result = Cache.GetOrSet(keyName, () =>
         {
-            Logger.LogDebug("Cache hit for {key}, returning cached data...", keyName);
-            return Ok(cachedModel);
-        }
+            Comic? entity = Repository.Get(key);
+            if (entity == null)
+            {
+                Logger.LogWarning("Entity with key {Key} not found", key);
+                return null;
+            }
+            ComicModel model = Mapper.Map<ComicModel>(entity);
+            if (isAuthorized)
+            {
+                model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
+                model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
+                model.IsRated = model.MyRating != null;
+            }
+            ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+            return model;
+        }, logger: Logger);
 
-        Comic? entity = Repository.Get(key);
-
-        if (entity == null)
+        if (result == null)
         {
-            Logger.LogWarning("Entity with key {key} not found", key);
             return NotFound();
         }
-
-        ComicModel model = Mapper.Map<ComicModel>(entity);
-        if (isAuthorized)
-        {
-            model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
-            model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
-            model.IsRated = model.MyRating != null;
-        }
-        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
-        Logger.LogDebug("Cache miss for {key}, storing data in cache...", keyName);
-        Cache.SetInBackground(keyName, model);
-        return Ok(model);
+        
+        return Ok(result);
     }
 
     [HttpPost("[action]")]
@@ -234,7 +237,7 @@ public partial class ComicsController(
     
     [Authorize]
     [HttpPut("{key}/follow")]
-    public ActionResult Follow(ulong key)
+    public ActionResult<LibraryEntryModel> Follow(ulong key)
     {
         ulong userId = User.GetId();
         Comic? comic = Repository.Get(key);
@@ -247,8 +250,7 @@ public partial class ComicsController(
         if (entry != null)
         {
             LibraryRepository.Delete(entry);
-            Cache.Remove($"{KeyPrefix}{key}:{userId}");
-            Cache.Remove($"{KeyPrefix}list*:{userId}");
+            ClearCacheForUser(key, userId);
             return NoContent();
         } 
         
@@ -259,9 +261,8 @@ public partial class ComicsController(
         };
 
         LibraryRepository.Add(entry);
-        Cache.Remove($"{KeyPrefix}{key}:{userId}");
-        Cache.Remove($"{KeyPrefix}list*:{userId}");
-        return Ok();
+        ClearCacheForUser(key, userId);
+        return Ok(new LibraryEntryModel() { Id = entry.Id.ToString(), ComicId = comic.Id.ToString() });
     }
     
     [Authorize]
@@ -286,8 +287,7 @@ public partial class ComicsController(
         {
             existingRating.Rating = rating.Rating!.Value;
             Repository.Update(comic);   
-            Cache.Remove($"{KeyPrefix}{key}:{userId}");
-            Cache.Remove($"{KeyPrefix}list*:{userId}");
+            ClearCacheForUser(key, userId);
             return Ok();
         }
 
@@ -300,9 +300,21 @@ public partial class ComicsController(
         
         comic.Ratings.Add(newRating);
         Repository.Update(comic);
-        Cache.Remove($"{KeyPrefix}{key}:{userId}");
-        Cache.Remove($"{KeyPrefix}list*:{userId}");
+        ClearCacheForUser(key, userId);
         return Ok();
+    }
+    
+    private void ClearCacheForUser(ulong key, ulong userId)
+    {
+        Task.Run(() =>
+        {
+            Cache.Remove($"{CacheKeyPrefix}{key}:{userId}");
+            lock (ListCacheKeyLock)
+            {
+                ListCacheKeys.ForEach(k => Cache.Remove(k));
+                ListCacheKeys.Clear();
+            }
+        });
     }
     
     
