@@ -198,6 +198,7 @@ public class AuthenticationController(
         }
     }
     
+    [HttpPost($"{nameof(Login)}/external/google/token")]
     public async Task<ActionResult> LoginWithGoogleToken([FromBody] GoogleTokenModel model)
     {
         if (!ModelState.IsValid)
@@ -211,30 +212,33 @@ public class AuthenticationController(
             return ValidationProblem(ModelState);
         }
         
-        User? user = await UserManager.FindByEmailAsync(payload.Email);
+        User? user = await UserManager.FindByLoginAsync("Google", payload.Subject);
         if (user is null)
         {
-            user = new User
+            user = await UserManager.FindByEmailAsync(payload.Email);
+            if (user is null)
             {
-                UserName = payload.Email,
-                Email = payload.Email,
-                Name = payload.Name,
-                EmailConfirmed = true,
-            };
-            IdentityResult result = await UserManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
-                result.Errors.Where(e => e.Code.Contains("Email")).ToList()
-                    .ForEach(e => ModelState.AddModelError("Email", e.Description));
-                result.Errors.Where(e => e.Code.Contains("Username")).ToList()
-                    .ForEach(e => ModelState.AddModelError("Username", e.Description));
-                return ValidationProblem(ModelState);
-            }    
-            if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
-            {
-                await UserManager.AddToRoleAsync(user, DefaulRole.Name);
+                user = new User
+                {
+                    UserName = payload.Email,
+                    Email = payload.Email,
+                    Name = payload.Name,
+                    EmailConfirmed = true,
+                };
+                IdentityResult result = await UserManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    result.Errors.Where(e => e.Code.Contains("Email")).ToList()
+                        .ForEach(e => ModelState.AddModelError("Email", e.Description));
+                    result.Errors.Where(e => e.Code.Contains("Username")).ToList()
+                        .ForEach(e => ModelState.AddModelError("Username", e.Description));
+                    return ValidationProblem(ModelState);
+                }    
+                if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
+                {
+                    await UserManager.AddToRoleAsync(user, DefaulRole.Name);
+                }
             }
-            
             await UserManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
         }
         
