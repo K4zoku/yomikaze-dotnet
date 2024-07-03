@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
@@ -14,13 +15,47 @@ public class HistoryController(
     [NonAction]
     public override ActionResult<HistoryRecordModel> Post(HistoryRecordModel input)
     {
-        return NotFound();
+        throw new NotSupportedException();
     }
 
     [NonAction]
     public override ActionResult<HistoryRecordModel> Put(ulong key, HistoryRecordModel input)
     {
-        return NotFound();
+        throw new NotSupportedException();
+    }
+
+    [NonAction]
+    public override ActionResult<HistoryRecordModel> Patch(ulong key, JsonPatchDocument<HistoryRecordModel> patch)
+    {
+        throw new NotSupportedException();
+    }
+
+    [HttpPatch("comics/{comicId}/chapters/{number}")]
+    [Authorize]
+    public IActionResult Patch([FromRoute] ulong comicId, [FromRoute] int number, JsonPatchDocument<HistoryRecordModel> patchDocument)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        var record = Repository.Get(User.GetId(), comicId, number);
+        if (record == null)
+        {
+            return NotFound();
+        }
+
+        var model = Mapper.Map<HistoryRecordModel>(record);
+        patchDocument.ApplyTo(model, ModelState);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        Mapper.Map(model, record);
+        Repository.Update(record);
+        return NoContent();
     }
 
     [HttpDelete]
