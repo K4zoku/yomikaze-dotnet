@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -23,7 +24,6 @@ public class AuthenticationController(
 {
     private UserManager<User> UserManager { get; } = signInManager.UserManager;
     private ClaimsIdentityOptions ClaimsIdentity { get; } = signInManager.Options.ClaimsIdentity;
-    private static readonly ClaimsIdentityOptions DefaultClaimsIdentity = new();
     private RoleManager<Role> RoleManager { get; } = roleManager;
     private AuthenticatorTokenProvider<User> AuthenticatorTokenProvider { get; } = authenticatorTokenProvider;
     private SignInManager<User> SignInManager { get; } = signInManager;
@@ -197,6 +197,59 @@ public class AuthenticationController(
             return BadRequest(ModelState);
         }
     }
+    
+    public async Task<ActionResult> LoginWithGoogleToken([FromBody] GoogleTokenModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        GoogleJsonWebSignature.Payload? payload = await GoogleJsonWebSignature.ValidateAsync(model.Token);
+        if (payload is null)
+        {
+            ModelState.AddModelError("Token", "Invalid token.");
+            return ValidationProblem(ModelState);
+        }
+        
+        User? user = await UserManager.FindByEmailAsync(payload.Email);
+        if (user is null)
+        {
+            user = new User
+            {
+                UserName = payload.Email,
+                Email = payload.Email,
+                Name = payload.Name,
+                EmailConfirmed = true,
+            };
+            IdentityResult result = await UserManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                result.Errors.Where(e => e.Code.Contains("Email")).ToList()
+                    .ForEach(e => ModelState.AddModelError("Email", e.Description));
+                result.Errors.Where(e => e.Code.Contains("Username")).ToList()
+                    .ForEach(e => ModelState.AddModelError("Username", e.Description));
+                return ValidationProblem(ModelState);
+            }    
+            if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
+            {
+                await UserManager.AddToRoleAsync(user, DefaulRole.Name);
+            }
+            
+            await UserManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+        }
+        
+        if (await UserManager.IsLockedOutAsync(user))
+        {
+            ModelState.AddModelError("Username", "User is locked out.");
+            return ValidationProblem(ModelState);   
+        }
+        
+        await SignInManager.SignInAsync(user, false, "Google");
+        
+        JwtSecurityToken token = await GenerateToken(user);
+        
+        return Ok(new TokenModel(token.ToTokenString()));
+    }
 
     [HttpPost]
     [Route("[action]")]
@@ -222,13 +275,12 @@ public class AuthenticationController(
         IdentityResult result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
-            string token = (await GenerateToken(user)).ToTokenString();
             if (!string.IsNullOrWhiteSpace(DefaulRole.Name))
             {
                 await UserManager.AddToRoleAsync(user, DefaulRole.Name);
             }
-
-            await UserManager.AddLoginAsync(user, new UserLoginInfo("YomikazeToken", token, "YomikazeToken"));
+            string token = (await GenerateToken(user)).ToTokenString();
+            
             return Ok(new TokenModel(token));
         }
 
