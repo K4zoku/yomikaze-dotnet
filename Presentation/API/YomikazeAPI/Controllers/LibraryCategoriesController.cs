@@ -1,3 +1,5 @@
+using Yomikaze.Application.Helpers.API;
+
 namespace Yomikaze.API.Main.Controllers;
 
 [Authorize(Roles = "Administrator,Publisher,Reader")]
@@ -9,4 +11,8 @@ public class LibraryCategoriesController(
     ILogger<CrudControllerBase<LibraryCategory, LibraryCategoryModel, LibraryCategoryRepository>> logger)
     : CrudControllerBase<LibraryCategory, LibraryCategoryModel, LibraryCategoryRepository>(repository, mapper, logger)
 {
+    protected override IQueryable<LibraryCategory> GetQuery()
+    {
+        return Repository.GetAllByUserId(User.GetIdString());
+    }
 }

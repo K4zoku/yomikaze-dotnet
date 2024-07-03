@@ -1,3 +1,5 @@
+using Yomikaze.Application.Helpers.API;
+
 namespace Yomikaze.API.Main.Controllers;
 
 [Authorize(Roles = "Administrator,Publisher,Reader")]
@@ -36,4 +38,9 @@ public class LibraryController(
                 });
         }),
     };
+
+    protected override IQueryable<LibraryEntry> GetQuery()
+    {
+        return Repository.GetAllByUserId(User.GetIdString());
+    }
 }

@@ -67,12 +67,17 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Logger.LogDebug("Cache hit for {Key}, returning cached data...", keyName);
             return Ok(cachedModels);
         }
-
-        PagedList<TModel> models = GetPaged(Repository.Query(), pagination);
+        var query = GetQuery();
+        PagedList<TModel> models = GetPaged(query, pagination);
         Logger.LogDebug("Cache miss for {Key}, storing data in cache...", keyName);
         Cache.SetInBackground(keyName, models);
         Logger.LogDebug("Returning {Key} data...", keyName);
         return models;
+    }
+    
+    protected virtual IQueryable<T> GetQuery()
+    {
+        return Repository.Query();
     }
 
     [HttpGet("{key}")]

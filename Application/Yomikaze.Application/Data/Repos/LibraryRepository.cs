@@ -21,4 +21,9 @@ public class LibraryRepository(DbContext dbContext) : BaseRepository<LibraryEntr
     {
         return Query().Any(x => x.UserId == userId && x.ComicId == comicId);
     }
+
+    public IQueryable<LibraryEntry> GetAllByUserId(string userId)
+    {
+        return Query().Where(x => x.UserId.ToString() == userId);
+    }
 }

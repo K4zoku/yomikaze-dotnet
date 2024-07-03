@@ -12,4 +12,9 @@ public class LibraryCategoryRepository(DbContext dbContext)
     {
         return Query().FirstOrDefault(x => x.Name == name && x.UserId == userId);
     }
+
+    public IQueryable<LibraryCategory> GetAllByUserId(string userId)
+    {
+        return Query().Where(x => x.UserId.ToString() == userId);
+    }
 }

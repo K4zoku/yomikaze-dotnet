@@ -12,6 +12,18 @@ public class HistoryController(
     ILogger<HistoryController> logger) :
     CrudControllerBase<HistoryRecord, HistoryRecordModel, HistoryRepository>(repository, mapper, logger)
 {
+    [HttpGet]
+    [Authorize]
+    public override ActionResult<PagedList<HistoryRecordModel>> List([FromQuery] PaginationModel pagination)
+    {
+        return base.List(pagination);
+    }
+
+    protected override IQueryable<HistoryRecord> GetQuery()
+    {
+        return Repository.GetAllByUserId(User.GetIdString());
+    }
+
     [NonAction]
     public override ActionResult<HistoryRecordModel> Post(HistoryRecordModel input)
     {
@@ -29,8 +41,50 @@ public class HistoryController(
     {
         throw new NotSupportedException();
     }
+    
+    [HttpPost("comics/{comicId}/chapters/{number}")] // mark as read
+    [Authorize]
+    public IActionResult Post([FromRoute] ulong comicId, [FromRoute] int number)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        if (Repository.Get(User.GetId(), comicId, number) != null)
+        {
+            return Conflict();
+        }
+        
+        Repository.AddBy(User.GetId(), comicId, number);
+        
+        return NoContent();
+    }
+    
+    [HttpDelete("comics/{comicId}/chapters/{number}")] // mark as unread
+    [Authorize]
+    public IActionResult Delete([FromRoute] ulong comicId, [FromRoute] int number)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        if (!Repository.Delete(User.GetId(), comicId, number))
+        {
+            return NotFound();
+        }
+        
+        return NoContent();
+    }
 
-    [HttpPatch("comics/{comicId}/chapters/{number}")]
+    [NonAction]
+    public override ActionResult Delete(ulong key)
+    {
+        throw new NotSupportedException();
+    }
+
+    [HttpPatch("comics/{comicId}/chapters/{number:int}")]
     [Authorize]
     public IActionResult Patch([FromRoute] ulong comicId, [FromRoute] int number, JsonPatchDocument<HistoryRecordModel> patchDocument)
     {

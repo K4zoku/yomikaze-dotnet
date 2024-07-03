@@ -18,9 +18,36 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
         return Query()
             .FirstOrDefault(x => x.UserId == userId && x.Chapter.ComicId == comicId && x.Chapter.Number == chapterNumber);
     }
+    
+    public bool Delete(ulong userId, ulong comicId, int chapterNumber)
+    {
+        var record = Get(userId, comicId, chapterNumber);
+        if (record == null)
+        {
+            return false;
+        }
+        
+        Delete(record);
+        return true;
+    }
 
     public void Clear(string userId)
     {
         Dao.DeleteAll(x => x.UserId.ToString() == userId);
+    }
+
+    public void AddBy(ulong userId, ulong comicId, int chapterNumber)
+    {
+        var record = new HistoryRecord
+        {
+            UserId = userId,
+            Chapter = new Chapter
+            {
+                ComicId = comicId,
+                Number = chapterNumber
+            }
+        };
+        
+        Add(record);
     }
 }
