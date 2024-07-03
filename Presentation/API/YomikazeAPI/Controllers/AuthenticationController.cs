@@ -198,7 +198,7 @@ public class AuthenticationController(
         }
     }
     
-    [HttpPost($"{nameof(Login)}/external/google/token")]
+    [HttpPost($"{nameof(Login)}/external/Google/token")]
     public async Task<ActionResult> LoginWithGoogleToken([FromBody] GoogleTokenModel model)
     {
         if (!ModelState.IsValid)
