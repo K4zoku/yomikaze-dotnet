@@ -14,7 +14,7 @@ public sealed class Comic : BaseEntity
 
     public string[] Aliases { get; set; } = [];
 
-    [StringLength(512)] public string? Description { get; set; }
+    [StringLength(1024)] public string? Description { get; set; }
 
     [StringLength(512)] public string? Cover { get; set; }
 

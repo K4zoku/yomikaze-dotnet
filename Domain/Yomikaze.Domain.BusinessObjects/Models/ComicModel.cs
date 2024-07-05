@@ -12,7 +12,7 @@ public class ComicModel : BaseModel
 
     public ICollection<string>? Aliases { get; set; } = [];
 
-    [StringLength(500, ErrorMessage = "Comic's description must from 0 to 500 characters")]
+    [StringLength(1024, ErrorMessage = "Comic's description must from 0 to 1024 characters")]
     public string? Description { get; set; }
 
     [SwaggerSchema(Format = "uri")] public string? Cover { get; set; }
