@@ -15,4 +15,10 @@ public class LibraryCategoriesController(
     {
         return Repository.GetAllByUserId(User.GetIdString());
     }
+
+    public override ActionResult<LibraryCategoryModel> Post(LibraryCategoryModel input)
+    {
+        input.UserId = User.GetIdString();
+        return base.Post(input);
+    }
 }

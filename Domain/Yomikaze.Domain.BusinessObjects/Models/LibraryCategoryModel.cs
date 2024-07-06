@@ -11,6 +11,7 @@ public class LibraryCategoryModel : BaseModel
     #region WriteOnlyProperties
 
     [WriteOnly]
+    [SwaggerSchema(ReadOnly = true)]
     public string? UserId { get; set; } = default!;
 
     #endregion
