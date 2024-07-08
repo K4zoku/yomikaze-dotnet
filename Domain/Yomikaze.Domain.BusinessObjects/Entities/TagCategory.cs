@@ -3,7 +3,7 @@ namespace Yomikaze.Domain.Entities;
 public class TagCategory : BaseEntity
 {
     
-    public new ulong Id { get; }
+    public override ulong Id { get; }
     public TagCategory()
     {
     }

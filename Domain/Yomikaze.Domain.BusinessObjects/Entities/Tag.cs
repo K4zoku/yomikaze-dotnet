@@ -12,7 +12,7 @@ public class Tag : BaseEntity
 
     #region Properties
     
-    public new ulong Id { get; }
+    public override ulong Id { get; }
 
     private Action<object, string>? LazyLoader { get; }
 

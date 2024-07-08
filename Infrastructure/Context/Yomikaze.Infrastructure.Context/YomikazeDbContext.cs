@@ -114,7 +114,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .WithOne(e => e.Comic);
         builder.Entity<LibraryEntry>()
             .HasMany(e => e.Categories)
-            .WithMany()
+            .WithMany(e => e.Entries)
             .UsingEntity<LibraryEntryCategory>();
     }
 

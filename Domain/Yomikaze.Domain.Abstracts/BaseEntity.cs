@@ -19,7 +19,7 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public virtual TId Id { get; init; } = default!;
+    public virtual TId Id { get; } = default!;
 
     public override bool Equals(object? obj)
     {
@@ -43,7 +43,7 @@ public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public new ulong Id { get; }
+    public virtual ulong Id { get; }
 
     [NotMapped] public virtual int WorkerId => 0;
 }

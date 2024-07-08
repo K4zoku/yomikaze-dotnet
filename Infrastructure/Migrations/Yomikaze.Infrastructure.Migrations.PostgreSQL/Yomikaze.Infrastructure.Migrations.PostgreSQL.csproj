@@ -20,4 +20,8 @@
         <ProjectReference Include="..\..\Context\Yomikaze.Infrastructure.Context\Yomikaze.Infrastructure.Context.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

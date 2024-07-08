@@ -15,7 +15,7 @@ public class LibraryController(
     {
         #pragma warning disable CA1862
         new(search => !string.IsNullOrWhiteSpace(search.Category), 
-            (query, search) => query.Where(x => x.Categories.Any(c => c.Name == search.Category))),
+            (query, search) => query.Where(x => x.Categories.Any(c => c.Name == search.Category!))),
         new(search => !string.IsNullOrWhiteSpace(search.Name), 
             (query, search) => query.Where(x => x.Comic.Name.ToLower().Contains(search.Name!.ToLower()))),
         #pragma warning restore CA1862

@@ -29,7 +29,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     protected ILogger<CrudControllerBase<T, TKey, TModel, TRepository>> Logger { get; } = logger;
 
     [NonAction]
-    protected PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
+    protected virtual PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
         long count = query.LongCount();
