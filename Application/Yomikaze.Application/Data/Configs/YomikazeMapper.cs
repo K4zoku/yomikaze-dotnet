@@ -143,7 +143,7 @@ public class YomikazeMapper : MapperProfile
             })
             .ForMember(dest => dest.Categories, options =>
             {
-                options.Condition(src => src.CategoryIds != null && src.CategoryIds.Length != 0);
+                options.Condition(src => src.CategoryIds != null && src.CategoryIds.Count != 0);
                 options.MapFrom(src => src.CategoryIds!.Select(IdParse).ToHashSet());
             });
         CreateMap<LibraryEntry, LibraryEntryModel>()

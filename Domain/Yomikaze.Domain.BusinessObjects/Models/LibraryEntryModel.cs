@@ -21,7 +21,7 @@ public class LibraryEntryModel : BaseModel
     public string? ComicId { get; set; }
 
     [WriteOnly]
-    public string[]? CategoryIds { get; set; }
+    public IList<string>? CategoryIds { get; set; }
 
     #endregion
 }
