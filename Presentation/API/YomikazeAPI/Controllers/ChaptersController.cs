@@ -3,6 +3,8 @@ using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
 
+// TODO)) Check comics ownership for creating, updating and deleting chapters
+// TODO)) Return isUnlocked & isRead for chapters, only if user is authenticated
 public partial class ComicsController
 {
      #region Chapters
@@ -45,7 +47,7 @@ public partial class ComicsController
             Mapper.Map<ChapterModel>(chapter));
     }
 
-    [HttpGet("{key}/chapters/{number:int}")]
+    [HttpGet($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}")]
     [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
     {

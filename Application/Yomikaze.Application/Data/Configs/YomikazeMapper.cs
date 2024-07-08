@@ -141,15 +141,16 @@ public class YomikazeMapper : MapperProfile
                 options.Condition(src => src.ComicId != null);
                 options.MapFrom(src => IdParse(src.ComicId));
             })
-            .ForMember(dest => dest.CategoryId, options =>
+            .ForMember(dest => dest.Categories, options =>
             {
-                options.Condition(src => src.CategoryId != null);
-                options.MapFrom(src => IdParse(src.CategoryId));
+                options.Condition(src => src.CategoryIds != null && src.CategoryIds.Length != 0);
+                options.MapFrom(src => src.CategoryIds!.Select(IdParse).ToHashSet());
             });
         CreateMap<LibraryEntry, LibraryEntryModel>()
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
-            .ForMember(dest => dest.CategoryId, options => options.MapFrom(src => src.CategoryId.ToString()));
+            .ForMember(dest => dest.Categories, options => options.MapFrom(src => src.Categories.Select(category => category.Name.ToString()).ToArray()))
+            .ForMember(dest => dest.CategoryIds, options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
 
         CreateMap<TagModel, Tag>()
             .ForMember(dest => dest.CategoryId, options =>

@@ -1,4 +1,5 @@
 using EntityFrameworkCore.Projectables;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -40,6 +41,13 @@ public class Chapter : BaseEntity
     }
 
     public ICollection<ChapterComment> Comments { get; set; } = new List<ChapterComment>();
+
+    public int Price { get; set; } = 0;
+    
+    [Projectable]
+    public bool HasLock => Price > 0;
+    
+    public ICollection<UnlockedChapter> Unlocked { get; set; } = new List<UnlockedChapter>();
     
     [NotMapped]
     [Projectable]

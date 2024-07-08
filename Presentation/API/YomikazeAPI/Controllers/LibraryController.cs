@@ -13,9 +13,11 @@ public class LibraryController(
 {
     protected override IList<SearchFieldMutator<LibraryEntry, LibrarySearchModel>> SearchFieldMutators { get; } = new List<SearchFieldMutator<LibraryEntry, LibrarySearchModel>>
     {
-        new(search => !string.IsNullOrWhiteSpace(search.Category), (query, search) => query.Where(x => x.Category != null && x.Category.Name == search.Category)),
         #pragma warning disable CA1862
-        new(search => !string.IsNullOrWhiteSpace(search.Name), (query, search) => query.Where(x => x.Comic.Name.ToLower().Contains(search.Name.ToLower()))),
+        new(search => !string.IsNullOrWhiteSpace(search.Category), 
+            (query, search) => query.Where(x => x.Categories.Any(c => c.Name == search.Category))),
+        new(search => !string.IsNullOrWhiteSpace(search.Name), 
+            (query, search) => query.Where(x => x.Comic.Name.ToLower().Contains(search.Name!.ToLower()))),
         #pragma warning restore CA1862
         new(search => search.OrderBy.Length > 0, (query, search) =>
         {

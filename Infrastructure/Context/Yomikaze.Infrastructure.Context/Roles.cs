@@ -6,10 +6,10 @@ public partial class YomikazeDbContext
 {
     public static partial class Default
     {
-        public static readonly Role Super = new("Super");
-        public static readonly Role Administrator = new("Administrator");
-        public static readonly Role Publisher = new("Publisher");
-        public static readonly Role Reader = new("Reader");
+        public static readonly Role Super = new("Super") { Id = 67464207511101440L };
+        public static readonly Role Administrator = new("Administrator") { Id = 67464207515295744L };
+        public static readonly Role Publisher = new("Publisher") { Id = 67464207515295745L };
+        public static readonly Role Reader = new("Reader") { Id = 67464207515295746L };
 
         public static readonly Role[] Roles =
         [

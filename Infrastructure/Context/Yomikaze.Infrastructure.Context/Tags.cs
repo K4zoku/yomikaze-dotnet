@@ -6,94 +6,134 @@ public partial class YomikazeDbContext
 {
     public static partial class Default
     {
-        public static readonly TagCategory[] TagCategories = { new() { Name = "Genre" }, new() { Name = "Theme" } };
+        public static readonly TagCategory FormatCategory  = new(67464207515254786L, "Format");
+        public static readonly TagCategory GenreCategory   = new(67464207515254787L, "Genre");
+        public static readonly TagCategory ThemeCategory   = new(67464207515254788L, "Theme");
+        public static readonly TagCategory ContentCategory = new(67464207515254789L, "Content");
+        
+        public static readonly TagCategory[] TagCategories = [
+            FormatCategory,
+            GenreCategory,
+            ThemeCategory,
+            ContentCategory
+        ];
 
         public static readonly Tag[] Tags =
         [
-            new Tag
-            {
-                Name = "Action",
-                Description =
-                    "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Adventure",
-                Description =
-                    "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Comedy",
-                Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Drama",
-                Description =
-                    "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Fantasy",
-                Description =
-                    "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Horror",
-                Description = "A story that evokes fear in both the characters and the audience.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Mystery",
-                Description = "A story that revolves around solving a puzzle or a crime.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Psychological",
-                Description =
-                    "A story that emphasizes the psychology of its characters and their unstable emotional states.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag { Name = "Romance", Description = "A story about love.", CategoryId = TagCategories[0].Id },
-            new Tag
-            {
-                Name = "Slice of Life",
-                Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Sports",
-                Description = "A story that revolves around sports, such as baseball or basketball.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Supernatural",
-                Description = "A story that involves supernatural elements, such as ghosts or demons.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Thriller",
-                Description = "A story that is fast-paced and suspenseful, often involving a crime.",
-                CategoryId = TagCategories[0].Id
-            },
-            new Tag
-            {
-                Name = "Tragedy",
-                Description = "A story that ends in a tragic or unhappy way.",
-                CategoryId = TagCategories[0].Id
-            }
+            new Tag(67464207515254877L, "4-Koma", FormatCategory, "A comic strip format that consists of four panels."),
+            new Tag(67464207515254878L, "Adaption", FormatCategory, "A comic that is based on a previously existing work."),
+            new Tag(67464207515254879L, "Anthology", FormatCategory, "A collection of stories or poems by different authors."),
+            new Tag(67464207515254880L, "Award Winning", FormatCategory, "A comic that has won an award."),
+            new Tag(67464207515254881L, "Doujinshi", FormatCategory, "A comic that based on a previously existing work, created by a fan."),
+            new Tag(67464207515254882L, "Fan colored", FormatCategory, "A comic that has been colored by a fan."),
+            new Tag(67464207515254883L, "Full Color", FormatCategory, "A comic that is fully colored."),
+            new Tag(67464207515254884L, "Long Strip", FormatCategory, "A comic that consists of a long strip of panels."),
+            new Tag(67464207515254885L, "Official Colored", FormatCategory, "A comic that has been officially colored."),
+            new Tag(67464207515254886L, "Oneshot", FormatCategory, "A comic that is a single, standalone story."),
+            new Tag(67464207515254887L, "Self-Published", FormatCategory, "A comic that has been published by the creator."),
+            new Tag(67464207515254888L, "Web Comic", FormatCategory, "A comic that is published on the internet."),
+
+            new Tag(67464207515254789L, "Action", GenreCategory, 
+                "A story that focuses on physical action, such as fighting, war, sports, or physical challenges."),
+            new Tag(67464207515254790L, "Adventure", GenreCategory, 
+                "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown."),
+            new Tag(67464207515254803L, "Boys' Love", GenreCategory, 
+                "A story that focuses on romantic relationships between \"male\" characters."),
+            new Tag(67464207515254791L, "Comedy", GenreCategory,
+                "A story with humorous narration or dialogue, intended to amuse the audience."),
+            new Tag(67464207515254804L, "Crime", GenreCategory, 
+                "A story that revolves around a crime, such as a thief"),
+            new Tag(67464207515254792L, "Drama", GenreCategory,
+                "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist."),
+            new Tag(67464207515254793L, "Fantasy", GenreCategory, 
+                "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements."),
+            new Tag(67464207515254805L, "Girls' Love", GenreCategory, 
+                "A story that focuses on romantic relationships between \"female\" characters."),
+            new Tag(67464207515254806L, "Historical", GenreCategory, "A story that takes place in the past."),
+            new Tag(67464207515254794L, "Horror", GenreCategory,
+                "A story that evokes fear in both the characters and the audience."),
+            new Tag(67464207515254807L, "Isekai", GenreCategory, 
+                "A story that involves characters being transported to another world."),
+            new Tag(67464207515254808L, "Magical Girls", GenreCategory, 
+                "A story that revolves around spell-casting and transforming heroines."),
+            new Tag(67464207515254809L, "Mecha", GenreCategory, 
+                "A story that revolves around giant robots."),
+            new Tag(67464207515254810L, "Medical", GenreCategory, 
+                "A story that revolves around medical procedures and practices."),
+            new Tag(67464207515254795L, "Mystery", GenreCategory,
+                "A story that revolves around solving a puzzle or a crime."),
+            new Tag(67464207515254796L, "Psychological", GenreCategory,
+                "A story that emphasizes the psychology of its characters and their unstable emotional states."),
+            new Tag(67464207515254797L, "Romance", GenreCategory, 
+                "A story about love."),
+            new Tag(67464207515254811L, "Sci-Fi", GenreCategory,
+                "A story that revolves around science fiction elements, such as space travel or hi-tech gadgets."),
+            new Tag(67464207515254798L, "Slice of Life", GenreCategory,
+                "A story that portrays a \"cut-out\" sequence of events in a character's life."),
+            new Tag(67464207515254799L, "Sports", GenreCategory,
+                "A story that revolves around sports, such as baseball or basketball."),
+            new Tag(67464207515254812L, "Superhero", GenreCategory,
+                "A story that revolves around characters with superhuman abilities."),
+            new Tag(67464207515254801L, "Thriller", GenreCategory,
+                "A story that is fast-paced and suspenseful, often involving a crime."),
+            new Tag(67464207515254802L, "Tragedy", GenreCategory,
+                "A story that ends in a tragic or unhappy way."),
+            new Tag(67464207515254813L, "Wuxia", GenreCategory,
+                "A story that revolves around martial arts and chivalry in ancient China."),
+            
+            new Tag(67464207515254814L, "Aliens", ThemeCategory,
+                "A story that involves extraterrestrial beings."),
+            new Tag(67464207515254815L, "Animals", ThemeCategory,
+                "A story that involves animals."),
+            new Tag(67464207515254816L, "Cooking", ThemeCategory,
+                "A story that revolves around cooking."),
+            new Tag(67464207515254817L, "Crossdressing", ThemeCategory,
+                "A story that involves characters dressing as the opposite gender."),
+            new Tag(67464207515254818L, "Delinquents", ThemeCategory,
+                "A story that involves delinquent characters."),
+            new Tag(67464207515254819L, "Demons", ThemeCategory,
+                "A story that involves demonic beings."),
+            new Tag(67464207515254820L, "Genderswap", ThemeCategory,
+                "A story that involves characters swapping their gender."),
+            new Tag(67464207515254821L, "Ghosts", ThemeCategory,
+                "A story that involves ghostly beings."),
+            new Tag(67464207515254822L, "Gyaru", ThemeCategory,
+                "A story that involves gyaru characters."),
+            new Tag(67464207515254823L, "Harem", ThemeCategory,
+                "A story that involves a man that is surrounded by multiple girls."),
+            new Tag(67464207515254824L, "Incest", ThemeCategory,
+                "A story that involves incestuous relationships."),
+            new Tag(67464207515254825L, "Loli", ThemeCategory,
+                "A story that involves little girl"),
+            new Tag(67464207515254826L, "Mafia", ThemeCategory, ""),
+            new Tag(67464207515254827L, "Magic", ThemeCategory, ""),
+            new Tag(67464207515254828L, "Martial Arts", ThemeCategory, ""),
+            new Tag(67464207515254829L, "Military", ThemeCategory, ""),
+            new Tag(67464207515254830L, "Monster Girls", ThemeCategory, ""),
+            new Tag(67464207515254831L, "Monsters", ThemeCategory, ""),
+            new Tag(67464207515254832L, "Music", ThemeCategory, ""),
+            new Tag(67464207515254833L, "Ninja", ThemeCategory, ""),
+            new Tag(67464207515254834L, "Office Workers", ThemeCategory, ""),
+            new Tag(67464207515254835L, "Police", ThemeCategory, ""),
+            new Tag(67464207515254836L, "Post-Apocalyptic", ThemeCategory, ""),
+            new Tag(67464207515254837L, "Reincarnation", ThemeCategory, ""),
+            new Tag(67464207515254838L, "Reversed Harem", ThemeCategory, ""),
+            new Tag(67464207515254839L, "Samurai", ThemeCategory, ""),
+            new Tag(67464207515254840L, "School Life", ThemeCategory, ""),
+            new Tag(67464207515254841L, "Shota", ThemeCategory, ""),
+            new Tag(67464207515254800L, "Supernatural", ThemeCategory,
+                "A story that involves supernatural elements, such as ghosts or demons."),
+            new Tag(67464207515254842L, "Survival", ThemeCategory, ""),
+            new Tag(67464207515254843L, "Time Travel", ThemeCategory, ""),
+            new Tag(67464207515254844L, "Traditional Games", ThemeCategory, ""),
+            new Tag(67464207515254845L, "Vampires", ThemeCategory, ""),
+            new Tag(67464207515254846L, "Video Games", ThemeCategory, ""),
+            new Tag(67464207515254847L, "Villainess", ThemeCategory, ""),
+            new Tag(67464207515254848L, "Virtual Reality", ThemeCategory, ""),
+            new Tag(67464207515254849L, "Zombies", ThemeCategory, ""),
+            
+            new Tag(67464207515254850L, "Gore", ContentCategory, "A story that contains graphic violence."),
+            new Tag(67464207515254851L, "Sexual Violence", ContentCategory, "A story that contains sexual violence."),
         ];
     }
 }

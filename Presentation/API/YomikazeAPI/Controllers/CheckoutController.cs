@@ -6,6 +6,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+// TODO)) Load pricing from database
 public class CheckoutController : ControllerBase
 {
     [HttpPost]

@@ -38,6 +38,22 @@ public class Tag : BaseEntity
     #region Constructors
 
     public Tag() { }
+    
+    public Tag(ulong id, string name, ulong categoryId, string description = "")
+    {
+        Id = id;
+        Name = name;
+        CategoryId = categoryId;
+        Description = description;
+    }
+    
+    public Tag(ulong id, string name, TagCategory category, string description = "")
+    {
+        Id = id;
+        Name = name;
+        CategoryId = category.Id;
+        Description = description;
+    }
 
     public Tag(Action<object, string>? lazyLoader)
     {

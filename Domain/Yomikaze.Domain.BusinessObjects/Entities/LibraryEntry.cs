@@ -6,7 +6,7 @@ public class LibraryEntry : BaseEntity
     #region Fields
 
     private Comic _comic = default!;
-    private LibraryCategory? _category;
+    private IList<LibraryCategory> _categories = [];
 
     #endregion
 
@@ -35,19 +35,12 @@ public class LibraryEntry : BaseEntity
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public User User { get; set; } = default!;
 
-    [ForeignKey(nameof(Category))]
-    [DataMember(Name = "categoryId", Order = 3)]
-    [Column("category_id", Order = 3)]
-    public ulong? CategoryId { get; set; }
-
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public LibraryCategory? Category
+    public IList<LibraryCategory> Categories
     {
-        get => LazyLoader.LoadNullable(this, ref _category);
-        set => _category = value;
+        get => LazyLoader.Load(this, ref _categories);
+        set => _categories = value;
     }
-
-    [NotMapped] public string CategoryName => Category?.Name ?? "Uncategorized";
 
     #endregion
 
