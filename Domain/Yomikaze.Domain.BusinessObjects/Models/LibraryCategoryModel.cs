@@ -4,7 +4,9 @@ public class LibraryCategoryModel : BaseModel
 {
     #region CommonProperties
 
-    [Required] public string? Name { get; set; } = default!;
+    [Required]
+    [StringLength(32, ErrorMessage = "Category name must be from 1 to 32 characters")]
+    public string? Name { get; set; } = default!;
 
     #endregion
 
