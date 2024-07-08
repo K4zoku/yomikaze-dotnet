@@ -23,12 +23,19 @@ public class LibraryCategory : BaseEntity
     }
 
     [StringLength(32)] public string Name { get; set; } = default!;
+    
+    public new ulong Id { get; }
 
     #endregion
 
     #region Constructors
 
     public LibraryCategory() { }
+
+    public LibraryCategory(ulong id)
+    {
+        Id = id;
+    }
 
     public LibraryCategory(Action<object, string>? lazyLoader)
     {

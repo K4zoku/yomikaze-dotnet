@@ -112,6 +112,10 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         builder.Entity<Comic>()
             .HasMany(e => e.Comments)
             .WithOne(e => e.Comic);
+        builder.Entity<LibraryEntry>()
+            .HasMany(e => e.Categories)
+            .WithMany()
+            .UsingEntity<LibraryEntryCategory>();
     }
 
     private void OnSaveChanges()

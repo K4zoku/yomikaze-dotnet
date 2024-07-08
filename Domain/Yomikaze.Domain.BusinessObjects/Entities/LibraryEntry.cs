@@ -1,4 +1,6 @@
-﻿namespace Yomikaze.Domain.Entities;
+﻿using Yomikaze.Domain.Entities.Weak;
+
+namespace Yomikaze.Domain.Entities;
 
 [Index(nameof(ComicId), nameof(UserId), IsUnique = true)]
 public class LibraryEntry : BaseEntity
@@ -34,6 +36,8 @@ public class LibraryEntry : BaseEntity
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public User User { get; set; } = default!;
+    
+    public IList<LibraryEntryCategory> LibraryCategories { get; set; } = new List<LibraryEntryCategory>();
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public IList<LibraryCategory> Categories
