@@ -26,8 +26,6 @@ public class LibraryCategory : BaseEntity
 
     [StringLength(32)] public string Name { get; set; } = default!;
     
-    public override ulong Id { get; }
-    
     public ICollection<LibraryEntry> Entries { get; set; } = new List<LibraryEntry>();
 
     #endregion
@@ -35,11 +33,6 @@ public class LibraryCategory : BaseEntity
     #region Constructors
 
     public LibraryCategory() { }
-
-    public LibraryCategory(ulong id)
-    {
-        Id = id;
-    }
 
     public LibraryCategory(Action<object, string>? lazyLoader)
     {
