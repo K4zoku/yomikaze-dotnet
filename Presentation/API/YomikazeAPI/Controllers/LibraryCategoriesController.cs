@@ -5,6 +5,7 @@ namespace Yomikaze.API.Main.Controllers;
 [Authorize(Roles = "Administrator,Publisher,Reader")]
 [Route("library/categories")]
 [ApiController]
+// TODO)) Check library categories ownership
 public class LibraryCategoriesController(
     LibraryCategoryRepository repository,
     IMapper mapper,
@@ -13,7 +14,7 @@ public class LibraryCategoriesController(
 {
     protected override IQueryable<LibraryCategory> ListQuery()
     {
-        return Repository.GetAllByUserId(User.GetIdString());
+        return Repository.GetAllByUserId(User.GetId());
     }
 
     public override ActionResult<LibraryCategoryModel> Post(LibraryCategoryModel input)
