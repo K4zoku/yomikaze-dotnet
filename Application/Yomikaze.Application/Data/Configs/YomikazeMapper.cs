@@ -16,9 +16,9 @@ public class YomikazeMapper : MapperProfile
         CreateMap<string, ulong>().ConvertUsing((src) => IdParse(src));
         CreateMap<ulong, string>().ConvertUsing((src) => src.ToString());
         CreateMap<BaseModel, BaseEntity>()
-            .ForMember(dest => dest.Id, options => options.UseDestinationValue())
-            .ForMember(dest => dest.CreationTime, options => options.UseDestinationValue())
-            .ForMember(dest => dest.LastModified, options => options.UseDestinationValue())
+            .ForMember(dest => dest.Id, options => options.Ignore())
+            .ForMember(dest => dest.CreationTime, options => options.Ignore())
+            .ForMember(dest => dest.LastModified, options => options.Ignore())
             .ForMember(dest => dest.WorkerId, options => options.Ignore())
             .ForAllMembers(options => options.Condition((_, _, member) => member != null));
         

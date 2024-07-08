@@ -43,7 +43,7 @@ public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public new ulong Id { get; protected init; }
+    public new ulong Id { get; }
 
     [NotMapped] public virtual int WorkerId => 0;
 }

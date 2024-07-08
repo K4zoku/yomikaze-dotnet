@@ -11,6 +11,8 @@ public class Tag : BaseEntity
     #endregion
 
     #region Properties
+    
+    public new ulong Id { get; }
 
     private Action<object, string>? LazyLoader { get; }
 
