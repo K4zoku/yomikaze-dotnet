@@ -31,4 +31,9 @@ public static class UserExtensions
         task.Wait();
         return task.Result ?? throw new HttpResponseException(500, "Cannot get user");
     }
+    
+    public static bool IsAuthenticated(this ClaimsPrincipal user)
+    {
+        return user.Identity?.IsAuthenticated ?? false;
+    }
 }

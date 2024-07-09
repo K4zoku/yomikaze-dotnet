@@ -163,6 +163,10 @@ public class YomikazeMapper : MapperProfile
         CreateMap<Tag, TagModel>()
             .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category.Name))
             .ForMember(dest => dest.CategoryId, options => options.Ignore());
+        
+        CreateMap<TagCategoryModel, TagCategory>()
+            .ForMember(dest => dest.Id, options => options.Ignore());
+        CreateMap<TagCategory, TagCategoryModel>();
 
         CreateMap<User, ProfileModel>()
             .ForMember(dest => dest.Balance, options => options.Ignore());

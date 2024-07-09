@@ -7,6 +7,12 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryRecord>(new HistoryDao(dbContext))
 {
+    public override IQueryable<HistoryRecord> Query()
+    {
+        return base.Query().GroupBy(x => x.ChapterId)
+            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
+    }
+
     public IQueryable<HistoryRecord> GetAllByUserId(string userId)
     {
         return Query()
