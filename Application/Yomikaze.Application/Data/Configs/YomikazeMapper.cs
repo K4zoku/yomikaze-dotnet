@@ -117,8 +117,7 @@ public class YomikazeMapper : MapperProfile
                 options.MapFrom(src => IdParse(src.ChapterId));
             });
         CreateMap<HistoryRecord, HistoryRecordModel>()
-            .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
-            .ForMember(dest => dest.ChapterId, options => options.MapFrom(src => src.ChapterId.ToString()));
+            .ForMember(dest => dest.Comic, options => options.MapFrom(src => src.Chapter.Comic));
 
         CreateMap<LibraryCategoryModel, LibraryCategory>()
             .ForMember(dest => dest.UserId, options =>

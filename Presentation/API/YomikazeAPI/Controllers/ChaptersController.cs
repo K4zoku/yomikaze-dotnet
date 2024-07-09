@@ -63,7 +63,7 @@ public partial class ComicsController
         {
             var userId = User.GetId();
             
-            HistoryRepository.Add(new HistoryRecord { ChapterId = chapter.Id, UserId = userId });
+            HistoryRepository.AddBy(userId, key, number);
             Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
             
             model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);

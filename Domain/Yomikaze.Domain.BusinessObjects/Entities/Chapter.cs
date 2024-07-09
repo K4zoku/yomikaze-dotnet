@@ -34,11 +34,7 @@ public class Chapter : BaseEntity
     }
 
     [InverseProperty(nameof(Page.Chapter))]
-    public IList<Page> Pages
-    {
-        get => LazyLoader.Load(this, ref _pages).OrderBy(page => page.Number).ToList();
-        set => _pages = value;
-    }
+    public IList<Page> Pages { get; set; }
 
     public ICollection<ChapterComment> Comments { get; set; } = new List<ChapterComment>();
 

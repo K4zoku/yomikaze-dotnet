@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using Yomikaze.Application.Data.Access;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
@@ -7,16 +8,18 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryRecord>(new HistoryDao(dbContext))
 {
-    public override IQueryable<HistoryRecord> Query()
-    {
-        return base.Query().GroupBy(x => x.ChapterId)
-            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
-    }
 
     public IQueryable<HistoryRecord> GetAllByUserId(string userId)
     {
         return Query()
-            .Where(x => x.UserId.ToString() == userId);
+            .Where(x => x.UserId.ToString() == userId)
+            .Include(x => x.Chapter)
+            .ThenInclude(x => x.Comic)
+            .ThenInclude(x => x.ComicTags)
+            .GroupBy(x => x.ChapterId)
+            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
+
+
     }
     
     public HistoryRecord? Get(ulong userId, ulong comicId, int chapterNumber)
@@ -44,7 +47,12 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
 
     public void AddBy(ulong userId, ulong comicId, int chapterNumber)
     {
-        var record = new HistoryRecord
+        var existing = Get(userId, comicId, chapterNumber);
+        if (existing != null)
+        {
+            return;
+        }
+        var record =  new HistoryRecord
         {
             UserId = userId,
             Chapter = new Chapter

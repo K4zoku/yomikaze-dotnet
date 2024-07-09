@@ -11,6 +11,8 @@ public class HistoryRecordModel : BaseModel
     #region ReadOnlyProperties
 
     [SwaggerSchema(ReadOnly = true)] public ChapterModel Chapter { get; set; } = default!;
+    
+    [SwaggerSchema(ReadOnly = true)] public ComicModel Comic { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel User { get; set; } = default!;
 
