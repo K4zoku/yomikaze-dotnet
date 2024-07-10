@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Yomikaze.Domain.Abstracts;
 
@@ -53,9 +54,9 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
         DbSet.Where(e => ids.Contains(e.Id)).ExecuteDeleteAsync();
     }
     
-    public virtual void DeleteAll(Predicate<TEntity> predicate)
+    public virtual void DeleteAll(Expression<Func<TEntity, bool>> predicate)
     {
-        DbSet.Where(e => predicate(e)).ExecuteDeleteAsync();
+        DbSet.Where(predicate).ExecuteDeleteAsync();
     }
 
     public virtual long Count()

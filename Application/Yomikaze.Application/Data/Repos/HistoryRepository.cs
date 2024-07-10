@@ -17,9 +17,7 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
             .ThenInclude(x => x.Comic)
             .ThenInclude(x => x.ComicTags)
             .GroupBy(x => x.ChapterId)
-            .Select(x => x.OrderByDescending(y => y.CreationTime).First());
-
-
+            .Select(x => x.OrderByDescending(y => y.LastModified).ThenByDescending(y => y.CreationTime).First());
     }
     
     public HistoryRecord? Get(ulong userId, ulong comicId, int chapterNumber)

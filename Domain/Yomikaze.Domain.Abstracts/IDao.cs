@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Yomikaze.Domain.Abstracts;
 
 public interface IDao<TEntity, in TId> where TEntity : class, IEntity<TId>
@@ -17,8 +19,8 @@ public interface IDao<TEntity, in TId> where TEntity : class, IEntity<TId>
     public void DeleteById(TId id);
     
     public void DeleteByIds(params TId[] ids);
-    
-    public void DeleteAll(Predicate<TEntity> predicate);
+
+    public void DeleteAll(Expression<Func<TEntity, bool>> predicate);
 
     public long Count();
 
