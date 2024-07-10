@@ -62,8 +62,8 @@ public partial class ComicsController
         Task.Run(() =>
         {
             chapter.Views++;
-            Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
             ChapterRepository.Update(chapter);
+            Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
             if (!User.TryGetId(out var id))
             {
                 Logger.LogDebug("User is not authenticated, skipping history record");
