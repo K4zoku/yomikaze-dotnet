@@ -56,19 +56,26 @@ public partial class ComicsController
         {
             return NotFound();
         }
-        chapter.Views++;
-        ChapterRepository.Update(chapter);
+        
         var model = Mapper.Map<ChapterModel>(chapter);
-        if (User.IsAuthenticated())
+
+        Task.Run(() =>
         {
+            chapter.Views++;
+            Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
+            ChapterRepository.Update(chapter);
+            if (!User.IsAuthenticated())
+            {
+                return;
+            }
+
             var userId = User.GetId();
             
             HistoryRepository.AddBy(userId, key, number);
             Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
             
             model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);
-        }
-
+        });
         return Ok(model);
     }
 
