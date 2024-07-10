@@ -59,29 +59,28 @@ public partial class ComicsController
         
         var model = Mapper.Map<ChapterModel>(chapter);
 
-        Task.Run(() =>
+        try
         {
-            try
+            chapter.Views++;
+            ChapterRepository.Update(chapter);
+            Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
+            if (User.TryGetId(out var id))
             {
-                chapter.Views++;
-                ChapterRepository.Update(chapter);
-                Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
-                if (!User.TryGetId(out var id))
-                {
-                    Logger.LogDebug("User is not authenticated, skipping history record");
-                    return;
-                }
-
                 HistoryRepository.AddBy(id, key, number);
                 Logger.LogDebug("User {Id} read chapter {Chapter}", id, chapter.Id);
 
                 model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == id);
             }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Failed to update chapter {Id} views or add history record", chapter.Id);
+            else
+            { 
+                Logger.LogDebug("User is not authenticated, skipping history record");
+                model.IsUnlocked = chapter.Price == 0;
             }
-        });
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to update chapter {Id} views or add history record", chapter.Id);
+        }
         return Ok(model);
     }
 
