@@ -8,6 +8,8 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryRecord>(new HistoryDao(dbContext))
 {
+    
+    private ChapterRepository ChapterRepository { get; } = new(dbContext);
 
     public IQueryable<HistoryRecord> GetAllByUserId(string userId)
     {
@@ -24,6 +26,27 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
     {
         return Query()
             .FirstOrDefault(x => x.UserId == userId && x.Chapter.ComicId == comicId && x.Chapter.Number == chapterNumber);
+    }
+    
+    public HistoryRecord? Get(ulong userId, Chapter chapter)
+    {
+        return Get(userId, chapter.Id);
+    }
+    
+    public HistoryRecord? Get(ulong userId, ulong chapterId)
+    {
+        return Query()
+            .FirstOrDefault(x => x.UserId == userId && x.Chapter.Id == chapterId);
+    }
+
+    public bool Exists(ulong userId, Chapter chapter)
+    {
+        return Exists(userId, chapter.Id);
+    }
+    
+    public bool Exists(ulong userId, ulong chapterId)
+    {
+        return Query().Any(x => x.UserId == userId && x.Chapter.Id == chapterId);
     }
     
     public bool Delete(ulong userId, ulong comicId, int chapterNumber)
@@ -43,21 +66,17 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
         Dao.DeleteAll(x => x.UserId.ToString() == userId);
     }
 
-    public void AddBy(ulong userId, ulong comicId, int chapterNumber)
+    public void Add(ulong userId, Chapter chapter)
     {
-        var existing = Get(userId, comicId, chapterNumber);
-        if (existing != null)
+        if (Exists(userId, chapter))
         {
             return;
         }
+        
         var record =  new HistoryRecord
         {
             UserId = userId,
-            Chapter = new Chapter
-            {
-                ComicId = comicId,
-                Number = chapterNumber
-            }
+            ChapterId = chapter.Id
         };
         
         Add(record);

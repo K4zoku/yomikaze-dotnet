@@ -64,12 +64,12 @@ public partial class ComicsController
             chapter.Views++;
             ChapterRepository.Update(chapter);
             Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
-            if (User.TryGetId(out var id))
+            if (User.TryGetId(out var userId))
             {
-                HistoryRepository.AddBy(id, key, number);
-                Logger.LogDebug("User {Id} read chapter {Chapter}", id, chapter.Id);
+                HistoryRepository.Add(userId, chapter);
+                Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
 
-                model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == id);
+                model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);
             }
             else
             { 
