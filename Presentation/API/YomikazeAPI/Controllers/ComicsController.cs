@@ -209,6 +209,7 @@ public partial class ComicsController(
                 model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
                 model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
                 model.IsRated = model.MyRating != null;
+                model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
             }
             ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
             return model;

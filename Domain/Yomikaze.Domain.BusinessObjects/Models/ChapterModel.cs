@@ -8,7 +8,7 @@ public class ChapterModel : BaseModel
     public int? Views { get; set; }
     
     [SwaggerSchema(ReadOnly = true)]
-    public bool HasLock { get; set; }
+    public bool? HasLock { get; set; }
 
     #endregion
 
@@ -28,7 +28,7 @@ public class ChapterModel : BaseModel
     public string? Name { get; set; }
 
     [MinLength(1, ErrorMessage = "Chapter must have at least 1 page")]
-    public IList<string>? Pages { get; set; } = new List<string>();
+    public IList<string>? Pages { get; set; }
     
     public int? Price { get; set; }
 
@@ -37,10 +37,12 @@ public class ChapterModel : BaseModel
     #region Extras
     
     [SwaggerSchema(ReadOnly = true)]
-    public bool IsUnlocked { get; set; }
+    public bool? IsUnlocked { get; set; }
     
     [SwaggerSchema(ReadOnly = true)]
     public int? TotalComments { get; set; }
+
+    public bool? IsRead { get; set; }
 
     #endregion
 }

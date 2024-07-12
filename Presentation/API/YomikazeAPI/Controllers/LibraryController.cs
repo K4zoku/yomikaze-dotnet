@@ -45,4 +45,56 @@ public class LibraryController(
     {
         return Repository.GetAllByUserId(User.GetIdString());
     }
+    
+    // Add to library category
+    [HttpPut("{key}/categories/{categoryKey}")]
+    [Authorize]
+    public ActionResult AddToCategory(ulong key, ulong categoryKey, [FromServices] LibraryCategoryRepository categoryRepository)
+    {
+        var userId = User.GetId();
+        var libraryEntry = Repository.Get(key);
+        if (libraryEntry == null)
+        {
+            return NotFound();
+        }
+        var category = categoryRepository.Get(categoryKey);
+        if (category == null)
+        {
+            ModelState.AddModelError(nameof(categoryKey), "Category not found.");
+            return ValidationProblem(ModelState);
+        }
+        if (libraryEntry.UserId != userId)
+        {
+            return Forbid();
+        }
+        libraryEntry.Categories.Add(category);
+        Repository.Update(libraryEntry);
+        return NoContent();
+    } 
+    
+    // Remove from library category
+    [HttpDelete("{key}/categories/{categoryKey}")]
+    [Authorize]
+    public ActionResult RemoveFromCategory(ulong key, ulong categoryKey, [FromServices] LibraryCategoryRepository categoryRepository)
+    {
+        var userId = User.GetId();
+        var libraryEntry = Repository.Get(key);
+        if (libraryEntry == null)
+        {
+            return NotFound();
+        }
+        var category = categoryRepository.Get(categoryKey);
+        if (category == null)
+        {
+            ModelState.AddModelError(nameof(categoryKey), "Category not found.");
+            return ValidationProblem(ModelState);
+        }
+        if (libraryEntry.UserId != userId)
+        {
+            return Forbid();
+        }
+        libraryEntry.Categories.Remove(category);
+        Repository.Update(libraryEntry);
+        return NoContent();
+    }
 }

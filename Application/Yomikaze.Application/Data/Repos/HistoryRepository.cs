@@ -17,9 +17,7 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
             .Where(x => x.UserId.ToString() == userId)
             .Include(x => x.Chapter)
             .ThenInclude(x => x.Comic)
-            .ThenInclude(x => x.ComicTags)
-            .GroupBy(x => x.ChapterId)
-            .Select(x => x.OrderByDescending(y => y.LastModified).ThenByDescending(y => y.CreationTime).First());
+            .ThenInclude(x => x.ComicTags);
     }
     
     public HistoryRecord? Get(ulong userId, ulong comicId, int chapterNumber)
@@ -38,6 +36,15 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
         return Query()
             .FirstOrDefault(x => x.UserId == userId && x.Chapter.Id == chapterId);
     }
+    
+    public HistoryRecord? Get(ulong userId, Comic comic)
+    {
+        return Query()
+            .OrderByDescending(x => x.Chapter.Number)
+            .ThenByDescending(x => x.LastModified)
+            .ThenByDescending(x => x.CreationTime)
+            .FirstOrDefault(x => x.UserId == userId && x.Chapter.ComicId == comic.Id);
+    }
 
     public bool Exists(ulong userId, Chapter chapter)
     {
@@ -47,6 +54,11 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
     public bool Exists(ulong userId, ulong chapterId)
     {
         return Query().Any(x => x.UserId == userId && x.Chapter.Id == chapterId);
+    }
+    
+    public bool Exists(ulong userId, Comic comic)
+    {
+        return Query().Any(x => x.UserId == userId && x.Chapter.ComicId == comic.Id);
     }
     
     public bool Delete(ulong userId, ulong comicId, int chapterNumber)
