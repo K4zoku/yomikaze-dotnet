@@ -47,9 +47,9 @@ public partial class ComicsController
         return CreatedAtAction(nameof(GetChapter), new { key, number = chapter.Number },
             Mapper.Map<ChapterModel>(chapter));
     }
-
-    [Authorize]
+    
     [HttpGet($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}")]
+    [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
@@ -62,9 +62,10 @@ public partial class ComicsController
 
         try
         {
+            model.IsUnlocked = chapter.Price == 0;
             if (User.TryGetId(out var userId))
             {
-                model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);
+                 model.IsUnlocked = model.IsUnlocked is true || chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;
@@ -83,7 +84,11 @@ public partial class ComicsController
             else
             { 
                 Logger.LogDebug("User is not authenticated, skipping history record");
-                model.IsUnlocked = chapter.Price == 0;
+                if (model.IsUnlocked is false)
+                {
+                    Logger.LogDebug("User is not authenticated, chapter {Id} is locked", chapter.Id);
+                    return Unauthorized();
+                }
             }
         }
         catch (Exception e)

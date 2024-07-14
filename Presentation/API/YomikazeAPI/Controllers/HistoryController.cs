@@ -88,12 +88,7 @@ public class HistoryController(
         {
             return new HistoryRecordModel
             {
-                Chapter = new ChapterModel()
-                {
-                    Id = record.ChapterId.ToString(),
-                    Number = record.Chapter.Number,
-                    Name = record.Chapter.Name,
-                },
+                Chapter = Mapper.Map<ChapterModel>(record.Chapter),
                 PageNumber = record.PageNumber,
             };
         }
@@ -103,14 +98,13 @@ public class HistoryController(
         {
             return NotFound();
         }
+        if (chapter.Unlocked.Any(c => c.UserId == userId))
+        {
+            return Forbid();
+        }
         var model = new HistoryRecordModel
         {
-            Chapter = new ChapterModel()
-            {
-                Id = chapter.Id.ToString(),
-                Number = chapter.Number,
-                Name = chapter.Name,
-            },
+            Chapter = Mapper.Map<ChapterModel>(chapter),
             PageNumber = 0,
         };
         return model;
