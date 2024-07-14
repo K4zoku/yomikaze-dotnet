@@ -38,7 +38,7 @@ public static class DistributedCacheExtension
         return value;
     }
     
-    public static TC GetOrSet<TC>(this IDistributedCache cache, string key, Func<TC> valueFactory,
+    public static T GetOrSet<T>(this IDistributedCache cache, string key, Func<T> valueFactory,
         DistributedCacheEntryOptions? options = default!, ILogger? logger = null)
     {
         if (cache is NoCache)
@@ -52,7 +52,7 @@ public static class DistributedCacheExtension
         if (cachedData != null)
         {
             logger?.LogDebug("Cache hit for key {Key}", key);
-            TC? deserialized = JsonConvert.DeserializeObject<TC>(Encoding.UTF8.GetString(cachedData));
+            T? deserialized = JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(cachedData));
             if (deserialized is not null)
             {
                 return deserialized;

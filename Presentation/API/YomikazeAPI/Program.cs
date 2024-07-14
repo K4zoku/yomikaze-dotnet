@@ -38,6 +38,8 @@ services.AddScoped<IRepository<LibraryEntry>, LibraryRepository>();
 services.AddScoped<LibraryRepository>();
 services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
+services.AddScoped<IRepository<ComicComment>, ComicCommentRepository>();
+services.AddScoped<ComicCommentRepository>();
 services.AddScoped<Yomikaze.API.Main.Services.AuthenticationService>();
 
 services.AddRouting(options => options.LowercaseUrls = true);

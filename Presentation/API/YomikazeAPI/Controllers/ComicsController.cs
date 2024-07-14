@@ -186,41 +186,24 @@ public partial class ComicsController(
     [AllowAnonymous]
     public override ActionResult<ComicModel> Get(ulong key)
     {
-        string keyName = CacheKeyPrefix + key;
-        
         bool isAuthorized = User.Identity is { IsAuthenticated: true };
         
-        if (isAuthorized)
+        Comic? entity = Repository.Get(key);
+        if (entity == null)
         {
-            keyName += $":{User.GetId()}";
-        }
-
-        var result = Cache.GetOrSet(keyName, () =>
-        {
-            Comic? entity = Repository.Get(key);
-            if (entity == null)
-            {
-                Logger.LogWarning("Entity with key {Key} not found", key);
-                return null;
-            }
-            ComicModel model = Mapper.Map<ComicModel>(entity);
-            if (isAuthorized)
-            {
-                model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
-                model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
-                model.IsRated = model.MyRating != null;
-                model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
-            }
-            ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
-            return model;
-        }, logger: Logger);
-
-        if (result == null)
-        {
+            Logger.LogWarning("Entity with key {Key} not found", key);
             return NotFound();
         }
-        
-        return Ok(result);
+        ComicModel model = Mapper.Map<ComicModel>(entity);
+        if (isAuthorized)
+        {
+            model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
+            model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
+            model.IsRated = model.MyRating != null;
+            model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
+        }
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+        return Ok(model);
     }
 
     [HttpPost("[action]")]

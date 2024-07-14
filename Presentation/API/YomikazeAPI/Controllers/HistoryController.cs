@@ -88,7 +88,12 @@ public class HistoryController(
         {
             return new HistoryRecordModel
             {
-                ChapterId = record.ChapterId.ToString(),
+                Chapter = new ChapterModel()
+                {
+                    Id = record.ChapterId.ToString(),
+                    Number = record.Chapter.Number,
+                    Name = record.Chapter.Name,
+                },
                 PageNumber = record.PageNumber,
             };
         }
@@ -100,7 +105,12 @@ public class HistoryController(
         }
         var model = new HistoryRecordModel
         {
-            ChapterId = chapter.Id.ToString(),
+            Chapter = new ChapterModel()
+            {
+                Id = chapter.Id.ToString(),
+                Number = chapter.Number,
+                Name = chapter.Name,
+            },
             PageNumber = 0,
         };
         return model;
