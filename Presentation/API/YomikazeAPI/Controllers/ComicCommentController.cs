@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
+using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
 
@@ -60,9 +61,11 @@ public class ComicCommentController(
     
     [Route("comics/{comicId}/comments")]
     [HttpPost]
+    [Authorize]
     public ActionResult<ComicCommentModel> Post([FromRoute] ulong comicId, ComicCommentModel input)
     {
         input.ComicId = comicId.ToString();
+        input.AuthorId = User.GetIdString();
         return base.Post(input);
     }
     

@@ -10,16 +10,22 @@ public class CommentModel : BaseModel
 
     #region ReadOnlyProperties
 
+    [SwaggerSchema(ReadOnly = true)]
     public ProfileModel Author { get; set; } = default!;
 
+    [SwaggerSchema(ReadOnly = true)]
     public ICollection<CommentModel> Replies { get; set; } = new List<CommentModel>();
 
     #endregion
 
     #region WriteOnlyProperties
 
+    [SwaggerSchema(ReadOnly = true)]
+    [WriteOnly]
     public string? AuthorId { get; set; } = default!;
 
+    [SwaggerSchema(WriteOnly = true)]
+    [WriteOnly]
     public string? ReplyToId { get; set; }
 
     #endregion
