@@ -19,6 +19,7 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
     public HistoryRecord? Get(ulong userId, ulong comicId, int chapterNumber)
     {
         return Query()
+            .Include(x => x.Chapter)
             .FirstOrDefault(x => x.UserId == userId && x.Chapter.ComicId == comicId && x.Chapter.Number == chapterNumber);
     }
     
@@ -30,12 +31,14 @@ public class HistoryRepository(DbContext dbContext) : BaseRepository<HistoryReco
     public HistoryRecord? Get(ulong userId, ulong chapterId)
     {
         return Query()
+            .Include(x => x.Chapter)
             .FirstOrDefault(x => x.UserId == userId && x.Chapter.Id == chapterId);
     }
     
     public HistoryRecord? Get(ulong userId, Comic comic)
     {
         return Query()
+            .Include(x => x.Chapter)
             .OrderByDescending(x => x.Chapter.Number)
             .ThenByDescending(x => x.LastModified)
             .ThenByDescending(x => x.CreationTime)

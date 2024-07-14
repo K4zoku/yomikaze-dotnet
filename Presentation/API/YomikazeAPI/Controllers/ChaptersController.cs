@@ -48,8 +48,8 @@ public partial class ComicsController
             Mapper.Map<ChapterModel>(chapter));
     }
 
+    [Authorize]
     [HttpGet($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}")]
-    [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
@@ -62,16 +62,23 @@ public partial class ComicsController
 
         try
         {
-            chapter.Views++;
-            ChapterRepository.Update(chapter);
-            Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
             if (User.TryGetId(out var userId))
             {
-                HistoryRepository.Add(userId, chapter);
-                Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
-
                 model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);
-                model.IsRead = true;
+                if (model.IsUnlocked is true)
+                {
+                    model.IsRead = true;
+                    chapter.Views++;
+                    ChapterRepository.Update(chapter);
+                    Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
+                    
+                    HistoryRepository.Add(userId, chapter);
+                    Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             else
             { 
