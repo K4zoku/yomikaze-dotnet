@@ -11,10 +11,10 @@ public class CommentModel : BaseModel
     #region ReadOnlyProperties
 
     [SwaggerSchema(ReadOnly = true)]
-    public ProfileModel Author { get; set; } = default!;
+    public ProfileModel? Author { get; set; }
 
     [SwaggerSchema(ReadOnly = true)]
-    public ICollection<CommentModel> Replies { get; set; } = new List<CommentModel>();
+    public ICollection<CommentModel>? Replies { get; set; }
 
     #endregion
 
