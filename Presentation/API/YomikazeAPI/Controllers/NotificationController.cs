@@ -8,6 +8,7 @@ using Notification = FirebaseAdmin.Messaging.Notification;
 
 namespace Yomikaze.API.Main.Controllers;
 
+// TODO)) Add CRUD for notifications
 [ApiController]
 [Route("[controller]")]
 public class NotificationController(FirebaseApp firebase, ILogger<NotificationController> logger)

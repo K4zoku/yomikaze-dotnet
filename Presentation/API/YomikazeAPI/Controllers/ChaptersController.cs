@@ -18,6 +18,7 @@ public partial class ComicsController
         {
             return NotFound();
         }
+        
 
         return Ok(Mapper.Map<ICollection<ChapterModel>>(entity.Chapters));
     }
@@ -70,6 +71,7 @@ public partial class ComicsController
                 Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
 
                 model.IsUnlocked = chapter.Price == 0 || chapter.Unlocked.Any(u => u.UserId == userId);
+                model.IsRead = true;
             }
             else
             { 

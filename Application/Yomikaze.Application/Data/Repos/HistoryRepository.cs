@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core;
-using Yomikaze.Application.Data.Access;
-using Yomikaze.Domain.Abstracts;
-using Yomikaze.Domain.Entities;
+﻿using Yomikaze.Application.Data.Access;
 
 namespace Yomikaze.Application.Data.Repos;
 

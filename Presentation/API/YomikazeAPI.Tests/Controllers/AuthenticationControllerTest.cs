@@ -82,7 +82,7 @@ public class AuthenticationControllerTest
         var controller = new AuthenticationController(signInManager, authService, logger);
         
         // Act
-        var result = await controller.Login(new LoginModel { Username = "administrator", Password = "Admin@123" });
+        var result = await controller.Login(new LoginModel { Username = defaultUsername, Password = defaultPassword });
         
         // Assert
         Assert.That(result, Is.Not.Null);
