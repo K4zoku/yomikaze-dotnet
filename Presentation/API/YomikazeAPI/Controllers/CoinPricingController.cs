@@ -1,38 +1,41 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Web;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
 
-[Authorize(Roles = "Super,Administrator")]
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class CoinPricingController(
     CoinPricingRepository repository,
     IMapper mapper,
     IDistributedCache cache,
+    SessionService sessionService,
+    PriceService priceService,
     ILogger<CoinPricingController> logger)
     : CrudControllerBase<CoinPricing, CoinPricingModel, CoinPricingRepository>(repository, mapper, cache, logger)
 {
+    
+    private SessionService SessionService { get; } = sessionService;
+    private PriceService PriceService { get; } = priceService;
+    
     [AllowAnonymous]
     [HttpGet]
     public override ActionResult<PagedList<CoinPricingModel>> List(PaginationModel pagination)
     {
         return base.List(pagination);
     }
-
-    [NonAction]
-    public override ActionResult<CoinPricingModel> Post(CoinPricingModel input)
-    {
-        return base.Post(input);
-    }
     
     [HttpPost]
-    public ActionResult<CoinPricingModel> Post(CoinPricingModel input, [FromServices] PriceService priceService)
+    [Authorize(Roles = "Super,Administrator")]
+    public override ActionResult<CoinPricingModel> Post(CoinPricingModel input)
     {
         var options = new PriceCreateOptions
         {
@@ -40,19 +43,14 @@ public class CoinPricingController(
             UnitAmount = input.Amount,
             ProductData = new PriceProductDataOptions { Name = $"{input.Amount} Yomikaze Coin" },
         };
-        var result = priceService.Create(options);
+        var result = PriceService.Create(options);
         input.StripePriceId = result.Id;
         return base.Post(input);
     }
     
-    [NonAction]
-    public override ActionResult<CoinPricingModel> Patch(ulong key, JsonPatchDocument<CoinPricingModel> patch)
-    {
-        return base.Patch(key, patch);
-    }
-    
     [HttpPatch("{key}")]
-    public ActionResult<CoinPricingModel> Patch(ulong key, JsonPatchDocument<CoinPricingModel> patch, [FromServices] PriceService priceService)
+    [Authorize(Roles = "Super,Administrator")]
+    public override ActionResult<CoinPricingModel> Patch(ulong key, JsonPatchDocument<CoinPricingModel> patch)
     {if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
@@ -62,7 +60,6 @@ public class CoinPricingController(
         {
             return NotFound();
         }
-
         
         CoinPricingModel model = Mapper.Map<CoinPricingModel>(entityToUpdate);
         Logger.LogDebug("Patching model: {Model}", JsonConvert.SerializeObject(model));
@@ -74,7 +71,7 @@ public class CoinPricingController(
             UnitAmount = model.Amount,
             ProductData = new PriceProductDataOptions { Name = $"{model.Amount} Yomikaze Coin" },
         };
-        var result = priceService.Create(options);
+        var result = PriceService.Create(options);
         model.StripePriceId = result.Id;
         Mapper.Map(model, entityToUpdate);
         try
@@ -93,27 +90,35 @@ public class CoinPricingController(
         RemoveCache(key);
         return NoContent();
     }
-
-    [Authorize]
-    [HttpGet("{key}/[action]")]
-    public ActionResult Checkout(ulong key, [FromQuery] string returnUrl, [FromServices] SessionService sessionService)
+    
+    
+    
+    [HttpPost("/checkout")]
+    [SwaggerOperation(Summary = "Create a new checkout session")]
+    public ActionResult<CheckoutResultModel> Checkout([FromBody] CheckoutModel model)
     {
+        ulong priceId;
+        if (!ulong.TryParse(model.PriceId, out priceId))
+        {
+            ModelState.AddModelError(nameof(model.PriceId), "Invalid price ID.");
+            return BadRequest(ModelState);
+        }
+        
         UriBuilder url;
         try
         {
-            url = new UriBuilder(returnUrl);
+            url = new UriBuilder(model.ReturnUrl);
         } 
         catch (UriFormatException)
         {
-            ModelState.AddModelError(nameof(returnUrl), "Invalid return URL.");
+            ModelState.AddModelError(nameof(model.ReturnUrl), "Invalid return URL.");
             return BadRequest(ModelState);
         }
-
         var query = HttpUtility.ParseQueryString(url.Query);
         query.Set("session_id", "CHECKOUT_SESSION_ID");
         url.Query = query.ToString();
         
-        CoinPricing? pricing = Repository.Get(key);
+        CoinPricing? pricing = Repository.Get(priceId);
         if (pricing == null)
         {
             return NotFound();
@@ -131,40 +136,90 @@ public class CoinPricingController(
             },
             ExpiresAt = DateTime.Now.AddMinutes(15),
             Mode = "payment",
+            ClientReferenceId = User.GetIdString(),
             ReturnUrl = url.ToString().Replace("CHECKOUT_SESSION_ID", "{CHECKOUT_SESSION_ID}") // Replace placeholder with actual placeholder (without url encoded)
         };
-        Session session = sessionService.Create(options);
-        Cache.GetOrSet(session.Id, () => User.GetIdString(), new DistributedCacheEntryOptions() { AbsoluteExpiration = session.ExpiresAt });
-        return CreatedAtAction("CheckoutStatus", new { session_id = session.Id}, new { clientSecret = session.ClientSecret });
+        Session session = SessionService.Create(options);
+        return CreatedAtAction("CheckoutStatus", new { sessionId = session.Id }, new CheckoutResultModel { SessionId = session.Id, ClientSecret = session.ClientSecret });
     }
     
-    [HttpGet("/checkout/{sessionId}/status")]
+    private bool TryGetSession(string sessionId, out Session session)
+    {
+        try 
+        {
+            session = SessionService.Get(sessionId);
+            return true;
+        }
+        catch (Exception e)
+        {
+            session = default!;
+            Logger.LogDebug(e, "Failed to get session {SessionId}", sessionId);   
+            return false;
+        }
+    }
+    
+    [HttpGet("/checkout/{sessionId}")]
+    [SwaggerOperation(Summary = "Get the status of a checkout session")]
     public ActionResult CheckoutStatus(string sessionId)
     {
-        var sessionService = new SessionService();
-        Session session = sessionService.Get(sessionId);
-
-        return Ok(session.RawJObject);
-    }
-    
-    [HttpGet("/checkout/{sessionId}/success")]
-    public ActionResult CheckoutSuccess(string sessionId)
-    {
-        string? userId = Cache.GetAsString(sessionId);
-        if (userId == null)
+        if (!TryGetSession(sessionId, out var session))
         {
             return NotFound();
         }
-        Cache.Remove(sessionId);
-        // TODO)) Check current authenticated user is the same as the user who initiated the session
-        // TODO)) Add coins to user's balance
+        return Ok(session.RawJObject);
+    }
+    
+    [HttpPut("/checkout/{sessionId}")] 
+    [SwaggerOperation(Summary = "Client MUST call this endpoint right after checkout is completed and redirected to the return URL.")]
+    public async Task<ActionResult> CheckoutComplete(string sessionId, [FromServices] UserManager<User> userManager)
+    {
+        if (!TryGetSession(sessionId, out var session))
+        {
+            return NotFound();
+        }
+        string suid = session.ClientReferenceId;
+        string uid = User.GetIdString();
         
+        if (suid != uid)
+        {
+            return Forbid();
+        }
+        
+        if (session.Status != "complete")
+        {
+            return BadRequest();
+        }
+        var coin = session.LineItems.First().Quantity;
+        if (coin == null)
+        {
+            return Problem();
+        }
+        var user = User.GetUser(userManager);
+        user.Balance += coin.Value;
+        await userManager.UpdateAsync(user);
+        // TODO)) Add transaction record
         return Ok();
     }
     
-    [HttpGet("/checkout/{sessionId}/cancel")]
+    [HttpDelete("/checkout/{sessionId}")]
+    [SwaggerOperation(Summary = "Actively cancel a checkout session")]
     public ActionResult CheckoutCancel(string sessionId)
     {
-        return Ok();
+        if (!TryGetSession(sessionId, out var session))
+        {
+            return NotFound();
+        }
+        if (session.Status != "open")
+        {
+            return BadRequest();
+        }
+        string suid = session.ClientReferenceId;
+        string uid = User.GetIdString();
+        if (suid != uid)
+        {
+            return Forbid();
+        }
+        SessionService.Expire(sessionId);
+        return NoContent();
     }
 }
