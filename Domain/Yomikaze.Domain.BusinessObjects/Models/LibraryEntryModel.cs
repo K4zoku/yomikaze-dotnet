@@ -8,7 +8,7 @@ public class LibraryEntryModel : BaseModel
     public ComicModel? Comic { get; set; }
 
     [SwaggerSchema(ReadOnly = true)]
-    public string[]? Categories { get; set; }
+    public LibraryCategoryModel[]? Categories { get; set; }
 
     #endregion
 

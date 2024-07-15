@@ -146,7 +146,6 @@ public class YomikazeMapper : MapperProfile
         CreateMap<LibraryEntry, LibraryEntryModel>()
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
-            .ForMember(dest => dest.Categories, options => options.MapFrom(src => src.Categories.Select(category => category.Name.ToString()).ToArray()))
             .ForMember(dest => dest.CategoryIds, options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
 
         CreateMap<TagModel, Tag>()
