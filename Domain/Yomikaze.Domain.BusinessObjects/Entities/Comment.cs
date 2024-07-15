@@ -1,4 +1,6 @@
-﻿namespace Yomikaze.Domain.Entities;
+﻿using Yomikaze.Domain.Entities.Weak;
+
+namespace Yomikaze.Domain.Entities;
 
 public class Comment : BaseEntity
 {
@@ -40,6 +42,8 @@ public class Comment : BaseEntity
         get => LazyLoader.Load(this, ref _replies);
         set => _replies = value;
     }
+    
+    public ICollection<CommentReaction> Reactions { get; set; } = [];
 
     #endregion
 
