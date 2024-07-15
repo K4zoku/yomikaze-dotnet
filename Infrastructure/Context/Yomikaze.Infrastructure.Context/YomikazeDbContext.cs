@@ -116,6 +116,12 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .HasMany(e => e.Categories)
             .WithMany(e => e.Entries)
             .UsingEntity<LibraryEntryCategory>();
+        
+        builder.Entity<CoinPricing>()
+            .Property(e => e.Currency)
+            .HasConversion(
+                v=> v.ToString(),
+                v=> Enum.Parse<Currency>(v));
     }
 
     private void OnSaveChanges()

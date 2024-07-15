@@ -1,4 +1,5 @@
-﻿using Yomikaze.Domain.Entities.Weak;
+﻿using AutoMapper.Extensions.EnumMapping;
+using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Models;
 using MapperProfile = AutoMapper.Profile;
 
@@ -162,6 +163,11 @@ public class YomikazeMapper : MapperProfile
         CreateMap<TagCategoryModel, TagCategory>()
             .ForMember(dest => dest.Id, options => options.Ignore());
         CreateMap<TagCategory, TagCategoryModel>();
+        
+        CreateMap<CoinPricing, CoinPricingModel>()
+            .ForMember(dest => dest.StripePriceId, options => options.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.StripePriceId, options => options.Condition(src => !string.IsNullOrWhiteSpace(src.StripePriceId)));
 
         CreateMap<User, ProfileModel>()
             .ForMember(dest => dest.Balance, options => options.Ignore());

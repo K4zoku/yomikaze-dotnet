@@ -1,12 +1,18 @@
+using Yomikaze.Domain.Entities;
+
 namespace Yomikaze.Domain.Models;
 
 public class CoinPricingModel : BaseModel
 {
-    public long Amount { get; set; }
-
-    public double Price { get; set; }
-
-    public string Currency { get; set; } = default!;
-
-    public double Discount { get; set; }
+    [Required]
+    public long? Amount { get; set; }
+    
+    [Required]
+    public double? Price { get; set; }
+    public Currency Currency { get; set; } = Currency.USD;
+    
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    [WriteOnly]
+    public string? StripePriceId { get; set; }
 }

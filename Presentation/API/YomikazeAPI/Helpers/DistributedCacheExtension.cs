@@ -71,6 +71,17 @@ public static class DistributedCacheExtension
         return value;
     }
     
+    public static string? GetAsString(this IDistributedCache cache, string key, ILogger? logger = null)
+    {
+        byte[]? cachedData = cache.Get(key);
+        if (cachedData != null)
+        {
+            logger?.LogDebug("Cache hit for key {Key}", key);
+            return Encoding.UTF8.GetString(cachedData);
+        }
+        logger?.LogDebug("Cache miss for key {Key}", key);
+        return null;
+    }
     
 }
 

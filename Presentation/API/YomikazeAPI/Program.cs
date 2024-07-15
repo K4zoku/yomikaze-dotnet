@@ -9,6 +9,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 using Stripe;
+using Stripe.Checkout;
 using Yomikaze.API.Main.Configurations;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
@@ -40,7 +41,12 @@ services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
 services.AddScoped<IRepository<ComicComment>, ComicCommentRepository>();
 services.AddScoped<ComicCommentRepository>();
+services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
+services.AddScoped<CoinPricingRepository>();
 services.AddScoped<Yomikaze.API.Main.Services.AuthenticationService>();
+
+services.AddSingleton(new SessionService());
+services.AddSingleton(new PriceService());
 
 services.AddRouting(options => options.LowercaseUrls = true);
 services.AddControllers(options =>
