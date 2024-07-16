@@ -189,11 +189,22 @@ public class CoinPricingController(
         {
             return NotFound();
         }
+        var customerOptions = new CustomerCreateOptions();
+        var customerService = new CustomerService();
+        var customer = customerService.Create(customerOptions);
+        var ephemeralKeyOptions = new EphemeralKeyCreateOptions
+        {
+            Customer = customer.Id,
+            StripeVersion = "2024-06-20",
+        };
+        var ephemeralKeyService = new EphemeralKeyService();
+        var ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
         
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             Amount = Convert.ToInt64(pricing.Price) * 100,
             Currency = pricing.Currency.ToString(),
+            Customer = customer.Id,
             Metadata = new Dictionary<string, string>()
             {
                 ["UserId"] = User.GetIdString(),
@@ -205,6 +216,8 @@ public class CoinPricingController(
         var result = new PaymentSheetResultModel
         {
             ClientSecret = paymentIntent.ClientSecret,
+            EphemeralKey = ephemeralKey.Secret,
+            Customer = customer.Id,
             PublishableKey = StripeConfig.PublishableKey,
         };
         return Ok(result);

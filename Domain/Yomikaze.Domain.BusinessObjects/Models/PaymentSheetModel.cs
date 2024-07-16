@@ -11,4 +11,8 @@ public class PaymentSheetResultModel
 {
     public string ClientSecret { get; set; } = default!;
     public string PublishableKey { get; set; } = default!;
+    
+    public string EphemeralKey { get; set; } = default!;
+
+    public string Customer { get; set; } = default!;
 }
