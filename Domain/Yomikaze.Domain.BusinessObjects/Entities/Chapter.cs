@@ -5,12 +5,6 @@ namespace Yomikaze.Domain.Entities;
 
 public class Chapter : BaseEntity
 {
-    #region Fields
-
-    private Comic _comic = default!;
-    private IList<Page> _pages = [];
-
-    #endregion
 
     #region Properties
 
@@ -27,14 +21,10 @@ public class Chapter : BaseEntity
     public int Views { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
-    public Comic Comic
-    {
-        get => LazyLoader.Load(this, ref _comic);
-        set => _comic = value;
-    }
+    public Comic Comic { get; set; } = default!;
 
     [InverseProperty(nameof(Page.Chapter))]
-    public IList<Page> Pages { get; set; }
+    public IList<Page> Pages { get; set; } = new List<Page>();
 
     public ICollection<ChapterComment> Comments { get; set; } = new List<ChapterComment>();
 
