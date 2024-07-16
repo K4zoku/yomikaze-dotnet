@@ -45,8 +45,12 @@ services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
 services.AddScoped<CoinPricingRepository>();
 services.AddScoped<Yomikaze.API.Main.Services.AuthenticationService>();
 
+// Stripe services
 services.AddSingleton(new SessionService());
 services.AddSingleton(new PriceService());
+services.AddSingleton(new PaymentIntentService());
+StripeConfig stripeConfig = configuration.GetRequiredSection("Stripe").Get<StripeConfig>() ?? throw new InvalidOperationException("Stripe configuration not found");
+services.AddSingleton(stripeConfig);
 
 services.AddRouting(options => options.LowercaseUrls = true);
 services.AddControllers(options =>

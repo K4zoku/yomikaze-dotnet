@@ -5,6 +5,7 @@ using Stripe;
 using Stripe.Checkout;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Web;
+using Yomikaze.API.Main.Configurations;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 
@@ -19,12 +20,15 @@ public class CoinPricingController(
     IDistributedCache cache,
     SessionService sessionService,
     PriceService priceService,
+    StripeConfig stripeConfig,
     ILogger<CoinPricingController> logger)
     : CrudControllerBase<CoinPricing, CoinPricingModel, CoinPricingRepository>(repository, mapper, cache, logger)
 {
     
     private SessionService SessionService { get; } = sessionService;
     private PriceService PriceService { get; } = priceService;
+    
+    private StripeConfig StripeConfig { get; } = stripeConfig;
     
     [AllowAnonymous]
     [HttpGet]
@@ -97,8 +101,7 @@ public class CoinPricingController(
     [SwaggerOperation(Summary = "Create a new checkout session")]
     public ActionResult<CheckoutResultModel> Checkout([FromBody] CheckoutModel model)
     {
-        ulong priceId;
-        if (!ulong.TryParse(model.PriceId, out priceId))
+        if (!ulong.TryParse(model.PriceId, out ulong priceId))
         {
             ModelState.AddModelError(nameof(model.PriceId), "Invalid price ID.");
             return BadRequest(ModelState);
@@ -221,5 +224,55 @@ public class CoinPricingController(
         }
         SessionService.Expire(sessionId);
         return NoContent();
+    }
+    
+    [HttpPost("/payment-sheet")]
+    public ActionResult<object> CreatePaymentSheet([FromBody][Bind(nameof(model.PriceId))] CheckoutModel model, [FromServices] PaymentIntentService paymentIntentService)
+    {
+        if (!ulong.TryParse(model.PriceId, out ulong priceId))
+        {
+            ModelState.AddModelError(nameof(model.PriceId), "Invalid price ID.");
+            return BadRequest(ModelState);
+        }
+        CoinPricing? pricing = Repository.Get(priceId);
+        if (pricing == null)
+        {
+            return NotFound();
+        }
+        
+        var paymentIntentOptions = new PaymentIntentCreateOptions
+        {
+            Amount = pricing.Amount,
+            Currency = pricing.Currency.ToString(),
+        };
+        PaymentIntent paymentIntent = paymentIntentService.Create(paymentIntentOptions);
+        
+        var result = new
+        {
+            PaymentIntent = paymentIntent.ClientSecret,
+            PublishableKey = StripeConfig.PublishableKey,
+        };
+        return Ok(result);
+    }
+
+    [HttpPost("/stripe/webhook")]
+    public async Task<IActionResult> Webhook([FromHeader(Name = "Stripe-Signature")] string signature)
+    {
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        try
+        {
+            var stripeEvent = EventUtility.ConstructEvent(json,
+                signature, StripeConfig.WebhookSecret);
+
+            // Handle the event
+            Logger.LogDebug("Received stripe event type: {Type}", stripeEvent.Type);
+            Logger.LogDebug("Raw data: {Data}", json);
+
+            return Ok();
+        }
+        catch (StripeException e)
+        {
+            return BadRequest();
+        }
     }
 }
