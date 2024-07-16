@@ -97,7 +97,7 @@ public class CoinPricingController(
     
     
     
-    [HttpPost("/checkout")]
+    [HttpPost("/stripe/checkout")]
     [SwaggerOperation(Summary = "Create a new checkout session")]
     public ActionResult<CheckoutResultModel> Checkout([FromBody] CheckoutModel model)
     {
@@ -161,7 +161,7 @@ public class CoinPricingController(
         }
     }
     
-    [HttpGet("/checkout/{sessionId}")]
+    [HttpGet("/stripe/checkout/{sessionId}")]
     [SwaggerOperation(Summary = "Get the status of a checkout session")]
     public ActionResult CheckoutStatus(string sessionId)
     {
@@ -172,7 +172,7 @@ public class CoinPricingController(
         return Ok(session.RawJObject);
     }
     
-    [HttpPut("/checkout/{sessionId}")] 
+    [HttpPut("/stripe/checkout/{sessionId}")] 
     [SwaggerOperation(Summary = "Client MUST call this endpoint right after checkout is completed and redirected to the return URL.")]
     public async Task<ActionResult> CheckoutComplete(string sessionId, [FromServices] UserManager<User> userManager)
     {
@@ -204,7 +204,7 @@ public class CoinPricingController(
         return Ok();
     }
     
-    [HttpDelete("/checkout/{sessionId}")]
+    [HttpDelete("/stripe/checkout/{sessionId}")]
     [SwaggerOperation(Summary = "Actively cancel a checkout session")]
     public ActionResult CheckoutCancel(string sessionId)
     {
@@ -226,8 +226,8 @@ public class CoinPricingController(
         return NoContent();
     }
     
-    [HttpPost("/payment-sheet")]
-    public ActionResult<object> CreatePaymentSheet([FromBody][Bind(nameof(model.PriceId))] CheckoutModel model, [FromServices] PaymentIntentService paymentIntentService)
+    [HttpPost("/stripe/payment-sheet")]
+    public ActionResult<PaymentSheetResultModel> CreatePaymentSheet([FromBody] PaymentSheetModel model, [FromServices] PaymentIntentService paymentIntentService)
     {
         if (!ulong.TryParse(model.PriceId, out ulong priceId))
         {
@@ -247,15 +247,16 @@ public class CoinPricingController(
         };
         PaymentIntent paymentIntent = paymentIntentService.Create(paymentIntentOptions);
         
-        var result = new
+        var result = new PaymentSheetResultModel
         {
-            PaymentIntent = paymentIntent.ClientSecret,
+            ClientSecret = paymentIntent.ClientSecret,
             PublishableKey = StripeConfig.PublishableKey,
         };
         return Ok(result);
     }
 
     [HttpPost("/stripe/webhook")]
+    [AllowAnonymous]    
     public async Task<IActionResult> Webhook([FromHeader(Name = "Stripe-Signature")] string signature)
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
@@ -272,6 +273,7 @@ public class CoinPricingController(
         }
         catch (StripeException e)
         {
+            Logger.LogWarning(e, "Stripe error when handling webhook");
             return BadRequest();
         }
     }
