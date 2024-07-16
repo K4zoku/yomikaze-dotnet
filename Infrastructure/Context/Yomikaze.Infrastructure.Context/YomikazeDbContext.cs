@@ -73,6 +73,9 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
             .HasMany(e => e.Roles)
             .WithMany()
             .UsingEntity<IdentityUserRole<ulong>>();
+        builder.Entity<User>()
+            .Navigation(e => e.Roles)
+            .AutoInclude();
         builder.Entity<IdentityUserToken<ulong>>().ToTable("user_tokens");
         builder.Entity<IdentityUserLogin<ulong>>().ToTable("user_logins");
         builder.Entity<IdentityUserClaim<ulong>>().ToTable("user_claims");

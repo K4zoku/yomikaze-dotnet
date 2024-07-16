@@ -32,8 +32,12 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
         {
             return NotFound();
         }
-        // TODO)) Add mapping for the user profile
-        return Mapper.Map<ProfileModel>(user);
+        var model = Mapper.Map<ProfileModel>(user);
+        if (User.TryGetId(out ulong currentId) && currentId == id)
+        {
+            model.Balance = user.Balance;
+        }
+        return model;
     }
     
     [HttpPatch]
