@@ -31,4 +31,6 @@ public sealed class User : IdentityUser<ulong>, IEntity
     public override ulong Id { get; set; }
 
     [NotMapped] public int WorkerId => 7;
+    
+    public IList<Role> Roles { get; set; } = new List<Role>();
 }

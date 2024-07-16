@@ -68,7 +68,11 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     protected override void OnModelCreating(ModelBuilder builder)
     {               
         base.OnModelCreating(builder);
-        builder.Entity<User>().ToTable("users");
+        builder.Entity<User>()
+            .ToTable("users")
+            .HasMany(e => e.Roles)
+            .WithMany()
+            .UsingEntity<IdentityUserRole<ulong>>();
         builder.Entity<IdentityUserToken<ulong>>().ToTable("user_tokens");
         builder.Entity<IdentityUserLogin<ulong>>().ToTable("user_logins");
         builder.Entity<IdentityUserClaim<ulong>>().ToTable("user_claims");

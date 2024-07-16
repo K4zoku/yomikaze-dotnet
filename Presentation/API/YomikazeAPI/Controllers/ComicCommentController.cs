@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
 
@@ -82,10 +83,9 @@ public class ComicCommentController(
                 return NotFound();
             }
         }
-        input.ComicId = comicId.ToString();
         input.ReplyToId = comment.Id.ToString(); // Set the root comment as the reply to id
-        input.AuthorId = User.GetIdString();
-        return base.Post(input);
+        
+        return Post(comicId, input);
     }
 
     [NonAction]
@@ -100,7 +100,35 @@ public class ComicCommentController(
     {
         input.ComicId = comicId.ToString();
         input.AuthorId = User.GetIdString();
-        return base.Post(input);
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        ComicComment entity = Mapper.Map<ComicComment>(input);
+        Logger.LogDebug("After mapped {Entity}", JsonConvert.SerializeObject(entity));
+        try
+        {
+            Repository.Add(entity);
+        } catch (DbUpdateException e)
+        {
+            Logger.LogWarning(e, "Error when adding entity");
+            return Conflict();
+        } catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when adding entity");
+            return Problem();
+        }
+        RemoveListCache();
+        if (Equals(entity.Id, default(ulong)))
+        {
+            return Problem("Id is null");
+        }
+        entity = Repository.Get(entity.Id) ?? entity;
+        var model = Mapper.Map<ComicCommentModel>(entity);
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+        
+        return CreatedAtAction("GetComment", new { comicId, key = entity.Id }, model);
     }
 
     [NonAction]
@@ -110,7 +138,7 @@ public class ComicCommentController(
     }
     
     [HttpGet("{key}")]
-    public ActionResult<ComicCommentModel> Get(ulong comicId, ulong key)
+    public ActionResult<ComicCommentModel> GetComment([FromRoute] ulong comicId, [FromRoute] ulong key)
     {
         return base.Get(key);
     }

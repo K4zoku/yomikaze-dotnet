@@ -16,6 +16,8 @@ public class ProfileModel : BaseModel
 
     public long? Balance { get; set; }
     
+    public string[] Roles { get; set; } = [];
+    
     // cast from User
     public static explicit operator ProfileModel(User user)
     {

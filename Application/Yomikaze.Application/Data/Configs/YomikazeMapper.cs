@@ -170,7 +170,8 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.StripePriceId, options => options.Condition(src => !string.IsNullOrWhiteSpace(src.StripePriceId)));
 
         CreateMap<User, ProfileModel>()
-            .ForMember(dest => dest.Balance, options => options.Ignore());
+            .ForMember(dest => dest.Balance, options => options.Ignore())
+            .ForMember(dest => dest.Roles, options => options.MapFrom(src => src.Roles.Select(role => role.Name).ToArray()));
 
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();

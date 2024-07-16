@@ -13,18 +13,17 @@ public class CommentModel : BaseModel
     [SwaggerSchema(ReadOnly = true)]
     public ProfileModel? Author { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)]
-    public ICollection<CommentModel>? Replies { get; set; }
-
     #endregion
 
     #region WriteOnlyProperties
 
+    [SwaggerIgnore]
     [SwaggerSchema(ReadOnly = true)]
     [WriteOnly]
     public string? AuthorId { get; set; } = default!;
 
-    [SwaggerSchema(WriteOnly = true)]
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
     [WriteOnly]
     public string? ReplyToId { get; set; }
 
