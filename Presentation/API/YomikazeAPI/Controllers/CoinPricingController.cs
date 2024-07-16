@@ -44,7 +44,7 @@ public class CoinPricingController(
         var options = new PriceCreateOptions
         {
             Currency = input.Currency.ToString().ToLower(),
-            UnitAmount = input.Amount,
+            UnitAmount = (long?) input.Price,
             ProductData = new PriceProductDataOptions { Name = $"{input.Amount} Yomikaze Coin" },
         };
         var result = PriceService.Create(options);
@@ -72,7 +72,7 @@ public class CoinPricingController(
         var options = new PriceCreateOptions
         {
             Currency = model.Currency.ToString().ToLower(),
-            UnitAmount = model.Amount,
+            UnitAmount = (long?) model.Price,
             ProductData = new PriceProductDataOptions { Name = $"{model.Amount} Yomikaze Coin" },
         };
         var result = PriceService.Create(options);
@@ -134,12 +134,16 @@ public class CoinPricingController(
                 new SessionLineItemOptions
                 {
                     DynamicTaxRates = null,
-                    Price = pricing.StripePriceId
+                    Price = pricing.StripePriceId,
                 }
+            },
+            Metadata = new Dictionary<string, string>()
+            {
+                ["UserId"] = User.GetIdString(),
+                ["PriceId"] = pricing.Id.ToString(),
             },
             ExpiresAt = DateTime.Now.AddMinutes(15),
             Mode = "payment",
-            ClientReferenceId = User.GetIdString(),
             ReturnUrl = url.ToString().Replace("CHECKOUT_SESSION_ID", "{CHECKOUT_SESSION_ID}") // Replace placeholder with actual placeholder (without url encoded)
         };
         Session session = SessionService.Create(options);
@@ -163,67 +167,13 @@ public class CoinPricingController(
     
     [HttpGet("/stripe/checkout/{sessionId}")]
     [SwaggerOperation(Summary = "Get the status of a checkout session")]
-    public ActionResult CheckoutStatus(string sessionId)
+    public ActionResult<Session> CheckoutStatus(string sessionId)
     {
         if (!TryGetSession(sessionId, out var session))
         {
             return NotFound();
         }
         return Ok(session.RawJObject);
-    }
-    
-    [HttpPut("/stripe/checkout/{sessionId}")] 
-    [SwaggerOperation(Summary = "Client MUST call this endpoint right after checkout is completed and redirected to the return URL.")]
-    public async Task<ActionResult> CheckoutComplete(string sessionId, [FromServices] UserManager<User> userManager)
-    {
-        if (!TryGetSession(sessionId, out var session))
-        {
-            return NotFound();
-        }
-        string suid = session.ClientReferenceId;
-        string uid = User.GetIdString();
-        
-        if (suid != uid)
-        {
-            return Forbid();
-        }
-        
-        if (session.Status != "complete")
-        {
-            return BadRequest();
-        }
-        var coin = session.LineItems.First().Quantity;
-        if (coin == null)
-        {
-            return Problem();
-        }
-        var user = User.GetUser(userManager);
-        user.Balance += coin.Value;
-        await userManager.UpdateAsync(user);
-        // TODO)) Add transaction record
-        return Ok();
-    }
-    
-    [HttpDelete("/stripe/checkout/{sessionId}")]
-    [SwaggerOperation(Summary = "Actively cancel a checkout session")]
-    public ActionResult CheckoutCancel(string sessionId)
-    {
-        if (!TryGetSession(sessionId, out var session))
-        {
-            return NotFound();
-        }
-        if (session.Status != "open")
-        {
-            return BadRequest();
-        }
-        string suid = session.ClientReferenceId;
-        string uid = User.GetIdString();
-        if (suid != uid)
-        {
-            return Forbid();
-        }
-        SessionService.Expire(sessionId);
-        return NoContent();
     }
     
     [HttpPost("/stripe/payment-sheet")]
@@ -242,8 +192,13 @@ public class CoinPricingController(
         
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
-            Amount = pricing.Amount,
+            Amount = (long) pricing.Price,
             Currency = pricing.Currency.ToString(),
+            Metadata = new Dictionary<string, string>()
+            {
+                ["UserId"] = User.GetIdString(),
+                ["PriceId"] = pricing.Id.ToString(),
+            }
         };
         PaymentIntent paymentIntent = paymentIntentService.Create(paymentIntentOptions);
         
@@ -257,24 +212,79 @@ public class CoinPricingController(
 
     [HttpPost("/stripe/webhook")]
     [AllowAnonymous]    
-    public async Task<IActionResult> Webhook([FromHeader(Name = "Stripe-Signature")] string signature)
+    public async Task<IActionResult> Webhook([FromHeader(Name = "Stripe-Signature")] string signature, [FromServices] UserManager<User> userManager)
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        Event stripeEvent;
         try
         {
-            var stripeEvent = EventUtility.ConstructEvent(json,
+            stripeEvent = EventUtility.ConstructEvent(json,
                 signature, StripeConfig.WebhookSecret);
-
-            // Handle the event
-            Logger.LogDebug("Received stripe event type: {Type}", stripeEvent.Type);
-            Logger.LogDebug("Raw data: {Data}", json);
-
-            return Ok();
         }
         catch (StripeException e)
         {
             Logger.LogWarning(e, "Stripe error when handling webhook");
             return BadRequest();
         }
+
+        Dictionary<string, string> metadata;
+        switch (stripeEvent.Type)
+        {
+            case Events.CheckoutSessionCompleted:
+                if (stripeEvent.Data.Object is not Session session)
+                {
+                    Logger.LogWarning("Invalid session object in event data");
+                    return BadRequest();
+                }
+                metadata = session.Metadata;
+                break;
+            case Events.PaymentIntentSucceeded:
+                if (stripeEvent.Data.Object is not PaymentIntent paymentIntent)
+                {
+                    Logger.LogWarning("Invalid payment intent object in event data");
+                    return BadRequest();
+                }
+                metadata = paymentIntent.Metadata;
+                break;
+            default:
+                metadata = new Dictionary<string, string>();
+                break;
+        }
+        
+        if (!metadata.TryGetValue("PriceId", out string? priceIdStr))
+        {
+            ModelState.AddModelError("Metadata.PriceId", "Price ID not found in metadata");
+            return BadRequest(ModelState);
+        }
+        if (!metadata.TryGetValue("UserId", out string? userId))
+        {
+            ModelState.AddModelError("Metadata.UserId", "User ID not found in metadata");
+            return BadRequest(ModelState);
+        }
+        if (!ulong.TryParse(priceIdStr, out ulong priceId))
+        {
+            ModelState.AddModelError("Metadata.PriceId", "Invalid price ID");
+            return BadRequest(ModelState);
+        }
+        
+        Logger.LogDebug("Getting CoinPricing {PriceId}", priceId);
+        CoinPricing? coin = Repository.Get(priceId);
+        if (coin == null)
+        {
+            Logger.LogWarning("Coin pricing {Id} not found", priceId);
+            return NotFound();
+        }
+        Logger.LogDebug("Getting User {UserId}", userId);
+        User? user = await userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            Logger.LogWarning("User {Id} not found", userId);
+            return NotFound();
+        }
+            
+        user.Balance += coin.Amount;
+        await userManager.UpdateAsync(user);
+        // TODO)) Add transaction record
+        return Ok();
     }
 }
