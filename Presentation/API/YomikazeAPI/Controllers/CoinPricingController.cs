@@ -44,7 +44,7 @@ public class CoinPricingController(
         var options = new PriceCreateOptions
         {
             Currency = input.Currency.ToString().ToLower(),
-            UnitAmount = (long?) input.Price,
+            UnitAmount = Convert.ToInt64(input.Price) * 100,
             ProductData = new PriceProductDataOptions { Name = $"{input.Amount} Yomikaze Coin" },
         };
         var result = PriceService.Create(options);
@@ -72,7 +72,7 @@ public class CoinPricingController(
         var options = new PriceCreateOptions
         {
             Currency = model.Currency.ToString().ToLower(),
-            UnitAmount = (long?) model.Price,
+            UnitAmount = Convert.ToInt64(model.Price) * 100,
             ProductData = new PriceProductDataOptions { Name = $"{model.Amount} Yomikaze Coin" },
         };
         var result = PriceService.Create(options);
@@ -192,7 +192,7 @@ public class CoinPricingController(
         
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
-            Amount = (long) pricing.Price,
+            Amount = Convert.ToInt64(pricing.Price) * 100,
             Currency = pricing.Currency.ToString(),
             Metadata = new Dictionary<string, string>()
             {
