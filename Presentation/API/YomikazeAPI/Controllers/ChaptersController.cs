@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.Main.Controllers;
 
@@ -96,6 +97,36 @@ public partial class ComicsController
             Logger.LogError(e, "Failed to update chapter {Id} views or add history record", chapter.Id);
         }
         return Ok(model);
+    }
+
+    [HttpPut($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}/unlock")]
+    [Authorize]
+    public ActionResult UnlockChapter(ulong key, int number)
+    {
+        Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
+        if (chapter == null)
+        {
+            return NotFound();
+        }
+
+        if (chapter.Price == 0)
+        {
+            ModelState.AddModelError("Chapter", "Chapter is not locked");
+            return BadRequest(ModelState);
+        }
+
+        var userId = User.GetId();
+        
+        if (chapter.Unlocked.Any(u => u.UserId == userId))
+        {
+            ModelState.AddModelError("Chapter", "Chapter is already unlocked");
+            return BadRequest(ModelState);
+        }
+        
+        chapter.Unlocked.Add(new UnlockedChapter() { UserId = userId, ChapterId = chapter.Id });
+        
+        ChapterRepository.Update(chapter);
+        return Ok();
     }
 
     [HttpPatch("{key}/chapters/{number:int}")]
