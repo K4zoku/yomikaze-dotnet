@@ -8,8 +8,12 @@ public class ReportModel : BaseModel
 
     public string? Description { get; set; } = default!;
 
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
     public ReportStatus Status { get; set; } = default!;
 
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
     public string? DismissalReason { get; set; }
 
     public string[]? Images { get; set; }

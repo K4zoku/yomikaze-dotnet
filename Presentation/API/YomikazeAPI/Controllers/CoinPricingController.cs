@@ -167,7 +167,7 @@ public class CoinPricingController(
     
     [HttpGet("/stripe/checkout/{sessionId}")]
     [SwaggerOperation(Summary = "Get the status of a checkout session")]
-    public ActionResult<Session> CheckoutStatus(string sessionId)
+    public ActionResult<StripeResponse> CheckoutStatus(string sessionId)
     {
         if (!TryGetSession(sessionId, out var session))
         {

@@ -1,6 +1,6 @@
 namespace Yomikaze.Domain.Models;
 
-public class ComicReportModel
+public class ComicReportModel : ReportModel
 {
     #region ReadOnlyProperties
 
@@ -10,7 +10,10 @@ public class ComicReportModel
 
     #region WriteOnlyProperties
 
-    [SwaggerSchema(WriteOnly = true)] public string TranslationId { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)]
+    [SwaggerIgnore]
+    [WriteOnly]
+    public string ComicId { get; set; } = default!;
 
     #endregion
 }

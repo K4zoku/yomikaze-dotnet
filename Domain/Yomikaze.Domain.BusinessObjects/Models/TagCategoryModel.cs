@@ -4,7 +4,9 @@ public class TagCategoryModel : BaseModel
 {
     #region CommonProperties
 
-    [Required] public string Name { get; set; } = default!;
+    [Required]
+    [StringLength(64)]
+    public string Name { get; set; } = default!;
 
     #endregion
 }

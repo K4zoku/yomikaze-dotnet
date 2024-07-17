@@ -4,7 +4,7 @@ public class TagModel : BaseModel
 {
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public string Category { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] public TagCategoryModel Category { get; set; } = default!;
 
     #endregion
 
