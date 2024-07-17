@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Net;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
 
@@ -101,7 +103,7 @@ public partial class ComicsController
 
     [HttpPut($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}/unlock")]
     [Authorize]
-    public ActionResult UnlockChapter(ulong key, int number)
+    public ActionResult UnlockChapter(ulong key, int number, [FromServices] UserManager<User> userManager)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
         if (chapter == null)
@@ -122,6 +124,16 @@ public partial class ComicsController
             ModelState.AddModelError("Chapter", "Chapter is already unlocked");
             return BadRequest(ModelState);
         }
+
+        var currentUser = User.GetUser(userManager);
+        if (currentUser.Balance < chapter.Price)
+        {
+            ModelState.AddModelError("User", "Insufficient balance");
+            return Problem(statusCode: (int)HttpStatusCode.PaymentRequired, detail: "Insufficient balance");
+        }
+        
+        currentUser.Balance -= chapter.Price;
+        userManager.UpdateAsync(currentUser).Wait();  
         
         chapter.Unlocked.Add(new UnlockedChapter() { UserId = userId, ChapterId = chapter.Id });
         
