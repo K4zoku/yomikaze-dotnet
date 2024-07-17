@@ -4,6 +4,7 @@ public class CommentModel : BaseModel
 {
     #region CommonProperties
 
+    [StringLength(1024)]
     public string? Content { get; set; } = default!;
 
     #endregion

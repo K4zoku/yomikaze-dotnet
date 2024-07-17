@@ -16,7 +16,7 @@ public class Comment : BaseEntity
 
     protected Action<object, string>? LazyLoader { get; }
 
-    [StringLength(256)] public string Content { get; set; } = default!;
+    [StringLength(1024)] public string Content { get; set; } = default!;
 
 
     [ForeignKey(nameof(Author))] public ulong AuthorId { get; set; }
