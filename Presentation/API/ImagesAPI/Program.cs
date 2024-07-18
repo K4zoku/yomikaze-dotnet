@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System.Net;
 using Yomikaze.API.CDN.Images.Configurations;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
@@ -61,23 +62,17 @@ if (env.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-var defaultFile = fileProvider.GetFileInfo("default.webp");
+
+app.Use(async (context, next) => {
+    await next.Invoke();
+    if (context.Response.StatusCode == (int)HttpStatusCode.NotFound)
+    {
+        context.Response.Redirect("/images/default.webp");
+    }
+});
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false, 
-    OnPrepareResponse = context =>
-    {
-        var httpContext = context.Context;
-        var response = httpContext.Response;
-        if (response.StatusCode is not 404)
-        {
-            return;
-        }
-        var body = response.Body;
-        defaultFile.CreateReadStream().CopyTo(body);
-        body.Close();
-        response.Headers.ContentType = "image/webp";
-    }
+    FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false
 });
 
 app.UseCors("Public");
