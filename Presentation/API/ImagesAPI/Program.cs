@@ -61,10 +61,23 @@ if (env.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+var defaultFile = fileProvider.GetFileInfo("default.webp");
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false
+    FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false, 
+    OnPrepareResponse = context =>
+    {
+        var httpContext = context.Context;
+        var response = httpContext.Response;
+        if (response.StatusCode is not 404)
+        {
+            return;
+        }
+        var body = response.Body;
+        defaultFile.CreateReadStream().CopyTo(body);
+        body.Close();
+        response.Headers.ContentType = "image/webp";
+    }
 });
 
 app.UseCors("Public");
