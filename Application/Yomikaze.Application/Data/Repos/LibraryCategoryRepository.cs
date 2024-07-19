@@ -14,4 +14,9 @@ public class LibraryCategoryRepository(DbContext dbContext)
     {
         return Query().Where(x => x.UserId == userId);
     }
+    
+    public IQueryable<LibraryCategory> Get(ulong userId, params ulong[] ids)
+    {
+        return Query().Where(x => ids.Contains(x.Id) && x.UserId == userId);
+    }
 }

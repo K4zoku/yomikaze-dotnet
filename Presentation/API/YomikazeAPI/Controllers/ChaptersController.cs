@@ -6,8 +6,6 @@ using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.Main.Controllers;
 
-// TODO)) Check comics ownership for creating, updating and deleting chapters
-// TODO)) Return isUnlocked & isRead for chapters, only if user is authenticated
 public partial class ComicsController
 {
      #region Chapters
@@ -130,7 +128,6 @@ public partial class ComicsController
         var currentUser = User.GetUser(userManager);
         if (currentUser.Balance < chapter.Price)
         {
-            ModelState.AddModelError("User", "Insufficient balance");
             return Problem(statusCode: (int)HttpStatusCode.PaymentRequired, detail: "Insufficient balance");
         }
         
@@ -143,6 +140,45 @@ public partial class ComicsController
         return Ok();
     }
 
+    [HttpPut($"{{{nameof(key)}}}/chapters/unlock")]
+    [Authorize]
+    public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers, [FromServices] UserManager<User> userManager)
+    {
+        var chapters = ChapterRepository.GetByComicIdAndIndexes(key.ToString(), chapterNumbers);
+        if (chapters.Count == 0)
+        {
+            return NotFound();
+        }
+        var price = chapters.Sum(c => c.Price);
+
+        if (price == 0)
+        {
+            ModelState.AddModelError("Chapters", "There are no locked chapters");
+            return BadRequest(ModelState);
+        }
+
+        var currentUser = User.GetUser(userManager);
+        
+        if (currentUser.Balance < price)
+        {
+            return Problem(statusCode: (int)HttpStatusCode.PaymentRequired, detail: "Insufficient balance");
+        }
+        currentUser.Balance -= price;
+        userManager.UpdateAsync(currentUser).Wait();
+        var unlockedChapters = new List<int>();
+        foreach (var chapter in chapters)
+        {
+            if (chapter.Unlocked.Any(u => u.UserId == currentUser.Id))
+            {
+                continue;
+            }
+            chapter.Unlocked.Add(new UnlockedChapter() { UserId = currentUser.Id, ChapterId = chapter.Id });
+            ChapterRepository.Update(chapter);
+            unlockedChapters.Add(chapter.Number);
+        }
+        return Ok(unlockedChapters);
+    }
+    
     [HttpPatch("{key}/chapters/{number:int}")]
     public ActionResult<ChapterModel> UpdateChapter(ulong key, int number,
         JsonPatchDocument<ChapterModel> patchDocument)

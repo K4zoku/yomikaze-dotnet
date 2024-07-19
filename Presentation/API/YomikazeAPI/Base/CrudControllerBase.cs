@@ -77,6 +77,11 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     {
         return Repository.Query();
     }
+    
+    protected virtual T? GetEntity(TKey key)
+    {
+        return Repository.Get(key);
+    }
 
     [HttpGet("{key}")]
     [SwaggerResponse((int)HttpStatusCode.OK, "Entity found", ContentTypes = ["application/json"])]
@@ -93,7 +98,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
 
         var result = Cache.GetOrSet(GetCacheKey(key), () =>
         {
-            T? entity = Repository.Get(key);
+            T? entity = GetEntity(key);
             if (entity == null)
             {
                 return null;
@@ -166,7 +171,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
-        T? entityToUpdate = Repository.Get(key);
+        T? entityToUpdate = GetEntity(key);
         if (entityToUpdate == null)
         {
             return NotFound();
@@ -208,7 +213,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
-        T? entity = Repository.Get(key);
+        T? entity = GetEntity(key);
         if (entity == null)
         {
             return NotFound();

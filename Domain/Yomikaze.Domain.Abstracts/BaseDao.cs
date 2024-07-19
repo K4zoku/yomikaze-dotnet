@@ -12,7 +12,7 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
 
     public virtual TEntity? GetById(TId id)
     {
-        return Query().FirstOrDefault(e => e.Id != null && e.Id.Equals(id));
+        return Query().FirstOrDefault(e => Equals(e.Id, id));
     }
 
     public virtual void Add(TEntity entity)

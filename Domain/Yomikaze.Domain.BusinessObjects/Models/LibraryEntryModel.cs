@@ -15,6 +15,8 @@ public class LibraryEntryModel : BaseModel
     #region WriteOnlyProperties
 
     [WriteOnly]
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
     public string? UserId { get; set; }
 
     [WriteOnly]

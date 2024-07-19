@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
+using Yomikaze.Infrastructure.Context.Configuration;
+using Yomikaze.Infrastructure.Context.Generator;
 
 namespace Yomikaze.Infrastructure.Context;
 
@@ -68,67 +70,18 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     protected override void OnModelCreating(ModelBuilder builder)
     {               
         base.OnModelCreating(builder);
-        builder.Entity<User>()
-            .ToTable("users")
-            .HasMany(e => e.Roles)
-            .WithMany()
-            .UsingEntity<IdentityUserRole<ulong>>();
-        builder.Entity<User>()
-            .Navigation(e => e.Roles)
-            .AutoInclude();
+        builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        
         builder.Entity<IdentityUserToken<ulong>>().ToTable("user_tokens");
         builder.Entity<IdentityUserLogin<ulong>>().ToTable("user_logins");
         builder.Entity<IdentityUserClaim<ulong>>().ToTable("user_claims");
         builder.Entity<Role>().ToTable("roles");
         builder.Entity<IdentityUserRole<ulong>>().ToTable("user_roles");
         builder.Entity<IdentityRoleClaim<ulong>>().ToTable("role_claims");
-
-        builder.Entity<Comment>()
-            .HasDiscriminator<string>("type")
-            .IsComplete(false)
-            .HasValue<Comment>("comment_base")
-            .HasValue<ChapterComment>("chapter_comment")
-            .HasValue<ComicComment>("comic_comment")
-            .HasValue<ProfileComment>("profile_comment");
-
-        builder.Entity<Report>()
-            .HasDiscriminator<string>("type")
-            .IsComplete(false)
-            .HasValue<Report>("report_base")
-            .HasValue<ChapterReport>("chapter_report")
-            .HasValue<ComicReport>("comic_report")
-            .HasValue<ProfileReport>("profile_report")
-            .HasValue<TranslationReport>("translation_report");
-
+        
         builder.Entity<TagCategory>().HasData(Default.TagCategories);
         builder.Entity<Tag>().HasData(Default.Tags);
         builder.Entity<Role>().HasData(Default.Roles);
-        builder.Entity<Comic>()
-            .HasMany(e => e.Tags)
-            .WithMany(e => e.Comics)
-            .UsingEntity<ComicTag>();
-        builder.Entity<Comic>()
-            .HasMany(e => e.Chapters)
-            .WithOne(e => e.Comic);
-        builder.Entity<Comic>()
-            .HasMany(e=> e.Ratings)
-            .WithOne(e => e.Comic);
-        builder.Entity<Comic>()
-            .HasMany(e => e.Follows)
-            .WithOne(e => e.Comic);
-        builder.Entity<Comic>()
-            .HasMany(e => e.Comments)
-            .WithOne(e => e.Comic);
-        builder.Entity<LibraryEntry>()
-            .HasMany(e => e.Categories)
-            .WithMany(e => e.Entries)
-            .UsingEntity<LibraryEntryCategory>();
-        
-        builder.Entity<CoinPricing>()
-            .Property(e => e.Currency)
-            .HasConversion(
-                v=> v.ToString(),
-                v=> Enum.Parse<Currency>(v));
     }
 
     private void OnSaveChanges()
@@ -144,7 +97,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
                 case { State: EntityState.Added } when entity.CreationTime == default:
                     entity.CreationTime = DateTime.UtcNow;
                     break;
-                case { State: EntityState.Modified } when entity.LastModified == null:
+                case { State: EntityState.Modified }:
                     entity.LastModified = DateTime.UtcNow;
                     break;
             }

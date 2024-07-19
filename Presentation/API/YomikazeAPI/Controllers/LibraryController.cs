@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.JsonPatch;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Linq.Dynamic.Core;
 using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
 
-[Authorize(Roles = "Administrator,Publisher,Reader")]
+[Authorize]
 [Route("[controller]")]
 [ApiController]
 public class LibraryController(
@@ -14,8 +17,8 @@ public class LibraryController(
     protected override IList<SearchFieldMutator<LibraryEntry, LibrarySearchModel>> SearchFieldMutators { get; } = new List<SearchFieldMutator<LibraryEntry, LibrarySearchModel>>
     {
         #pragma warning disable CA1862
-        new(search => !string.IsNullOrWhiteSpace(search.Category), 
-            (query, search) => query.Where(x => x.Categories.Any(c => c.Name == search.Category!))),
+        new(search => search.CategoryId != null, 
+            (query, search) => query.Where(x => x.Categories.Any(c => c.Id == search.CategoryId))),
         new(search => !string.IsNullOrWhiteSpace(search.Name), 
             (query, search) => query.Where(x => x.Comic.Name.ToLower().Contains(search.Name!.ToLower()))),
         #pragma warning restore CA1862
@@ -46,55 +49,90 @@ public class LibraryController(
         return Repository.GetAllByUserId(User.GetIdString());
     }
     
-    // Add to library category
-    [HttpPut("{key}/categories/{categoryKey}")]
-    [Authorize]
-    public ActionResult AddToCategory(ulong key, ulong categoryKey, [FromServices] LibraryCategoryRepository categoryRepository)
+    [HttpPost("{comicId}/categories/")]
+    [SwaggerOperation("Add comic in library to categories, this will return the categories that were added.")]
+    public ActionResult<IEnumerable<LibraryCategoryModel>> AddToCategories(ulong comicId, [FromBody] ulong[] categoryIds, [FromServices] LibraryCategoryRepository categoryRepository)
     {
         var userId = User.GetId();
-        var libraryEntry = Repository.Get(key);
+        var libraryEntry = Repository.GetLibraryEntry(userId, comicId);
         if (libraryEntry == null)
         {
             return NotFound();
         }
-        var category = categoryRepository.Get(categoryKey);
-        if (category == null)
+        var notExistingCategories = categoryIds.Except(libraryEntry.Categories.Select(x => x.Id)).ToArray();
+        var categories = categoryRepository.Get(userId, notExistingCategories).ToArray();
+        if (categories.Length == 0)
         {
-            ModelState.AddModelError(nameof(categoryKey), "Category not found.");
+            ModelState.AddModelError("Categories", "There are no valid categories.");
             return ValidationProblem(ModelState);
         }
-        if (libraryEntry.UserId != userId)
-        {
-            return Forbid();
-        }
-        libraryEntry.Categories.Add(category);
+        libraryEntry.Categories.AddRange(categories);
         Repository.Update(libraryEntry);
-        return NoContent();
+        return Ok(Mapper.Map<IEnumerable<LibraryCategoryModel>>(categories));
     } 
     
     // Remove from library category
-    [HttpDelete("{key}/categories/{categoryKey}")]
-    [Authorize]
-    public ActionResult RemoveFromCategory(ulong key, ulong categoryKey, [FromServices] LibraryCategoryRepository categoryRepository)
+    [HttpDelete("{comicId}/categories")]
+    [SwaggerOperation("Remove comic in library from categories, this will return the categories that were removed.")]
+    public ActionResult<IEnumerable<LibraryCategoryModel>> RemoveFromCategory(ulong comicId, [FromBody] ulong[] categoryIds, [FromServices] LibraryCategoryRepository categoryRepository)
     {
         var userId = User.GetId();
-        var libraryEntry = Repository.Get(key);
+        var libraryEntry = Repository.GetLibraryEntry(userId, comicId);
         if (libraryEntry == null)
         {
             return NotFound();
         }
-        var category = categoryRepository.Get(categoryKey);
-        if (category == null)
+        
+        var categories = categoryRepository.Get(userId, categoryIds).ToArray();
+        
+        if (categories.Length == 0)
         {
-            ModelState.AddModelError(nameof(categoryKey), "Category not found.");
+            ModelState.AddModelError("Categories", "There are no valid categories.");
             return ValidationProblem(ModelState);
         }
-        if (libraryEntry.UserId != userId)
-        {
-            return Forbid();
-        }
-        libraryEntry.Categories.Remove(category);
+        var removedCategories = categories.Where(category => libraryEntry.Categories.Remove(category)).ToList();
         Repository.Update(libraryEntry);
-        return NoContent();
+        return Ok(Mapper.Map<IEnumerable<LibraryCategoryModel>>(removedCategories));
+    }
+
+    protected override LibraryEntry? GetEntity(ulong key)
+    {
+        return Repository.GetLibraryEntry(User.GetId(), key);
+    }
+
+    [HttpPost]
+    [SwaggerOperation("Add comic to library (follow comic)")]
+    public override ActionResult<LibraryEntryModel> Post(LibraryEntryModel input)
+    {
+        input.UserId = User.GetIdString();
+        return base.Post(input);
+    }
+    
+    [HttpGet("category/{categoryId}")]
+    [SwaggerOperation("List library entries by its category")]
+    public ActionResult<PagedList<LibraryEntryModel>> ListByCategory([FromRoute] ulong categoryId, [FromQuery] LibrarySearchModel search, [FromQuery] PaginationModel pagination)
+    {
+        search.CategoryId = categoryId;
+        return base.List(search, pagination);
+    }
+    
+    [HttpGet("{comicId}")]
+    [SwaggerOperation("Get library entry by comic")]
+    public override ActionResult<LibraryEntryModel> Get(ulong comicId)
+    {
+        return base.Get(comicId);
+    }
+    
+    [NonAction]
+    public override ActionResult<LibraryEntryModel> Patch(ulong comicId, JsonPatchDocument<LibraryEntryModel> input)
+    {
+        return base.Patch(comicId, input);
+    }
+    
+    [HttpDelete("{comicId}")]
+    [SwaggerOperation("Delete library entry by comic (unfollow comic)")]
+    public override ActionResult Delete(ulong comicId)
+    {
+        return base.Delete(comicId);
     }
 }

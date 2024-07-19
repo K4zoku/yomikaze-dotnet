@@ -2,7 +2,9 @@ namespace Yomikaze.Domain.Models;
 
 public class LibrarySearchModel
 {
-    public string? Category { get; set; }
+    
+    [SwaggerIgnore]
+    public ulong? CategoryId { get; set; }
     
     public string? Name { get; set; }
 
