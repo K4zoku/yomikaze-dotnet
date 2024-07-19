@@ -184,11 +184,11 @@ public partial class ComicsController(
     {
         IQueryable<Comic> queryable = Repository.QueryWithExtras();
         var topRead = queryable
-            .Select(comic =>
-            new {
-                Comic = comic,
-                Views = comic.Views.Where(view => view.CreationTime >= start && view.CreationTime <= end).Sum(view => view.Views)
-            })
+            .Select(comic => new {
+                    Comic = comic,
+                    Views = DbContext.GetComicViewsResult(comic.Id, start, end).Sum(r => (int) r.Views)
+                }
+            )
             .OrderByDescending(r => r.Views)
             .Take(10)
             .ToList();
@@ -200,7 +200,7 @@ public partial class ComicsController(
         return models;
     }
     
-    private DateTimeOffset RemoveTime(DateTimeOffset dateTime)
+    private static DateTimeOffset RemoveTime(DateTimeOffset dateTime)
     {
         return dateTime.Subtract(TimeSpan.FromHours(dateTime.Hour))
             .Subtract(TimeSpan.FromMinutes(dateTime.Minute))

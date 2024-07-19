@@ -69,8 +69,6 @@ public enum ComicOrderBy
     TotalChaptersDesc,
     TotalViews,
     TotalViewsDesc,
-    ViewsByDate,
-    ViewsByDateDesc,
     AverageRating,
     AverageRatingDesc,
     TotalRatings,
