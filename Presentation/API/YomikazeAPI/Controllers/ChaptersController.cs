@@ -45,7 +45,9 @@ public partial class ComicsController
         Chapter chapter = Mapper.Map<Chapter>(model);
         chapter.ComicId = key;
 
-        ChapterRepository.Add(chapter);
+        comic.Chapters.Add(chapter);
+        comic.LastModified = DateTimeOffset.UtcNow;
+        Repository.Update(comic);
 
         return CreatedAtAction(nameof(GetChapter), new { key, number = chapter.Number },
             Mapper.Map<ChapterModel>(chapter));

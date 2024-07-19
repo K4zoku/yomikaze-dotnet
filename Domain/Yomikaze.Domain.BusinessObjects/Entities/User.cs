@@ -33,4 +33,10 @@ public sealed class User : IdentityUser<ulong>, IEntity
     [NotMapped] public int WorkerId => 7;
     
     public IList<Role> Roles { get; set; } = new List<Role>();
+    
+    // Stripe
+    
+    public string? StripeCustomerId { get; set; }
+    
+    public string? StripeEphemeralKey { get; set; }
 }

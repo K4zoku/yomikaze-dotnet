@@ -177,7 +177,8 @@ public class CoinPricingController(
     }
     
     [HttpPost("/stripe/payment-sheet")]
-    public ActionResult<PaymentSheetResultModel> CreatePaymentSheet([FromBody] PaymentSheetModel model, [FromServices] PaymentIntentService paymentIntentService)
+    [Authorize]
+    public ActionResult<PaymentSheetResultModel> CreatePaymentSheet([FromBody] PaymentSheetModel model, [FromServices] PaymentIntentService paymentIntentService, [FromServices] UserManager<User> userManager)
     {
         if (!ulong.TryParse(model.PriceId, out ulong priceId))
         {
@@ -189,22 +190,40 @@ public class CoinPricingController(
         {
             return NotFound();
         }
-        var customerOptions = new CustomerCreateOptions();
-        var customerService = new CustomerService();
-        var customer = customerService.Create(customerOptions);
-        var ephemeralKeyOptions = new EphemeralKeyCreateOptions
+
+        var user = User.GetUser(userManager);
+        var isChanged = false;
+        if (user.StripeCustomerId == null)
         {
-            Customer = customer.Id,
-            StripeVersion = "2024-06-20",
-        };
-        var ephemeralKeyService = new EphemeralKeyService();
-        var ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
-        
+            var customerOptions = new CustomerCreateOptions() { Email = user.Email, Name = user.Name };
+            var customerService = new CustomerService();
+            var customer = customerService.Create(customerOptions);
+            user.StripeCustomerId = customer.Id;
+            isChanged = true;
+        }
+
+        if (user.StripeEphemeralKey == null)
+        {
+            var ephemeralKeyOptions = new EphemeralKeyCreateOptions
+            {
+                Customer = user.StripeCustomerId, StripeVersion = "2024-06-20",
+            };
+            var ephemeralKeyService = new EphemeralKeyService();
+            var ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
+            user.StripeEphemeralKey = ephemeralKey.Secret;
+            isChanged = true;
+        }
+
+        if (isChanged)
+        {
+            userManager.UpdateAsync(user).Wait();
+        }
+
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             Amount = Convert.ToInt64(pricing.Price) * 100,
             Currency = pricing.Currency.ToString(),
-            Customer = customer.Id,
+            Customer = user.StripeCustomerId,
             Metadata = new Dictionary<string, string>()
             {
                 ["UserId"] = User.GetIdString(),
@@ -216,8 +235,8 @@ public class CoinPricingController(
         var result = new PaymentSheetResultModel
         {
             ClientSecret = paymentIntent.ClientSecret,
-            EphemeralKey = ephemeralKey.Secret,
-            Customer = customer.Id,
+            EphemeralKey = user.StripeEphemeralKey,
+            Customer = user.StripeCustomerId,
             PublishableKey = StripeConfig.PublishableKey,
         };
         return Ok(result);
