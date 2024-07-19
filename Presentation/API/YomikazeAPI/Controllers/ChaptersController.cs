@@ -75,7 +75,9 @@ public partial class ComicsController
                     chapter.Views++;
                     ChapterRepository.Update(chapter);
                     Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
-                    
+                    DbContext.ComicViews.Add(new ComicView() { ComicId = chapter.ComicId, CreationTime = DateTimeOffset.UtcNow, Views = 1});
+                    DbContext.SaveChanges();
+                    Logger.LogDebug("Added view record for comic {Id}", chapter.ComicId);
                     HistoryRepository.Add(userId, chapter);
                     Logger.LogDebug("User {Id} read chapter {Chapter}", userId, chapter.Id);
                 }

@@ -45,8 +45,9 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
     [SwaggerOperation(Summary = "Edit the current user's profile by patching it.")]
     public async Task<ActionResult<ProfileModel>> PatchCurrentUser(JsonPatchDocument<BaseModel> patch)
     {
-        var uid = User.GetId();
+        var user = User.GetUser(UserManager);
         // TODO)) Implement patching the user profile, create model for the profile patch
+        await UserManager.UpdateAsync(user);
         return NoContent();
     }
     
@@ -55,9 +56,10 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
     [SwaggerOperation(Summary = "Change the current user's password.")] 
     public async Task<ActionResult<ProfileModel>> ChangePassword(BaseModel model)
     {
-        var uid = User.GetId();
+        var user = User.GetUser(UserManager);
         // TODO)) Implement changing the user password, create model for the password change
+        await UserManager.UpdateAsync(user);
         return NoContent();
-    }
+    }   
     
 }

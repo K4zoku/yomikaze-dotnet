@@ -5,7 +5,6 @@ public sealed class Role : IdentityRole<ulong>, IEntity
 {
     public Role(string name) : base(name)
     {
-        Id = SnowflakeGenerator.Generate(WorkerId);
         NormalizedName = name.ToUpperInvariant();
         ConcurrencyStamp = Guid.NewGuid().ToString();
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.ImageSharp;
 using Yomikaze.Domain.Abstracts;
+using Yomikaze.Infrastructure.Context.Generator;
 using static System.IO.File;
 using static System.IO.Path;
 using ImageUploadModel = Yomikaze.API.CDN.Images.Models.ImageUploadModel;
@@ -26,7 +27,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
 
         IFormFile file = request.File;
         string ext = GetExtension(file.FileName);
-        string fileName = SnowflakeGenerator.Generate(30) + ext;
+        string fileName = SnowflakeIdGenerator.Generate(30) + ext;
         string filePath = FileProvider.Root;
         if (request.ComicId != null)
         {

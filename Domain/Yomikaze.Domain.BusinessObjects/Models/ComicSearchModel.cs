@@ -32,6 +32,10 @@ public class ComicSearchModel
     
     public int? ToTotalViews { get; set; }
     
+    public DateTimeOffset? ViewsByDateTo { get; set; }
+    
+    public DateTimeOffset? ViewsByDateFrom { get; set; }
+    
     public double? FromAverageRating { get; set; }
     
     public double? ToAverageRating { get; set; }
@@ -65,6 +69,8 @@ public enum ComicOrderBy
     TotalChaptersDesc,
     TotalViews,
     TotalViewsDesc,
+    ViewsByDate,
+    ViewsByDateDesc,
     AverageRating,
     AverageRatingDesc,
     TotalRatings,

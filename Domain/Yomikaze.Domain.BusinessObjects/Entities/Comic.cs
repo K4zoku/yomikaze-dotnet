@@ -31,8 +31,12 @@ public sealed class Comic : BaseEntity
     [Projectable]
     public int TotalChapters => Chapters.Count;
     
+    public ICollection<ComicView> Views { get; set; } = new List<ComicView>();
+
+    [NotMapped] public ulong ViewsByDate { get; set; } = 0;
+    
     [Projectable]
-    public int TotalViews => Chapters.Sum(chapter => chapter.Views);
+    public int TotalViews => Views.Sum(view => view.Views);
     
     public ICollection<ComicRating> Ratings { get; set; } = new List<ComicRating>();
     

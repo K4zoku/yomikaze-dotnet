@@ -33,8 +33,10 @@ public static class DistributedCacheExtension
             logger?.LogWarning("The value factory returned null for key {Key}", key);
             return default!;
         }
+        // set cache without waiting
         logger?.LogDebug("Setting the cache for key {Key}", key);
-        await cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options, token);
+        _ = cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options, token)
+            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key), TaskContinuationOptions.OnlyOnFaulted);
         return value;
     }
     
@@ -66,23 +68,12 @@ public static class DistributedCacheExtension
             logger?.LogWarning("The value factory returned null for key {Key}", key);
             return default!;
         }
+        // set cache without waiting    
         logger?.LogDebug("Setting the cache for key {Key}", key);
-        cache.Set(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options);
+        _ = cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options)
+            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key), TaskContinuationOptions.OnlyOnFaulted);
         return value;
     }
-    
-    public static string? GetAsString(this IDistributedCache cache, string key, ILogger? logger = null)
-    {
-        byte[]? cachedData = cache.Get(key);
-        if (cachedData != null)
-        {
-            logger?.LogDebug("Cache hit for key {Key}", key);
-            return Encoding.UTF8.GetString(cachedData);
-        }
-        logger?.LogDebug("Cache miss for key {Key}", key);
-        return null;
-    }
-    
 }
 
 internal class NoCache : IDistributedCache

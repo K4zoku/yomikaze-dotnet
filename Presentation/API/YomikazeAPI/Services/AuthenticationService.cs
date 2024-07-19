@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Web;
 using Yomikaze.Application.Helpers.Security;
 using Yomikaze.Infrastructure.Context;
+using Yomikaze.Infrastructure.Context.Generator;
 
 namespace Yomikaze.API.Main.Services;
 
@@ -22,7 +23,7 @@ public class AuthenticationService(SignInManager<User> signInManager, JwtConfigu
         DateTimeOffset now = DateTimeOffset.UtcNow;
         List<Claim> claims =
         [
-            new Claim(JwtRegisteredClaimNames.Jti, SnowflakeGenerator.Generate(31).ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, SnowflakeIdGenerator.Generate(31).ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             // new Claim(JwtRegisteredClaimNames.Exp, now.AddMinutes(JwtConfiguration.ExpireMinutes).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         ];

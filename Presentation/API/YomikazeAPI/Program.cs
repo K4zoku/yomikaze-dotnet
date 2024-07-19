@@ -1,16 +1,16 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using StackExchange.Redis;
 using Stripe;
 using Stripe.Checkout;
+using System.Data.Common;
 using Yomikaze.API.Main.Configurations;
+using Yomikaze.API.Main.Services;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
@@ -43,7 +43,7 @@ services.AddScoped<IRepository<ComicComment>, ComicCommentRepository>();
 services.AddScoped<ComicCommentRepository>();
 services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
 services.AddScoped<CoinPricingRepository>();
-services.AddScoped<Yomikaze.API.Main.Services.AuthenticationService>();
+services.AddScoped<AuthenticationService>();
 
 // Stripe services
 services.AddSingleton(new SessionService());
@@ -141,10 +141,17 @@ app.MapControllers();
 IServiceScope scope = app.Services.CreateScope();
 IServiceProvider serviceProvider = scope.ServiceProvider;
 YomikazeDbContext dbContext = serviceProvider.GetRequiredService<YomikazeDbContext>();
+ILogger<Program> logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 await dbContext.Database.MigrateAsync();
 UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+if (!await dbContext.Roles.AnyAsync())
+{
+    logger.LogInformation("No roles found, adding default roles");
+    await dbContext.Roles.AddRangeAsync(YomikazeDbContext.Default.Roles);
+}
 if (!await userManager.Users.AnyAsync())
 {
+    logger.LogInformation("No users found, adding default admin user");
     User admin = new()
     {
         UserName = app.Configuration["Admin:Username"] ?? "administrator",
@@ -160,5 +167,42 @@ if (!await userManager.Users.AnyAsync())
     await userManager.AddToRoleAsync(admin, "Super");
     await userManager.AddToRoleAsync(admin, "Administrator");
 }
+
+try
+{
+    if (!await dbContext.TagCategories.AnyAsync())
+    {
+        logger.LogInformation("No tag categories found, adding default tag categories");
+        await dbContext.TagCategories.AddRangeAsync(YomikazeDbContext.Default.TagCategories);
+        await dbContext.SaveChangesAsync();
+    }
+
+    if (!await dbContext.Tags.AnyAsync())
+    {
+        logger.LogInformation("No tags found, adding default tags");
+        await dbContext.Tags.AddRangeAsync(YomikazeDbContext.Default.Tags);
+        await dbContext.SaveChangesAsync();
+    }
+}
+catch (DbException)
+{
+    #pragma warning disable
+    logger.LogWarning("Could not add default tags and tag categories, but system will continue to run.");
+    #pragma warning restore
+}
+/* Example of using a stored function   
+var f = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(30)).ToUniversalTime();
+var t = DateTimeOffset.Now.ToUniversalTime();
+var r = dbContext.GetComicsViewsResult(f, t)
+    .Join(dbContext.Comics, result => result.Id, comic => comic.Id,
+        (result, comic) => new { Id = comic.Id, Name = comic.Name, result.Views, FromDate = f, ToDate = t })
+    .OrderByDescending(result => result.Views);
+foreach (var result in r)
+{
+    logger.LogInformation("Comic {Name} ({Id}) has {Views} views", result.Name, result.Id, result.Views);
+    logger.LogInformation("From {FromDate} to {ToDate}", result.FromDate.ToLocalTime(), result.ToDate.ToLocalTime());
+}
+*/
+    
 
 await app.RunAsync();

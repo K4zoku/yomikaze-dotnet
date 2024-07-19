@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq.Dynamic.Core;
 using Yomikaze.Application.Helpers.API;
 
 namespace Yomikaze.API.Main.Controllers;
@@ -17,11 +16,13 @@ public class LibraryController(
     protected override IList<SearchFieldMutator<LibraryEntry, LibrarySearchModel>> SearchFieldMutators { get; } = new List<SearchFieldMutator<LibraryEntry, LibrarySearchModel>>
     {
         #pragma warning disable CA1862
-        new(search => search.CategoryId != null, 
-            (query, search) => query.Where(x => x.Categories.Any(c => c.Id == search.CategoryId))),
         new(search => !string.IsNullOrWhiteSpace(search.Name), 
             (query, search) => query.Where(x => x.Comic.Name.ToLower().Contains(search.Name!.ToLower()))),
         #pragma warning restore CA1862
+        new(search => search.CategoryId != null, 
+            (query, search) => query.Where(x => x.Categories.Any(c => c.Id == search.CategoryId))),
+        new(search => search.HasNoCategory.HasValue, 
+            (query, search) => search.HasNoCategory!.Value ? query.Where(x => x.Categories.Count == 0) : query),
         new(search => search.OrderBy.Length > 0, (query, search) =>
         {
             IOrderedQueryable<LibraryEntry> ordered = search.OrderBy[0] switch
@@ -113,6 +114,14 @@ public class LibraryController(
     public ActionResult<PagedList<LibraryEntryModel>> ListByCategory([FromRoute] ulong categoryId, [FromQuery] LibrarySearchModel search, [FromQuery] PaginationModel pagination)
     {
         search.CategoryId = categoryId;
+        return base.List(search, pagination);
+    }
+    
+    [HttpGet("category/default")]
+    [SwaggerOperation("List library entries with default category")]
+    public ActionResult<PagedList<LibraryEntryModel>> ListByDefaultCategory([FromQuery] LibrarySearchModel search, [FromQuery] PaginationModel pagination)
+    {
+        search.HasNoCategory = true;
         return base.List(search, pagination);
     }
     

@@ -13,6 +13,8 @@ public abstract class BaseEntityConfiguration<TEntity, TKey> : IEntityTypeConfig
         
         builder
             .Property(e => e.CreationTime)
+            .IsRequired()
+            .ValueGeneratedOnAdd()
             .HasValueGenerator<CreationTimeGenerator>();
         builder
             .Property(e => e.LastModified)
@@ -28,6 +30,7 @@ public abstract class BaseEntityConfiguration<TEntity> : BaseEntityConfiguration
         base.Configure(builder);
         builder
             .Property(e => e.Id)
+            .ValueGeneratedOnAdd()
             .HasValueGenerator<SnowflakeIdGenerator>();
     }
 }

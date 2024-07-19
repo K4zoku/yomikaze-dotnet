@@ -5,7 +5,6 @@ public sealed class User : IdentityUser<ulong>, IEntity
 {
     public User()
     {
-        Id = SnowflakeGenerator.Generate(WorkerId);
         SecurityStamp = Guid.NewGuid().ToString();
     }
 

@@ -12,7 +12,7 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    [Migration("20240708092523_Initial")]
+    [Migration("20240719203019_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -158,6 +158,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Chapter", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -166,18 +167,15 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("comic_id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -209,6 +207,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.CoinPricing", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -216,11 +215,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -232,11 +231,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("discount");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<double>("Price")
                         .HasColumnType("double precision")
@@ -256,6 +252,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comic", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -279,11 +276,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("character varying(512)")
                         .HasColumnName("cover");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
@@ -291,11 +288,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("description");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -324,9 +318,34 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.ToTable("comics", (string)null);
                 });
 
+            modelBuilder.Entity("Yomikaze.Domain.Entities.ComicView", b =>
+                {
+                    b.Property<decimal>("ComicId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("comic_id");
+
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
+
+                    b.Property<int>("Views")
+                        .HasColumnType("integer")
+                        .HasColumnName("views");
+
+                    b.HasKey("ComicId", "CreationTime")
+                        .HasName("pk_comic_views");
+
+                    b.HasIndex("CreationTime")
+                        .HasDatabaseName("ix_comic_views_creation_time");
+
+                    b.ToTable("comic_views", (string)null);
+                });
+
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -336,22 +355,19 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("content");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal?>("ReplyToId")
                         .HasColumnType("numeric(20,0)")
@@ -382,6 +398,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.HistoryRecord", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -389,18 +406,15 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("chapter_id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<int>("PageNumber")
                         .HasColumnType("integer")
@@ -429,18 +443,15 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -465,6 +476,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.LibraryEntry", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -473,18 +485,15 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("comic_id")
                         .HasColumnOrder(1);
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
@@ -507,6 +516,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Notification", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -515,18 +525,15 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("character varying(512)")
                         .HasColumnName("content");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<bool>("Read")
                         .HasColumnType("boolean")
@@ -554,6 +561,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Page", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -561,11 +569,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("chapter_id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -574,11 +582,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("image");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<int>("Number")
                         .HasColumnType("integer")
@@ -596,6 +601,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Report", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -603,11 +609,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("category_id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
                         .HasColumnType("text")
@@ -622,11 +628,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("images");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal>("ReporterId")
                         .HasColumnType("numeric(20,0)")
@@ -655,21 +658,19 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.ReportCategory", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -690,6 +691,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Role", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -716,36 +718,6 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 67464207511101440m,
-                            ConcurrencyStamp = "a463d649-579f-4dac-9c2b-2003771edd3a",
-                            Name = "Super",
-                            NormalizedName = "SUPER"
-                        },
-                        new
-                        {
-                            Id = 67464207515295744m,
-                            ConcurrencyStamp = "db4d9a74-c4fd-4a04-8922-f0b76eee2c24",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        },
-                        new
-                        {
-                            Id = 67464207515295745m,
-                            ConcurrencyStamp = "ff33e1bf-a857-43db-9f16-a85ba7037148",
-                            Name = "Publisher",
-                            NormalizedName = "PUBLISHER"
-                        },
-                        new
-                        {
-                            Id = 67464207515295746m,
-                            ConcurrencyStamp = "7ae547f3-022c-4521-85a2-470200e12b99",
-                            Name = "Reader",
-                            NormalizedName = "READER"
-                        });
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Tag", b =>
@@ -759,11 +731,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("category_id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
@@ -771,11 +743,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("description");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -794,608 +763,6 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasDatabaseName("ix_tags_name_category_id");
 
                     b.ToTable("tags", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 67464207515254877m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 428, DateTimeKind.Unspecified).AddTicks(9965), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic strip format that consists of four panels.",
-                            Name = "4-Koma"
-                        },
-                        new
-                        {
-                            Id = 67464207515254878m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(681), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that is based on a previously existing work.",
-                            Name = "Adaption"
-                        },
-                        new
-                        {
-                            Id = 67464207515254879m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(687), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A collection of stories or poems by different authors.",
-                            Name = "Anthology"
-                        },
-                        new
-                        {
-                            Id = 67464207515254880m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(690), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that has won an award.",
-                            Name = "Award Winning"
-                        },
-                        new
-                        {
-                            Id = 67464207515254881m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(691), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that based on a previously existing work, created by a fan.",
-                            Name = "Doujinshi"
-                        },
-                        new
-                        {
-                            Id = 67464207515254882m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(693), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that has been colored by a fan.",
-                            Name = "Fan colored"
-                        },
-                        new
-                        {
-                            Id = 67464207515254883m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(695), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that is fully colored.",
-                            Name = "Full Color"
-                        },
-                        new
-                        {
-                            Id = 67464207515254884m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(696), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that consists of a long strip of panels.",
-                            Name = "Long Strip"
-                        },
-                        new
-                        {
-                            Id = 67464207515254885m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(698), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that has been officially colored.",
-                            Name = "Official Colored"
-                        },
-                        new
-                        {
-                            Id = 67464207515254886m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(700), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that is a single, standalone story.",
-                            Name = "Oneshot"
-                        },
-                        new
-                        {
-                            Id = 67464207515254887m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(701), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that has been published by the creator.",
-                            Name = "Self-Published"
-                        },
-                        new
-                        {
-                            Id = 67464207515254888m,
-                            CategoryId = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(703), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A comic that is published on the internet.",
-                            Name = "Web Comic"
-                        },
-                        new
-                        {
-                            Id = 67464207515254789m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(704), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that focuses on physical action, such as fighting, war, sports, or physical challenges.",
-                            Name = "Action"
-                        },
-                        new
-                        {
-                            Id = 67464207515254790m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(706), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "Explores exotic locations and tense situations, such as battles, a treasure hunt, or an exploration of the unknown.",
-                            Name = "Adventure"
-                        },
-                        new
-                        {
-                            Id = 67464207515254803m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(707), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that focuses on romantic relationships between \"male\" characters.",
-                            Name = "Boys' Love"
-                        },
-                        new
-                        {
-                            Id = 67464207515254791m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(808), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story with humorous narration or dialogue, intended to amuse the audience.",
-                            Name = "Comedy"
-                        },
-                        new
-                        {
-                            Id = 67464207515254804m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(809), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around a crime, such as a thief",
-                            Name = "Crime"
-                        },
-                        new
-                        {
-                            Id = 67464207515254792m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(811), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that is neither a comedy nor a tragedy, typically focusing on a conflict between the protagonist and antagonist.",
-                            Name = "Drama"
-                        },
-                        new
-                        {
-                            Id = 67464207515254793m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(813), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that takes place in a setting that defies the laws of the universe, such as magic or supernatural elements.",
-                            Name = "Fantasy"
-                        },
-                        new
-                        {
-                            Id = 67464207515254805m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(814), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that focuses on romantic relationships between \"female\" characters.",
-                            Name = "Girls' Love"
-                        },
-                        new
-                        {
-                            Id = 67464207515254806m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(816), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that takes place in the past.",
-                            Name = "Historical"
-                        },
-                        new
-                        {
-                            Id = 67464207515254794m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(817), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that evokes fear in both the characters and the audience.",
-                            Name = "Horror"
-                        },
-                        new
-                        {
-                            Id = 67464207515254807m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(819), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves characters being transported to another world.",
-                            Name = "Isekai"
-                        },
-                        new
-                        {
-                            Id = 67464207515254808m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(820), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around spell-casting and transforming heroines.",
-                            Name = "Magical Girls"
-                        },
-                        new
-                        {
-                            Id = 67464207515254809m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(822), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around giant robots.",
-                            Name = "Mecha"
-                        },
-                        new
-                        {
-                            Id = 67464207515254810m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(823), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around medical procedures and practices.",
-                            Name = "Medical"
-                        },
-                        new
-                        {
-                            Id = 67464207515254795m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(825), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around solving a puzzle or a crime.",
-                            Name = "Mystery"
-                        },
-                        new
-                        {
-                            Id = 67464207515254796m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(826), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that emphasizes the psychology of its characters and their unstable emotional states.",
-                            Name = "Psychological"
-                        },
-                        new
-                        {
-                            Id = 67464207515254797m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(828), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story about love.",
-                            Name = "Romance"
-                        },
-                        new
-                        {
-                            Id = 67464207515254811m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(829), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around science fiction elements, such as space travel or hi-tech gadgets.",
-                            Name = "Sci-Fi"
-                        },
-                        new
-                        {
-                            Id = 67464207515254798m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(831), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that portrays a \"cut-out\" sequence of events in a character's life.",
-                            Name = "Slice of Life"
-                        },
-                        new
-                        {
-                            Id = 67464207515254799m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(832), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around sports, such as baseball or basketball.",
-                            Name = "Sports"
-                        },
-                        new
-                        {
-                            Id = 67464207515254812m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(833), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around characters with superhuman abilities.",
-                            Name = "Superhero"
-                        },
-                        new
-                        {
-                            Id = 67464207515254801m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(835), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that is fast-paced and suspenseful, often involving a crime.",
-                            Name = "Thriller"
-                        },
-                        new
-                        {
-                            Id = 67464207515254802m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(836), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that ends in a tragic or unhappy way.",
-                            Name = "Tragedy"
-                        },
-                        new
-                        {
-                            Id = 67464207515254813m,
-                            CategoryId = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(838), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around martial arts and chivalry in ancient China.",
-                            Name = "Wuxia"
-                        },
-                        new
-                        {
-                            Id = 67464207515254814m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(839), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves extraterrestrial beings.",
-                            Name = "Aliens"
-                        },
-                        new
-                        {
-                            Id = 67464207515254815m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(840), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves animals.",
-                            Name = "Animals"
-                        },
-                        new
-                        {
-                            Id = 67464207515254816m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(842), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that revolves around cooking.",
-                            Name = "Cooking"
-                        },
-                        new
-                        {
-                            Id = 67464207515254817m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(843), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves characters dressing as the opposite gender.",
-                            Name = "Crossdressing"
-                        },
-                        new
-                        {
-                            Id = 67464207515254818m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(845), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves delinquent characters.",
-                            Name = "Delinquents"
-                        },
-                        new
-                        {
-                            Id = 67464207515254819m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(846), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves demonic beings.",
-                            Name = "Demons"
-                        },
-                        new
-                        {
-                            Id = 67464207515254820m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(848), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves characters swapping their gender.",
-                            Name = "Genderswap"
-                        },
-                        new
-                        {
-                            Id = 67464207515254821m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(849), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves ghostly beings.",
-                            Name = "Ghosts"
-                        },
-                        new
-                        {
-                            Id = 67464207515254822m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(850), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves gyaru characters.",
-                            Name = "Gyaru"
-                        },
-                        new
-                        {
-                            Id = 67464207515254823m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(852), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves a man that is surrounded by multiple girls.",
-                            Name = "Harem"
-                        },
-                        new
-                        {
-                            Id = 67464207515254824m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(853), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves incestuous relationships.",
-                            Name = "Incest"
-                        },
-                        new
-                        {
-                            Id = 67464207515254825m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(855), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves little girl",
-                            Name = "Loli"
-                        },
-                        new
-                        {
-                            Id = 67464207515254826m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(856), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Mafia"
-                        },
-                        new
-                        {
-                            Id = 67464207515254827m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(857), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Magic"
-                        },
-                        new
-                        {
-                            Id = 67464207515254828m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(859), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Martial Arts"
-                        },
-                        new
-                        {
-                            Id = 67464207515254829m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(860), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Military"
-                        },
-                        new
-                        {
-                            Id = 67464207515254830m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(861), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Monster Girls"
-                        },
-                        new
-                        {
-                            Id = 67464207515254831m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(863), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Monsters"
-                        },
-                        new
-                        {
-                            Id = 67464207515254832m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(896), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Music"
-                        },
-                        new
-                        {
-                            Id = 67464207515254833m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(898), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Ninja"
-                        },
-                        new
-                        {
-                            Id = 67464207515254834m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(900), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Office Workers"
-                        },
-                        new
-                        {
-                            Id = 67464207515254835m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(901), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Police"
-                        },
-                        new
-                        {
-                            Id = 67464207515254836m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(903), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Post-Apocalyptic"
-                        },
-                        new
-                        {
-                            Id = 67464207515254837m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(904), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Reincarnation"
-                        },
-                        new
-                        {
-                            Id = 67464207515254838m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(906), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Reversed Harem"
-                        },
-                        new
-                        {
-                            Id = 67464207515254839m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(908), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Samurai"
-                        },
-                        new
-                        {
-                            Id = 67464207515254840m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(909), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "School Life"
-                        },
-                        new
-                        {
-                            Id = 67464207515254841m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(911), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Shota"
-                        },
-                        new
-                        {
-                            Id = 67464207515254800m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(912), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that involves supernatural elements, such as ghosts or demons.",
-                            Name = "Supernatural"
-                        },
-                        new
-                        {
-                            Id = 67464207515254842m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(913), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Survival"
-                        },
-                        new
-                        {
-                            Id = 67464207515254843m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(915), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Time Travel"
-                        },
-                        new
-                        {
-                            Id = 67464207515254844m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(916), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Traditional Games"
-                        },
-                        new
-                        {
-                            Id = 67464207515254845m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(918), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Vampires"
-                        },
-                        new
-                        {
-                            Id = 67464207515254846m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(919), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Video Games"
-                        },
-                        new
-                        {
-                            Id = 67464207515254847m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(920), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Villainess"
-                        },
-                        new
-                        {
-                            Id = 67464207515254848m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(922), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Virtual Reality"
-                        },
-                        new
-                        {
-                            Id = 67464207515254849m,
-                            CategoryId = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(923), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "",
-                            Name = "Zombies"
-                        },
-                        new
-                        {
-                            Id = 67464207515254850m,
-                            CategoryId = 67464207515254789m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(925), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that contains graphic violence.",
-                            Name = "Gore"
-                        },
-                        new
-                        {
-                            Id = 67464207515254851m,
-                            CategoryId = 67464207515254789m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 429, DateTimeKind.Unspecified).AddTicks(926), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "A story that contains sexual violence.",
-                            Name = "Sexual Violence"
-                        });
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.TagCategory", b =>
@@ -1405,18 +772,13 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset?>("CreationTime")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1428,37 +790,12 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasName("pk_tag_categories");
 
                     b.ToTable("tag_categories", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 67464207515254786m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 428, DateTimeKind.Unspecified).AddTicks(8832), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Format"
-                        },
-                        new
-                        {
-                            Id = 67464207515254787m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 428, DateTimeKind.Unspecified).AddTicks(9127), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Genre"
-                        },
-                        new
-                        {
-                            Id = 67464207515254788m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 428, DateTimeKind.Unspecified).AddTicks(9131), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Theme"
-                        },
-                        new
-                        {
-                            Id = 67464207515254789m,
-                            CreationTime = new DateTimeOffset(new DateTime(2024, 7, 8, 9, 25, 22, 428, DateTimeKind.Unspecified).AddTicks(9133), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "Content"
-                        });
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Transaction", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -1466,11 +803,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1478,11 +815,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("description");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal>("UserId")
                         .HasColumnType("numeric(20,0)")
@@ -1500,6 +834,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Translation", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -1513,11 +848,11 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("text")
                         .HasColumnName("content");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<int>("Height")
                         .HasColumnType("integer")
@@ -1529,11 +864,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnName("language");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal>("PageId")
                         .HasColumnType("numeric(20,0)")
@@ -1570,6 +902,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.User", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
@@ -1653,6 +986,14 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text")
                         .HasColumnName("security_stamp");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("text")
+                        .HasColumnName("stripe_customer_id");
+
+                    b.Property<string>("StripeEphemeralKey")
+                        .HasColumnType("text")
+                        .HasColumnName("stripe_ephemeral_key");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean")
@@ -1786,21 +1127,19 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.WithdrawalRequest", b =>
                 {
                     b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreationTime")
+                    b.Property<DateTimeOffset?>("CreationTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_time")
-                        .HasColumnOrder(98);
+                        .HasColumnName("creation_time");
 
                     b.Property<DateTimeOffset?>("LastModified")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified")
-                        .HasColumnOrder(99);
+                        .HasColumnName("last_modified");
 
                     b.Property<decimal>("ProfileId")
                         .HasColumnType("numeric(20,0)")
@@ -2206,7 +1545,7 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
             modelBuilder.Entity("Yomikaze.Domain.Entities.Weak.CommentReaction", b =>
                 {
                     b.HasOne("Yomikaze.Domain.Entities.Comment", "Comment")
-                        .WithMany()
+                        .WithMany("Reactions")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -2458,6 +1797,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.Comment", b =>
                 {
+                    b.Navigation("Reactions");
+
                     b.Navigation("Replies");
                 });
 

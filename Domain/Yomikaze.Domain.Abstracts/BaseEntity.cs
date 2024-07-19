@@ -8,17 +8,11 @@ namespace Yomikaze.Domain.Abstracts;
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity<TId> : IEntity<TId>
 {
-    [Column( Order = 98)]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? CreationTime { get; set; }
     
-    [Column(Order = 99)]
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    [Timestamp]
     public DateTimeOffset? LastModified { get; set; }
 
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public virtual TId Id { get; } = default!;
 
     public override bool Equals(object? obj)
@@ -35,15 +29,5 @@ public abstract class BaseEntity<TId> : IEntity<TId>
 [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity : BaseEntity<ulong>, IEntity
 {
-    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
-    protected BaseEntity()
-    {
-        Id = SnowflakeGenerator.Generate(WorkerId);
-    }
-
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public override ulong Id { get; }
-
     [NotMapped] public virtual int WorkerId => 0;
 }

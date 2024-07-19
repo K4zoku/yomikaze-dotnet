@@ -2,6 +2,7 @@
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
+using Yomikaze.Infrastructure.Context;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace Yomikaze.API.Main.Controllers;
@@ -11,6 +12,7 @@ namespace Yomikaze.API.Main.Controllers;
 [SuppressMessage("Performance",
     "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
 public partial class ComicsController(
+    YomikazeDbContext dbContext,
     ComicRepository repository,
     ChapterRepository chapterRepository,
     HistoryRepository historyRepository,
@@ -21,6 +23,7 @@ public partial class ComicsController(
     ILogger<ComicsController> logger)
     : CrudControllerBase<Comic, ComicModel, ComicRepository>(repository, mapper, cache, logger)
 {
+    private YomikazeDbContext DbContext { get; } = dbContext;
     private ChapterRepository ChapterRepository { get; } = chapterRepository;
 
     private HistoryRepository HistoryRepository { get; } = historyRepository;
@@ -151,12 +154,13 @@ public partial class ComicsController(
         {
             key += $":{User.GetId()}";
         }
-        return await Cache.GetOrSetAsync(key, valueFactory: () =>
+        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
         {
             lock (ListCacheKeyLock)
             {
                 ListCacheKeys.Add(key);
             }
+
             IQueryable<Comic> queryable = Repository.QueryWithExtras();
             queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
             PagedList<ComicModel> paged = GetPaged(queryable, pagination);
@@ -164,13 +168,98 @@ public partial class ComicsController(
             ulong userId = User.GetId();
             foreach (var model in paged.Results)
             {
-                model.IsFollowing = LibraryRepository.IsFollowing(userId, ulong.Parse(model.Id ?? "0"));
+                if (!ulong.TryParse(model.Id, out ulong comicId))
+                {
+                    continue;
+                }
+                model.IsFollowing = LibraryRepository.IsFollowing(userId, comicId);
             }
-
             return paged;
         }, logger: Logger);
-    }
 
+        return result;
+    }
+    
+    private ICollection<ComicModel> GetRankingByTime(DateTimeOffset start, DateTimeOffset end)
+    {
+        IQueryable<Comic> queryable = Repository.QueryWithExtras();
+        var topRead = queryable
+            .Select(comic =>
+            new {
+                Comic = comic,
+                Views = comic.Views.Where(view => view.CreationTime >= start && view.CreationTime <= end).Sum(view => view.Views)
+            })
+            .OrderByDescending(r => r.Views)
+            .Take(10)
+            .ToList();
+        var models = Mapper.Map<ICollection<ComicModel>>(topRead.Select(r => r.Comic));
+        foreach (var model in models)
+        {
+            model.TotalViews = topRead.Where(r => r.Comic.Id.ToString() == model.Id).Sum(r => r.Views);
+        }
+        return models;
+    }
+    
+    private DateTimeOffset RemoveTime(DateTimeOffset dateTime)
+    {
+        return dateTime.Subtract(TimeSpan.FromHours(dateTime.Hour))
+            .Subtract(TimeSpan.FromMinutes(dateTime.Minute))
+            .Subtract(TimeSpan.FromSeconds(dateTime.Second))
+            .Subtract(TimeSpan.FromMilliseconds(dateTime.Millisecond));
+    }
+    
+    [HttpGet("ranking/weekly")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByWeek()
+    {
+        string key = $"{CacheKeyPrefix}{nameof(GetTopReadByWeek)}";
+        var now = RemoveTime(DateTimeOffset.UtcNow);
+        
+        var result = await Cache.GetOrSetAsync(key, 
+            valueFactory: () => 
+                Mapper.Map<ICollection<ComicModel>>(
+                    GetRankingByTime(
+                        now.Subtract(TimeSpan.FromDays((int) now.DayOfWeek)),
+                        now
+                    )
+                ), logger: Logger);
+
+        return Ok(result);
+    }
+    
+    [HttpGet("ranking/monthly")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByMonth()
+    {
+        string key = $"{CacheKeyPrefix}{nameof(GetTopReadByMonth)}";
+        var result = await Cache.GetOrSetAsync(key, valueFactory: () => 
+            Mapper.Map<ICollection<ComicModel>>(
+                GetRankingByTime(
+                    RemoveTime(DateTimeOffset.UtcNow).Subtract(TimeSpan.FromDays(DateTimeOffset.UtcNow.Day)),
+                    DateTimeOffset.UtcNow
+                )
+            ), logger: Logger);
+
+        return Ok(result);
+    }
+    
+    [HttpGet("ranking/yearly")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByYear()
+    {
+        string key = $"{CacheKeyPrefix}{nameof(GetTopReadByYear)}";
+        var result = await Cache.GetOrSetAsync(key, valueFactory: () => 
+            Mapper.Map<ICollection<ComicModel>>(
+                GetRankingByTime(
+                    RemoveTime(DateTimeOffset.UtcNow).Subtract(TimeSpan.FromDays(DateTimeOffset.UtcNow.DayOfYear)),
+                    DateTimeOffset.UtcNow
+                )
+            ), logger: Logger);
+
+        return Ok(result);
+    }
+        
+        
     [HttpPost]
     [Authorize(Roles = "Administrator,Publisher")]
     public override ActionResult<ComicModel> Post(
@@ -217,36 +306,6 @@ public partial class ComicsController(
         }));
         Repository.Add(entities);
         return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
-    }
-    
-    [Authorize]
-    [HttpPut("{key}/follow")]
-    public ActionResult<LibraryEntryModel> Follow(ulong key)
-    {
-        ulong userId = User.GetId();
-        Comic? comic = Repository.Get(key);
-        if (comic == null)
-        {
-            return NotFound();
-        }
-        
-        LibraryEntry? entry = LibraryRepository.GetLibraryEntry(userId, comic.Id);
-        if (entry != null)
-        {
-            LibraryRepository.Delete(entry);
-            ClearCacheForUser(key, userId);
-            return NoContent();
-        } 
-        
-        entry = new LibraryEntry
-        {
-            UserId = userId,
-            ComicId = key
-        };
-
-        LibraryRepository.Add(entry);
-        ClearCacheForUser(key, userId);
-        return Ok(new LibraryEntryModel() { Id = entry.Id.ToString(), ComicId = comic.Id.ToString() });
     }
     
     [Authorize]

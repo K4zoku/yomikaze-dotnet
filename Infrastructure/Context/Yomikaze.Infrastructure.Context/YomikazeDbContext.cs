@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Yomikaze.Domain.Abstracts;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
-using Yomikaze.Infrastructure.Context.Configuration;
-using Yomikaze.Infrastructure.Context.Generator;
 
 namespace Yomikaze.Infrastructure.Context;
 
@@ -14,17 +14,17 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
 {
     public YomikazeDbContext()
     {
-        SaveChangesEvent += OnSaveChanges;
     }
 
     public YomikazeDbContext(DbContextOptions<YomikazeDbContext> options) : base(options)
     {
-        SaveChangesEvent += OnSaveChanges;
     }
 
     public DbSet<Chapter> Chapters { get; init; } = default!;
     public DbSet<CoinPricing> CoinPricings { get; init; } = default!;
     public DbSet<Comic> Comics { get; init; } = default!;
+    
+    public DbSet<ComicView> ComicViews { get; init; } = default!;
     public DbSet<ComicRating> ComicRatings { get; init; } = default!;
     public DbSet<ChapterComment> ChapterComments { get; init; } = default!;
     public DbSet<ComicComment> ComicComments { get; init; } = default!;
@@ -59,14 +59,6 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         throw new InvalidOperationException("No database connection string provided.");
     }
 
-    private event Action? SaveChangesEvent;
-
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        SaveChangesEvent?.Invoke();
-        return base.SaveChanges(acceptAllChangesOnSuccess);
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {               
         base.OnModelCreating(builder);
@@ -79,28 +71,31 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         builder.Entity<IdentityUserRole<ulong>>().ToTable("user_roles");
         builder.Entity<IdentityRoleClaim<ulong>>().ToTable("role_claims");
         
-        builder.Entity<TagCategory>().HasData(Default.TagCategories);
-        builder.Entity<Tag>().HasData(Default.Tags);
-        builder.Entity<Role>().HasData(Default.Roles);
+        builder
+            .HasDbFunction(GetType().GetMethod(nameof(GetComicViewsResult),
+                [typeof(ulong), typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
+            .HasName("get_comic_views")
+            .IsBuiltIn(false);
+        
+        builder
+            .HasDbFunction(GetType().GetMethod(nameof(GetComicsViewsResult),
+                [typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
+            .HasName("get_comics_views")
+            .IsBuiltIn(false);  
     }
-
-    private void OnSaveChanges()
+    
+    public IQueryable<ComicViewsResult> GetComicViewsResult(ulong id, DateTimeOffset startDate, DateTimeOffset endDate)
     {
-        IEnumerable<EntityEntry> entries = ChangeTracker.Entries()
-            .Where(e => e is { State: EntityState.Added or EntityState.Modified, Entity: BaseEntity });
-
-        foreach (EntityEntry entry in entries)
-        {
-            BaseEntity entity = (BaseEntity)entry.Entity;
-            switch (entry)
-            {
-                case { State: EntityState.Added } when entity.CreationTime == default:
-                    entity.CreationTime = DateTime.UtcNow;
-                    break;
-                case { State: EntityState.Modified }:
-                    entity.LastModified = DateTime.UtcNow;
-                    break;
-            }
-        }
+        return FromExpression(() => GetComicViewsResult(id, startDate.ToUniversalTime(), endDate.ToUniversalTime()));
+    }
+    
+    public IQueryable<ComicsViewResult> GetComicsViewsResult(DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        return FromExpression(() => GetComicsViewsResult(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
     }
 }
+
+[Keyless]
+public record ComicViewsResult(ulong Views);
+
+public record ComicsViewResult(ulong Id, ulong Views);
