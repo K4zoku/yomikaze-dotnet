@@ -126,8 +126,7 @@ public class LibraryController(
             Logger.LogCritical(e, "Critical error when adding entity");
             return Problem();
         }
-
-        Logger.LogDebug("After added {Entity}", JsonConvert.SerializeObject(entity));
+        
         RemoveListCache();
         if (Equals(entity.Id, default(ulong)))
         {
