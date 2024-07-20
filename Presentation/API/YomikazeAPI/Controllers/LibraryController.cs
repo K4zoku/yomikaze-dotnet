@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using Yomikaze.Application.Helpers.API;
 
@@ -106,7 +107,36 @@ public class LibraryController(
     public override ActionResult<LibraryEntryModel> Post(LibraryEntryModel input)
     {
         input.UserId = User.GetIdString();
-        return base.Post(input);
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        LibraryEntry entity = Mapper.Map<LibraryEntry>(input);
+        Logger.LogDebug("After mapped {Entity}", JsonConvert.SerializeObject(entity));
+        try
+        {
+            Repository.Add(entity);
+        } catch (DbUpdateException e)
+        {
+            Logger.LogWarning(e, "Error when adding entity");
+            return Conflict();
+        } catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when adding entity");
+            return Problem();
+        }
+
+        Logger.LogDebug("After added {Entity}", JsonConvert.SerializeObject(entity));
+        RemoveListCache();
+        if (Equals(entity.Id, default(ulong)))
+        {
+            return Problem("Id is null");
+        }
+        entity = Repository.Get(entity.Id) ?? entity;
+        var model = Mapper.Map<LibraryEntryModel>(entity);
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+        return CreatedAtAction("Get", new { comicId = entity }, model);
     }
     
     [HttpGet("category/{categoryId}")]
