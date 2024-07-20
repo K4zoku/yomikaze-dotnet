@@ -29,6 +29,7 @@ public class Comment : BaseEntity
 
     [ForeignKey(nameof(ReplyTo))] public ulong? ReplyToId { get; set; }
 
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public Comment? ReplyTo
     {
         get => LazyLoader.LoadNullable(this, ref _replyTo);

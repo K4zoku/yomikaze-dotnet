@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
@@ -70,7 +71,10 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         builder.Entity<Role>().ToTable("roles");
         builder.Entity<IdentityUserRole<ulong>>().ToTable("user_roles");
         builder.Entity<IdentityRoleClaim<ulong>>().ToTable("role_claims");
-        
+
+        builder.Entity<ComicViewsResult>().ToView("comic_views");
+        builder.Entity<ComicsViewResult>().ToView("comics_views");
+
         builder
             .HasDbFunction(GetType().GetMethod(nameof(GetComicViewsResult),
                 [typeof(ulong), typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
@@ -98,4 +102,5 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
 [Keyless]
 public record ComicViewsResult(ulong Views);
 
+[Keyless]
 public record ComicsViewResult(ulong Id, ulong Views);

@@ -50,8 +50,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                 name: "fk_comic_views_comics_comic_id",
                 table: "comic_views");
             
-            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_comic_views(bigint, timestamp with timezone, timestamp with timezone)");
-            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_comics_views(timestamp with timezone, timestamp with timezone)");
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_comic_views(bigint, timestamp with time zone, timestamp with time zone)");
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_comics_views(timestamp with time zone, timestamp with time zone)");
         }
     }
 }
