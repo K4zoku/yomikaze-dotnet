@@ -21,6 +21,8 @@ public class ComicCommentController(
             (query, search) => query.Where(comment => comment.ComicId == search.ComicId)),
         new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.ReplyToId is not null,
             (query, search) => query.Where(comment => comment.ReplyToId == search.ReplyToId)),
+        new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.ReplyToId is null,
+            (query, search) => query.Where(comment => comment.ReplyToId == null)),
         new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
