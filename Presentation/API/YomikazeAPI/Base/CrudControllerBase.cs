@@ -53,10 +53,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         .ToList();
 
     [HttpGet]
-    [SwaggerResponse((int)HttpStatusCode.OK, $"List of entity", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
     public virtual ActionResult<PagedList<TModel>> List([FromQuery] PaginationModel pagination)
     {
         if (!ModelState.IsValid)
@@ -84,11 +80,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpGet("{key}")]
-    [SwaggerResponse((int)HttpStatusCode.OK, "Entity found", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Get(TKey key)
     {
         if (!ModelState.IsValid)
@@ -116,13 +107,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpPost]
-    [SwaggerResponse((int)HttpStatusCode.Created, "Entity created", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Problem when creating entity", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Conflict, "Entity may already exists or some relationship does not exists",
-        ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Post(TModel input)
     {
         if (!ModelState.IsValid)
@@ -158,13 +142,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpPatch("{key}")]    
-    [SwaggerResponse((int)HttpStatusCode.NoContent, "Entity updated", ContentTypes = ["application/json"])] 
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Problem when updating entity", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Conflict, "Entity may already exists or some relationship does not exists",
-        ContentTypes = ["application/json"])]
     public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
     {
         if (!ModelState.IsValid)
@@ -202,11 +179,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
     }
 
     [HttpDelete("{key}")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent, "Entity deleted", ContentTypes = ["application/json"])] 
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.NotFound, "Not found", ContentTypes = ["application/json"])]
     public virtual ActionResult Delete(TKey key)
     {
         if (!ModelState.IsValid)
@@ -281,10 +253,6 @@ public abstract class SearchControllerBase<T, TModel, TRepository, TSearch>(
     }
     
     [HttpGet]
-    [SwaggerResponse((int)HttpStatusCode.OK, "List of entity", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.InternalServerError, "Internal server error")]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Unauthorized", ContentTypes = ["application/json"])]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden, "Forbidden", ContentTypes = ["application/json"])]
     public virtual ActionResult<PagedList<TModel>> List([FromQuery] TSearch search, [FromQuery] PaginationModel pagination)
     {
         if (!ModelState.IsValid)
