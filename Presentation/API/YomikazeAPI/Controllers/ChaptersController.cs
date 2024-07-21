@@ -14,14 +14,29 @@ public partial class ComicsController
     [AllowAnonymous]
     public ActionResult<ICollection<ChapterModel>> GetChapters(ulong key)
     {
-        Comic? entity = Repository.Query().Include(c => c.Chapters).FirstOrDefault(c => c.Id == key);
+        Comic? entity = Repository.Query()
+            .Include(c => c.Chapters)
+            .ThenInclude(c => c.Unlocked)
+            .FirstOrDefault(c => c.Id == key);
         if (entity == null)
         {
             return NotFound();
         }
+        var chapters = entity.Chapters;
+        var result = Mapper.Map<ICollection<ChapterModel>>(chapters);
+        if (!User.TryGetId(out var userId))
+        {
+            return Ok(result);
+        }
         
-
-        return Ok(Mapper.Map<ICollection<ChapterModel>>(entity.Chapters));
+        for (var i = 0; i < chapters.Count; i++)
+        {
+            var chapter = chapters.ElementAt(i);
+            var model = result.ElementAt(i);
+            model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
+        }
+        
+        return Ok(result);
     }
 
     [HttpPost("{key}/chapters")]
@@ -65,10 +80,9 @@ public partial class ComicsController
 
         try
         {
-            model.IsUnlocked = chapter.Price == 0;
             if (User.TryGetId(out var userId))
             {
-                 model.IsUnlocked = model.IsUnlocked is true || chapter.Unlocked.Any(u => u.UserId == userId);
+                 model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;

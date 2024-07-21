@@ -31,6 +31,7 @@ public class YomikazeMapper : MapperProfile
                 options.MapFrom(src => IdParse(src.ComicId));
             });
         CreateMap<Chapter, ChapterModel>()
+            .ForMember(dest => dest.HasLock, options => options.MapFrom(src => src.Price > 0))
             .ForMember(dest => dest.Pages, options => options.MapFrom(src => src.Pages.Select(page => page.Image)))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()));
 
