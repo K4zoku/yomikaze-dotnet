@@ -30,7 +30,10 @@ public class ComicConfiguration : BaseEntityConfiguration<Comic>
             .AutoInclude();
         builder
             .Navigation(e => e.Views)
-            .EnableLazyLoading();         
+            .EnableLazyLoading();
+        builder
+            .Navigation(e => e.Chapters)
+            .EnableLazyLoading();
         builder
             .Navigation(e => e.Publisher)
             .AutoInclude();

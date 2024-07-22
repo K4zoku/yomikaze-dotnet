@@ -68,6 +68,8 @@ public class ComicModel : BaseModel
     [SwaggerSchema(ReadOnly = true)] public int? MyRating { get; set; }
     
     [SwaggerSchema(ReadOnly = true)] public bool? IsRead { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)] public ChapterModel? LatestChapter { get; set; }
 
     #endregion
 }
