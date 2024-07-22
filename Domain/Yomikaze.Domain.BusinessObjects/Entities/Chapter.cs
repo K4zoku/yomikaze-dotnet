@@ -5,6 +5,11 @@ namespace Yomikaze.Domain.Entities;
 
 public class Chapter : BaseEntity
 {
+    #region Fields
+
+    private ICollection<UnlockedChapter> _unlocked = [];
+
+    #endregion
 
     #region Properties
 
@@ -32,9 +37,13 @@ public class Chapter : BaseEntity
     
     [Projectable]
     public bool HasLock => Price > 0;
-    
-    public ICollection<UnlockedChapter> Unlocked { get; set; } = new List<UnlockedChapter>();
-    
+
+    public ICollection<UnlockedChapter> Unlocked
+    {
+        get => LazyLoader.Load(this, ref _unlocked);
+        set => _unlocked = value;
+    }
+
     [NotMapped]
     [Projectable]
     public int TotalComments => Comments.Count;

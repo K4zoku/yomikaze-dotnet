@@ -13,6 +13,7 @@ public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(ne
     public IQueryable<Chapter> GetAllByComicId(ulong comicId)
     {
         return Query()
+            .Include(chapter => chapter.Unlocked)
             .Where(chapter => chapter.ComicId == comicId)
             .OrderBy(chapter => chapter.Number)
             .ThenBy(chapter => chapter.LastModified)
