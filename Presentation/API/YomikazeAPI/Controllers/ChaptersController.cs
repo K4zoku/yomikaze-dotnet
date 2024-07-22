@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Linq.Dynamic.Core;
 using System.Net;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
@@ -216,17 +217,23 @@ public partial class ComicsController
     public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers, [FromServices] UserManager<User> userManager)
     {
         var chapters = ChapterRepository.GetByComicIdAndIndexes(key.ToString(), chapterNumbers);
-        if (chapters.Count == 0)
+        if (!chapters.Any())
         {
             return NotFound();
         }
-        var price = chapters.Sum(c => c.Price);
 
-        if (price == 0)
+        var locked = chapters
+            .Where(c => c.Price > 0)
+            .Where(c => c.Unlocked.All(u => u.UserId != User.GetId()))
+            .ToList();
+
+        if (locked.Count == 0)
         {
             ModelState.AddModelError("Chapters", "There are no locked chapters");
             return BadRequest(ModelState);
         }
+        
+        var price = locked.Sum(c => c.Price);
 
         var currentUser = User.GetUser(userManager);
         
@@ -239,10 +246,6 @@ public partial class ComicsController
         var unlockedChapters = new List<int>();
         foreach (var chapter in chapters)
         {
-            if (chapter.Unlocked.Any(u => u.UserId == currentUser.Id))
-            {
-                continue;
-            }
             chapter.Unlocked.Add(new UnlockedChapter() { UserId = currentUser.Id, ChapterId = chapter.Id });
             ChapterRepository.Update(chapter);
             unlockedChapters.Add(chapter.Number);

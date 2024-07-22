@@ -27,12 +27,11 @@ public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(ne
             .FirstOrDefault(chapter => chapter.ComicId.ToString() == comicId && chapter.Number == index);
     }
 
-    public ICollection<Chapter> GetByComicIdAndIndexes(string comicId, params int[] indexes)
+    public IQueryable<Chapter> GetByComicIdAndIndexes(string comicId, params int[] indexes)
     {
         return Query()
             .Include(chapter => chapter.Pages)
             .Include(chapter => chapter.Unlocked)
-            .Where(chapter => chapter.ComicId.ToString() == comicId && indexes.Contains(chapter.Number))
-            .ToList();
+            .Where(chapter => chapter.ComicId.ToString() == comicId && indexes.Contains(chapter.Number));
     }
 }
