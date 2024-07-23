@@ -18,6 +18,10 @@ public class ComicSearchModel
     
     public string? Publisher { get => _publisher; set => _publisher = value?.Trim().ToLower(); }
     
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    public ulong? PublisherId { get; set; }
+    
     public ComicStatus? Status { get; set; }
     
     public DateTimeOffset? FromPublicationDate { get; set; }

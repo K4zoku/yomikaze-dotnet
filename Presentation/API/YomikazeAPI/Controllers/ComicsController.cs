@@ -41,6 +41,8 @@ public partial class ComicsController(
                                                             alias.ToLower().Contains(search.Name!)))),
             new(searchModel => !string.IsNullOrWhiteSpace(searchModel.Publisher),
                 (query, search) => query.Where(comic => comic.Publisher.Name.ToLower().Contains(search.Publisher!))),
+            new(searchModel => searchModel.PublisherId.HasValue,
+                (query, search) => query.Where(comic => comic.PublisherId == search.PublisherId)),
             new(searchModel => searchModel.IncludeTags != null && searchModel.IncludeTags.Length != 0,
                 (query, search) => search.InclusionMode == LogicalOperator.Or
                     ? query.Where(comic => comic.Tags.Any(tag => (search.IncludeTags!.Any(searchTag =>
@@ -178,6 +180,15 @@ public partial class ComicsController(
         }, logger: Logger);
 
         return result;
+    }
+    
+    [HttpGet("/management")]
+    [Authorize(Roles = "Administrator,Publisher")]
+    public async Task<ActionResult<PagedList<ComicModel>>> ListForManagement([FromQuery] ComicSearchModel search,
+        [FromQuery] PaginationModel pagination)
+    {
+        search.PublisherId = User.GetId();
+        return await List(search, pagination);
     }
     
     private ICollection<ComicModel> GetRankingByTime(DateTimeOffset start, DateTimeOffset end)
