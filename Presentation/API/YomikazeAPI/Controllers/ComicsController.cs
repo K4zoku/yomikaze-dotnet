@@ -43,18 +43,21 @@ public partial class ComicsController(
                 (query, search) => query.Where(comic => comic.Publisher.Name.ToLower().Contains(search.Publisher!))),
             new(searchModel => searchModel.PublisherId.HasValue,
                 (query, search) => query.Where(comic => comic.PublisherId == search.PublisherId)),
+            #pragma warning disable
+            // disable warning for csharpsquid:S6603 because it's cause linq cannot translate to sql
             new(searchModel => searchModel.IncludeTags != null && searchModel.IncludeTags.Length != 0,
                 (query, search) => search.InclusionMode == LogicalOperator.Or
                     ? query.Where(comic => comic.Tags.Any(tag => (search.IncludeTags!.Any(searchTag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag))))
-                    : query.Where(comic => Array.TrueForAll(search.IncludeTags!, searchTag => comic.Tags.Any(tag =>
+                    : query.Where(comic => search.IncludeTags!.All(searchTag => comic.Tags.Any(tag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
             new(searchModel => searchModel.ExcludeTags != null && searchModel.ExcludeTags.Length != 0,
                 (query, search) => search.ExclusionMode == LogicalOperator.And
-                    ? query.Where(comic => Array.TrueForAll(search.ExcludeTags!, searchTag => comic.Tags.All(tag =>
+                    ? query.Where(comic => search.ExcludeTags!.All(searchTag => comic.Tags.All(tag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))
                     : query.Where(comic => comic.Tags.All(tag => search.ExcludeTags!.Any(searchTag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
+            #pragma warning restore
             new(searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
                 (query, search) => query.Where(comic => search.Authors!.Any(searchAuthor =>
                     comic.Authors.Any(author => author.ToLower().Contains(searchAuthor.ToLower()))))),
