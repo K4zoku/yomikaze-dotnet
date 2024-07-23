@@ -63,18 +63,6 @@ if (env.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.Use(async (context, next) => {
-    await next.Invoke();
-    if (context.Response.StatusCode == (int)HttpStatusCode.NotFound)
-    {
-        var defaultFile = fileProvider.GetFileInfo("misc/default.webp");
-        context.Response.ContentType = "image/webp";
-        await using Stream stream = defaultFile.CreateReadStream();
-        await stream.CopyToAsync(context.Response.Body);
-        await context.Response.StartAsync();
-        // context.Response.Redirect("/images/misc/default.webp");
-    }
-});
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = fileProvider, RequestPath = new PathString("/images"), ServeUnknownFileTypes = false
