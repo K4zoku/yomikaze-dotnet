@@ -10,7 +10,7 @@ public static class IdentityExtensions
 {
     public static IServiceCollection AddYomikazeIdentity(this IServiceCollection services)
     {
-        var builder = services.AddIdentityCore<User>(options =>
+        var builder = services.AddIdentity<User, Role>(options =>
         {
             options.User.RequireUniqueEmail = true;
             options.ClaimsIdentity.SecurityStampClaimType = JwtRegisteredClaimNames.Sid;
@@ -19,9 +19,7 @@ public static class IdentityExtensions
             options.ClaimsIdentity.EmailClaimType = JwtRegisteredClaimNames.Email;
             options.ClaimsIdentity.RoleClaimType = "roles";
         });
-        builder.AddRoles<Role>();
         builder.AddEntityFrameworkStores<YomikazeDbContext>();
-        builder.AddSignInManager<SignInManager<User>>();
         builder.AddDefaultTokenProviders();
         return services;
     }
