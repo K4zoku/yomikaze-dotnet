@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.Main.Controllers;
 
-// TODO)) Add isReacted and reactionType to comment model, those fields only need to be set when the user is logged in
 [ApiController]
 [Route("comics/{comicId}/comments")]
 public class ComicCommentController(
@@ -57,7 +57,31 @@ public class ComicCommentController(
     public ActionResult<PagedList<ComicCommentModel>> List([FromRoute] ulong comicId, [FromQuery] ComicCommentSearchModel search, [FromQuery] PaginationModel pagination)
     {
         search.ComicId = comicId;
-        return base.List(search, pagination);
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+        string keyName = $"{CacheKeyPrefix}{nameof(List)}:{JsonConvert.SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
+        
+        return Cache.GetOrSet(keyName, () =>
+        {
+            IQueryable<ComicComment> query = ListQuery();
+            query = ApplySearch(query, search);
+            var result = GetPaged(query, pagination);
+            if (!User.TryGetId(out ulong userId))
+            {
+                return result;
+            }
+
+            foreach (var item in result.Results)
+            {
+                var reaction = Repository.GetReactionsByCommentId(item.Id)
+                    .FirstOrDefault(x => x.UserId == userId);
+                item.IsReacted = reaction != null;
+                item.MyReaction = reaction?.ReactionType;
+            }
+            return result;
+        }, logger: Logger);
     }
     
     [HttpGet("{key}/replies")]
@@ -65,7 +89,7 @@ public class ComicCommentController(
     {
         search.ComicId = comicId;
         search.ReplyToId = key;
-        return base.List(search, pagination);
+        return List(comicId, search, pagination);
     }
     
     [HttpPost("{key}/replies")]
@@ -142,7 +166,21 @@ public class ComicCommentController(
     [HttpGet("{key}")]
     public ActionResult<ComicCommentModel> GetComment([FromRoute] ulong comicId, [FromRoute] ulong key)
     {
-        return base.Get(key);
+        ComicComment? comment = Repository.Get(key);
+        if (comment == null)
+        {
+            return NotFound();
+        }
+        var model = Mapper.Map<ComicCommentModel>(comment);
+        if (!User.TryGetId(out ulong userId))
+        {
+            return model;
+        }
+
+        var reaction = comment.Reactions.FirstOrDefault(x => x.UserId == userId);
+        model.IsReacted = reaction != null;
+        model.MyReaction = reaction?.ReactionType;
+        return model;
     }
     
     [NonAction]

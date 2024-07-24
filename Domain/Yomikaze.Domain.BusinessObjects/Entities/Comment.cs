@@ -45,6 +45,9 @@ public class Comment : BaseEntity
         set => _replies = value;
     }
     
+    [Projectable]
+    public int TotalReplies => Replies.Count;
+    
     public ICollection<CommentReaction> Reactions { get; set; } = [];
     
     [Projectable]

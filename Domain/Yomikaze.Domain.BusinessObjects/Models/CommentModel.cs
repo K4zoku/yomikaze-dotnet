@@ -1,4 +1,6 @@
-﻿namespace Yomikaze.Domain.Models;
+﻿using Yomikaze.Domain.Entities.Weak;
+
+namespace Yomikaze.Domain.Models;
 
 public class CommentModel : BaseModel
 {
@@ -19,6 +21,14 @@ public class CommentModel : BaseModel
     
     [SwaggerSchema(ReadOnly = true)]
     public int TotalDislikes { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public bool IsReacted { get; set; }
+    
+    public ReactionType? MyReaction { get; set; } 
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public int TotalReplies { get; set; }
 
     #endregion
 

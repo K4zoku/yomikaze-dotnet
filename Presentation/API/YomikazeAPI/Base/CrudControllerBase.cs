@@ -241,7 +241,7 @@ public abstract class SearchControllerBase<T, TModel, TRepository, TSearch>(
     
     protected abstract IList<SearchFieldMutator<T, TSearch>> SearchFieldMutators { get; }
 
-    private IQueryable<T> ApplySearch(IQueryable<T> query, TSearch search)
+    protected IQueryable<T> ApplySearch(IQueryable<T> query, TSearch search)
     {
         return SearchFieldMutators.Aggregate(query, (current, mutator) => mutator.Apply(search, current));
     }

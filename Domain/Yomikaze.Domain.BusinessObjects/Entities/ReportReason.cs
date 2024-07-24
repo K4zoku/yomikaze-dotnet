@@ -2,7 +2,7 @@ namespace Yomikaze.Domain.Entities;
 
 public class ReportReason : BaseEntity
 {
-    [StringLength(128)] public string Content { get; set; } = default!;
+    [StringLength(128)] public string Content { get; set; }
 
     public override ulong Id { get; }
     

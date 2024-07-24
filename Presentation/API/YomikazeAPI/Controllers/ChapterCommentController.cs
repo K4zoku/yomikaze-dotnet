@@ -5,9 +5,9 @@ using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.Main.Controllers;
 
-// TODO)) Add isReacted and reactionType to comment model, those fields only need to be set when the user is logged in
+// TODO)) copy code from ComicCommentController
 [ApiController]
-[Route("comics/{comicId}/chapters/{number}/comments")]
+[Route("comics/{comicId}/chapters/{number:int}/comments")]
 public class ChapterCommentController(
     ChapterCommentRepository repository,
     ChapterRepository chapterRepository,

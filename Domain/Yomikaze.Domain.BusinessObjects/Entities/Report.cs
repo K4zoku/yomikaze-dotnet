@@ -4,8 +4,6 @@ public class Report : BaseEntity
 {
     #region Fields
 
-    private ReportReason _reason = default!;
-
     private User _reporter = default!;
 
     #endregion
