@@ -17,6 +17,8 @@ public class ComicReport : Report
         get => LazyLoader.Load(this, ref _comic);
         set => _comic = value;
     }
+    
+    public override ComicReportReason Reason { get; } = default!;
 
     #endregion
 

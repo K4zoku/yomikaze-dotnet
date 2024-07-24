@@ -17,6 +17,8 @@ public class ProfileReport : Report
         get => LazyLoader.Load(this, ref _profile);
         set => _profile = value;
     }
+    
+    public override ProfileReportReason Reason { get; } = default!;
 
     #endregion
 

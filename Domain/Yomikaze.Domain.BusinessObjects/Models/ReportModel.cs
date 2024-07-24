@@ -22,17 +22,13 @@ public class ReportModel : BaseModel
 
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public string Category { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] public string Reason { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Reporter { get; set; } = default!;
 
     #endregion
 
     #region WriteOnlyProperties
-
-    [SwaggerSchema(WriteOnly = true)]
-    [Required]
-    public string CategoryId { get; set; } = default!;
 
     [SwaggerSchema(WriteOnly = true)]
     [Required]

@@ -63,6 +63,18 @@
         <Compile Update="Models\TranslationReportModel.cs">
             <DependentUpon>ReportModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Entities\ComicReportReason.cs">
+          <DependentUpon>ReportReason.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\ChapterReportReason.cs">
+          <DependentUpon>ReportReason.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\ProfileReportReason.cs">
+          <DependentUpon>ReportReason.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\TranslationReportReason.cs">
+          <DependentUpon>ReportReason.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

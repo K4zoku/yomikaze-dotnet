@@ -31,6 +31,9 @@
         <Compile Update="Roles.cs">
             <DependentUpon>Default.cs</DependentUpon>
         </Compile>
+        <Compile Update="ReportReasons.cs">
+          <DependentUpon>Default.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

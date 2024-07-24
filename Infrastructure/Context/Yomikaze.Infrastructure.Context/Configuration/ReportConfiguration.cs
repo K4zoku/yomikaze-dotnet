@@ -16,5 +16,6 @@ public class ReportConfiguration : BaseEntityConfiguration<Report>
             .HasValue<ComicReport>("comic_report")
             .HasValue<ProfileReport>("profile_report")
             .HasValue<TranslationReport>("translation_report");
+        
     }
 }

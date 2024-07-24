@@ -4,7 +4,7 @@ public class Report : BaseEntity
 {
     #region Fields
 
-    private ReportCategory _category = default!;
+    private ReportReason _reason = default!;
 
     private User _reporter = default!;
 
@@ -14,13 +14,9 @@ public class Report : BaseEntity
 
     protected Action<object, string>? LazyLoader { get; }
 
-    [ForeignKey(nameof(Category))] public ulong CategoryId { get; set; }
+    [ForeignKey(nameof(Reason))] public ulong ReasonId { get; set; }
 
-    public ReportCategory Category
-    {
-        get => LazyLoader.Load(this, ref _category);
-        set => _category = value;
-    }
+    public virtual ReportReason Reason { get;  }
 
     [ForeignKey(nameof(Reporter))] public ulong ReporterId { get; set; }
 

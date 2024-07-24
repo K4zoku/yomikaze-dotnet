@@ -1,4 +1,5 @@
-﻿using Yomikaze.Domain.Entities.Weak;
+﻿using EntityFrameworkCore.Projectables;
+using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
 
@@ -45,6 +46,12 @@ public class Comment : BaseEntity
     }
     
     public ICollection<CommentReaction> Reactions { get; set; } = [];
+    
+    [Projectable]
+    public int TotalLikes => Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like);
+    
+    [Projectable]
+    public int TotalDislikes => Reactions.Count(reaction => reaction.ReactionType == ReactionType.Dislike);
 
     #endregion
 

@@ -7,26 +7,32 @@ namespace Yomikaze.API.Main.Controllers;
 
 // TODO)) Add isReacted and reactionType to comment model, those fields only need to be set when the user is logged in
 [ApiController]
-[Route("comics/{comicId}/comments")]
-public class ComicCommentController(
-    ComicCommentRepository repository,
+[Route("comics/{comicId}/chapters/{number}/comments")]
+public class ChapterCommentController(
+    ChapterCommentRepository repository,
+    ChapterRepository chapterRepository,
     IMapper mapper,
-    ILogger<ComicCommentController> logger)
-    : SearchControllerBase<ComicComment, ComicCommentModel, ComicCommentRepository, ComicCommentSearchModel>(repository,
+    ILogger<ChapterCommentController> logger)
+    : SearchControllerBase<ChapterComment, ChapterCommentModel, ChapterCommentRepository, ChapterCommentSearchModel>(repository,
         mapper, logger)
 {
-    protected override IList<SearchFieldMutator<ComicComment, ComicCommentSearchModel>> SearchFieldMutators { get; } =
+    
+    private ChapterRepository ChapterRepository { get; } = chapterRepository;
+    
+    protected override IList<SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>> SearchFieldMutators { get; } =
     [
-        new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.ComicId is not null,
-            (query, search) => query.Where(comment => comment.ComicId == search.ComicId)),
-        new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.ReplyToId is not null,
+        new SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>(search => search.ComicId is not null,
+            (query, search) => query.Where(comment => comment.Chapter.ComicId == search.ComicId)),
+        new SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>(search => search.ChapterNumber is not null,
+            (query, search) => query.Where(comment => comment.Chapter.Number == search.ChapterNumber)),
+        new SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>(search => search.ReplyToId is not null,
             (query, search) => query.Where(comment => comment.ReplyToId == search.ReplyToId)),
-        new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.ReplyToId is null,
+        new SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>(search => search.ReplyToId is null,
             (query, search) => query.Where(comment => comment.ReplyToId == null)),
-        new SearchFieldMutator<ComicComment, ComicCommentSearchModel>(search => search.OrderBy is not { Length: 0 },
+        new SearchFieldMutator<ChapterComment, ChapterCommentSearchModel>(search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
-                IOrderedQueryable<ComicComment> orderedQuery = search.OrderBy![0] switch
+                IOrderedQueryable<ChapterComment> orderedQuery = search.OrderBy![0] switch
                 {
                     ComicCommentOrderBy.CreationTime => query.OrderBy(comment => comment.CreationTime),
                     ComicCommentOrderBy.CreationTimeDesc => query.OrderByDescending(comment => comment.CreationTime),
@@ -48,28 +54,30 @@ public class ComicCommentController(
     ];
 
     [NonAction]
-    public override ActionResult<PagedList<ComicCommentModel>> List(ComicCommentSearchModel search, PaginationModel pagination)
+    public override ActionResult<PagedList<ChapterCommentModel>> List(ChapterCommentSearchModel search, PaginationModel pagination)
     {
         return base.List(search, pagination);
     }
     
     [HttpGet]
-    public ActionResult<PagedList<ComicCommentModel>> List([FromRoute] ulong comicId, [FromQuery] ComicCommentSearchModel search, [FromQuery] PaginationModel pagination)
+    public ActionResult<PagedList<ChapterCommentModel>> List([FromRoute] ulong comicId, [FromRoute] int number, [FromQuery] ChapterCommentSearchModel search, [FromQuery] PaginationModel pagination)
     {
         search.ComicId = comicId;
+        search.ChapterNumber = number;
         return base.List(search, pagination);
     }
     
     [HttpGet("{key}/replies")]
-    public ActionResult<PagedList<ComicCommentModel>> ListReplies([FromRoute] ulong comicId, [FromRoute] ulong key, [FromQuery] ComicCommentSearchModel search, [FromQuery] PaginationModel pagination)
+    public ActionResult<PagedList<ChapterCommentModel>> ListReplies([FromRoute] ulong comicId, [FromRoute] int number, [FromRoute] ulong key, [FromQuery] ChapterCommentSearchModel search, [FromQuery] PaginationModel pagination)
     {
         search.ComicId = comicId;
         search.ReplyToId = key;
+        search.ChapterNumber = number;
         return base.List(search, pagination);
     }
     
     [HttpPost("{key}/replies")]
-    public ActionResult<ComicCommentModel> PostReplies([FromRoute] ulong comicId, [FromRoute] ulong key, [FromBody] ComicCommentModel input)
+    public ActionResult<ChapterCommentModel> PostReplies([FromRoute] ulong comicId, [FromRoute] int number, [FromRoute] ulong key, [FromBody] ChapterCommentModel input)
     {
         var comment = Repository.Get(key);
         if (comment == null)
@@ -86,29 +94,36 @@ public class ComicCommentController(
             }
         }
         input.ReplyToId = comment.Id.ToString(); // Set the root comment as the reply to id
-        
-        return Post(comicId, input);
+        input.ChapterId = comment.ChapterId.ToString();
+
+        return Post(comicId, number, input);
     }
 
     [NonAction]
-    public override ActionResult<ComicCommentModel> Post(ComicCommentModel input)
+    public override ActionResult<ChapterCommentModel> Post(ChapterCommentModel input)
     {
         return base.Post(input);
     }
     
     [HttpPost]
     [Authorize]
-    public ActionResult<ComicCommentModel> Post([FromRoute] ulong comicId, ComicCommentModel input)
+    public ActionResult<ChapterCommentModel> Post([FromRoute] ulong comicId, [FromRoute] int number, ChapterCommentModel input)
     {
-        input.ComicId = comicId.ToString();
         input.AuthorId = User.GetIdString();
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
+        
+        Chapter? chapter = input.ChapterId == null ? ChapterRepository.GetByComicIdAndIndex(comicId.ToString(), number) : ChapterRepository.Get(input.ChapterId);
+        
+        if (chapter == null)
+        {
+            return NotFound();
+        }
 
-        ComicComment entity = Mapper.Map<ComicComment>(input);
-        Logger.LogDebug("After mapped {Entity}", JsonConvert.SerializeObject(entity));
+        ChapterComment entity = Mapper.Map<ChapterComment>(input);
+        entity.ChapterId = chapter.Id;
         try
         {
             Repository.Add(entity);
@@ -134,25 +149,25 @@ public class ComicCommentController(
     }
 
     [NonAction]
-    public override ActionResult<ComicCommentModel> Get(ulong key)
+    public override ActionResult<ChapterCommentModel> Get(ulong key)
     {
         return base.Get(key);
     }
     
     [HttpGet("{key}")]
-    public ActionResult<ComicCommentModel> GetComment([FromRoute] ulong comicId, [FromRoute] ulong key)
+    public ActionResult<ChapterCommentModel> GetComment([FromRoute] ulong comicId, [FromRoute] ulong key)
     {
         return base.Get(key);
     }
     
     [NonAction]
-    public override ActionResult<ComicCommentModel> Patch(ulong key, JsonPatchDocument<ComicCommentModel> patch)
+    public override ActionResult<ChapterCommentModel> Patch(ulong key, JsonPatchDocument<ChapterCommentModel> patch)
     {
         return base.Patch(key, patch);
     }
     
     [HttpPatch("{key}")]
-    public ActionResult<ComicCommentModel> Patch(ulong comicId, ulong key, JsonPatchDocument<ComicCommentModel> patch)
+    public ActionResult<ChapterCommentModel> Patch(ulong comicId, int number, ulong key, JsonPatchDocument<ChapterCommentModel> patch)
     {
         return base.Patch(key, patch);
     }
@@ -164,13 +179,13 @@ public class ComicCommentController(
     }
     
     [HttpDelete("{key}")]
-    public ActionResult Delete(ulong comicId, ulong key)
+    public ActionResult Delete(ulong comicId, int number, ulong key)
     {
         return base.Delete(key);
     }
     
     [HttpPost("{key}/react")]
-    public ActionResult React(ulong comicId, ulong key, [FromBody] ReactionModel input)
+    public ActionResult React(ulong comicId, int number, ulong key, [FromBody] ReactionModel input)
     {
         var comment = Repository.Get(key);
         if (comment == null)

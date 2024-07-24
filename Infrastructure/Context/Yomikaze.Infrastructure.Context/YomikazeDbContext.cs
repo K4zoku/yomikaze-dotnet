@@ -40,7 +40,10 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<ComicReport> ComicReports { get; init; } = default!;
     public DbSet<ProfileReport> ProfileReports { get; init; } = default!;
     public DbSet<TranslationReport> TranslationReports { get; init; } = default!;
-    public DbSet<ReportCategory> ReportCategories { get; init; } = default!;
+    public DbSet<ChapterReportReason> ChapterReportReasons { get; init; } = default!;
+    public DbSet<ComicReportReason> ComicReportReasons { get; init; } = default!;
+    public DbSet<ProfileReportReason> ProfileReportReasons { get; init; } = default!;
+    public DbSet<TranslationReportReason> TranslationReportReasons { get; init; } = default!;
     public DbSet<Tag> Tags { get; init; } = default!;
     public DbSet<TagCategory> TagCategories { get; init; } = default!;
     public DbSet<Transaction> Transactions { get; init; } = default!;

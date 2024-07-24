@@ -14,6 +14,9 @@ public class ComicReportModel : ReportModel
     [SwaggerIgnore]
     [WriteOnly]
     public string ComicId { get; set; } = default!;
+    
+    [WriteOnly]
+    public string ReasonId { get; set; } = default!;
 
     #endregion
 }

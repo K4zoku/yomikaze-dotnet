@@ -168,7 +168,10 @@ public class YomikazeMapper : MapperProfile
         CreateMap<User, ProfileModel>()
             .ForMember(dest => dest.Balance, options => options.Ignore())
             .ForMember(dest => dest.Roles, options => options.MapFrom(src => src.Roles.Select(role => role.Name).ToArray()));
-
+        
+        CreateMap<ReportReason, ReportReasonModel>().ReverseMap();
+        CreateMap<ReportReasonModel, ReportReason>().ReverseMap();
+        
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
     }

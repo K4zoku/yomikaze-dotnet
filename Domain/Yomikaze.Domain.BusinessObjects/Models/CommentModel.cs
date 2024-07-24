@@ -13,6 +13,12 @@ public class CommentModel : BaseModel
 
     [SwaggerSchema(ReadOnly = true)]
     public ProfileModel? Author { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public int TotalLikes { get; set; }
+    
+    [SwaggerSchema(ReadOnly = true)]
+    public int TotalDislikes { get; set; }
 
     #endregion
 

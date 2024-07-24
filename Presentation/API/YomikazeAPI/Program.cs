@@ -41,8 +41,12 @@ services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
 services.AddScoped<IRepository<ComicComment>, ComicCommentRepository>();
 services.AddScoped<ComicCommentRepository>();
+services.AddScoped<IRepository<ChapterComment>, ChapterCommentRepository>();
+services.AddScoped<ChapterCommentRepository>();
 services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
 services.AddScoped<CoinPricingRepository>();
+services.AddScoped<IRepository<ComicReport>, ComicReportRepository>();
+services.AddScoped<ComicReportRepository>();
 services.AddScoped<AuthenticationService>();
 
 // Stripe services
@@ -183,6 +187,34 @@ try
         await dbContext.Tags.AddRangeAsync(YomikazeDbContext.Default.Tags);
         await dbContext.SaveChangesAsync();
     }
+    
+    if (!await dbContext.ChapterReportReasons.AnyAsync())
+    {
+        logger.LogInformation("No chapter report reasons found, adding default chapter report reasons");
+        await dbContext.ChapterReportReasons.AddRangeAsync(YomikazeDbContext.Default.ChapterReportReasons);
+        await dbContext.SaveChangesAsync();
+    }
+    
+    if (!await dbContext.ComicReportReasons.AnyAsync())
+    {
+        logger.LogInformation("No comic report reasons found, adding default comic report reasons");
+        await dbContext.ComicReportReasons.AddRangeAsync(YomikazeDbContext.Default.ComicReportReasons);
+        await dbContext.SaveChangesAsync();
+    }
+    
+    if (!await dbContext.ProfileReportReasons.AnyAsync())
+    {
+        logger.LogInformation("No profile report reasons found, adding default profile report reasons");
+        await dbContext.ProfileReportReasons.AddRangeAsync(YomikazeDbContext.Default.ProfileReportReasons);
+        await dbContext.SaveChangesAsync();
+    }
+
+    if (!await dbContext.TranslationReportReasons.AnyAsync())
+    {
+        logger.LogInformation("No translation report reasons found, adding default translation report reasons");
+        await dbContext.TranslationReportReasons.AddRangeAsync(YomikazeDbContext.Default.TranslationReportReasons);
+        await dbContext.SaveChangesAsync();
+    }
 }
 catch (DbException)
 {
@@ -190,19 +222,5 @@ catch (DbException)
     logger.LogWarning("Could not add default tags and tag categories, but system will continue to run.");
     #pragma warning restore
 }
-/* Example of using a stored function   
-var f = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(30)).ToUniversalTime();
-var t = DateTimeOffset.Now.ToUniversalTime();
-var r = dbContext.GetComicsViewsResult(f, t)
-    .Join(dbContext.Comics, result => result.Id, comic => comic.Id,
-        (result, comic) => new { Id = comic.Id, Name = comic.Name, result.Views, FromDate = f, ToDate = t })
-    .OrderByDescending(result => result.Views);
-foreach (var result in r)
-{
-    logger.LogInformation("Comic {Name} ({Id}) has {Views} views", result.Name, result.Id, result.Views);
-    logger.LogInformation("From {FromDate} to {ToDate}", result.FromDate.ToLocalTime(), result.ToDate.ToLocalTime());
-}
-*/
-    
 
 await app.RunAsync();

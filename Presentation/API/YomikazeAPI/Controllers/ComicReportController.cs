@@ -1,21 +1,26 @@
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Infrastructure.Context;
 
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("reports/comics")]
 public class ComicReportController(
+    YomikazeDbContext dbContext,
     ComicReportRepository repository,
     IMapper mapper,
     ILogger<SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>> logger)
     : SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>(repository,
         mapper, logger)
 {
+    
+    private YomikazeDbContext DbContext { get; } = dbContext;
+    
     protected override IList<SearchFieldMutator<ComicReport, ComicReportSearchModel>> SearchFieldMutators { get; } =
     [
         new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
             search => !string.IsNullOrWhiteSpace(search.ReportCategoryId),
-            (query, search) => query.Where(x => x.CategoryId.ToString() == search.ReportCategoryId)),
+            (query, search) => query.Where(x => x.ReasonId.ToString() == search.ReportCategoryId)),
         new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
             search => !string.IsNullOrWhiteSpace(search.ComicId),
             (query, search) => query.Where(x => x.ComicId.ToString() == search.ComicId)),
@@ -57,5 +62,12 @@ public class ComicReportController(
         input.ReporterId = User.GetIdString();
         input.Status = ReportStatus.Pending;
         return base.Post(input);
+    }
+    
+    [HttpGet("/comics/reports/reasons")]
+    public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
+    {
+        var result = DbContext.ComicReportReasons.ToList();
+        return Ok(Mapper.Map<IEnumerable<ReportReasonModel>>(result));
     }
 }
