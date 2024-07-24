@@ -139,8 +139,26 @@ public partial class ComicsController(
         };
 
     private static List<string> ListCacheKeys { get; } = [];
+
     private static object ListCacheKeyLock { get; } = new();
+
+    private static void AddCacheKey(string key)
+    {
+        lock (ListCacheKeyLock)
+        {
+            ListCacheKeys.Add(key);
+        }
+    }
     
+    private static void ClearCache(IDistributedCache cache)
+    {
+        lock (ListCacheKeyLock)
+        {
+            ListCacheKeys.ForEach(cache.Remove);
+            ListCacheKeys.Clear();
+        }
+    }
+
     [NonAction]
     public override ActionResult<PagedList<ComicModel>> List(PaginationModel pagination)
     {
@@ -161,10 +179,7 @@ public partial class ComicsController(
         }
         var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
         {
-            lock (ListCacheKeyLock)
-            {
-                ListCacheKeys.Add(key);
-            }
+            AddCacheKey(key);
 
             IQueryable<Comic> queryable = Repository.QueryWithExtras();
             queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
@@ -185,7 +200,7 @@ public partial class ComicsController(
         return result;
     }
     
-    [HttpGet("/management")]
+    [HttpGet("management")]
     [Authorize(Roles = "Administrator,Publisher")]
     public async Task<ActionResult<PagedList<ComicModel>>> ListForManagement([FromQuery] ComicSearchModel search,
         [FromQuery] PaginationModel pagination)
@@ -230,13 +245,16 @@ public partial class ComicsController(
         var now = RemoveTime(DateTimeOffset.UtcNow);
         
         var result = await Cache.GetOrSetAsync(key, 
-            valueFactory: () => 
-                Mapper.Map<ICollection<ComicModel>>(
+            valueFactory: () =>
+            {
+                AddCacheKey(key);
+                return Mapper.Map<ICollection<ComicModel>>(
                     GetRankingByTime(
-                        now.Subtract(TimeSpan.FromDays((int) now.DayOfWeek)),
+                        now.Subtract(TimeSpan.FromDays((int)now.DayOfWeek)),
                         now
                     )
-                ), logger: Logger);
+                );
+            }, logger: Logger);
 
         return Ok(result);
     }
@@ -246,13 +264,16 @@ public partial class ComicsController(
     public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByMonth()
     {
         string key = $"{CacheKeyPrefix}{nameof(GetTopReadByMonth)}";
-        var result = await Cache.GetOrSetAsync(key, valueFactory: () => 
-            Mapper.Map<ICollection<ComicModel>>(
+        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
+        {
+            AddCacheKey(key);
+            return Mapper.Map<ICollection<ComicModel>>(
                 GetRankingByTime(
                     RemoveTime(DateTimeOffset.UtcNow).Subtract(TimeSpan.FromDays(DateTimeOffset.UtcNow.Day)),
                     DateTimeOffset.UtcNow
                 )
-            ), logger: Logger);
+            );
+        }, logger: Logger);
 
         return Ok(result);
     }
@@ -262,13 +283,16 @@ public partial class ComicsController(
     public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByYear()
     {
         string key = $"{CacheKeyPrefix}{nameof(GetTopReadByYear)}";
-        var result = await Cache.GetOrSetAsync(key, valueFactory: () => 
-            Mapper.Map<ICollection<ComicModel>>(
+        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
+        {
+            AddCacheKey(key);
+            return Mapper.Map<ICollection<ComicModel>>(
                 GetRankingByTime(
                     RemoveTime(DateTimeOffset.UtcNow).Subtract(TimeSpan.FromDays(DateTimeOffset.UtcNow.DayOfYear)),
                     DateTimeOffset.UtcNow
                 )
-            ), logger: Logger);
+            );
+        }, logger: Logger);
 
         return Ok(result);
     }
@@ -281,8 +305,14 @@ public partial class ComicsController(
             $"{nameof(ComicModel.Name)},{nameof(ComicModel.Description)},{nameof(ComicModel.Cover)},{nameof(ComicModel.Banner)},{nameof(ComicModel.PublicationDate)},{nameof(ComicModel.Authors)},{nameof(ComicModel.Status)},{nameof(ComicModel.TagIds)}")]
         ComicModel input)
     {
+        
         input.PublisherId = User.GetIdString();
-        return base.Post(input);
+        var result = base.Post(input);
+        if (result.Value is not null)
+        {
+            ClearCache(Cache);
+        }
+        return result;
     }
     
     [HttpGet("{key}")]
@@ -374,5 +404,16 @@ public partial class ComicsController(
         });
     }
     
-    
+    [HttpGet("[action]")]
+    public ActionResult<ComicModel> Random()
+    {
+        Comic? comic = Repository.GetRandomComic();
+        if (comic == null)
+        {
+            return NotFound();
+        }
+        ComicModel model = Mapper.Map<ComicModel>(comic);
+        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+        return Ok(model);
+    }
 }

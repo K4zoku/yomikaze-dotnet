@@ -3,7 +3,7 @@ using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.Domain.Entities;
 
-public sealed class Comic : BaseEntity
+public class Comic : BaseEntity
 {
 
     #region Properties
