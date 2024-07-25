@@ -15,5 +15,9 @@ public class CommentConfiguration : BaseEntityConfiguration<Comment>
             .HasValue<ChapterComment>("chapter_comment")
             .HasValue<ComicComment>("comic_comment")
             .HasValue<ProfileComment>("profile_comment");
+
+        builder
+            .Navigation(x => x.Reactions)
+            .AutoInclude();
     }
 }
