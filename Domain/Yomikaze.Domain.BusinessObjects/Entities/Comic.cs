@@ -31,11 +31,6 @@ public class Comic : BaseEntity
     [Projectable]
     public int TotalChapters => Chapters.Count;
     
-    public ICollection<ComicView> Views { get; set; } = new List<ComicView>();
-
-    [Projectable]
-    public int ViewsByDate => Views.Sum(view => view.Views);
-    
     [Projectable]
     public int TotalViews => Chapters.Sum(chapter => chapter.Views);
     

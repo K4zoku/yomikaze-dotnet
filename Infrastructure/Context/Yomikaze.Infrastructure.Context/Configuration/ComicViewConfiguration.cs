@@ -18,7 +18,7 @@ public class ComicViewConfiguration : IEntityTypeConfiguration<ComicView>
             .ValueGeneratedOnAdd()
             .HasValueGenerator<CreationTimeGenerator>();
         builder.HasOne<Comic>()
-            .WithMany(c => c.Views)
+            .WithMany()
             .HasForeignKey(x => x.ComicId)
             .OnDelete(DeleteBehavior.Cascade);
     }
