@@ -320,36 +320,35 @@ public partial class ComicsController(
     public override ActionResult<ComicModel> Get(ulong key)
     {
         bool isAuthorized = User.Identity is { IsAuthenticated: true };
-        
-        Comic? entity = Repository.Get(key);
-        if (entity == null)
-        {
-            Logger.LogWarning("Entity with key {Key} not found", key);
-            return NotFound();
-        }
-        ComicModel model = Mapper.Map<ComicModel>(entity);
+        var cacheKey = $"{CacheKeyPrefix}{key}";
         if (isAuthorized)
         {
-            model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
-            model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
-            model.IsRated = model.MyRating != null;
-            model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
+            cacheKey += $":{User.GetId()}";
         }
-        ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
-        return Ok(model);
-    }
-
-    [HttpPost("[action]")]
-    [Authorize(Roles = "Administrator,Publisher")]
-    public ActionResult<ICollection<ComicModel>> Batch([FromBody] ICollection<ComicModel> comics)
-    {
-        Comic[] entities = Mapper.Map<Comic[]>(comics.Select(comic =>
+        var model = Cache.GetOrSet(cacheKey, () =>
         {
-            comic.PublisherId = User.GetIdString();
-            return comic;
-        }));
-        Repository.Add(entities);
-        return Ok(Mapper.Map<ICollection<ComicModel>>(entities));
+            Comic? entity = Repository.Get(key);
+            if (entity == null)
+            {
+                Logger.LogWarning("Entity with key {Key} not found", key);
+                return null;
+            }
+            ComicModel model = Mapper.Map<ComicModel>(entity);
+            if (isAuthorized)
+            {
+                model.IsFollowing = LibraryRepository.IsFollowing(User.GetId(), entity.Id);
+                model.MyRating = entity.Ratings.FirstOrDefault(r => r.UserId == User.GetId())?.Rating;
+                model.IsRated = model.MyRating != null;
+                model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
+            }
+            ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
+            return model;
+        }, logger: Logger);
+        if (model is null)
+        {
+            return NotFound();
+        }
+        return Ok(model);
     }
     
     [Authorize]

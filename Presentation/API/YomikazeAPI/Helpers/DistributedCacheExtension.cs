@@ -13,7 +13,7 @@ public static class DistributedCacheExtension
             logger?.LogDebug("NoCache is being used. The value will be generated directly.");
             return valueFactory();
         }
-        options ??= new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5), AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) };
+        options ??= new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) };
         
         byte[]? cachedData = await cache.GetAsync(key, token);
         if (cachedData != null)
@@ -48,7 +48,7 @@ public static class DistributedCacheExtension
             logger?.LogDebug("NoCache is being used. The value will be generated directly.");
             return valueFactory();
         }
-        options ??= new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5), AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) };
+        options ??= new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) };
         
         byte[]? cachedData = cache.Get(key);
         if (cachedData != null)

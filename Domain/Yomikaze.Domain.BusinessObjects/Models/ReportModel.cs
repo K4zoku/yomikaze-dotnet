@@ -16,8 +16,6 @@ public class ReportModel : BaseModel
     [SwaggerSchema(ReadOnly = true)]
     public string? DismissalReason { get; set; }
 
-    public string[]? Images { get; set; }
-
     #endregion
 
     #region ReadOnlyProperties
@@ -30,8 +28,9 @@ public class ReportModel : BaseModel
 
     #region WriteOnlyProperties
 
-    [SwaggerSchema(WriteOnly = true)]
-    [Required]
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    [WriteOnly]
     public string ReporterId { get; set; } = default!;
 
     #endregion

@@ -1,6 +1,6 @@
 namespace Yomikaze.API.Main.Controllers;
 
-[Authorize(Roles = "Administrator,Publisher,Reader")]
+[Authorize(Roles = "Administrator")]
 [Route("tags/categories")]
 [ApiController]
 public class TagCategoriesController(
@@ -10,4 +10,9 @@ public class TagCategoriesController(
     ILogger<CrudControllerBase<TagCategory, TagCategoryModel, TagCategoryRepository>> logger)
     : CrudControllerBase<TagCategory, TagCategoryModel, TagCategoryRepository>(repository, mapper, cache, logger)
 {
+    [AllowAnonymous]
+    public override ActionResult<PagedList<TagCategoryModel>> List(PaginationModel pagination)
+    {
+        return base.List(pagination);
+    }
 }

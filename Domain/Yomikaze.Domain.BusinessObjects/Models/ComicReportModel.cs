@@ -16,6 +16,7 @@ public class ComicReportModel : ReportModel
     public string ComicId { get; set; } = default!;
     
     [WriteOnly]
+    [Required]
     public string ReasonId { get; set; } = default!;
 
     #endregion
