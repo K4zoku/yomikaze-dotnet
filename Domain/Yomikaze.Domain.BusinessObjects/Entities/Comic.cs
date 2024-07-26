@@ -33,10 +33,11 @@ public class Comic : BaseEntity
     
     public ICollection<ComicView> Views { get; set; } = new List<ComicView>();
 
-    [NotMapped] public ulong ViewsByDate { get; set; } = 0;
+    [Projectable]
+    public int ViewsByDate => Views.Sum(view => view.Views);
     
     [Projectable]
-    public int TotalViews => Views.Sum(view => view.Views);
+    public int TotalViews => Chapters.Sum(chapter => chapter.Views);
     
     public ICollection<ComicRating> Ratings { get; set; } = new List<ComicRating>();
     

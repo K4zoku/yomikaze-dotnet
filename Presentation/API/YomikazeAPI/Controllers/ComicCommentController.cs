@@ -241,11 +241,10 @@ public class ComicCommentController(
             if (existingReaction.ReactionType == input.Type)
             {
                 comment.Reactions.Remove(existingReaction);
+                Repository.Update(comment);
+                return NoContent();
             }
-            else
-            {
-                existingReaction.ReactionType = input.Type;
-            }
+            existingReaction.ReactionType = input.Type;
         }
         else
         {
