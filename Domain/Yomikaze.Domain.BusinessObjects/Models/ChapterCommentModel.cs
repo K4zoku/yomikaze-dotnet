@@ -4,7 +4,10 @@ public class ChapterCommentModel : CommentModel
 {
     #region WriteOnlyProperties
 
-    public string? ChapterId { get; set; } = default!;
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    [WriteOnly]
+    public string? ChapterId { get; set; }
 
     #endregion
 }

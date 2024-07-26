@@ -25,6 +25,7 @@ public class CommentModel : BaseModel
     [SwaggerSchema(ReadOnly = true)]
     public bool IsReacted { get; set; }
     
+    [SwaggerSchema(ReadOnly = true)]
     public ReactionType? MyReaction { get; set; } 
     
     [SwaggerSchema(ReadOnly = true)]
