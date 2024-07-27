@@ -1,3 +1,5 @@
+using Yomikaze.Domain.Entities;
+
 namespace Yomikaze.Domain.Models;
 
 public class TransactionModel : BaseModel
@@ -10,9 +12,11 @@ public class TransactionModel : BaseModel
 
     #region CommonProperties
 
-    [Required] public long Amount { get; set; }
+    public long Amount { get; set; }
 
-    [Required] public string Description { get; set; } = default!;
+    public string Description { get; set; } = default!;
+    
+    public TransactionType Type { get; set; }
 
     #endregion
 }
