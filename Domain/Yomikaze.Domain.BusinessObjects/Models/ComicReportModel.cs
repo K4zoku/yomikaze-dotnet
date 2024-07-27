@@ -1,10 +1,14 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace Yomikaze.Domain.Models;
 
+[ValidateNever]
 public class ComicReportModel : ReportModel
 {
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public ComicModel Comic { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] 
+    public ComicModel Comic { get; set; } = default!;
 
     #endregion
 

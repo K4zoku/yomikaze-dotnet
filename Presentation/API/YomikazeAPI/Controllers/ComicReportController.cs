@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Infrastructure.Context;
 
@@ -9,7 +11,7 @@ public class ComicReportController(
     YomikazeDbContext dbContext,
     ComicReportRepository repository,
     IMapper mapper,
-    ILogger<SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>> logger)
+    ILogger<ComicReportController> logger)
     : SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>(repository,
         mapper, logger)
 {
@@ -61,6 +63,7 @@ public class ComicReportController(
         input.ComicId = comicId.ToString();
         input.ReporterId = User.GetIdString();
         input.Status = ReportStatus.Pending;
+        Logger.LogInformation("Creating comic report: {Input}", JsonConvert.SerializeObject(input));
         return base.Post(input);
     }
     
