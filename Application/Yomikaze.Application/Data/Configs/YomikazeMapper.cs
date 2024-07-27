@@ -171,6 +171,9 @@ public class YomikazeMapper : MapperProfile
         
         CreateMap<ReportReason, ReportReasonModel>().ReverseMap();
         CreateMap<ReportReasonModel, ReportReason>().ReverseMap();
+
+        CreateMap<Transaction, TransactionModel>()
+            .ReverseMap();
         
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
