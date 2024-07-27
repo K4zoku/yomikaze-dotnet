@@ -24,6 +24,7 @@ public static class AddDbContextExtensions
                         x.MigrationsAssembly(provider.Assembly);
                         x.EnableRetryOnFailure();
                         x.MigrationsHistoryTable("migrations_history", "efcore");
+                        x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     }).UseSnakeCaseNamingConvention();
                     break;
                 case "SqlServer":

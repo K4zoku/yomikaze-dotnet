@@ -11,30 +11,28 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
         return base.Query()
             .Include(comic => comic.Tags)
             .Include(comic => comic.Publisher)
-            .AsSingleQuery();
+            .AsSplitQuery();
     }
     
     public IQueryable<Comic> QueryWithExtras()
     {
-        return base.Query()
-            .Include(comic => comic.Tags)
-            .Include(comic => comic.Publisher)
+        return Query()
             .Include(comic => comic.Chapters)
             .Include(comic => comic.Ratings)
             .Include(comic => comic.Follows)
             .Include(comic => comic.Comments)
-            .AsSingleQuery();
+            .AsSplitQuery();
     }
 
     public override Comic? Get(ulong id)
     {
-        return base.Query()
+        return Query()
             .Where(comic => comic.Id == id)
             .Include(comic => comic.Chapters)
             .Include(comic => comic.Ratings)
             .Include(comic => comic.Follows)
             .Include(comic => comic.Comments)
-            .AsSingleQuery()
+            .AsSplitQuery()
             .FirstOrDefault();
     }
     
@@ -42,18 +40,16 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
     {
         return base.Query()
             .Where(comic => comic.Id == id)
-            .Include(comic => comic.Tags)
-            .Include(comic => comic.Publisher)
             .Include(comic => comic.Chapters)
             .Include(comic => comic.Ratings)
             .Include(comic => comic.Follows)
             .Include(comic => comic.Comments)
-            .AsSingleQuery()
+            .AsSplitQuery()
             .FirstOrDefault();
     }
     
     public Comic? GetRandomComic()
     {
-        return DbContext.GetRandomComic().FirstOrDefault();
+        return DbContext.GetRandomComic().SingleOrDefault();
     }
 }

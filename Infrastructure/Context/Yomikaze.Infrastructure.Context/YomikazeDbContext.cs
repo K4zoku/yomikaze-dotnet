@@ -89,13 +89,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
                 [typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
             .HasName("get_comics_views")
             .IsBuiltIn(false);
-
-        builder.Entity<RandomComicResult>()
-            .ToView("get_random_comic");
-
     }
-    
-    private DbSet<RandomComicResult> RandomComic { get; init; } = default!;
     
     public IQueryable<ComicViewsResult> GetComicViewsResult(ulong id, DateTimeOffset startDate, DateTimeOffset endDate)
     {
@@ -109,11 +103,9 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     
     public IQueryable<Comic> GetRandomComic()
     {
-        return RandomComic;
+        return Comics.FromSqlRaw("SELECT * FROM get_random_comic");
     }
 }
-
-public class RandomComicResult : Comic {}
 
 [Keyless]
 public record ComicViewsResult(ulong Views);

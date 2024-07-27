@@ -30,7 +30,7 @@ public class CommentModel : BaseModel
     
     [SwaggerSchema(ReadOnly = true)]
     public int TotalReplies { get; set; }
-
+    
     #endregion
 
     #region WriteOnlyProperties
