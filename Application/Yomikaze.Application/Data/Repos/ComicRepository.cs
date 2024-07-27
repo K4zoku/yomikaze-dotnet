@@ -50,6 +50,10 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
     
     public Comic? GetRandomComic()
     {
-        return DbContext.GetRandomComic().SingleOrDefault();
+        return DbContext.GetRandomComic()
+            .Include(comic => comic.Publisher)
+            .Include(comic => comic.Tags)
+            .AsSingleQuery()        
+            .SingleOrDefault();
     }
 }

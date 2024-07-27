@@ -46,6 +46,7 @@ services.AddScoped<ChapterCommentRepository>();
 services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
 services.AddScoped<CoinPricingRepository>();
 services.AddScoped<IRepository<ComicReport>, ComicReportRepository>();
+services.AddScoped<TransactionRepository>();
 services.AddScoped<ComicReportRepository>();
 services.AddScoped<AuthenticationService>();
 

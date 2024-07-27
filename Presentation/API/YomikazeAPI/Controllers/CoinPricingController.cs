@@ -16,6 +16,7 @@ namespace Yomikaze.API.Main.Controllers;
 [Route("[controller]")]
 public class CoinPricingController(
     CoinPricingRepository repository,
+    TransactionRepository transactionRepository,
     IMapper mapper,
     IDistributedCache cache,
     SessionService sessionService,
@@ -29,6 +30,8 @@ public class CoinPricingController(
     private PriceService PriceService { get; } = priceService;
     
     private StripeConfig StripeConfig { get; } = stripeConfig;
+    
+    private TransactionRepository TransactionRepository { get; } = transactionRepository;
     
     [AllowAnonymous]
     [HttpGet]
@@ -316,7 +319,8 @@ public class CoinPricingController(
             
         user.Balance += coin.Amount;
         await userManager.UpdateAsync(user);
-        // TODO)) Add transaction record
+        Transaction transaction = new() { Amount = coin.Amount, UserId = user.Id, Description = "Coin purchase", };
+        TransactionRepository.Add(transaction);
         return Ok();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json;
 using System.Linq.Dynamic.Core;
 using System.Net;
 using Yomikaze.Application.Helpers.API;
@@ -175,7 +176,7 @@ public partial class ComicsController
 
     [HttpPut($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}/unlock")]
     [Authorize]
-    public ActionResult UnlockChapter(ulong key, int number, [FromServices] UserManager<User> userManager)
+    public ActionResult UnlockChapter(ulong key, int number, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
         if (chapter == null)
@@ -205,7 +206,14 @@ public partial class ComicsController
         
         currentUser.Balance -= chapter.Price;
         userManager.UpdateAsync(currentUser).Wait();  
-        
+        Transaction transaction = new()
+        {
+            UserId = currentUser.Id,
+            Amount = -chapter.Price,
+            Type = TransactionType.UnlockChapter,
+            Description = $"/comics/{key}/chapters/{number}"
+        };
+        transactionRepository.Add(transaction);
         chapter.Unlocked.Add(new UnlockedChapter() { UserId = userId, ChapterId = chapter.Id });
         
         ChapterRepository.Update(chapter);
@@ -214,7 +222,7 @@ public partial class ComicsController
 
     [HttpPut($"{{{nameof(key)}}}/chapters/unlock")]
     [Authorize]
-    public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers, [FromServices] UserManager<User> userManager)
+    public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         var chapters = ChapterRepository.GetByComicIdAndIndexes(key.ToString(), chapterNumbers);
         if (!chapters.Any())
@@ -243,6 +251,14 @@ public partial class ComicsController
         }
         currentUser.Balance -= price;
         userManager.UpdateAsync(currentUser).Wait();
+        Transaction transaction = new()
+        {
+            UserId = currentUser.Id,
+            Amount = -price,
+            Type = TransactionType.UnlockChapters,
+            Description = JsonConvert.SerializeObject(chapters.Select(c => $"/comics/{key}/chapters/{c.Number}").ToArray()),
+        };
+        transactionRepository.Add(transaction);
         var unlockedChapters = new List<int>();
         foreach (var chapter in chapters)
         {
