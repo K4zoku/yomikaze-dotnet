@@ -194,15 +194,13 @@ public class CoinPricingController(
             return NotFound();
         }
 
-        var user = User.GetUser(userManager);
-        var isChanged = false;
+        var user = User.GetUser(userManager);   
         if (user.StripeCustomerId == null)
         {
             var customerOptions = new CustomerCreateOptions() { Email = user.Email, Name = user.Name };
             var customerService = new CustomerService();
             var customer = customerService.Create(customerOptions);
             user.StripeCustomerId = customer.Id;
-            isChanged = true;
             userManager.UpdateAsync(user).Wait();
         }
         var ephemeralKeyOptions = new EphemeralKeyCreateOptions

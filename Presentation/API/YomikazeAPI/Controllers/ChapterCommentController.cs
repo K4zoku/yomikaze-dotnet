@@ -5,7 +5,6 @@ using Yomikaze.Domain.Entities.Weak;
 
 namespace Yomikaze.API.Main.Controllers;
 
-// TODO)) copy code from ComicCommentController
 [ApiController]
 [Route("comics/{comicId}/chapters/{number:int}/comments")]
 public class ChapterCommentController(
@@ -142,10 +141,10 @@ public class ChapterCommentController(
             return Problem("Id is null");
         }
         entity = Repository.Get(entity.Id) ?? entity;
-        var model = Mapper.Map<ComicCommentModel>(entity);
+        var model = Mapper.Map<ChapterCommentModel>(entity);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         
-        return CreatedAtAction("GetComment", new { comicId, key = entity.Id }, model);
+        return CreatedAtAction("GetComment", new { comicId, number, key = entity.Id, }, model);
     }
 
     [NonAction]
