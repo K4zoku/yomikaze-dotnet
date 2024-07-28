@@ -319,7 +319,7 @@ public class CoinPricingController(
             
         user.Balance += coin.Amount;
         await userManager.UpdateAsync(user);
-        Transaction transaction = new() { Amount = coin.Amount, UserId = user.Id, Description = "Coin purchase", };
+        Transaction transaction = new() { Amount = coin.Amount, UserId = user.Id, Description = "Coin purchase", Type = TransactionType.PurchaseCoin };
         TransactionRepository.Add(transaction);
         return Ok();
     }
