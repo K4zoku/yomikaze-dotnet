@@ -82,8 +82,7 @@ public class YomikazeMapper : MapperProfile
                 options.Condition(src => src.ChapterId != null);
                 options.MapFrom(src => IdParse(src.ChapterId));
             });
-        CreateMap<ChapterComment, ChapterCommentModel>()
-            .ForMember(dest => dest.ChapterId, options => options.MapFrom(src => src.ChapterId.ToString()));
+        CreateMap<ChapterComment, ChapterCommentModel>().ReverseMap();      
 
         CreateMap<ComicCommentModel, ComicComment>()
             .ForMember(dest => dest.Author, options => options.Ignore())

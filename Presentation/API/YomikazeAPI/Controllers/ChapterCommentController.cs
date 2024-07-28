@@ -192,21 +192,25 @@ public class ChapterCommentController(
         {
             return NotFound();
         }
+        var userId = User.GetId();
+
         var existingReaction = comment.Reactions
-            .FirstOrDefault(x => x.UserId == User.GetId());
+            .FirstOrDefault(x => x.UserId == userId);
         if (existingReaction != null)
         {
-            comment.Reactions.Remove(existingReaction);
-            if (existingReaction.ReactionType != input.Type)
+            if (existingReaction.ReactionType == input.Type)
             {
-                comment.Reactions.Add(new CommentReaction { UserId = User.GetId(), ReactionType = input.Type });
+                comment.Reactions.Remove(existingReaction);
+                Repository.Update(comment);
+                return NoContent();
             }
-            Repository.Update(comment);
-            return Ok();
-        } 
-        
-        comment.Reactions.Add(new CommentReaction { UserId = User.GetId(), ReactionType = input.Type });
-        Repository.Update(comment);
+            existingReaction.ReactionType = input.Type;
+        }
+        else
+        {
+            comment.Reactions.Add(new CommentReaction { UserId = userId, ReactionType = input.Type });
+        }
+        Repository.Update(comment); 
         return Ok();
     }
 }
