@@ -6,71 +6,71 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
-[Route("reports/comic")]
-public class ComicReportController(
+[Route("/reports/profile")]
+public class ProfileReportController(
     YomikazeDbContext dbContext,
-    ComicReportRepository repository,
+    ProfileReportRepository repository,
     IMapper mapper,
-    ILogger<ComicReportController> logger)
-    : SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>(repository,
+    ILogger<ProfileReportController> logger)
+    : SearchControllerBase<ProfileReport, ProfileReportModel, ProfileReportRepository, ProfileReportSearchModel>(repository,
         mapper, logger)
 {
     
     private YomikazeDbContext DbContext { get; } = dbContext;
     
-    protected override IList<SearchFieldMutator<ComicReport, ComicReportSearchModel>> SearchFieldMutators { get; } =
+    protected override IList<SearchFieldMutator<ProfileReport, ProfileReportSearchModel>> SearchFieldMutators { get; } =
     [
-        new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
+        new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
             search => !string.IsNullOrWhiteSpace(search.ReasonId),
             (query, search) => query.Where(x => x.ReasonId.ToString() == search.ReasonId)),
-        new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
-            search => !string.IsNullOrWhiteSpace(search.ComicId),
-            (query, search) => query.Where(x => x.ComicId.ToString() == search.ComicId)),
-        new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
+        new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
+            search => !string.IsNullOrWhiteSpace(search.ProfileId),
+            (query, search) => query.Where(x => x.ProfileId.ToString() == search.ProfileId)),
+        new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
             search => !string.IsNullOrWhiteSpace(search.ReporterId),
             (query, search) => query.Where(x => x.ReporterId.ToString() == search.ReporterId)),
-        new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
+        new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
             search => search.Status.HasValue,
             (query, search) => query.Where(x => x.Status == search.Status!.Value)),
-        new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
+        new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
             search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
                 var ordered = search.OrderBy[0] switch
                 {
-                    ComicReportOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
-                    ComicReportOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
+                    ProfileReportOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
+                    ProfileReportOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
                     _ => query.OrderByDescending(x => x.CreationTime)
                 };
                 return search.OrderBy.Skip(1).Aggregate(ordered, (current, orderBy) => orderBy switch
                 {
-                    ComicReportOrderBy.CreationTime => current.ThenBy(x => x.CreationTime),
-                    ComicReportOrderBy.CreationTimeDesc => current.ThenByDescending(x => x.CreationTime),
+                    ProfileReportOrderBy.CreationTime => current.ThenBy(x => x.CreationTime),
+                    ProfileReportOrderBy.CreationTimeDesc => current.ThenByDescending(x => x.CreationTime),
                     _ => current
                 });
             })
     ];
 
     [NonAction]
-    public override ActionResult<ComicReportModel> Post(ComicReportModel input)
+    public override ActionResult<ProfileReportModel> Post(ProfileReportModel input)
     {
         return base.Post(input);
     }
     
-    [HttpPost("{comicId}")]
-    public ActionResult<ComicReportModel> Post(ulong comicId, ComicReportModel input)
+    [HttpPost("{profileId}")]
+    public ActionResult<ProfileReportModel> Post(ulong profileId, ProfileReportModel input)
     {
-        input.ComicId = comicId.ToString();
+        input.ProfileId = profileId.ToString();
         input.ReporterId = User.GetIdString();
         input.Status = ReportStatus.Pending;
         Logger.LogInformation("Creating comic report: {Input}", JsonConvert.SerializeObject(input));
         return base.Post(input);
     }
     
-    [HttpGet("comics/reasons")]
+    [HttpGet("profile/reasons")]
     public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
     {
-        var result = DbContext.ComicReportReasons.ToList();
+        var result = DbContext.ProfileReportReasons.ToList();
         return Ok(Mapper.Map<IEnumerable<ReportReasonModel>>(result));
     }
 }

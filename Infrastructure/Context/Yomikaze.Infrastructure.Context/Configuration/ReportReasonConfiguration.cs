@@ -15,6 +15,7 @@ public class ReportReasonConfiguration : BaseEntityConfiguration<ReportReason>
             .HasValue<ChapterReportReason>("chapter")
             .HasValue<ComicReportReason>("comic")
             .HasValue<ProfileReportReason>("profile")
-            .HasValue<TranslationReportReason>("translation");
+            .HasValue<TranslationReportReason>("translation")
+            .HasValue<CommentReportReason>("comment");
     }
 }

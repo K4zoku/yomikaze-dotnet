@@ -4,7 +4,7 @@ namespace Yomikaze.Domain.Models;
 
 public class ComicReportSearchModel
 {
-    public string? ReportCategoryId { get; set; }
+    public string? ReasonId { get; set; }
     
     public string? ComicId { get; set; }
     

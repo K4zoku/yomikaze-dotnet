@@ -1,16 +1,17 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace Yomikaze.Domain.Models;
 
+[ValidateNever]
 public class ProfileReportModel : ReportModel
 {
-    #region ReadOnlyProperties
-
-    [SwaggerSchema(ReadOnly = true)] public ProfileModel Profile { get; set; } = default!;
-
-    #endregion
 
     #region WriteOnlyProperties
-
-    [SwaggerSchema(WriteOnly = true)] public string ProfileId { get; set; } = default!;
+    
+    [SwaggerIgnore]
+    public string ProfileId { get; set; } = default!;
+    
+    [Required] public ulong ReasonId { get; set; }
 
     #endregion
 }

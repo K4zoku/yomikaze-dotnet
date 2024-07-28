@@ -1,16 +1,17 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace Yomikaze.Domain.Models;
 
+[ValidateNever]
 public class ChapterReportModel : ReportModel
 {
-    #region ReadOnlyProperties
-
-    [SwaggerSchema(ReadOnly = true)] public ChapterModel Chapter { get; set; } = default!;
-
-    #endregion
-
     #region WriteOnlyProperties
 
-    [SwaggerSchema(WriteOnly = true)] public string ChapterId { get; set; } = default!;
+    [SwaggerIgnore] 
+    public string ChapterId { get; set; } = default!;
+    
+    [Required]
+    public string ReasonId { get; set; } = default!;
 
     #endregion
 }

@@ -48,6 +48,10 @@ services.AddScoped<CoinPricingRepository>();
 services.AddScoped<IRepository<ComicReport>, ComicReportRepository>();
 services.AddScoped<TransactionRepository>();
 services.AddScoped<ComicReportRepository>();
+services.AddScoped<ChapterReportRepository>();
+services.AddScoped<ProfileReportRepository>();
+services.AddScoped<ComicCommentReportRepository>();
+services.AddScoped<ChapterCommentReportRepository>();
 services.AddScoped<AuthenticationService>();
 
 // Stripe services

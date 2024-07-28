@@ -75,6 +75,18 @@
         <Compile Update="Entities\TranslationReportReason.cs">
           <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
+        <Compile Update="Entities\ComicCommentReport.cs">
+          <DependentUpon>CommentReport.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\CommentReportReason.cs">
+          <DependentUpon>ReportReason.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\CommentReport.cs">
+          <DependentUpon>Report.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Entities\ChapterCommentReport.cs">
+          <DependentUpon>CommentReport.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>
