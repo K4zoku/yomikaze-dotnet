@@ -129,27 +129,22 @@ public class CoinPricingController(
         {
             return NotFound();
         }
-        var options = new SessionCreateOptions
-        {
-            UiMode = "embedded",
+        string uid = User.GetIdString();
+        var opts = new SessionCreateOptions { 
+            UiMode = "embedded", 
             LineItems =
-            {
-                new SessionLineItemOptions
-                {
-                    DynamicTaxRates = null,
-                    Price = pricing.StripePriceId,
-                }
-            },
+            [
+                new SessionLineItemOptions { Price = pricing.StripePriceId, Quantity = 1 }
+            ],
             Metadata = new Dictionary<string, string>()
             {
-                ["UserId"] = User.GetIdString(),
-                ["PriceId"] = pricing.Id.ToString(),
+                ["UserId"] = uid,
+                ["PriceId"] = priceId.ToString(),
             },
-            ExpiresAt = DateTime.Now.AddMinutes(15),
             Mode = "payment",
-            ReturnUrl = url.ToString().Replace("CHECKOUT_SESSION_ID", "{CHECKOUT_SESSION_ID}") // Replace placeholder with actual placeholder (without url encoded)
+            ReturnUrl = url.ToString().Replace("CHECKOUT_SESSION_ID", "{CHECKOUT_SESSION_ID}")
         };
-        Session session = SessionService.Create(options);
+        Session session = SessionService.Create(opts);
         return CreatedAtAction("CheckoutStatus", new { sessionId = session.Id }, new CheckoutResultModel { SessionId = session.Id, ClientSecret = session.ClientSecret });
     }
     
