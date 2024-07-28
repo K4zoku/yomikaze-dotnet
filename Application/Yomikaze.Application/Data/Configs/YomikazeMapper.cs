@@ -77,12 +77,8 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.ReplyToId, options => options.MapFrom(src => src.ReplyToId.ToString()));
 
         CreateMap<ChapterCommentModel, ChapterComment>()
-            .ForMember(dest => dest.ChapterId, options =>
-            {
-                options.Condition(src => src.ChapterId != null);
-                options.MapFrom(src => IdParse(src.ChapterId));
-            });
-        CreateMap<ChapterComment, ChapterCommentModel>().ReverseMap();      
+            .ForMember(dest => dest.Author, options => options.Ignore());
+        CreateMap<ChapterComment, ChapterCommentModel>();      
 
         CreateMap<ComicCommentModel, ComicComment>()
             .ForMember(dest => dest.Author, options => options.Ignore())
@@ -177,6 +173,7 @@ public class YomikazeMapper : MapperProfile
         
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
+        CreateMap<Notification, NotificationModel>().ReverseMap();
     }
 
     private static ulong IdParse(string? id)
