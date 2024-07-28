@@ -176,6 +176,9 @@ public class YomikazeMapper : MapperProfile
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
         CreateMap<Notification, NotificationModel>().ReverseMap();
+        var profileUpdate = CreateMap<ProfileUpdateModel, User>();
+            profileUpdate.ForAllMembers(options => options.Condition((_, _, member) => member != null));
+            profileUpdate.ReverseMap();
     }
 
     private static ulong IdParse(string? id)

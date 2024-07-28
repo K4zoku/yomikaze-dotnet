@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Infrastructure.Context;
@@ -6,7 +5,7 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
-[Route("/reports/chapters")]
+[Route("/reports/chapter")]
 public class ChapterReportController(
     YomikazeDbContext dbContext,
     ChapterReportRepository repository,
