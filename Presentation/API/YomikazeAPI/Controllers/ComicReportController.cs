@@ -67,7 +67,7 @@ public class ComicReportController(
         return base.Post(input);
     }
     
-    [HttpGet("comics/reasons")]
+    [HttpGet("reasons")]
     public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
     {
         var result = DbContext.ComicReportReasons.ToList();
