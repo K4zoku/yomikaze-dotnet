@@ -203,24 +203,15 @@ public class CoinPricingController(
             var customer = customerService.Create(customerOptions);
             user.StripeCustomerId = customer.Id;
             isChanged = true;
-        }
-
-        if (user.StripeEphemeralKey == null)
-        {
-            var ephemeralKeyOptions = new EphemeralKeyCreateOptions
-            {
-                Customer = user.StripeCustomerId, StripeVersion = "2024-06-20",
-            };
-            var ephemeralKeyService = new EphemeralKeyService();
-            var ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
-            user.StripeEphemeralKey = ephemeralKey.Secret;
-            isChanged = true;
-        }
-
-        if (isChanged)
-        {
             userManager.UpdateAsync(user).Wait();
         }
+        var ephemeralKeyOptions = new EphemeralKeyCreateOptions
+        {
+            Customer = user.StripeCustomerId, StripeVersion = "2024-06-20",
+        };
+        var ephemeralKeyService = new EphemeralKeyService();
+        var ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
+        user.StripeEphemeralKey = ephemeralKey.Secret;
 
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
