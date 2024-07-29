@@ -44,6 +44,14 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             },
             Android = new AndroidConfig
             {
+                Notification = new AndroidNotification()
+                {
+                    Title = title,
+                    Body = body,
+                    ClickAction = path
+                },
+                Priority = Priority.High,
+                CollapseKey = "test"
             }
         };
         if (fcmToken is not null)
