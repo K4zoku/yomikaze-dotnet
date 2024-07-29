@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.ImageSharp;
-using Yomikaze.Domain.Abstracts;
 using Yomikaze.Infrastructure.Context.Generator;
 using static System.IO.File;
 using static System.IO.Path;
@@ -14,6 +13,7 @@ namespace Yomikaze.API.CDN.Images.Controllers;
 [Route("[controller]")]
 public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBase
 {
+    private static readonly string[] Units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
     private PhysicalFileProvider FileProvider => fileProvider;
 
     [HttpPost]
@@ -55,15 +55,15 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
 
         try
         {
-            using var image = await Image.LoadAsync(filePath, cancellationToken);
+            using Image image = await Image.LoadAsync(filePath, cancellationToken);
             await image.SaveAsWebpAsync(ChangeExtension(filePath, "webp"), cancellationToken);
         }
-        catch (Exception exception) when(exception is NotSupportedException or InvalidImageContentException)
+        catch (Exception exception) when (exception is NotSupportedException or InvalidImageContentException)
         {
             Delete(filePath);
             ModelState.AddModelError(nameof(request.File), "Invalid image format.");
             return BadRequest(ModelState);
-        } 
+        }
         catch (Exception)
         {
             Delete(filePath);
@@ -72,7 +72,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
 
         // Generate URL
         string url = Url.Content($"~/images/{GetRelativePath(FileProvider.Root, filePath)}");
-        return Created(url, new { Images = new[]{ ChangeExtension(url, "webp"), url}});
+        return Created(url, new { Images = new[] { ChangeExtension(url, "webp"), url } });
     }
 
     [HttpDelete("{file}")]
@@ -88,7 +88,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
         Delete(info.PhysicalPath);
         return NoContent();
     }
-    
+
     [HttpDelete("batch")]
     [Authorize(Roles = "Super,Administrator")]
     public IActionResult BatchDeleteImage(string[]? files)
@@ -99,17 +99,15 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
             return BadRequest(ModelState);
         }
 
-        var willDelete = new HashSet<string>(files ?? []);
-        
+        HashSet<string> willDelete = new HashSet<string>(files ?? []);
+
         foreach (string file in willDelete)
         {
             Delete(file);
         }
-    
+
         return NoContent();
     }
-    
-    private static readonly string[] Units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
 
     [HttpGet("[action]")]
     [Authorize(Roles = "Super,Administrator")]

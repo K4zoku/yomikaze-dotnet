@@ -20,11 +20,39 @@ namespace YomikazeAPI.Tests.Controllers;
 [TestOf(typeof(AuthenticationController))]
 public class AuthenticationControllerTest
 {
-    
+    // on startup, migrations are applied to the database
+    [SetUp]
+    public async Task Setup()
+    {
+        await using AsyncServiceScope scope = _services.BuildServiceProvider().CreateAsyncScope();
+        YomikazeDbContext context = scope.ServiceProvider.GetRequiredService<YomikazeDbContext>();
+        await context.Database.MigrateAsync();
+        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        User user = new User
+        {
+            UserName = defaultUsername, Name = defaultUsername, Email = defaultUsername + "@yomikaze.com"
+        };
+        await userManager.CreateAsync(user, defaultPassword);
+        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.Super.Name!);
+        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.Administrator.Name!);
+        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.DefaulRole.Name!);
+    }
+
+    [TearDown]
+    public async Task TearDown()
+    {
+        await using AsyncServiceScope scope = _services.BuildServiceProvider().CreateAsyncScope();
+        YomikazeDbContext context = scope.ServiceProvider.GetRequiredService<YomikazeDbContext>();
+        await context.Database.EnsureDeletedAsync();
+    }
+
     private readonly IServiceCollection _services;
+
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
         .AddJsonFile("appsettings.json", false, true).Build();
+
     public AuthenticationControllerTest()
     {
         _services = new ServiceCollection();
@@ -34,75 +62,51 @@ public class AuthenticationControllerTest
         _services.AddIdentity<User, Role>().AddEntityFrameworkStores<YomikazeDbContext>();
         _services.AddScoped<DbContext, YomikazeDbContext>();
         _services.AddScoped<AuthenticationService>();
-        _services.AddSingleton(new JwtConfiguration() { Secret = "The encryption algorithm 'HS256' requires a key size of at least '128' bits", });
-        
+        _services.AddSingleton(new JwtConfiguration
+        {
+            Secret = "The encryption algorithm 'HS256' requires a key size of at least '128' bits"
+        });
+
         _services.AddLogging();
     }
-    
+
     private readonly string defaultUsername = "administrator";
     private readonly string defaultPassword = "Admin@123";
-    
-    // on startup, migrations are applied to the database
-    [SetUp]
-    public async Task Setup()
-    {
-        await using var scope = _services.BuildServiceProvider().CreateAsyncScope();
-        var context = scope.ServiceProvider.GetRequiredService<YomikazeDbContext>();
-        await context.Database.MigrateAsync();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        
-        var user = new User
-        {
-            UserName = defaultUsername,
-            Name = defaultUsername,
-            Email = defaultUsername + "@yomikaze.com",
-        };
-        await userManager.CreateAsync(user, defaultPassword);
-        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.Super.Name!);
-        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.Administrator.Name!);
-        await userManager.AddToRoleAsync(user, YomikazeDbContext.Default.DefaulRole.Name!);
-    }   
-    
-    [TearDown]
-    public async Task TearDown()
-    {
-        await using var scope = _services.BuildServiceProvider().CreateAsyncScope();
-        var context = scope.ServiceProvider.GetRequiredService<YomikazeDbContext>();
-        await context.Database.EnsureDeletedAsync();
-    }
 
     [Test]
     public async Task TestLogin_ShouldReturnToken()
     {
         // Arrange
-        var service = _services.BuildServiceProvider();
-        var authService = service.GetRequiredService<AuthenticationService>();
-        var signInManager = service.GetRequiredService<SignInManager<User>>();
-        var logger = service.GetRequiredService<ILogger<AuthenticationController>>();
-        var controller = new AuthenticationController(signInManager, authService, logger);
-        
+        ServiceProvider service = _services.BuildServiceProvider();
+        AuthenticationService authService = service.GetRequiredService<AuthenticationService>();
+        SignInManager<User> signInManager = service.GetRequiredService<SignInManager<User>>();
+        ILogger<AuthenticationController> logger = service.GetRequiredService<ILogger<AuthenticationController>>();
+        AuthenticationController controller = new AuthenticationController(signInManager, authService, logger);
+
         // Act
-        var result = await controller.Login(new LoginModel { Username = defaultUsername, Password = defaultPassword });
-        
+        ActionResult<TokenModel> result =
+            await controller.Login(new LoginModel { Username = defaultUsername, Password = defaultPassword });
+
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Value, Is.Not.Null);
         Assert.That(result.Value.Token, Is.Not.Null);
     }
-    
+
     [Test]
     public async Task TestLogin_ShouldReturnValidationProblem()
     {
         // Arrange
-        var service = _services.BuildServiceProvider();
-        var authService = service.GetRequiredService<AuthenticationService>();
-        var signInManager = service.GetRequiredService<SignInManager<User>>();
-        var logger = service.GetRequiredService<ILogger<AuthenticationController>>();
-        var controller = new AuthenticationController(signInManager, authService, logger);
-        
+        ServiceProvider service = _services.BuildServiceProvider();
+        AuthenticationService authService = service.GetRequiredService<AuthenticationService>();
+        SignInManager<User> signInManager = service.GetRequiredService<SignInManager<User>>();
+        ILogger<AuthenticationController> logger = service.GetRequiredService<ILogger<AuthenticationController>>();
+        AuthenticationController controller = new AuthenticationController(signInManager, authService, logger);
+
         // Act
-        var result = await controller.Login(new LoginModel { Username = "notfounduser", Password = "Admin@1234" });
-        
+        ActionResult<TokenModel> result =
+            await controller.Login(new LoginModel { Username = "notfounduser", Password = "Admin@1234" });
+
         // Assert
         Assert.That(result.Result, Is.Not.Null);
         Assert.That(result.Result, Is.TypeOf<ObjectResult>());

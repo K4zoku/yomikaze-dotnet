@@ -35,5 +35,13 @@ public partial class YomikazeDbContext
             new TranslationReportReason(67464207515295761L, "Incorrect translation"),
             new TranslationReportReason(67464207515295762L, "Other")
         ];
+
+        public static readonly CommentReportReason[] CommentReportReasons =
+        [
+            new CommentReportReason(67464207511101467L, "Inappropriate content"),
+            new CommentReportReason(67464207515295768L, "Spam"),
+            new CommentReportReason(67464207515295769L, "Harassment"),
+            new CommentReportReason(67464207515295770L, "Other")
+        ];
     }
 }

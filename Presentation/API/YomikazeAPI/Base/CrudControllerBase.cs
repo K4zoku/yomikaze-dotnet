@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.Annotations;
-using System.Net;
 using System.Reflection;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Domain;
@@ -28,13 +26,17 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
 
     protected ILogger<CrudControllerBase<T, TKey, TModel, TRepository>> Logger { get; } = logger;
 
+    protected List<PropertyInfo> ModelWriteOnlyProperties { get; } = typeof(TModel).GetProperties()
+        .Where(x => x.GetCustomAttribute<WriteOnlyAttribute>() != null)
+        .ToList();
+
     [NonAction]
     protected virtual PagedList<TModel> GetPaged(IQueryable<T> query, PaginationModel pagination)
     {
         int skip = (pagination.Page - 1) * pagination.Size;
         long count = query.LongCount();
         query = query.Skip(skip).Take(pagination.Size);
-        var results = Mapper.Map<List<TModel>>(query.ToList());
+        List<TModel>? results = Mapper.Map<List<TModel>>(query.ToList());
         results.ForEach(model => ModelWriteOnlyProperties.ForEach(property => property.SetValue(model, default)));
         return new PagedList<TModel>
         {
@@ -45,12 +47,11 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Results = results
         };
     }
-    
-    protected string GetCacheKey(TKey key) => CacheKeyPrefix + key;
 
-    protected List<PropertyInfo> ModelWriteOnlyProperties { get; } = typeof(TModel).GetProperties()
-        .Where(x => x.GetCustomAttribute<WriteOnlyAttribute>() != null)
-        .ToList();
+    protected string GetCacheKey(TKey key)
+    {
+        return CacheKeyPrefix + key;
+    }
 
     [HttpGet]
     public virtual ActionResult<PagedList<TModel>> List([FromQuery] PaginationModel pagination)
@@ -59,21 +60,22 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
+
         string keyName = $"{CacheKeyPrefix}{nameof(List)}:[{pagination.Page}, {pagination.Size}]";
-        var result = Cache.GetOrSet(keyName, () =>
+        PagedList<TModel> result = Cache.GetOrSet(keyName, () =>
         {
-            var query = ListQuery();
+            IQueryable<T> query = ListQuery();
             PagedList<TModel> models = GetPaged(query, pagination);
             return models;
         }, logger: Logger);
         return Ok(result);
     }
-    
+
     protected virtual IQueryable<T> ListQuery()
     {
         return Repository.Query();
     }
-    
+
     protected virtual T? GetEntity(TKey key)
     {
         return Repository.Get(key);
@@ -87,13 +89,14 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             return ValidationProblem(ModelState);
         }
 
-        var result = Cache.GetOrSet(GetCacheKey(key), () =>
+        TModel? result = Cache.GetOrSet(GetCacheKey(key), () =>
         {
             T? entity = GetEntity(key);
             if (entity == null)
             {
                 return null;
             }
+
             TModel model = Mapper.Map<TModel>(entity);
             ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
             return model;
@@ -102,7 +105,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return NotFound();
         }
-         
+
         return Ok(result);
     }
 
@@ -119,11 +122,13 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         try
         {
             Repository.Add(entity);
-        } catch (DbUpdateException e)
+        }
+        catch (DbUpdateException e)
         {
             Logger.LogWarning(e, "Error when adding entity");
             return Conflict();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogCritical(e, "Critical error when adding entity");
             return Problem();
@@ -135,19 +140,21 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return Problem("Id is null");
         }
+
         entity = Repository.Get(entity.Id) ?? entity;
-        var model = Mapper.Map<TModel>(entity);
+        TModel? model = Mapper.Map<TModel>(entity);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         return CreatedAtAction("Get", new { key = entity.Id }, model);
     }
 
-    [HttpPatch("{key}")]    
+    [HttpPatch("{key}")]
     public virtual ActionResult<TModel> Patch(TKey key, JsonPatchDocument<TModel> patch)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
+
         T? entityToUpdate = GetEntity(key);
         if (entityToUpdate == null)
         {
@@ -169,11 +176,13 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             Logger.LogWarning(e, "DbRelation error when updating entity {Key}", key);
             return Conflict();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogCritical(e, "Critical error when updating entity {Key}", key);
             return Problem();
         }
+
         RemoveCache(key);
         return NoContent();
     }
@@ -185,16 +194,18 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         {
             return ValidationProblem(ModelState);
         }
+
         T? entity = GetEntity(key);
         if (entity == null)
         {
             return NotFound();
         }
+
         Repository.Delete(entity);
         RemoveCache(key);
         return NoContent();
     }
-    
+
     protected virtual void RemoveCache(TKey key)
     {
         Cache.Remove(GetCacheKey(key));
@@ -217,7 +228,8 @@ public abstract class CrudControllerBase<T, TModel, TRepository>(
     where TModel : class
     where TRepository : IRepository<T>
 {
-    protected CrudControllerBase(TRepository repository, IMapper mapper, ILogger<CrudControllerBase<T, TModel, TRepository>> logger)
+    protected CrudControllerBase(TRepository repository, IMapper mapper,
+        ILogger<CrudControllerBase<T, TModel, TRepository>> logger)
         : this(repository, mapper, NoCache.Instance, logger)
     {
     }
@@ -234,38 +246,42 @@ public abstract class SearchControllerBase<T, TModel, TRepository, TSearch>(
     where TRepository : IRepository<T>
     where TSearch : class
 {
-    protected SearchControllerBase(TRepository repository, IMapper mapper, ILogger<SearchControllerBase<T, TModel, TRepository, TSearch>> logger)
+    protected SearchControllerBase(TRepository repository, IMapper mapper,
+        ILogger<SearchControllerBase<T, TModel, TRepository, TSearch>> logger)
         : this(repository, mapper, NoCache.Instance, logger)
     {
     }
-    
+
     protected abstract IList<SearchFieldMutator<T, TSearch>> SearchFieldMutators { get; }
 
     protected IQueryable<T> ApplySearch(IQueryable<T> query, TSearch search)
     {
         return SearchFieldMutators.Aggregate(query, (current, mutator) => mutator.Apply(search, current));
     }
-    
+
     [NonAction]
     public override ActionResult<PagedList<TModel>> List(PaginationModel pagination)
     {
         throw new NotSupportedException($"Use {nameof(List)} with search parameter");
     }
-    
+
     [HttpGet]
-    public virtual ActionResult<PagedList<TModel>> List([FromQuery] TSearch search, [FromQuery] PaginationModel pagination)
+    public virtual ActionResult<PagedList<TModel>> List([FromQuery] TSearch search,
+        [FromQuery] PaginationModel pagination)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
-        string keyName = $"{CacheKeyPrefix}{nameof(List)}:{JsonConvert.SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
-        
+
+        string keyName =
+            $"{CacheKeyPrefix}{nameof(List)}:{JsonConvert.SerializeObject(search)}:[{pagination.Page},{pagination.Size}]";
+
         return Cache.GetOrSet(keyName, () =>
         {
             IQueryable<T> query = ListQuery();
             query = ApplySearch(query, search);
-            return GetPaged(query, pagination);    
+            return GetPaged(query, pagination);
         }, logger: Logger);
     }
 }

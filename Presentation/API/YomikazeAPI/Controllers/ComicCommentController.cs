@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
-using Yomikaze.Infrastructure.Context;
+using Yomikaze.Domain.Models.Search;
 
 namespace Yomikaze.API.Main.Controllers;
 
@@ -33,7 +33,7 @@ public class ComicCommentController(
                     ComicCommentOrderBy.CreationTimeDesc => query.OrderByDescending(comment => comment.CreationTime),
                     ComicCommentOrderBy.LastModified => query.OrderBy(comment => comment.LastModified),
                     ComicCommentOrderBy.LastModifiedDesc => query.OrderByDescending(comment => comment.LastModified),
-                    _ => query.OrderBy(comment => comment.CreationTime),
+                    _ => query.OrderBy(comment => comment.CreationTime)
                 };
 
                 return search.OrderBy!.Skip(1)
@@ -45,9 +45,9 @@ public class ComicCommentController(
                         ComicCommentOrderBy.LastModified => current.ThenBy(comment => comment.LastModified),
                         ComicCommentOrderBy.LastModifiedDesc => current.ThenByDescending(
                             comment => comment.LastModified),
-                        _ => current.ThenBy(comment => comment.CreationTime),
+                        _ => current.ThenBy(comment => comment.CreationTime)
                     });
-            }),
+            })
     ];
 
     [NonAction]
@@ -74,15 +74,19 @@ public class ComicCommentController(
         {
             IQueryable<ComicComment> query = ListQuery();
             query = ApplySearch(query, search);
-            var result = GetPaged(query, pagination);
+            PagedList<ComicCommentModel> result = GetPaged(query, pagination);
             if (!User.TryGetId(out ulong userId))
             {
                 return result;
             }
 
-            foreach (var item in result.Results)
+            foreach (ComicCommentModel item in result.Results)
             {
-                var reaction = Repository.GetReactionsByCommentId(item.Id)
+                if (item.Id is null)
+                {
+                    continue;
+                }
+                CommentReaction? reaction = Repository.GetReactionsByCommentId(item.Id)
                     .FirstOrDefault(x => x.UserId == userId);
                 item.IsReacted = reaction != null;
                 item.MyReaction = reaction?.ReactionType;
@@ -105,7 +109,7 @@ public class ComicCommentController(
     public ActionResult<ComicCommentModel> PostReplies([FromRoute] ulong comicId, [FromRoute] ulong key,
         [FromBody] ComicCommentModel input)
     {
-        var comment = Repository.Get(key);
+        ComicComment? comment = Repository.Get(key);
         if (comment == null)
         {
             return NotFound();
@@ -167,7 +171,7 @@ public class ComicCommentController(
         }
 
         entity = Repository.Get(entity.Id) ?? entity;
-        var model = Mapper.Map<ComicCommentModel>(entity);
+        ComicCommentModel? model = Mapper.Map<ComicCommentModel>(entity);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
 
         return CreatedAtAction("GetComment", new { comicId, key = entity.Id }, model);
@@ -188,13 +192,13 @@ public class ComicCommentController(
             return NotFound();
         }
 
-        var model = Mapper.Map<ComicCommentModel>(comment);
+        ComicCommentModel? model = Mapper.Map<ComicCommentModel>(comment);
         if (!User.TryGetId(out ulong userId))
         {
             return model;
         }
 
-        var reaction = comment.Reactions.FirstOrDefault(x => x.UserId == userId);
+        CommentReaction? reaction = comment.Reactions.FirstOrDefault(x => x.UserId == userId);
         model.IsReacted = reaction != null;
         model.MyReaction = reaction?.ReactionType;
         return model;
@@ -227,14 +231,15 @@ public class ComicCommentController(
     [HttpPost("{key}/react")]
     public ActionResult React(ulong comicId, ulong key, [FromBody] ReactionModel input)
     {
-        var comment = Repository.Get(key);
+        ComicComment? comment = Repository.Get(key);
         if (comment == null)
         {
             return NotFound();
         }
-        var userId = User.GetId();
 
-        var existingReaction = comment.Reactions
+        ulong userId = User.GetId();
+
+        CommentReaction? existingReaction = comment.Reactions
             .FirstOrDefault(x => x.UserId == userId);
         if (existingReaction != null)
         {
@@ -244,13 +249,15 @@ public class ComicCommentController(
                 Repository.Update(comment);
                 return NoContent();
             }
+
             existingReaction.ReactionType = input.Type;
         }
         else
         {
             comment.Reactions.Add(new CommentReaction { UserId = userId, ReactionType = input.Type });
         }
-        Repository.Update(comment); 
+
+        Repository.Update(comment);
         return Ok();
     }
 }

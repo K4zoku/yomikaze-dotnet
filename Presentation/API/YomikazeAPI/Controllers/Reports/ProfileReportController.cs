@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Domain.Models.Search;
 using Yomikaze.Infrastructure.Context;
 
-namespace Yomikaze.API.Main.Controllers;
+namespace Yomikaze.API.Main.Controllers.Reports;
 
 [ApiController]
 [Route("/reports/profile")]
@@ -12,12 +12,12 @@ public class ProfileReportController(
     ProfileReportRepository repository,
     IMapper mapper,
     ILogger<ProfileReportController> logger)
-    : SearchControllerBase<ProfileReport, ProfileReportModel, ProfileReportRepository, ProfileReportSearchModel>(repository,
+    : SearchControllerBase<ProfileReport, ProfileReportModel, ProfileReportRepository, ProfileReportSearchModel>(
+        repository,
         mapper, logger)
 {
-    
     private YomikazeDbContext DbContext { get; } = dbContext;
-    
+
     protected override IList<SearchFieldMutator<ProfileReport, ProfileReportSearchModel>> SearchFieldMutators { get; } =
     [
         new SearchFieldMutator<ProfileReport, ProfileReportSearchModel>(
@@ -36,7 +36,7 @@ public class ProfileReportController(
             search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
-                var ordered = search.OrderBy[0] switch
+                IOrderedQueryable<ProfileReport> ordered = search.OrderBy[0] switch
                 {
                     ProfileReportOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
                     ProfileReportOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
@@ -56,7 +56,7 @@ public class ProfileReportController(
     {
         return base.Post(input);
     }
-    
+
     [HttpPost("{profileId}")]
     public ActionResult<ProfileReportModel> Post(ulong profileId, ProfileReportModel input)
     {
@@ -66,11 +66,11 @@ public class ProfileReportController(
         Logger.LogInformation("Creating comic report: {Input}", JsonConvert.SerializeObject(input));
         return base.Post(input);
     }
-    
-    [HttpGet("profile/reasons")]
+
+    [HttpGet("reasons")]
     public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
     {
-        var result = DbContext.ProfileReportReasons.ToList();
+        List<ProfileReportReason> result = DbContext.ProfileReportReasons.ToList();
         return Ok(Mapper.Map<IEnumerable<ReportReasonModel>>(result));
     }
 }

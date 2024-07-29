@@ -25,32 +25,21 @@ Provider provider = Provider.FromName(configuration.GetValue("provider", Provide
 services.AddDbContext<YomikazeDbContext>(provider, configuration, "Yomikaze");
 services.AddScoped<DbContext, YomikazeDbContext>();
 
-services.AddScoped<IRepository<Comic>, ComicRepository>();
 services.AddScoped<ComicRepository>();
-services.AddScoped<IRepository<Chapter>, ChapterRepository>();
 services.AddScoped<ChapterRepository>();
-services.AddScoped<IRepository<Tag>, TagRepository>();
 services.AddScoped<TagRepository>();
-services.AddScoped<IRepository<TagCategory>, TagCategoryRepository>();
 services.AddScoped<TagCategoryRepository>();
-services.AddScoped<IRepository<HistoryRecord>, HistoryRepository>();
 services.AddScoped<HistoryRepository>();
-services.AddScoped<IRepository<LibraryEntry>, LibraryRepository>();
 services.AddScoped<LibraryRepository>();
-services.AddScoped<IRepository<LibraryCategory>, LibraryCategoryRepository>();
 services.AddScoped<LibraryCategoryRepository>();
-services.AddScoped<IRepository<ComicComment>, ComicCommentRepository>();
 services.AddScoped<ComicCommentRepository>();
-services.AddScoped<IRepository<ChapterComment>, ChapterCommentRepository>();
 services.AddScoped<ChapterCommentRepository>();
-services.AddScoped<IRepository<CoinPricing>, CoinPricingRepository>();
 services.AddScoped<CoinPricingRepository>();
-services.AddScoped<IRepository<ComicReport>, ComicReportRepository>();
 services.AddScoped<TransactionRepository>();
 services.AddScoped<ComicReportRepository>();
 services.AddScoped<ChapterReportRepository>();
 services.AddScoped<ProfileReportRepository>();
-services.AddScoped<ComicCommentReportRepository>();
+services.AddScoped<CommentReportRepository>();
 services.AddScoped<ChapterCommentReportRepository>();
 services.AddScoped<AuthenticationService>();
 
@@ -58,7 +47,8 @@ services.AddScoped<AuthenticationService>();
 services.AddSingleton(new SessionService());
 services.AddSingleton(new PriceService());
 services.AddSingleton(new PaymentIntentService());
-StripeConfig stripeConfig = configuration.GetRequiredSection("Stripe").Get<StripeConfig>() ?? throw new InvalidOperationException("Stripe configuration not found");
+StripeConfig stripeConfig = configuration.GetRequiredSection("Stripe").Get<StripeConfig>() ??
+                            throw new InvalidOperationException("Stripe configuration not found");
 services.AddSingleton(stripeConfig);
 
 services.AddRouting(options => options.LowercaseUrls = true);
@@ -80,12 +70,13 @@ services.AddControllers(options =>
 services.AddYomikazeIdentity();
 services.UpgradePasswordSecurity().UseArgon2<User>();
 
-var googleClientId = configuration["Authentication:Google:ClientId"];
-var googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+string? googleClientId = configuration["Authentication:Google:ClientId"];
+string? googleClientSecret = configuration["Authentication:Google:ClientSecret"];
 if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googleClientSecret))
 {
     throw new InvalidOperationException("Google authentication configuration not found");
 }
+
 services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
@@ -111,21 +102,23 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
-var redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ?? throw new InvalidOperationException("Redis configuration not found");
+string redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ??
+               throw new InvalidOperationException("Redis configuration not found");
 services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redis;
     options.InstanceName = "Yomikaze:";
 });
-services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+services.AddAuthorizationBuilder()
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 services.AddAutoMapper(typeof(YomikazeMapper));
 
-StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe secret key not found");
+StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"] ??
+                             throw new InvalidOperationException("Stripe secret key not found");
 
-services.AddSingleton(FirebaseApp.Create(new AppOptions()
+services.AddSingleton(FirebaseApp.Create(new AppOptions
 {
-    Credential = await GoogleCredential.GetApplicationDefaultAsync(),
-    ProjectId = "yomikaze-fcm",
+    Credential = await GoogleCredential.GetApplicationDefaultAsync(), ProjectId = "yomikaze-fcm"
 }));
 
 WebApplication app = builder.Build();
@@ -158,6 +151,7 @@ if (!await dbContext.Roles.AnyAsync())
     logger.LogInformation("No roles found, adding default roles");
     await dbContext.Roles.AddRangeAsync(YomikazeDbContext.Default.Roles);
 }
+
 if (!await userManager.Users.AnyAsync())
 {
     logger.LogInformation("No users found, adding default admin user");
@@ -173,6 +167,7 @@ if (!await userManager.Users.AnyAsync())
     {
         throw new InvalidOperationException("Could not create default admin user");
     }
+
     await userManager.AddToRoleAsync(admin, "Super");
     await userManager.AddToRoleAsync(admin, "Administrator");
 }
@@ -192,21 +187,21 @@ try
         await dbContext.Tags.AddRangeAsync(YomikazeDbContext.Default.Tags);
         await dbContext.SaveChangesAsync();
     }
-    
+
     if (!await dbContext.ChapterReportReasons.AnyAsync())
     {
         logger.LogInformation("No chapter report reasons found, adding default chapter report reasons");
         await dbContext.ChapterReportReasons.AddRangeAsync(YomikazeDbContext.Default.ChapterReportReasons);
         await dbContext.SaveChangesAsync();
     }
-    
+
     if (!await dbContext.ComicReportReasons.AnyAsync())
     {
         logger.LogInformation("No comic report reasons found, adding default comic report reasons");
         await dbContext.ComicReportReasons.AddRangeAsync(YomikazeDbContext.Default.ComicReportReasons);
         await dbContext.SaveChangesAsync();
     }
-    
+
     if (!await dbContext.ProfileReportReasons.AnyAsync())
     {
         logger.LogInformation("No profile report reasons found, adding default profile report reasons");
@@ -220,12 +215,19 @@ try
         await dbContext.TranslationReportReasons.AddRangeAsync(YomikazeDbContext.Default.TranslationReportReasons);
         await dbContext.SaveChangesAsync();
     }
+    
+    if (!await dbContext.CommentReportReasons.AnyAsync())
+    {
+        logger.LogInformation("No comment report reasons found, adding default comment report reasons");
+        await dbContext.CommentReportReasons.AddRangeAsync(YomikazeDbContext.Default.CommentReportReasons);
+        await dbContext.SaveChangesAsync();
+    }
 }
 catch (DbException)
 {
-    #pragma warning disable
+#pragma warning disable
     logger.LogWarning("Could not add default tags and tag categories, but system will continue to run.");
-    #pragma warning restore
+#pragma warning restore
 }
 
 await app.RunAsync();

@@ -10,7 +10,7 @@ namespace Yomikaze.API.Main.Controllers;
 [ApiController]
 [Route("[controller]")]
 [SuppressMessage("Performance",
-    "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")]
+    "CA1862:Use the \'StringComparison\' method overloads to perform case-insensitive string comparisons")] // for linq queries
 public partial class ComicsController(
     YomikazeDbContext dbContext,
     ComicRepository repository,
@@ -27,63 +27,63 @@ public partial class ComicsController(
     private ChapterRepository ChapterRepository { get; } = chapterRepository;
 
     private HistoryRepository HistoryRepository { get; } = historyRepository;
-    
+
     private LibraryRepository LibraryRepository { get; } = libraryRepository;
-    
+
     private LibraryCategoryRepository LibraryCategoryRepository { get; } = libraryCategoryRepository;
 
-    private IList<SearchFieldMutator<Comic, ComicSearchModel>> SearchFieldMutators { get; } =
-        new List<SearchFieldMutator<Comic, ComicSearchModel>>
+    private List<SearchFieldMutator<Comic, ComicSearchModel>> SearchFieldMutators { get; } =
+        new()
         {
-            new(searchModel => !string.IsNullOrWhiteSpace(searchModel.Name),
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => !string.IsNullOrWhiteSpace(searchModel.Name),
                 (query, search) => query.Where(comic => comic.Name.ToLower().Contains(search.Name!) ||
                                                         comic.Aliases.Any(alias =>
                                                             alias.ToLower().Contains(search.Name!)))),
-            new(searchModel => !string.IsNullOrWhiteSpace(searchModel.Publisher),
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => !string.IsNullOrWhiteSpace(searchModel.Publisher),
                 (query, search) => query.Where(comic => comic.Publisher.Name.ToLower().Contains(search.Publisher!))),
-            new(searchModel => searchModel.PublisherId.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.PublisherId.HasValue,
                 (query, search) => query.Where(comic => comic.PublisherId == search.PublisherId)),
-            #pragma warning disable
+#pragma warning disable
             // disable warning for csharpsquid:S6603 because it's cause linq cannot translate to sql
-            new(searchModel => searchModel.IncludeTags != null && searchModel.IncludeTags.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.IncludeTags != null && searchModel.IncludeTags.Length != 0,
                 (query, search) => search.InclusionMode == LogicalOperator.Or
-                    ? query.Where(comic => comic.Tags.Any(tag => (search.IncludeTags!.Any(searchTag =>
-                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag))))
+                    ? query.Where(comic => comic.Tags.Any(tag => search.IncludeTags!.Any(searchTag =>
+                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))
                     : query.Where(comic => search.IncludeTags!.All(searchTag => comic.Tags.Any(tag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
-            new(searchModel => searchModel.ExcludeTags != null && searchModel.ExcludeTags.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ExcludeTags != null && searchModel.ExcludeTags.Length != 0,
                 (query, search) => search.ExclusionMode == LogicalOperator.And
                     ? query.Where(comic => search.ExcludeTags!.All(searchTag => comic.Tags.All(tag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))
                     : query.Where(comic => comic.Tags.All(tag => search.ExcludeTags!.Any(searchTag =>
                         tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
-            #pragma warning restore
-            new(searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
+#pragma warning restore
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
                 (query, search) => query.Where(comic => search.Authors!.Any(searchAuthor =>
                     comic.Authors.Any(author => author.ToLower().Contains(searchAuthor.ToLower()))))),
-            new(searchModel => searchModel.FromPublicationDate.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromPublicationDate.HasValue,
                 (query, search) => query.Where(comic => comic.PublicationDate >= search.FromPublicationDate)),
-            new(searchModel => searchModel.ToPublicationDate.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToPublicationDate.HasValue,
                 (query, search) => query.Where(comic => comic.PublicationDate <= search.ToPublicationDate)),
-            new(searchModel => searchModel.Status.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.Status.HasValue,
                 (query, search) => query.Where(comic => search.Status == comic.Status)),
-            new(searchModel => searchModel.FromTotalChapters.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromTotalChapters.HasValue,
                 (query, search) => query.Where(comic => comic.TotalChapters >= search.FromTotalChapters)),
-            new(searchModel => searchModel.ToTotalChapters.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToTotalChapters.HasValue,
                 (query, search) => query.Where(comic => comic.TotalChapters <= search.ToTotalChapters)),
-            new(searchModel => searchModel.FromTotalViews.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromTotalViews.HasValue,
                 (query, search) => query.Where(comic => comic.TotalViews >= search.FromTotalViews)),
-            new(searchModel => searchModel.ToTotalViews.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToTotalViews.HasValue,
                 (query, search) => query.Where(comic => comic.TotalViews <= search.ToTotalViews)),
-            new(searchModel => searchModel.FromAverageRating.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromAverageRating.HasValue,
                 (query, search) => query.Where(comic => comic.AverageRating >= search.FromAverageRating)),
-            new(searchModel => searchModel.ToAverageRating.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToAverageRating.HasValue,
                 (query, search) => query.Where(comic => comic.AverageRating <= search.ToAverageRating)),
-            new(searchModel => searchModel.FromTotalFollows.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromTotalFollows.HasValue,
                 (query, search) => query.Where(comic => comic.TotalFollows >= search.FromTotalFollows)),
-            new(searchModel => searchModel.ToTotalFollows.HasValue,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToTotalFollows.HasValue,
                 (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows)),
-            new(searchModel => searchModel.OrderBy != null && searchModel.OrderBy.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.OrderBy != null && searchModel.OrderBy.Length != 0,
                 (query, search) =>
                 {
                     ComicOrderBy firstMutator = search.OrderBy![0];
@@ -149,7 +149,7 @@ public partial class ComicsController(
             ListCacheKeys.Add(key);
         }
     }
-    
+
     private static void ClearCache(IDistributedCache cache)
     {
         lock (ListCacheKeyLock)
@@ -164,7 +164,7 @@ public partial class ComicsController(
     {
         return NotFound();
     }
-    
+
 
     [HttpGet]
     [AllowAnonymous]
@@ -177,29 +177,36 @@ public partial class ComicsController(
         {
             key += $":{User.GetId()}";
         }
-        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
+
+        PagedList<ComicModel> result = await Cache.GetOrSetAsync(key, () =>
         {
             AddCacheKey(key);
 
             IQueryable<Comic> queryable = Repository.QueryWithExtras();
             queryable = SearchFieldMutators.Aggregate(queryable, (current, mutator) => mutator.Apply(search, current));
             PagedList<ComicModel> paged = GetPaged(queryable, pagination);
-            if (!isAuthorized) return paged;
+            if (!isAuthorized)
+            {
+                return paged;
+            }
+
             ulong userId = User.GetId();
-            foreach (var model in paged.Results)
+            foreach (ComicModel model in paged.Results)
             {
                 if (!ulong.TryParse(model.Id, out ulong comicId))
                 {
                     continue;
                 }
+
                 model.IsFollowing = LibraryRepository.IsFollowing(userId, comicId);
             }
+
             return paged;
         }, logger: Logger);
 
         return result;
     }
-    
+
     [HttpGet("management")]
     [Authorize(Roles = "Administrator,Publisher")]
     public async Task<ActionResult<PagedList<ComicModel>>> ListForManagement([FromQuery] ComicSearchModel search,
@@ -208,27 +215,28 @@ public partial class ComicsController(
         search.PublisherId = User.GetId();
         return await List(search, pagination);
     }
-    
+
     private ICollection<ComicModel> GetRankingByTime(DateTimeOffset start, DateTimeOffset end)
     {
         IQueryable<Comic> queryable = Repository.QueryWithExtras();
         var topRead = queryable
-            .Select(comic => new {
-                    Comic = comic,
-                    Views = DbContext.GetComicViewsResult(comic.Id, start, end).Sum(r => (int) r.Views)
+            .Select(comic => new
+                {
+                    Comic = comic, Views = DbContext.GetComicViewsResult(comic.Id, start, end).Sum(r => (int)r.Views)
                 }
             )
             .OrderByDescending(r => r.Views)
             .Take(10)
             .ToList();
-        var models = Mapper.Map<ICollection<ComicModel>>(topRead.Select(r => r.Comic));
-        foreach (var model in models)
+        ICollection<ComicModel>? models = Mapper.Map<ICollection<ComicModel>>(topRead.Select(r => r.Comic));
+        foreach (ComicModel model in models)
         {
             model.TotalViews = topRead.Where(r => r.Comic.Id.ToString() == model.Id).Sum(r => r.Views);
         }
+
         return models;
     }
-    
+
     private static DateTimeOffset RemoveTime(DateTimeOffset dateTime)
     {
         return dateTime.Subtract(TimeSpan.FromHours(dateTime.Hour))
@@ -236,16 +244,16 @@ public partial class ComicsController(
             .Subtract(TimeSpan.FromSeconds(dateTime.Second))
             .Subtract(TimeSpan.FromMilliseconds(dateTime.Millisecond));
     }
-    
+
     [HttpGet("ranking/weekly")]
     [AllowAnonymous]
     public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByWeek()
     {
         string key = $"{CacheKeyPrefix}{nameof(GetTopReadByWeek)}";
-        var now = RemoveTime(DateTimeOffset.UtcNow);
-        
-        var result = await Cache.GetOrSetAsync(key, 
-            valueFactory: () =>
+        DateTimeOffset now = RemoveTime(DateTimeOffset.UtcNow);
+
+        ICollection<ComicModel>? result = await Cache.GetOrSetAsync(key,
+            () =>
             {
                 AddCacheKey(key);
                 return Mapper.Map<ICollection<ComicModel>>(
@@ -258,13 +266,13 @@ public partial class ComicsController(
 
         return Ok(result);
     }
-    
+
     [HttpGet("ranking/monthly")]
     [AllowAnonymous]
     public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByMonth()
     {
         string key = $"{CacheKeyPrefix}{nameof(GetTopReadByMonth)}";
-        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
+        ICollection<ComicModel>? result = await Cache.GetOrSetAsync(key, () =>
         {
             AddCacheKey(key);
             return Mapper.Map<ICollection<ComicModel>>(
@@ -277,13 +285,13 @@ public partial class ComicsController(
 
         return Ok(result);
     }
-    
+
     [HttpGet("ranking/yearly")]
     [AllowAnonymous]
     public async Task<ActionResult<ICollection<ComicModel>>> GetTopReadByYear()
     {
         string key = $"{CacheKeyPrefix}{nameof(GetTopReadByYear)}";
-        var result = await Cache.GetOrSetAsync(key, valueFactory: () =>
+        ICollection<ComicModel>? result = await Cache.GetOrSetAsync(key, () =>
         {
             AddCacheKey(key);
             return Mapper.Map<ICollection<ComicModel>>(
@@ -296,8 +304,8 @@ public partial class ComicsController(
 
         return Ok(result);
     }
-        
-        
+
+
     [HttpPost]
     [Authorize(Roles = "Administrator,Publisher")]
     public override ActionResult<ComicModel> Post(
@@ -305,27 +313,28 @@ public partial class ComicsController(
             $"{nameof(ComicModel.Name)},{nameof(ComicModel.Description)},{nameof(ComicModel.Cover)},{nameof(ComicModel.Banner)},{nameof(ComicModel.PublicationDate)},{nameof(ComicModel.Authors)},{nameof(ComicModel.Status)},{nameof(ComicModel.TagIds)}")]
         ComicModel input)
     {
-        
         input.PublisherId = User.GetIdString();
-        var result = base.Post(input);
+        ActionResult<ComicModel> result = base.Post(input);
         if (result.Value is not null)
         {
             ClearCache(Cache);
         }
+
         return result;
     }
-    
+
     [HttpGet("{key}")]
     [AllowAnonymous]
     public override ActionResult<ComicModel> Get(ulong key)
     {
         bool isAuthorized = User.Identity is { IsAuthenticated: true };
-        var cacheKey = $"{CacheKeyPrefix}{key}";
+        string cacheKey = $"{CacheKeyPrefix}{key}";
         if (isAuthorized)
         {
             cacheKey += $":{User.GetId()}";
         }
-        var model = Cache.GetOrSet(cacheKey, () =>
+
+        ComicModel? model = Cache.GetOrSet(cacheKey, () =>
         {
             Comic? entity = Repository.Get(key);
             if (entity == null)
@@ -333,6 +342,7 @@ public partial class ComicsController(
                 Logger.LogWarning("Entity with key {Key} not found", key);
                 return null;
             }
+
             ComicModel model = Mapper.Map<ComicModel>(entity);
             if (isAuthorized)
             {
@@ -341,6 +351,7 @@ public partial class ComicsController(
                 model.IsRated = model.MyRating != null;
                 model.IsRead = HistoryRepository.Exists(User.GetId(), entity);
             }
+
             ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
             return model;
         }, logger: Logger);
@@ -348,9 +359,10 @@ public partial class ComicsController(
         {
             return NotFound();
         }
+
         return Ok(model);
     }
-    
+
     [Authorize]
     [HttpPut("{key}/rate")]
     public ActionResult Rate(ulong key, [FromBody] ComicRatingModel rating)
@@ -359,37 +371,32 @@ public partial class ComicsController(
         {
             return BadRequest(ModelState);
         }
-        
+
         ulong userId = User.GetId();
         Comic? comic = Repository.Get(key);
         if (comic == null)
         {
             return NotFound();
         }
-        
+
         ComicRating? existingRating = comic.Ratings.FirstOrDefault(r => r.UserId == userId);
-        
+
         if (existingRating != null)
         {
             existingRating.Rating = rating.Rating!.Value;
-            Repository.Update(comic);   
+            Repository.Update(comic);
             ClearCacheForUser(key, userId);
             return Ok();
         }
 
-        ComicRating newRating = new()
-        {
-            UserId = userId,
-            ComicId = key,
-            Rating = rating.Rating!.Value
-        };
-        
+        ComicRating newRating = new() { UserId = userId, ComicId = key, Rating = rating.Rating!.Value };
+
         comic.Ratings.Add(newRating);
         Repository.Update(comic);
         ClearCacheForUser(key, userId);
         return Ok();
     }
-    
+
     private void ClearCacheForUser(ulong key, ulong userId)
     {
         Task.Run(() =>
@@ -402,7 +409,7 @@ public partial class ComicsController(
             }
         });
     }
-    
+
     [HttpGet("[action]")]
     public ActionResult<ComicModel> Random()
     {
@@ -411,6 +418,7 @@ public partial class ComicsController(
         {
             return NotFound();
         }
+
         ComicModel model = Mapper.Map<ComicModel>(comic);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         return Ok(model);

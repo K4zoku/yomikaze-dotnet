@@ -1,8 +1,7 @@
 namespace Yomikaze.Domain.Entities;
 
-public abstract class CommentReport : Report
+public class CommentReport : Report
 {
-    public CommentReportReason Reason { get; set; } = default!;
-    public ulong ReasonId { get; set; }
-    public ulong CommentId { get; set; }
+    public override CommentReportReason Reason { get; } = default!;
+    public ulong CommentId { get; set; } = default!;
 }

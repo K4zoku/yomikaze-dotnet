@@ -4,7 +4,6 @@ using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using System.Net;
 using Yomikaze.API.CDN.Images.Configurations;
 using Yomikaze.Application.Helpers;
 using Yomikaze.Application.Helpers.Security;
@@ -29,7 +28,7 @@ services.AddControllers(options =>
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
-services.AddPublicCors();   
+services.AddPublicCors();
 JwtConfiguration jwt = builder.Configuration
                            .GetRequiredSection(JwtConfiguration.SectionName)
                            .Get<JwtConfiguration>()
@@ -37,7 +36,8 @@ JwtConfiguration jwt = builder.Configuration
 services.AddSingleton(jwt);
 services.AddJwtBearerAuthentication(jwt);
 
-string storagePath = builder.Configuration["StoragePath"] ?? Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
+string storagePath = builder.Configuration["StoragePath"] ??
+                     Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images");
 if (!Directory.Exists(storagePath))
 {
     Directory.CreateDirectory(storagePath);

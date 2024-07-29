@@ -3,12 +3,10 @@ using FirebaseAdmin.Messaging;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Yomikaze.Application.Helpers.API;
-using Action = FirebaseAdmin.Messaging.Action;
-using Notification = FirebaseAdmin.Messaging.Notification;
+using Notification = Yomikaze.Domain.Entities.Notification;
 
 namespace Yomikaze.API.Main.Controllers;
 
-// TODO)) Add RU for notifications
 [ApiController]
 [Route("[controller]")]
 public class NotificationController(FirebaseApp firebase, ILogger<NotificationController> logger)
@@ -27,40 +25,84 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             .SubscribeToTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());
         return NoContent();
     }
-    
+
     [HttpPost("[action]")]
     public ActionResult Test([Required] string title, [Required] string body, [Required] string path, string? fcmToken)
     {
-        var message = new Message
+        Message message = new Message
         {
             Webpush = new WebpushConfig
             {
                 Data = new Dictionary<string, string>
                 {
-                    [nameof(title)] = title,
-                    [nameof(body)] = body,
-                    [nameof(path)] = path,                  
+                    [nameof(title)] = title, [nameof(body)] = body, [nameof(path)] = path
                 }
             },
             Android = new AndroidConfig
             {
-                Data = new Dictionary<string, string>()
+                Data = new Dictionary<string, string>
                 {
-                    [nameof(path)] = path,
-                    [nameof(title)] = title,
-                    [nameof(body)] = body,
+                    [nameof(path)] = path, [nameof(title)] = title, [nameof(body)] = body
                 }
-            },
+            }
         };
         if (fcmToken is not null)
         {
             message.Token = fcmToken;
         }
         else
-        {        
-            message.Topic = User.Identity is { IsAuthenticated: true } ? User.GetId().ToString() : "all";
+        {
+            message.Topic = User.TryGetId(out ulong userId) ? userId.ToString() : "all";
         }
+
         FirebaseMessaging.SendAsync(message);
+        return NoContent();
+    }
+
+    [HttpPost("[action]")]
+    public ActionResult Unsubscribe([FromForm] [Required] string fcmToken)
+    {
+        ulong userId = User.GetId();
+        // remove fcmToken from database
+        FirebaseMessaging
+            .UnsubscribeFromTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());
+        return NoContent();
+    }
+
+    [HttpGet]
+    public ActionResult<IEnumerable<NotificationModel>> ListNotifications(
+        [FromServices] NotificationRepository repository)
+    {
+        ulong userId = User.GetId();
+        List<Notification> query = repository.GetByUserId(userId).ToList();
+        List<NotificationModel> result = query.Select(x => new NotificationModel
+        {
+            Id = x.Id.ToString(),
+            Title = x.Title,
+            Content = x.Content,
+            Read = x.Read,
+            CreationTime = x.CreationTime
+        }).ToList();
+        return Ok(result);
+    }
+
+    [HttpPut("{key}/read")]
+    public ActionResult MarkAsRead([FromServices] NotificationRepository repository, [FromRoute] ulong key)
+    {
+        ulong userId = User.GetId();
+        Notification? notification = repository.Get(key);
+        if (notification == null)
+        {
+            return NotFound();
+        }
+
+        if (notification.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        notification.Read = true;
+        repository.Update(notification);
         return NoContent();
     }
 }

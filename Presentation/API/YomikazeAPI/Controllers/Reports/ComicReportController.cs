@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Domain.Models.Search;
 using Yomikaze.Infrastructure.Context;
 
-namespace Yomikaze.API.Main.Controllers;
+namespace Yomikaze.API.Main.Controllers.Reports;
 
 [ApiController]
 [Route("reports/comic")]
@@ -15,9 +15,8 @@ public class ComicReportController(
     : SearchControllerBase<ComicReport, ComicReportModel, ComicReportRepository, ComicReportSearchModel>(repository,
         mapper, logger)
 {
-    
     private YomikazeDbContext DbContext { get; } = dbContext;
-    
+
     protected override IList<SearchFieldMutator<ComicReport, ComicReportSearchModel>> SearchFieldMutators { get; } =
     [
         new SearchFieldMutator<ComicReport, ComicReportSearchModel>(
@@ -36,7 +35,7 @@ public class ComicReportController(
             search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
-                var ordered = search.OrderBy[0] switch
+                IOrderedQueryable<ComicReport>? ordered = search.OrderBy[0] switch
                 {
                     ComicReportOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
                     ComicReportOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
@@ -56,7 +55,7 @@ public class ComicReportController(
     {
         return base.Post(input);
     }
-    
+
     [HttpPost("{comicId}")]
     public ActionResult<ComicReportModel> Post(ulong comicId, ComicReportModel input)
     {
@@ -66,11 +65,11 @@ public class ComicReportController(
         Logger.LogInformation("Creating comic report: {Input}", JsonConvert.SerializeObject(input));
         return base.Post(input);
     }
-    
+
     [HttpGet("reasons")]
     public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
     {
-        var result = DbContext.ComicReportReasons.ToList();
+        List<ComicReportReason> result = DbContext.ComicReportReasons.ToList();
         return Ok(Mapper.Map<IEnumerable<ReportReasonModel>>(result));
     }
 }

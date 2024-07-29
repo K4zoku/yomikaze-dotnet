@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Yomikaze.Application.Helpers.API;
+using Yomikaze.Domain.Models.Search;
 using Yomikaze.Infrastructure.Context;
 
-namespace Yomikaze.API.Main.Controllers;
+namespace Yomikaze.API.Main.Controllers.Reports;
 
 [ApiController]
 [Route("/reports/chapter")]
@@ -11,12 +12,12 @@ public class ChapterReportController(
     ChapterReportRepository repository,
     IMapper mapper,
     ILogger<ChapterReportController> logger)
-    : SearchControllerBase<ChapterReport, ChapterReportModel, ChapterReportRepository, ChapterReportSearchModel>(repository,
+    : SearchControllerBase<ChapterReport, ChapterReportModel, ChapterReportRepository, ChapterReportSearchModel>(
+        repository,
         mapper, logger)
 {
-    
     private YomikazeDbContext DbContext { get; } = dbContext;
-    
+
     protected override IList<SearchFieldMutator<ChapterReport, ChapterReportSearchModel>> SearchFieldMutators { get; } =
     [
         new SearchFieldMutator<ChapterReport, ChapterReportSearchModel>(
@@ -38,7 +39,7 @@ public class ChapterReportController(
             search => search.OrderBy is not { Length: 0 },
             (query, search) =>
             {
-                var ordered = search.OrderBy[0] switch
+                IOrderedQueryable<ChapterReport> ordered = search.OrderBy[0] switch
                 {
                     ChapterReportOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
                     ChapterReportOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
@@ -58,26 +59,28 @@ public class ChapterReportController(
     {
         return base.Post(input);
     }
-    
+
     [HttpPost("comics/{comicId}/chapters/{chapterNumber:int}")]
-    public ActionResult<ChapterReportModel> Post(ulong comicId, int chapterNumber, ChapterReportModel input, [FromServices] ChapterRepository chapterRepository)
+    public ActionResult<ChapterReportModel> Post(ulong comicId, int chapterNumber, ChapterReportModel input,
+        [FromServices] ChapterRepository chapterRepository)
     {
-        var chapter = chapterRepository.GetByComicIdAndIndex(comicId.ToString(), chapterNumber);
+        Chapter? chapter = chapterRepository.GetByComicIdAndIndex(comicId.ToString(), chapterNumber);
         if (chapter == null)
         {
             return NotFound();
         }
+
         input.ChapterId = chapter.Id.ToString();
         input.ReporterId = User.GetIdString();
         input.Status = ReportStatus.Pending;
         Logger.LogInformation("Creating comic report: {Input}", JsonConvert.SerializeObject(input));
         return base.Post(input);
     }
-    
+
     [HttpGet("reasons")]
     public ActionResult<IEnumerable<ReportReasonModel>> GetReasons()
     {
-        var result = DbContext.ChapterReportReasons.ToList();
+        List<ChapterReportReason> result = DbContext.ChapterReportReasons.ToList();
         return Ok(Mapper.Map<IEnumerable<ReportReasonModel>>(result));
     }
 }

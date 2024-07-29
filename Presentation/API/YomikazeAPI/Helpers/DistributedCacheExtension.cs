@@ -13,8 +13,9 @@ public static class DistributedCacheExtension
             logger?.LogDebug("NoCache is being used. The value will be generated directly.");
             return valueFactory();
         }
+
         options ??= new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) };
-        
+
         byte[]? cachedData = await cache.GetAsync(key, token);
         if (cachedData != null)
         {
@@ -24,22 +25,25 @@ public static class DistributedCacheExtension
             {
                 return deserialized;
             }
-            logger?.LogWarning("Failed to deserialize the cached data for key {Key}", key);
-        }   
 
-        var value = valueFactory();
+            logger?.LogWarning("Failed to deserialize the cached data for key {Key}", key);
+        }
+
+        T value = valueFactory();
         if (value is null)
         {
             logger?.LogWarning("The value factory returned null for key {Key}", key);
             return default!;
         }
+
         // set cache without waiting
         logger?.LogDebug("Setting the cache for key {Key}", key);
         _ = cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options, token)
-            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key), TaskContinuationOptions.OnlyOnFaulted);
+            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key),
+                TaskContinuationOptions.OnlyOnFaulted);
         return value;
     }
-    
+
     public static T GetOrSet<T>(this IDistributedCache cache, string key, Func<T> valueFactory,
         DistributedCacheEntryOptions? options = default!, ILogger? logger = null)
     {
@@ -48,8 +52,9 @@ public static class DistributedCacheExtension
             logger?.LogDebug("NoCache is being used. The value will be generated directly.");
             return valueFactory();
         }
+
         options ??= new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) };
-        
+
         byte[]? cachedData = cache.Get(key);
         if (cachedData != null)
         {
@@ -59,19 +64,22 @@ public static class DistributedCacheExtension
             {
                 return deserialized;
             }
-            logger?.LogWarning("Failed to deserialize the cached data for key {Key}", key);
-        }   
 
-        var value = valueFactory();
+            logger?.LogWarning("Failed to deserialize the cached data for key {Key}", key);
+        }
+
+        T value = valueFactory();
         if (value is null)
         {
             logger?.LogWarning("The value factory returned null for key {Key}", key);
             return default!;
         }
+
         // set cache without waiting    
         logger?.LogDebug("Setting the cache for key {Key}", key);
         _ = cache.SetAsync(key, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value)), options)
-            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key), TaskContinuationOptions.OnlyOnFaulted);
+            .ContinueWith(t => logger?.LogWarning(t.Exception, "Failed to set the cache for key {Key}", key),
+                TaskContinuationOptions.OnlyOnFaulted);
         return value;
     }
 }
@@ -80,7 +88,7 @@ internal class NoCache : IDistributedCache
 {
     private static NoCache? _instance;
     private static readonly object Lock = new();
-    
+
     public static NoCache Instance
     {
         get
@@ -91,6 +99,7 @@ internal class NoCache : IDistributedCache
             }
         }
     }
+
     public byte[]? Get(string key)
     {
         return null;

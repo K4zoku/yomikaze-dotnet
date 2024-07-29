@@ -1,4 +1,4 @@
-namespace Yomikaze.Domain.Models;
+namespace Yomikaze.Domain.Models.Search;
 
 public class ComicCommentSearchModel
 {

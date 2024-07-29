@@ -21,7 +21,7 @@ public class AuthenticationController(
 {
     private UserManager<User> UserManager { get; } = signInManager.UserManager;
     private SignInManager<User> SignInManager { get; } = signInManager;
-    
+
     private AuthenticationService Service { get; } = service;
     private ILogger<AuthenticationController> Logger { get; } = logger;
 
@@ -35,7 +35,7 @@ public class AuthenticationController(
         }
 
         User? user = await Service.FindUser(model.Username);
-        
+
         if (user is null)
         {
             ModelState.AddModelError(nameof(model.Username), "User not found.");
@@ -62,7 +62,7 @@ public class AuthenticationController(
         else
         {
             result = await SignInManager.TwoFactorSignInAsync("default", model.TwoFactorCode, false, false);
-            ModelState.Clear(); 
+            ModelState.Clear();
             if (HandleSignInResult(result))
             {
                 JwtSecurityToken token = await Service.GenerateAccessToken(user);
@@ -80,7 +80,7 @@ public class AuthenticationController(
 
         return ValidationProblem(ModelState);
     }
-    
+
     [HttpGet]
     [Route($"{nameof(Login)}/external")]
     public async Task<ActionResult> ExternalLoginProviders()
@@ -94,13 +94,15 @@ public class AuthenticationController(
     public ActionResult ExternalLogin([FromRoute] string provider, [FromQuery] string? returnUrl = null)
     {
         string? redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Authentication", new { provider, returnUrl });
-        AuthenticationProperties properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        AuthenticationProperties properties =
+            SignInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         return Challenge(properties, provider);
     }
-    
+
     [HttpGet]
     [Route($"{nameof(Login)}/callback/{{provider}}")]
-    public async Task<ActionResult> ExternalLoginCallback([FromRoute] string provider, [FromQuery] string? returnUrl = null, string? remoteErrors = null)
+    public async Task<ActionResult> ExternalLoginCallback([FromRoute] string provider,
+        [FromQuery] string? returnUrl = null, string? remoteErrors = null)
     {
         ExternalLoginInfo? info = await SignInManager.GetExternalLoginInfoAsync();
         if (info is null)
@@ -110,8 +112,9 @@ public class AuthenticationController(
         }
 
         User user = await Service.GetOrCreateUser(info);
-        
-        SignInResult result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+
+        SignInResult result =
+            await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
 
         if (!HandleSignInResult(result))
         {
@@ -121,7 +124,7 @@ public class AuthenticationController(
         JwtSecurityToken token = await Service.GenerateAccessToken(user);
         return Service.CallbackOrResult(returnUrl, token);
     }
-    
+
     [HttpPost($"{nameof(Login)}/external/Google")]
     public async Task<ActionResult> LoginWithGoogleToken([FromBody] GoogleTokenModel model)
     {
@@ -129,21 +132,21 @@ public class AuthenticationController(
         {
             return BadRequest(ModelState);
         }
+
         GoogleJsonWebSignature.Payload? payload = await GoogleJsonWebSignature.ValidateAsync(model.Token);
         if (payload is null)
         {
             ModelState.AddModelError("Token", "Invalid token.");
             return ValidationProblem(ModelState);
         }
-        ClaimsPrincipal? principal = new(new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.Email, payload.Email),
-            new Claim(ClaimTypes.Name, payload.Name),
-        }, "Google"));
+
+        ClaimsPrincipal? principal = new(new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.Email, payload.Email), new Claim(ClaimTypes.Name, payload.Name) }, "Google"));
         ExternalLoginInfo info = new(principal, "Google", payload.Subject, "Google");
         User user = await Service.GetOrCreateUser(info);
-        
-        SignInResult result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+
+        SignInResult result =
+            await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
 
         if (!HandleSignInResult(result))
         {
@@ -160,10 +163,11 @@ public class AuthenticationController(
         {
             return true;
         }
+
         if (result.IsLockedOut)
         {
             ModelState.AddModelError("Username", "User is locked out.");
-        } 
+        }
         else if (result.IsNotAllowed)
         {
             ModelState.AddModelError("Username", "User is not allowed to sign in.");
@@ -172,6 +176,7 @@ public class AuthenticationController(
         {
             ModelState.AddModelError("Password", "Password is incorrect.");
         }
+
         return false;
     }
 
@@ -224,7 +229,7 @@ public class AuthenticationController(
             return Problem("User not found", statusCode: (int)HttpStatusCode.NotFound, title: "Not Found",
                 type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
         }
-        
+
         return Ok(
             new
             {
@@ -233,5 +238,4 @@ public class AuthenticationController(
             }
         );
     }
-
 }

@@ -14,9 +14,9 @@ public class Report : BaseEntity
 
     [ForeignKey(nameof(Reason))] public ulong ReasonId { get; set; }
 
-    public virtual ReportReason Reason { get;  }
+    public virtual ReportReason Reason { get; } = default!;
 
-    [ForeignKey(nameof(Reporter))] public ulong ReporterId { get; set; }
+    [ForeignKey(nameof(Reporter))] public ulong ReporterId { get; set; } = default!;
 
     public User Reporter
     {

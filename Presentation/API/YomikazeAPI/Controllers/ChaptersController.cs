@@ -1,61 +1,62 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
-using System.Linq.Dynamic.Core;
 using System.Net;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
+using Yomikaze.Domain.Models.Search;
 
 namespace Yomikaze.API.Main.Controllers;
 
 public partial class ComicsController
 {
-     #region Chapters
+    #region Chapters
 
-     private List<SearchFieldMutator<Chapter, ChapterSearchModel>> ChapterSearchFieldMutators { get; } =
-     [
-         new SearchFieldMutator<Chapter, ChapterSearchModel>(search => search.OrderBy.Length > 0, (query, search) =>
-         {
-             IOrderedQueryable<Chapter> ordered = search.OrderBy[0] switch
-             {
-                 ChapterOrderBy.Number => query.OrderBy(x => x.Number),
-                 ChapterOrderBy.NumberDesc => query.OrderByDescending(x => x.Number),
-                 ChapterOrderBy.Name => query.OrderBy(x => x.Name),
-                 ChapterOrderBy.NameDesc => query.OrderByDescending(x => x.Name),
-                 ChapterOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
-                 ChapterOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
-                 ChapterOrderBy.LastModified => query.OrderBy(x => x.LastModified),
-                 ChapterOrderBy.LastModifiedDesc => query.OrderByDescending(x => x.LastModified),
-                 _ => query.OrderBy(x => x.Number),
-             };
-             return search.OrderBy.Skip(1)
-                 .Aggregate(ordered, (current, orderBy) => orderBy switch
-                 {
-                     ChapterOrderBy.Number => current.ThenBy(x => x.Number),
-                     ChapterOrderBy.NumberDesc => current.ThenByDescending(x => x.Number),
-                     ChapterOrderBy.Name => current.ThenBy(x => x.Name),
-                     ChapterOrderBy.NameDesc => current.ThenByDescending(x => x.Name),
-                     ChapterOrderBy.CreationTime => current.ThenBy(x => x.CreationTime),
-                     ChapterOrderBy.CreationTimeDesc => current.ThenByDescending(x => x.CreationTime),
-                     ChapterOrderBy.LastModified => current.ThenBy(x => x.LastModified),
-                     ChapterOrderBy.LastModifiedDesc => current.ThenByDescending(x => x.LastModified),
-                     _ => current.ThenBy(x => x.Number),
-                 });
-         })
+    private List<SearchFieldMutator<Chapter, ChapterSearchModel>> ChapterSearchFieldMutators { get; } =
+    [
+        new SearchFieldMutator<Chapter, ChapterSearchModel>(search => search.OrderBy.Length > 0, (query, search) =>
+        {
+            IOrderedQueryable<Chapter> ordered = search.OrderBy[0] switch
+            {
+                ChapterOrderBy.Number => query.OrderBy(x => x.Number),
+                ChapterOrderBy.NumberDesc => query.OrderByDescending(x => x.Number),
+                ChapterOrderBy.Name => query.OrderBy(x => x.Name),
+                ChapterOrderBy.NameDesc => query.OrderByDescending(x => x.Name),
+                ChapterOrderBy.CreationTime => query.OrderBy(x => x.CreationTime),
+                ChapterOrderBy.CreationTimeDesc => query.OrderByDescending(x => x.CreationTime),
+                ChapterOrderBy.LastModified => query.OrderBy(x => x.LastModified),
+                ChapterOrderBy.LastModifiedDesc => query.OrderByDescending(x => x.LastModified),
+                _ => query.OrderBy(x => x.Number)
+            };
+            return search.OrderBy.Skip(1)
+                .Aggregate(ordered, (current, orderBy) => orderBy switch
+                {
+                    ChapterOrderBy.Number => current.ThenBy(x => x.Number),
+                    ChapterOrderBy.NumberDesc => current.ThenByDescending(x => x.Number),
+                    ChapterOrderBy.Name => current.ThenBy(x => x.Name),
+                    ChapterOrderBy.NameDesc => current.ThenByDescending(x => x.Name),
+                    ChapterOrderBy.CreationTime => current.ThenBy(x => x.CreationTime),
+                    ChapterOrderBy.CreationTimeDesc => current.ThenByDescending(x => x.CreationTime),
+                    ChapterOrderBy.LastModified => current.ThenBy(x => x.LastModified),
+                    ChapterOrderBy.LastModifiedDesc => current.ThenByDescending(x => x.LastModified),
+                    _ => current.ThenBy(x => x.Number)
+                });
+        })
+    ];
 
-     ];
-     
     [HttpGet("{key}/chapters")]
     [AllowAnonymous]
-    public ActionResult<PagedList<ChapterModel>> GetChapters(ulong key, [FromQuery] ChapterSearchModel search, [FromQuery] PaginationModel pagination)
+    public ActionResult<PagedList<ChapterModel>> GetChapters(ulong key, [FromQuery] ChapterSearchModel search,
+        [FromQuery] PaginationModel pagination)
     {
         Comic? entity = Repository.Get(key);
         if (entity == null)
         {
             return NotFound();
         }
-        var chapters = ChapterRepository.GetAllByComicId(key);
-        
+
+        IQueryable<Chapter> chapters = ChapterRepository.GetAllByComicId(key);
+
         chapters = ChapterSearchFieldMutators.Aggregate(chapters, (current, mutator) => mutator.Apply(search, current));
         long count = chapters.LongCount();
         if (search.Pagination)
@@ -69,8 +70,8 @@ public partial class ComicsController
             pagination.Page = 1;
         }
 
-        var results = Mapper.Map<List<ChapterModel>>(chapters.ToList());        
-        var paged = new PagedList<ChapterModel>
+        List<ChapterModel>? results = Mapper.Map<List<ChapterModel>>(chapters.ToList());
+        PagedList<ChapterModel> paged = new PagedList<ChapterModel>
         {
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
@@ -78,24 +79,24 @@ public partial class ComicsController
             TotalPages = (int)Math.Ceiling((double)count / pagination.Size),
             Results = results
         };
-        
-        if (!User.TryGetId(out var userId))
+
+        if (!User.TryGetId(out ulong userId))
         {
             return Ok(paged);
         }
-        
-        for (var i = 0; i < paged.Results.Count(); i++)
+
+        for (int i = 0; i < paged.Results.Count(); i++)
         {
-            var chapter = chapters.ElementAt(i);
-            var model = paged.Results.ElementAt(i);
+            Chapter chapter = chapters.ElementAt(i);
+            ChapterModel model = paged.Results.ElementAt(i);
             model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
         }
-        
+
         return Ok(paged);
     }
 
     [HttpPost("{key}/chapters")]
-    public ActionResult<ChapterModel> PostChapter(ulong key, 
+    public ActionResult<ChapterModel> PostChapter(ulong key,
         [Bind($"{nameof(ChapterModel.Number)},{nameof(ChapterModel.Name)},{nameof(ChapterModel.Pages)}")]
         ChapterModel model)
     {
@@ -122,7 +123,7 @@ public partial class ComicsController
         return CreatedAtAction(nameof(GetChapter), new { key, number = chapter.Number },
             Mapper.Map<ChapterModel>(chapter));
     }
-    
+
     [HttpGet($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}")]
     [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
@@ -132,21 +133,24 @@ public partial class ComicsController
         {
             return NotFound();
         }
-        
-        var model = Mapper.Map<ChapterModel>(chapter);
+
+        ChapterModel? model = Mapper.Map<ChapterModel>(chapter);
 
         try
         {
-            if (User.TryGetId(out var userId))
+            if (User.TryGetId(out ulong userId))
             {
-                 model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
+                model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;
                     chapter.Views++;
                     ChapterRepository.Update(chapter);
                     Logger.LogDebug("Chapter {Id} views increased to {Views}", chapter.Id, chapter.Views);
-                    DbContext.ComicViews.Add(new ComicView() { ComicId = chapter.ComicId, CreationTime = DateTimeOffset.UtcNow, Views = 1});
+                    DbContext.ComicViews.Add(new ComicView
+                    {
+                        ComicId = chapter.ComicId, CreationTime = DateTimeOffset.UtcNow, Views = 1
+                    });
                     DbContext.SaveChanges();
                     Logger.LogDebug("Added view record for comic {Id}", chapter.ComicId);
                     HistoryRepository.Add(userId, chapter);
@@ -158,7 +162,7 @@ public partial class ComicsController
                 }
             }
             else
-            { 
+            {
                 Logger.LogDebug("User is not authenticated, skipping history record");
                 if (model.HasLock is true)
                 {
@@ -171,12 +175,14 @@ public partial class ComicsController
         {
             Logger.LogError(e, "Failed to update chapter {Id} views or add history record", chapter.Id);
         }
+
         return Ok(model);
     }
 
     [HttpPut($"{{{nameof(key)}}}/chapters/{{{nameof(number)}:int}}/unlock")]
     [Authorize]
-    public ActionResult UnlockChapter(ulong key, int number, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    public ActionResult UnlockChapter(ulong key, int number, [FromServices] UserManager<User> userManager,
+        [FromServices] TransactionRepository transactionRepository)
     {
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
         if (chapter == null)
@@ -190,22 +196,22 @@ public partial class ComicsController
             return BadRequest(ModelState);
         }
 
-        var userId = User.GetId();
-        
+        ulong userId = User.GetId();
+
         if (chapter.Unlocked.Any(u => u.UserId == userId))
         {
             ModelState.AddModelError("Chapter", "Chapter is already unlocked");
             return BadRequest(ModelState);
         }
 
-        var currentUser = User.GetUser(userManager);
+        User currentUser = User.GetUser(userManager);
         if (currentUser.Balance < chapter.Price)
         {
             return Problem(statusCode: (int)HttpStatusCode.PaymentRequired, detail: "Insufficient balance");
         }
-        
+
         currentUser.Balance -= chapter.Price;
-        userManager.UpdateAsync(currentUser).Wait();  
+        userManager.UpdateAsync(currentUser).Wait();
         Transaction transaction = new()
         {
             UserId = currentUser.Id,
@@ -214,23 +220,24 @@ public partial class ComicsController
             Description = $"/comics/{key}/chapters/{number}"
         };
         transactionRepository.Add(transaction);
-        chapter.Unlocked.Add(new UnlockedChapter() { UserId = userId, ChapterId = chapter.Id });
-        
+        chapter.Unlocked.Add(new UnlockedChapter { UserId = userId, ChapterId = chapter.Id });
+
         ChapterRepository.Update(chapter);
         return Ok();
     }
 
     [HttpPut($"{{{nameof(key)}}}/chapters/unlock")]
     [Authorize]
-    public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    public ActionResult<IEnumerable<int>> UnlockChapters(ulong key, [FromBody] int[] chapterNumbers,
+        [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
-        var chapters = ChapterRepository.GetByComicIdAndIndexes(key.ToString(), chapterNumbers);
+        IQueryable<Chapter> chapters = ChapterRepository.GetByComicIdAndIndexes(key.ToString(), chapterNumbers);
         if (!chapters.Any())
         {
             return NotFound();
         }
 
-        var locked = chapters
+        List<Chapter> locked = chapters
             .Where(c => c.Price > 0)
             .Where(c => c.Unlocked.All(u => u.UserId != User.GetId()))
             .ToList();
@@ -240,15 +247,16 @@ public partial class ComicsController
             ModelState.AddModelError("Chapters", "There are no locked chapters");
             return BadRequest(ModelState);
         }
-        
-        var price = locked.Sum(c => c.Price);
 
-        var currentUser = User.GetUser(userManager);
-        
+        int price = locked.Sum(c => c.Price);
+
+        User currentUser = User.GetUser(userManager);
+
         if (currentUser.Balance < price)
         {
             return Problem(statusCode: (int)HttpStatusCode.PaymentRequired, detail: "Insufficient balance");
         }
+
         currentUser.Balance -= price;
         userManager.UpdateAsync(currentUser).Wait();
         Transaction transaction = new()
@@ -256,19 +264,21 @@ public partial class ComicsController
             UserId = currentUser.Id,
             Amount = -price,
             Type = TransactionType.UnlockChapters,
-            Description = JsonConvert.SerializeObject(chapters.Select(c => $"/comics/{key}/chapters/{c.Number}").ToArray()),
+            Description =
+                JsonConvert.SerializeObject(chapters.Select(c => $"/comics/{key}/chapters/{c.Number}").ToArray())
         };
         transactionRepository.Add(transaction);
-        var unlockedChapters = new List<int>();
-        foreach (var chapter in chapters)
+        List<int> unlockedChapters = new List<int>();
+        foreach (Chapter chapter in chapters)
         {
-            chapter.Unlocked.Add(new UnlockedChapter() { UserId = currentUser.Id, ChapterId = chapter.Id });
+            chapter.Unlocked.Add(new UnlockedChapter { UserId = currentUser.Id, ChapterId = chapter.Id });
             ChapterRepository.Update(chapter);
             unlockedChapters.Add(chapter.Number);
         }
+
         return Ok(unlockedChapters);
     }
-    
+
     [HttpPatch("{key}/chapters/{number:int}")]
     public ActionResult<ChapterModel> UpdateChapter(ulong key, int number,
         JsonPatchDocument<ChapterModel> patchDocument)
