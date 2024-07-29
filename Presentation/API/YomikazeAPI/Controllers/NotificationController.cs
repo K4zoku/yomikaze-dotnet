@@ -44,11 +44,11 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             },
             Android = new AndroidConfig
             {
-                // Notification = new AndroidNotification()
-                // {
-                //     Title = title,
-                //     Body = body,
-                // },
+                Notification = new AndroidNotification()
+                {
+                    Title = title,
+                    Body = body,
+                },
                 Priority = Priority.High,
                 CollapseKey = "test",
             },
