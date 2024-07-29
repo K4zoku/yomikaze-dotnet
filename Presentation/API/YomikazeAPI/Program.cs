@@ -41,6 +41,7 @@ services.AddScoped<ChapterReportRepository>();
 services.AddScoped<ProfileReportRepository>();
 services.AddScoped<CommentReportRepository>();
 services.AddScoped<ChapterCommentReportRepository>();
+services.AddScoped<WithdrawalRequestRepository>();
 services.AddScoped<AuthenticationService>();
 
 // Stripe services

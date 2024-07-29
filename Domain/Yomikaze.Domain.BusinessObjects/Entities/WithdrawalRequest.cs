@@ -17,6 +17,8 @@ public class WithdrawalRequest : BaseEntity
     #region Properties
 
     public string UserId { get; set; } = default!;
+    
+    public WithdrawalRequestStatus Status { get; set; }
 
     #endregion
 

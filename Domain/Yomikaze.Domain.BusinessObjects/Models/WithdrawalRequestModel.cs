@@ -8,21 +8,22 @@ public class WithdrawalRequestModel : BaseModel
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Profile { get; set; } = default!;
 
+    [SwaggerSchema(ReadOnly = true)]
+    public WithdrawalRequestStatus Status { get; set; } = WithdrawalRequestStatus.Pending;
+    
     #endregion
 
     #region WriteOnlyProperties
 
-    [SwaggerSchema(WriteOnly = true)] public string UserId { get; set; } = default!;
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    public string UserId { get; set; } = default!;
 
     #endregion
 
     #region CommonProperties
 
     [Required] public long Amount { get; set; }
-
-    public WithdrawalRequestStatus Status { get; set; }
-
-    public string? RejectionReason { get; set; }
 
     #endregion
 }
