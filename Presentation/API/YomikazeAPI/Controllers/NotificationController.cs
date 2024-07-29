@@ -44,20 +44,13 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             },
             Android = new AndroidConfig
             {
-                Notification = new AndroidNotification()
+                Data = new Dictionary<string, string>()
                 {
-                    Title = title,
-                    Body = body,
-                },
-                Priority = Priority.High,
-                CollapseKey = "test",
+                    [nameof(path)] = path,
+                    [nameof(title)] = title,
+                    [nameof(body)] = body,
+                }
             },
-            Data = new Dictionary<string, string>()
-            {
-                [nameof(path)] = path,
-                [nameof(title)] = title,
-                [nameof(body)] = body,
-            }
         };
         if (fcmToken is not null)
         {
