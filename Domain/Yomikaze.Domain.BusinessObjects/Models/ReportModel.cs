@@ -20,7 +20,7 @@ public class ReportModel : BaseModel
 
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public string Reason { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] public ReportReasonModel Reason { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Reporter { get; set; } = default!;
 

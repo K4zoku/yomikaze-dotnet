@@ -20,5 +20,14 @@ public class ReportConfiguration : BaseEntityConfiguration<Report>
             .HasValue<ComicCommentReport>("comic_comment_report")
             .HasValue<ChapterCommentReport>("chapter_comment_report");
         
+        builder
+            .HasOne(r => r.Reason)
+            .WithMany()
+            .HasForeignKey(r => r.ReasonId);
+
+        builder
+            .Navigation(r => r.Reason)
+            .AutoInclude();
+
     }
 }
