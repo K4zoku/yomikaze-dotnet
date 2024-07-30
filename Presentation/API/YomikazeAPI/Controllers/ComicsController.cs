@@ -39,26 +39,26 @@ public partial class ComicsController(
                 (query, search) => query.Where(comic => comic.Name.ToLower().Contains(search.Name!) ||
                                                         comic.Aliases.Any(alias =>
                                                             alias.ToLower().Contains(search.Name!)))),
-            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => !string.IsNullOrWhiteSpace(searchModel.Publisher),
+            new SearchFieldMutator<Comic, ComicSearchModel>(
+                searchModel => !string.IsNullOrWhiteSpace(searchModel.Publisher),
                 (query, search) => query.Where(comic => comic.Publisher.Name.ToLower().Contains(search.Publisher!))),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.PublisherId.HasValue,
                 (query, search) => query.Where(comic => comic.PublisherId == search.PublisherId)),
 #pragma warning disable
             // disable warning for csharpsquid:S6603 because it's cause linq cannot translate to sql
-            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.IncludeTags != null && searchModel.IncludeTags.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(
+                searchModel => searchModel.IncludeTags.Any(),
                 (query, search) => search.InclusionMode == LogicalOperator.Or
-                    ? query.Where(comic => comic.Tags.Any(tag => search.IncludeTags!.Any(searchTag =>
-                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))
-                    : query.Where(comic => search.IncludeTags!.All(searchTag => comic.Tags.Any(tag =>
-                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
-            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ExcludeTags != null && searchModel.ExcludeTags.Length != 0,
+                    ? query.Where(comic => comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().Overlaps(search.IncludeTags))
+                    : query.Where(comic => comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().IsSupersetOf(search.IncludeTags))),
+            new SearchFieldMutator<Comic, ComicSearchModel>(
+                searchModel => searchModel.ExcludeTags.Any(),
                 (query, search) => search.ExclusionMode == LogicalOperator.And
-                    ? query.Where(comic => search.ExcludeTags!.All(searchTag => comic.Tags.All(tag =>
-                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))
-                    : query.Where(comic => comic.Tags.All(tag => search.ExcludeTags!.Any(searchTag =>
-                        tag.Name.ToLower().Contains(searchTag.ToLower()) || tag.Id.ToString() == searchTag)))),
+                    ? query.Where(comic => !comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().IsSupersetOf(search.ExcludeTags))
+                    : query.Where(comic => !comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().Overlaps(search.ExcludeTags))),
 #pragma warning restore
-            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(
+                searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
                 (query, search) => query.Where(comic => search.Authors!.Any(searchAuthor =>
                     comic.Authors.Any(author => author.ToLower().Contains(searchAuthor.ToLower()))))),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromPublicationDate.HasValue,
@@ -83,7 +83,8 @@ public partial class ComicsController(
                 (query, search) => query.Where(comic => comic.TotalFollows >= search.FromTotalFollows)),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToTotalFollows.HasValue,
                 (query, search) => query.Where(comic => comic.TotalFollows <= search.ToTotalFollows)),
-            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.OrderBy != null && searchModel.OrderBy.Length != 0,
+            new SearchFieldMutator<Comic, ComicSearchModel>(
+                searchModel => searchModel.OrderBy != null && searchModel.OrderBy.Length != 0,
                 (query, search) =>
                 {
                     ComicOrderBy firstMutator = search.OrderBy![0];

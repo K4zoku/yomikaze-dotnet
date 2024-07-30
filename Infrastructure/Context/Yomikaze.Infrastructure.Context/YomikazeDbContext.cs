@@ -52,6 +52,8 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<Translation> Translations { get; init; } = default!;
     public DbSet<UnlockedChapter> UnlockedChapters { get; init; } = default!;
     public DbSet<WithdrawalRequest> WithdrawalRequests { get; init; } = default!;
+    
+    public DbSet<RoleRequest> RoleRequests { get; init; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

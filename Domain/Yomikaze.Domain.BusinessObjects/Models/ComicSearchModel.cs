@@ -47,14 +47,14 @@ public class ComicSearchModel
     public int? FromTotalFollows { get; set; }
     
     public int? ToTotalFollows { get; set; }
-    
-    public string[]? IncludeTags { get; set; }
-    
-    public string[]? ExcludeTags { get; set; }
 
-    public LogicalOperator? InclusionMode { get; set; }
+    public ISet<string> IncludeTags { get; set; } = new HashSet<string>();
 
-    public LogicalOperator? ExclusionMode { get; set; }
+    public ISet<string> ExcludeTags { get; set; } = new HashSet<string>();
+
+    public LogicalOperator InclusionMode { get; set; } = LogicalOperator.Or;
+
+    public LogicalOperator ExclusionMode { get; set; } = LogicalOperator.And;
     
     public ComicOrderBy[]? OrderBy { get; set; }
 }
