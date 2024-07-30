@@ -8,7 +8,7 @@ public class LastModifiedGenerator : ValueGenerator<DateTimeOffset?>
 {
     public override DateTimeOffset? Next(EntityEntry entry)
     {
-        return entry.State == EntityState.Modified ? DateTimeOffset.UtcNow : null;
+        return DateTimeOffset.UtcNow;
     }
 
     public override bool GeneratesTemporaryValues { get; } = false;

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Yomikaze.Infrastructure.Context;
@@ -11,9 +12,11 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    partial class YomikazeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240730171341_FixWithdrawal2")]
+    partial class FixWithdrawal2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1200,10 +1203,6 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
-
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint")
-                        .HasColumnName("amount");
 
                     b.Property<DateTimeOffset?>("CreationTime")
                         .IsRequired()

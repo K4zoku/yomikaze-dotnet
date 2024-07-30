@@ -10,8 +10,15 @@ public class RoleRequest : BaseEntity
     
     public Role Role { get; set; } = default!;
     
-    public bool IsApproved { get; set; }
+    public RoleRequestStatus Status { get; set; } = RoleRequestStatus.Pending;
     
     [StringLength(512)]
     public string Reason { get; set; } = default!;
+}
+
+public enum RoleRequestStatus
+{
+    Pending,
+    Approved,
+    Rejected
 }

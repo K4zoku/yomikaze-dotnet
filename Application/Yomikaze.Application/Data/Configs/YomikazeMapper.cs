@@ -171,8 +171,9 @@ public class YomikazeMapper : MapperProfile
         CreateMap<ProfileReport, ProfileReportModel>().ReverseMap();
         CreateMap<CommentReport, CommentReportModel>().ReverseMap();
 
-        CreateMap<Transaction, TransactionModel>()
-            .ReverseMap();
+        CreateMap<Transaction, TransactionModel>().ReverseMap();
+        CreateMap<WithdrawalRequest, WithdrawalRequestModel>().ReverseMap();
+        CreateMap<RoleRequest, RoleRequestModel>().ReverseMap();
         
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();

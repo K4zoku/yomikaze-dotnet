@@ -43,6 +43,7 @@ services.AddScoped<CommentReportRepository>();
 services.AddScoped<ChapterCommentReportRepository>();
 services.AddScoped<WithdrawalRequestRepository>();
 services.AddScoped<NotificationRepository>();
+services.AddScoped<RoleRequestRepository>();
 services.AddScoped<AuthenticationService>();
 
 // Stripe services

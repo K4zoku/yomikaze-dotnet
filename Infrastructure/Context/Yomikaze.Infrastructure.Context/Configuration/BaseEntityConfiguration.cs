@@ -18,6 +18,7 @@ public abstract class BaseEntityConfiguration<TEntity, TKey> : IEntityTypeConfig
             .HasValueGenerator<CreationTimeGenerator>();
         builder
             .Property(e => e.LastModified)
+            .ValueGeneratedOnUpdate()
             .HasValueGenerator<LastModifiedGenerator>();
     }
 }

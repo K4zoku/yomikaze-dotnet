@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Yomikaze.Infrastructure.Context;
@@ -11,9 +12,11 @@ using Yomikaze.Infrastructure.Context;
 namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 {
     [DbContext(typeof(YomikazeDbContext))]
-    partial class YomikazeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240730171105_FixWithdrawalRequest")]
+    partial class FixWithdrawalRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1201,10 +1204,6 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("id");
 
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint")
-                        .HasColumnName("amount");
-
                     b.Property<DateTimeOffset?>("CreationTime")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -1222,19 +1221,19 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
                         .HasColumnType("character varying(1024)")
                         .HasColumnName("payment_information");
 
+                    b.Property<decimal>("ProfileId")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("profile_id");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
-                    b.Property<decimal>("UserId")
-                        .HasColumnType("numeric(20,0)")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
                         .HasName("pk_withdrawal_requests");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_withdrawal_requests_user_id");
+                    b.HasIndex("ProfileId")
+                        .HasDatabaseName("ix_withdrawal_requests_profile_id");
 
                     b.ToTable("withdrawal_requests", (string)null);
                 });
@@ -1808,14 +1807,14 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL.Migrations
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.WithdrawalRequest", b =>
                 {
-                    b.HasOne("Yomikaze.Domain.Entities.User", "User")
+                    b.HasOne("Yomikaze.Domain.Entities.User", "Profile")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_withdrawal_requests_users_user_id");
+                        .HasConstraintName("fk_withdrawal_requests_users_profile_id");
 
-                    b.Navigation("User");
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Yomikaze.Domain.Entities.ChapterComment", b =>

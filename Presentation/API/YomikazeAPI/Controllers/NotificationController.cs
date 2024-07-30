@@ -9,6 +9,7 @@ namespace Yomikaze.API.Main.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class NotificationController(FirebaseApp firebase, ILogger<NotificationController> logger)
     : ControllerBase
 {

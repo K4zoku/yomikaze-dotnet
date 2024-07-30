@@ -23,7 +23,9 @@ public class WithdrawalRequestModel : BaseModel
 
     #region CommonProperties
 
-    [Required] public long Amount { get; set; }
+    [Required] public long Amount { get; set; } = default!;
+    
+    [Required] public string PaymentInformation { get; set; } = default!;
 
     #endregion
 }
