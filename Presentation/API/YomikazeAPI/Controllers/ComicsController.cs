@@ -49,13 +49,23 @@ public partial class ComicsController(
             new SearchFieldMutator<Comic, ComicSearchModel>(
                 searchModel => searchModel.IncludeTags.Any(),
                 (query, search) => search.InclusionMode == LogicalOperator.Or
-                    ? query.Where(comic => comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().Overlaps(search.IncludeTags))
-                    : query.Where(comic => comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().IsSupersetOf(search.IncludeTags))),
+                    ? query.Where(comic => search.IncludeTags.Any(tag =>
+                        comic.Tags.Any(comicTag => comicTag.Id.ToString() == tag))
+                    )
+                    : query.Where(comic => search.IncludeTags.All(tag =>
+                        comic.Tags.Any(comicTag => comicTag.Id.ToString() == tag))
+                    )
+                ),
             new SearchFieldMutator<Comic, ComicSearchModel>(
                 searchModel => searchModel.ExcludeTags.Any(),
                 (query, search) => search.ExclusionMode == LogicalOperator.And
-                    ? query.Where(comic => !comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().IsSupersetOf(search.ExcludeTags))
-                    : query.Where(comic => !comic.Tags.Select(tag => tag.Id.ToString()).ToHashSet().Overlaps(search.ExcludeTags))),
+                    ? query.Where(comic => search.ExcludeTags.All(tag =>
+                        comic.Tags.All(comicTag => comicTag.Id.ToString() != tag))
+                    )
+                    : query.Where(comic => search.ExcludeTags.Any(tag =>
+                        comic.Tags.All(comicTag => comicTag.Id.ToString() != tag))
+                    )
+                ),
 #pragma warning restore
             new SearchFieldMutator<Comic, ComicSearchModel>(
                 searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
