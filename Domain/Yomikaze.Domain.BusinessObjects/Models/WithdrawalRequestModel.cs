@@ -6,7 +6,7 @@ public class WithdrawalRequestModel : BaseModel
 {
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] public ProfileModel Profile { get; set; } = default!;
+    [SwaggerSchema(ReadOnly = true)] public ProfileModel? Profile { get; set; }
 
     [SwaggerSchema(ReadOnly = true)]
     public WithdrawalRequestStatus Status { get; set; } = WithdrawalRequestStatus.Pending;
@@ -17,7 +17,7 @@ public class WithdrawalRequestModel : BaseModel
 
     [SwaggerIgnore]
     [SwaggerSchema(ReadOnly = true)]
-    public string UserId { get; set; } = default!;
+    public string? UserId { get; set; }
 
     #endregion
 
