@@ -20,7 +20,7 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     [HttpPost("[action]")]
     public ActionResult Subscribe([FromForm] [Required] string fcmToken)
     {
-        ulong userId = User.GetId();
+        ulong userId = User.GetId();                                    
         // insert fcmToken into database
         FirebaseMessaging
             .SubscribeToTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());

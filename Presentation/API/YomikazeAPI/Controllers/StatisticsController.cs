@@ -112,4 +112,14 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
             .ToList();
         return Ok(new { income, outcome });
     }
+    
+    [HttpGet("report")]
+    public ActionResult GetReports()
+    {
+        var chapterReports = context.ChapterReports.Count();
+        var comicReports = context.ComicReports.Count();
+        var profileReports = context.ProfileReports.Count();
+        var commentReports = context.Set<CommentReport>().Count();
+        return Ok(new { chapterReports, comicReports, profileReports, commentReports });
+    }
 }

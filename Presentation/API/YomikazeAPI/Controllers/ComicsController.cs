@@ -55,7 +55,7 @@ public partial class ComicsController(
                     : query.Where(comic => search.IncludeTags.All(tag =>
                         comic.Tags.Any(comicTag => comicTag.Id.ToString() == tag))
                     )
-                ),
+            ),
             new SearchFieldMutator<Comic, ComicSearchModel>(
                 searchModel => searchModel.ExcludeTags.Any(),
                 (query, search) => search.ExclusionMode == LogicalOperator.And
@@ -65,7 +65,7 @@ public partial class ComicsController(
                     : query.Where(comic => search.ExcludeTags.Any(tag =>
                         comic.Tags.All(comicTag => comicTag.Id.ToString() != tag))
                     )
-                ),
+            ),
 #pragma warning restore
             new SearchFieldMutator<Comic, ComicSearchModel>(
                 searchModel => searchModel.Authors != null && searchModel.Authors.Length != 0,
@@ -161,10 +161,11 @@ public partial class ComicsController(
         }
     }
 
-    private static void ClearCache(IDistributedCache cache)
+    private void ClearCache(IDistributedCache cache)
     {
         lock (ListCacheKeyLock)
         {
+            Logger.LogInformation("Removing cache keys {Keys}", ListCacheKeys);
             ListCacheKeys.ForEach(cache.Remove);
             ListCacheKeys.Clear();
         }
@@ -334,6 +335,8 @@ public partial class ComicsController(
         return result;
     }
 
+    private static Random RandomNumber { get; } = new();
+
     [HttpGet("{key}")]
     [AllowAnonymous]
     public override ActionResult<ComicModel> Get(ulong key)
@@ -342,11 +345,12 @@ public partial class ComicsController(
         string cacheKey = $"{CacheKeyPrefix}{key}";
         if (isAuthorized)
         {
-            cacheKey += $":{User.GetId()}";
+            cacheKey += $":{User.GetId()}" + RandomNumber.Next(); // to disable cache for authorized users
         }
 
         ComicModel? model = Cache.GetOrSet(cacheKey, () =>
         {
+            AddCacheKey(cacheKey);
             Comic? entity = Repository.Get(key);
             if (entity == null)
             {
@@ -410,15 +414,20 @@ public partial class ComicsController(
 
     private void ClearCacheForUser(ulong key, ulong userId)
     {
-        Task.Run(() =>
+        Cache.Remove($"{CacheKeyPrefix}{key}:{userId}");
+        Logger.LogInformation("Removed cache key {Key}:{UserId}", key, userId);
+        lock (ListCacheKeyLock)
         {
-            Cache.Remove($"{CacheKeyPrefix}{key}:{userId}");
-            lock (ListCacheKeyLock)
+            var toRemove = ListCacheKeys
+                .Where(k => k.Contains($":{userId}"))
+                .ToList();
+            toRemove.ForEach(k =>
             {
-                ListCacheKeys.ForEach(k => Cache.Remove(k));
-                ListCacheKeys.Clear();
-            }
-        });
+                Logger.LogInformation("Removing cache key {Key}", k);
+                Cache.Remove(k);
+                ListCacheKeys.Remove(k);
+            });
+        }
     }
 
     [HttpGet("[action]")]

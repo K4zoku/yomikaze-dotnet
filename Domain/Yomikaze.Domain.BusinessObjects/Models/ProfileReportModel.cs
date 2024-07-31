@@ -16,8 +16,8 @@ public class ProfileReportModel : ReportModel
 
     #endregion
     
-    #region ReadOnlyProperties
-    
+    #region ReadOnlyProperties  
+                        
     [ValidateNever]
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Profile { get; set; } = default!;
     

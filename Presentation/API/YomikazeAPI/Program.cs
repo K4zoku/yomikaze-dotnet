@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using StackExchange.Redis;
+using StackExchange.Redis.KeyspaceIsolation;
 using Stripe;
 using Stripe.Checkout;
 using System.Data.Common;
@@ -112,6 +114,9 @@ services.AddStackExchangeRedisCache(options =>
     options.Configuration = redis;
     options.InstanceName = "Yomikaze:";
 });
+var redisConn = await ConnectionMultiplexer.ConnectAsync(redis);
+redisConn.GetDatabase().WithKeyPrefix("Yomikaze:");
+services.AddSingleton(redisConn);
 services.AddAuthorizationBuilder()
     .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 services.AddAutoMapper(typeof(YomikazeMapper));

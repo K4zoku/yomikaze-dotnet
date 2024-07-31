@@ -58,7 +58,7 @@ public partial class ComicsController
         IQueryable<Chapter> chapters = ChapterRepository.GetAllByComicId(key);
 
         chapters = ChapterSearchFieldMutators.Aggregate(chapters, (current, mutator) => mutator.Apply(search, current));
-        long count = chapters.LongCount();
+        long count = chapters.AsSplitQuery().LongCount();
         if (search.Pagination)
         {
             int skip = (pagination.Page - 1) * pagination.Size;
@@ -69,9 +69,9 @@ public partial class ComicsController
             pagination.Size = (int)count;
             pagination.Page = 1;
         }
-
-        List<ChapterModel>? results = Mapper.Map<List<ChapterModel>>(chapters.ToList());
-        PagedList<ChapterModel> paged = new PagedList<ChapterModel>
+        List<Chapter> chapterList = chapters.ToList();
+        List<ChapterModel>? results = Mapper.Map<List<ChapterModel>>(chapterList);
+        PagedList<ChapterModel> paged = new()
         {
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
@@ -87,7 +87,7 @@ public partial class ComicsController
 
         for (int i = 0; i < paged.Results.Count(); i++)
         {
-            Chapter chapter = chapters.ElementAt(i);
+            Chapter chapter = chapterList[i];
             ChapterModel model = paged.Results.ElementAt(i);
             model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
         }
