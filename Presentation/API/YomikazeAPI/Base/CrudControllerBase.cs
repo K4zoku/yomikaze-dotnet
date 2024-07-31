@@ -118,7 +118,6 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
         }
 
         T entity = Mapper.Map<T>(input);
-        Logger.LogDebug("After mapped {Entity}", JsonConvert.SerializeObject(entity));
         try
         {
             Repository.Add(entity);
@@ -133,8 +132,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Logger.LogCritical(e, "Critical error when adding entity");
             return Problem();
         }
-
-        Logger.LogDebug("After added {Entity}", JsonConvert.SerializeObject(entity));
+        
         RemoveListCache();
         if (Equals(entity.Id, default(TKey)))
         {

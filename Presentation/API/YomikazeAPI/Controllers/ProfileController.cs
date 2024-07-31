@@ -13,6 +13,15 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
 
     private IMapper Mapper { get; } = mapper;
 
+    [HttpGet("/profiles")]
+    [Authorize(Roles = "Administrator")]
+    [SwaggerOperation(Summary = "Get all profiles.")]
+    public async Task<ActionResult<IEnumerable<ProfileModel>>> GetProfiles()
+    {
+        List<User> users = await UserManager.Users.ToListAsync();
+        return Mapper.Map<List<ProfileModel>>(users);
+    }
+    
     [HttpGet]
     [Authorize]
     [SwaggerOperation(Summary = "Get the current user's profile.")]

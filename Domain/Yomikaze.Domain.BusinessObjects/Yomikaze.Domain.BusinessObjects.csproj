@@ -87,6 +87,9 @@
         <Compile Update="Entities\ChapterCommentReport.cs">
           <DependentUpon>CommentReport.cs</DependentUpon>
         </Compile>
+        <Compile Update="Models\CommentReportModel.cs">
+          <DependentUpon>ReportModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

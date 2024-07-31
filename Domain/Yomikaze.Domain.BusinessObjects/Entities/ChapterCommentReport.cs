@@ -2,5 +2,5 @@ namespace Yomikaze.Domain.Entities;
 
 public class ChapterCommentReport : CommentReport
 {
-    public ChapterComment Comment { get; set; } = default!;
+    public new ChapterComment Comment { get; set; } = default!;
 }

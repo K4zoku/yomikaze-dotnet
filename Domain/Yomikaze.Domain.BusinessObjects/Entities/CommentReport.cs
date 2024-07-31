@@ -4,4 +4,6 @@ public class CommentReport : Report
 {
     public override CommentReportReason Reason { get; } = default!;
     public ulong CommentId { get; set; } = default!;
+    
+    public virtual Comment Comment { get; set; } = default!;
 }

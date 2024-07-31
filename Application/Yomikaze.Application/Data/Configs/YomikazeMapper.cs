@@ -165,15 +165,34 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.Roles, options => options.MapFrom(src => src.Roles.Select(role => role.Name).ToArray()));
         
         CreateMap<ReportReason, ReportReasonModel>().ReverseMap();
-        CreateMap<ReportReasonModel, ReportReason>().ReverseMap();
+        CreateMap<ComicReportReason, ReportReasonModel>();
+        CreateMap<ChapterReportReason, ReportReasonModel>();
+        CreateMap<CommentReportReason, ReportReasonModel>();
+        CreateMap<ProfileReportReason, ReportReasonModel>();
+        CreateMap<TranslationReportReason, ReportReasonModel>();
+        
         CreateMap<Report, ReportModel>()
+            .ForMember(dest => dest.ReasonId, options => options.MapFrom(src => src.ReasonId.ToString()))
             .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
             .ForMember(dest => dest.Reporter, options => options.MapFrom(src => src.Reporter))
             .ForMember(dest => dest.ReporterId, options => options.MapFrom(src => src.Reporter.Id.ToString()));
-        CreateMap<ComicReport, ComicReportModel>().ReverseMap();
-        CreateMap<ChapterReport, ChapterReportModel>().ReverseMap();
-        CreateMap<ProfileReport, ProfileReportModel>().ReverseMap();
-        CreateMap<CommentReport, CommentReportModel>().ReverseMap();
+        CreateMap<ComicReport, ComicReportModel>()
+            .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
+            .ReverseMap()
+            .ForMember(dest => dest.Comic, options => options.Ignore());
+        CreateMap<ChapterReport, ChapterReportModel>()
+            .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
+            .ForMember(dest => dest.Comic, options => options.MapFrom(src => src.Chapter.Comic))
+            .AfterMap((_, dest) => dest.Chapter.Pages = null)
+            .ReverseMap()
+            .ForMember(dest => dest.Chapter, options => options.Ignore());
+        CreateMap<ProfileReport, ProfileReportModel>()
+            .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
+            .ReverseMap()
+            .ForMember(dest => dest.Profile, options => options.Ignore());
+        CreateMap<CommentReport, CommentReportModel>()
+            .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
+            .ReverseMap();
 
         CreateMap<Transaction, TransactionModel>().ReverseMap();
         CreateMap<WithdrawalRequest, WithdrawalRequestModel>().ReverseMap();

@@ -11,8 +11,6 @@ public class ProfileReportModel : ReportModel
     
     [SwaggerIgnore]
     public string ProfileId { get; set; } = default!;
-    
-    [Required] public string ReasonId { get; set; } = default!;
 
     #endregion
     

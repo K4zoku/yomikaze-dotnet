@@ -6,6 +6,10 @@ namespace Yomikaze.Domain.Models;
 public class CommentReportModel : ReportModel
 {
 
+    [ValidateNever]
+    [SwaggerSchema(ReadOnly = true)]
+    public CommentModel Comment { get; set; } = default!;
+    
     #region WriteOnlyProperties
     
     [SwaggerIgnore]

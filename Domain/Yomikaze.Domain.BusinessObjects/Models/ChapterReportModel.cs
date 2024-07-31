@@ -9,9 +9,14 @@ public class ChapterReportModel : ReportModel
 
     [SwaggerIgnore] 
     public string ChapterId { get; set; } = default!;
-    
-    [Required]
-    public string ReasonId { get; set; } = default!;
 
     #endregion
+    
+    [ValidateNever]
+    [SwaggerSchema(ReadOnly = true)]
+    public ChapterModel Chapter { get; set; } = default!;
+    
+    [ValidateNever]
+    [SwaggerSchema(ReadOnly = true)]
+    public ComicModel Comic { get; set; } = default!;
 }

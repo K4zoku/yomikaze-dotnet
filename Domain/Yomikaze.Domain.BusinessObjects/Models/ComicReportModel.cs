@@ -8,6 +8,7 @@ public class ComicReportModel : ReportModel
     #region ReadOnlyProperties
 
     [SwaggerSchema(ReadOnly = true)] 
+    [ValidateNever]
     public ComicModel Comic { get; set; } = default!;
 
     #endregion
@@ -18,10 +19,6 @@ public class ComicReportModel : ReportModel
     [SwaggerIgnore]
     [WriteOnly]
     public string ComicId { get; set; } = default!;
-    
-    [WriteOnly]
-    [Required]
-    public string ReasonId { get; set; } = default!;
 
     #endregion
 }

@@ -19,6 +19,9 @@ public class ReportModel : BaseModel
     #endregion
 
     #region ReadOnlyProperties
+    
+    [Required]
+    public string ReasonId { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ReportReasonModel Reason { get; set; } = default!;
 
