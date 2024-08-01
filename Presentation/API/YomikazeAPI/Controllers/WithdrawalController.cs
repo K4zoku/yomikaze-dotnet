@@ -14,6 +14,9 @@ public class WithdrawalController(
     : SearchControllerBase<WithdrawalRequest, WithdrawalRequestModel, WithdrawalRequestRepository,
         WithdrawalRequestSearchModel>(repository, mapper, logger)
 {
+    
+    private WithdrawalRequestRepository Repository { get; } = repository;
+    
     protected override IList<SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>> SearchFieldMutators
     { get; } =
     [
@@ -50,6 +53,52 @@ public class WithdrawalController(
 
         ModelState.AddModelError(nameof(input.Amount), "Insufficient balance");
         return BadRequest(ModelState);
+    }
+    
+    [HttpPut]
+    [Route("{id}/approve")]
+    [Authorize]
+    public async Task<ActionResult<WithdrawalRequestModel>> Approve(ulong id, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    {
+        WithdrawalRequest? request = Repository.Get(id);
+        if (request is null)
+        {
+            return NotFound("Withdrawal request not found");
+        }
 
+        User? user = await userManager.FindByIdAsync(request.UserId.ToString());
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        user.Balance -= request.Amount;
+        await userManager.UpdateAsync(user);
+        Transaction transaction = new()
+        {
+            UserId = user.Id,
+            Amount = -request.Amount,
+            Type = TransactionType.Withdrawal
+        };
+        transactionRepository.Add(transaction);
+        request.Status = WithdrawalRequestStatus.Approved;
+        Repository.Update(request);
+        return Mapper.Map<WithdrawalRequestModel>(request);
+    }
+    
+    [HttpPut]
+    [Route("{id}/reject")]
+    [Authorize]
+    public ActionResult<WithdrawalRequestModel> Reject(ulong id)
+    {
+        WithdrawalRequest? request = Repository.Get(id);
+        if (request is null)
+        {
+            return NotFound("Withdrawal request not found");
+        }
+
+        request.Status = WithdrawalRequestStatus.Rejected;
+        Repository.Update(request);
+        return Mapper.Map<WithdrawalRequestModel>(request);
     }
 }

@@ -220,8 +220,20 @@ public partial class ComicsController
             Description = $"/comics/{key}/chapters/{number}"
         };
         transactionRepository.Add(transaction);
+        var comic = Repository.Get(key);
+        var publisher = comic!.Publisher;
+        publisher.Balance += chapter.Price;
+        userManager.UpdateAsync(publisher).Wait();
+        transaction = new Transaction
+        {
+            UserId = publisher.Id,
+            Amount = chapter.Price,
+            Type = TransactionType.ReceiveCoin,
+            Description = $"Unlock chapter {number} for comic {key}"
+        };
+        transactionRepository.Add(transaction);
+        
         chapter.Unlocked.Add(new UnlockedChapter { UserId = userId, ChapterId = chapter.Id });
-
         ChapterRepository.Update(chapter);
         return Ok();
     }
@@ -268,7 +280,20 @@ public partial class ComicsController
                 JsonConvert.SerializeObject(chapters.Select(c => $"/comics/{key}/chapters/{c.Number}").ToArray())
         };
         transactionRepository.Add(transaction);
-        List<int> unlockedChapters = new List<int>();
+        var comic = Repository.Get(key);
+        var publisher = comic!.Publisher;
+        publisher.Balance += price;
+        userManager.UpdateAsync(publisher).Wait();
+        transaction = new Transaction
+        {
+            UserId = publisher.Id,
+            Amount = price,
+            Type = TransactionType.ReceiveCoin,
+            Description = $"Unlock chapters for comic {key}"
+        };
+        transactionRepository.Add(transaction);
+        
+        List<int> unlockedChapters = [];
         foreach (Chapter chapter in chapters)
         {
             chapter.Unlocked.Add(new UnlockedChapter { UserId = currentUser.Id, ChapterId = chapter.Id });
