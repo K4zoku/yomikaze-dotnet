@@ -101,7 +101,7 @@ services.AddJwtBearerAuthentication(jwt)
         options.CallbackPath = "/google";
     });
 
-services.AddTransient<IAuthorizationHandler, SidValidationAuthorizationHandler>();
+services.AddTransient<IAuthorizationMiddlewareResultHandler, SidValidationAuthorizationHandler>();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();

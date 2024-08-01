@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Security.Claims;
 
 namespace Yomikaze.API.Main.Configurations;
 
-public class SidValidationAuthorizationHandler(SignInManager<User> signInManager) : IAuthorizationHandler
+public class SidValidationAuthorizationHandler(SignInManager<User> signInManager) : IAuthorizationMiddlewareResultHandler
 {
     private SignInManager<User> SignInManager => signInManager;
+    
+    private readonly AuthorizationMiddlewareResultHandler _defaultHandler = new();
 
-    public async Task HandleAsync(AuthorizationHandlerContext context)
+    public async Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy,
+        PolicyAuthorizationResult authorizeResult)
     {
         ClaimsPrincipal principal = context.User;
         if (!(principal.Identity?.IsAuthenticated ?? false))
@@ -20,14 +24,11 @@ public class SidValidationAuthorizationHandler(SignInManager<User> signInManager
         User? user = await SignInManager.ValidateSecurityStampAsync(principal);
         if (user is null)
         {
-            if (context.Resource is HttpContext httpContext)
-            {
-                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            }
-            context.Fail();
+            
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return;
         }
 
-        context.Succeed(new OperationAuthorizationRequirement());
+        await _defaultHandler.HandleAsync(next, context, policy, authorizeResult);
     }
 }
