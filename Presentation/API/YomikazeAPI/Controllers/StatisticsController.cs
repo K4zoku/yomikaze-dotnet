@@ -22,6 +22,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
         var reports = context.ChapterReports.Count() + context.ComicReports.Count() + context.ProfileReports.Count() +
                       context.Set<CommentReport>().Count();
         var comments = context.ChapterComments.Count() + context.ComicComments.Count();
+        var roleRequests = context.RoleRequests.Count();
 
         var income = context.Transactions.Where(x => x.Type == TransactionType.PurchaseCoin).Sum(x => x.Amount);
         var outcome = context.Transactions.Where(x => x.Type == TransactionType.Withdrawal).Sum(x => x.Amount);
@@ -37,6 +38,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
             withdrawals,
             reports,
             comments,
+            roleRequests,
             income,
             outcome
         });
