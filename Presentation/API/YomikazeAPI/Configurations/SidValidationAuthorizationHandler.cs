@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using System.Net;
 using System.Security.Claims;
 
 namespace Yomikaze.API.Main.Configurations;
@@ -19,7 +20,12 @@ public class SidValidationAuthorizationHandler(SignInManager<User> signInManager
         User? user = await SignInManager.ValidateSecurityStampAsync(principal);
         if (user is null)
         {
-            context.Fail(new AuthorizationFailureReason(this, "Invalid security stamp"));
+            if (context.Resource is HttpContext httpContext)
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            }
+            context.Fail();
+            return;
         }
 
         context.Succeed(new OperationAuthorizationRequirement());
