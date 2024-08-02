@@ -7,9 +7,8 @@ namespace Yomikaze.Application.Data.Configs;
 
 public class YomikazeMapper : MapperProfile
 {
-    public YomikazeMapper() 
+    public YomikazeMapper()
     {
-        
         CreateMap<string, ulong>().ConvertUsing((src) => IdParse(src));
         CreateMap<ulong, string>().ConvertUsing((src) => src.ToString());
         CreateMap<BaseModel, BaseEntity>()
@@ -18,7 +17,7 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.LastModified, options => options.Ignore())
             .ForMember(dest => dest.WorkerId, options => options.Ignore())
             .ForAllMembers(options => options.Condition((_, _, member) => member != null));
-        
+
         CreateMap<ChapterModel, Chapter>()
             .ForMember(dest => dest.Pages, options =>
             {
@@ -78,7 +77,7 @@ public class YomikazeMapper : MapperProfile
 
         CreateMap<ChapterCommentModel, ChapterComment>()
             .ForMember(dest => dest.Author, options => options.Ignore());
-        CreateMap<ChapterComment, ChapterCommentModel>();      
+        CreateMap<ChapterComment, ChapterCommentModel>();
 
         CreateMap<ComicCommentModel, ComicComment>()
             .ForMember(dest => dest.Author, options => options.Ignore())
@@ -138,39 +137,44 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.LibraryCategories, options =>
             {
                 options.Condition(src => src.CategoryIds != null && src.CategoryIds.Count != 0);
-                options.MapFrom(src => src.CategoryIds!.Select(IdParse).Select(categoryId => new LibraryEntryCategory() { CategoryId = categoryId }).ToHashSet());
+                options.MapFrom(src =>
+                    src.CategoryIds!.Select(IdParse)
+                        .Select(categoryId => new LibraryEntryCategory() { CategoryId = categoryId }).ToHashSet());
             });
         CreateMap<LibraryEntry, LibraryEntryModel>()
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
             .ForMember(dest => dest.ComicId, options => options.MapFrom(src => src.ComicId.ToString()))
-            .ForMember(dest => dest.CategoryIds, options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
+            .ForMember(dest => dest.CategoryIds,
+                options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
 
         CreateMap<TagModel, Tag>();
 
         CreateMap<Tag, TagModel>()
             .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category))
             .ForMember(dest => dest.CategoryId, options => options.Ignore());
-        
+
         CreateMap<TagCategoryModel, TagCategory>()
             .ForMember(dest => dest.Id, options => options.Ignore());
         CreateMap<TagCategory, TagCategoryModel>();
-        
+
         CreateMap<CoinPricing, CoinPricingModel>()
             .ForMember(dest => dest.StripePriceId, options => options.Ignore())
             .ReverseMap()
-            .ForMember(dest => dest.StripePriceId, options => options.Condition(src => !string.IsNullOrWhiteSpace(src.StripePriceId)));
+            .ForMember(dest => dest.StripePriceId,
+                options => options.Condition(src => !string.IsNullOrWhiteSpace(src.StripePriceId)));
 
         CreateMap<User, ProfileModel>()
             .ForMember(dest => dest.Balance, options => options.Ignore())
-            .ForMember(dest => dest.Roles, options => options.MapFrom(src => src.Roles.Select(role => role.Name).ToArray()));
-        
+            .ForMember(dest => dest.Roles,
+                options => options.MapFrom(src => src.Roles.Select(role => role.Name).ToArray()));
+
         CreateMap<ReportReason, ReportReasonModel>().ReverseMap();
         CreateMap<ComicReportReason, ReportReasonModel>();
         CreateMap<ChapterReportReason, ReportReasonModel>();
         CreateMap<CommentReportReason, ReportReasonModel>();
         CreateMap<ProfileReportReason, ReportReasonModel>();
         CreateMap<TranslationReportReason, ReportReasonModel>();
-        
+
         CreateMap<Report, ReportModel>()
             .ForMember(dest => dest.ReasonId, options => options.MapFrom(src => src.ReasonId.ToString()))
             .ForMember(dest => dest.Reason, options => options.MapFrom(src => src.Reason))
@@ -197,13 +201,18 @@ public class YomikazeMapper : MapperProfile
         CreateMap<Transaction, TransactionModel>().ReverseMap();
         CreateMap<WithdrawalRequest, WithdrawalRequestModel>().ReverseMap();
         CreateMap<RoleRequest, RoleRequestModel>().ReverseMap();
-        
+
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
         CreateMap<Notification, NotificationModel>().ReverseMap();
         var profileUpdate = CreateMap<ProfileUpdateModel, User>();
-            profileUpdate.ForAllMembers(options => options.Condition((_, _, member) => member != null));
-            profileUpdate.ReverseMap();
+        profileUpdate.ForMember(dest => dest.Birthday, options =>
+        {
+            options.Condition(src => src.Birthday != null);
+            options.MapFrom(src => src.Birthday!.Value.ToUniversalTime());
+        });
+        profileUpdate.ForAllMembers(options => options.Condition((_, _, member) => member != null));
+        profileUpdate.ReverseMap();
     }
 
     private static ulong IdParse(string? id)

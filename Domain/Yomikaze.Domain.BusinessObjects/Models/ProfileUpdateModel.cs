@@ -10,5 +10,5 @@ public class ProfileUpdateModel
     
     public string? Banner { get; set; }
     
-    public DateTime? Birthday { get; set; }
-}
+    public DateTimeOffset? Birthday { get; set; }       
+}                       
