@@ -76,7 +76,7 @@ public partial class ComicsController
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
             Totals = count,
-            TotalPages = (int)Math.Ceiling((double)count / pagination.Size),
+            TotalPages = (int)Math.Ceiling((double)count / pagination.Size),        
             Results = results
         };
 

@@ -39,6 +39,7 @@ public class YomikazeMapper : MapperProfile
         CreateMap<CoinPricingModel, CoinPricing>().ReverseMap();
 
         CreateMap<ComicModel, Comic>()
+            .ForMember(dest => dest.Chapters, options => options.Condition(src => src.Chapters != null))
             .ForMember(dest => dest.Id, options => options.Condition(src => src.Id != null))
             .ForMember(dest => dest.ComicTags, options =>
             {
@@ -59,6 +60,7 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.Publisher, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore())
             .ReverseMap()
+            .ForMember(dest => dest.Chapters, options => options.Ignore())
             .ForMember(dest => dest.TagIds,
                 options => options.MapFrom(src => src.ComicTags.Select(tag => tag.TagId.ToString())));
 

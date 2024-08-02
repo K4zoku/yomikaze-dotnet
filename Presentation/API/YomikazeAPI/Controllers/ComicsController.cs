@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
@@ -442,5 +444,46 @@ public partial class ComicsController(
         ComicModel model = Mapper.Map<ComicModel>(comic);
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         return Ok(model);
+    }
+    
+    [HttpPatch("{key}")]
+    public override ActionResult<ComicModel> Patch(ulong key, JsonPatchDocument<ComicModel> patch)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        Comic? entityToUpdate = GetEntity(key);
+        if (entityToUpdate == null)
+        {
+            return NotFound();
+        }
+
+        ComicModel model = Mapper.Map<ComicModel>(entityToUpdate);
+        model.Chapters = Mapper.Map<IList<ChapterModel>>(ChapterRepository.GetAllByComicId(key).Include(chapter => chapter.Pages).ToList());
+    
+        Logger.LogDebug("Patching model: {Model}", JsonConvert.SerializeObject(model));
+        patch.ApplyTo(model);
+        Logger.LogDebug("Patched model: {Model}", JsonConvert.SerializeObject(model));
+
+        Mapper.Map(model, entityToUpdate);
+        try
+        {
+            Repository.Update(entityToUpdate);
+        }
+        catch (DbUpdateException e)
+        {
+            Logger.LogWarning(e, "DbRelation error when updating entity {Key}", key);
+            return Conflict();
+        }
+        catch (Exception e)
+        {
+            Logger.LogCritical(e, "Critical error when updating entity {Key}", key);
+            return Problem();
+        }
+
+        RemoveCache(key);
+        return NoContent();
     }
 }

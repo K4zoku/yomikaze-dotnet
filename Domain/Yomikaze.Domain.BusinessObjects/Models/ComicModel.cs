@@ -44,13 +44,15 @@ public class ComicModel : BaseModel
 
     [WriteOnly]
     [SwaggerSchema(WriteOnly = true)] public string? PublisherId { get; set; }
+    
+    public IList<ChapterModel>? Chapters { get; set; } = null;                          
 
     #endregion
 
     #region ReadOnlyExtraProperties
 
     [SwaggerSchema(ReadOnly = true)] public int? TotalChapters { get; set; }
-
+                    
     [SwaggerSchema(ReadOnly = true)] public int? TotalViews { get; set; }
 
     [SwaggerSchema(ReadOnly = true)] public double AverageRating { get; set; }
