@@ -11,6 +11,8 @@ public class YomikazeMapper : MapperProfile
     {
         CreateMap<string, ulong>().ConvertUsing((src) => IdParse(src));
         CreateMap<ulong, string>().ConvertUsing((src) => src.ToString());
+        CreateMap<DateTimeOffset, DateTimeOffset>().ConvertUsing((src) => src.ToUniversalTime());
+        CreateMap<DateTimeOffset?, DateTimeOffset?>().ConvertUsing((src) => src == null ? null : src.Value.ToUniversalTime());
         CreateMap<BaseModel, BaseEntity>()
             .ForMember(dest => dest.Id, options => options.Ignore())
             .ForMember(dest => dest.CreationTime, options => options.Ignore())
