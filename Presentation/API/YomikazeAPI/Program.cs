@@ -12,6 +12,7 @@ using Stripe;
 using Stripe.Checkout;
 using System.Data.Common;
 using Yomikaze.API.Main.Configurations;
+using Yomikaze.API.Main.Helpers;
 using Yomikaze.API.Main.Services;
 using Yomikaze.Application.Data.Configs;
 using Yomikaze.Application.Helpers;
@@ -107,16 +108,14 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
-string redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ??
-               throw new InvalidOperationException("Redis configuration not found");
-services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = redis;
-    options.InstanceName = "Yomikaze:";
-});
-var redisConn = await ConnectionMultiplexer.ConnectAsync(redis);
-redisConn.GetDatabase().WithKeyPrefix("Yomikaze:");
-services.AddSingleton(redisConn);
+// string redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ??
+//                throw new InvalidOperationException("Redis configuration not found");
+// services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = redis;
+//     options.InstanceName = "Yomikaze:";
+// });
+services.AddSingleton<IDistributedCache, NoCache>();
 services.AddAuthorizationBuilder()
     .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 services.AddAutoMapper(typeof(YomikazeMapper));
