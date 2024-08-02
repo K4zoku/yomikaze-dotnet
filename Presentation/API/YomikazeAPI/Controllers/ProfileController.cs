@@ -42,6 +42,7 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
         }
 
         ProfileModel? model = Mapper.Map<ProfileModel>(user);
+        model.Roles = user.Roles.OrderBy(role => role.Id).Select(role => role.Name!).ToArray();
         if (User.TryGetId(out ulong currentId) && currentId == id)
         {
             model.Balance = user.Balance;
