@@ -70,5 +70,6 @@ public enum ComicStatus
     OnGoing = 0,
     Completed = 1,
     Hiatus = 2,
-    Cancelled = 3
+    Cancelled = 3,
+    Pending = 4
 }
