@@ -79,6 +79,8 @@ public partial class ComicsController(
                 (query, search) => query.Where(comic => comic.PublicationDate <= search.ToPublicationDate)),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.Status.HasValue,
                 (query, search) => query.Where(comic => search.Status == comic.Status)),
+            new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => !searchModel.Status.HasValue,
+                (query, search) => query.Where(comic => comic.Status != ComicStatus.Pending)),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.FromTotalChapters.HasValue,
                 (query, search) => query.Where(comic => comic.TotalChapters >= search.FromTotalChapters)),
             new SearchFieldMutator<Comic, ComicSearchModel>(searchModel => searchModel.ToTotalChapters.HasValue,
