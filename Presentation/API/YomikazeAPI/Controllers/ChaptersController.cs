@@ -66,7 +66,7 @@ public partial class ComicsController
         }
         else
         {
-            pagination.Size = (int)count;
+            pagination.Size = count > 0 ? (int)count : 1;
             pagination.Page = 1;
         }
         List<Chapter> chapterList = chapters.ToList();
