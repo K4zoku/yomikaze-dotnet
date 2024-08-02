@@ -140,7 +140,7 @@ public partial class ComicsController
         {
             if (User.TryGetId(out ulong userId))
             {
-                model.IsUnlocked = model.HasLock is false || chapter.Unlocked.Any(u => u.UserId == userId);
+                model.IsUnlocked = model.HasLock is false || chapter.Comic.PublisherId == userId || chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;
