@@ -6,7 +6,8 @@ namespace Yomikaze.Infrastructure.Migrations.PostgreSQL;
 
 public static class TimescaleDbExtension
 {
-    public static OperationBuilder<SqlOperation> CreateHyperTable(this MigrationBuilder migrationBuilder, string tableName, string timeColumn)
+    public static OperationBuilder<SqlOperation> CreateHyperTable(this MigrationBuilder migrationBuilder,
+        string tableName, string timeColumn)
     {
         return migrationBuilder.Sql($"SELECT create_hypertable('{tableName}', '{timeColumn}');");
     }

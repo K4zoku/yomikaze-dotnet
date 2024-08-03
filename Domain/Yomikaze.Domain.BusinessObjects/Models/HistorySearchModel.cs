@@ -3,9 +3,9 @@ namespace Yomikaze.Domain.Models;
 public class HistorySearchModel
 {
     public HistoryOrderBy[]? OrderBy { get; set; }
-    
+
     public DateTime? FromCreationTime { get; set; }
-    
+
     public DateTime? ToCreationTime { get; set; }
 }
 

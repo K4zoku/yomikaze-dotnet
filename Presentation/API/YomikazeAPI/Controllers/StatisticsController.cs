@@ -12,20 +12,20 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
     [HttpGet]
     public ActionResult GetStatistics()
     {
-        var comics = context.Comics.Count();
-        var chapters = context.Chapters.Count();
-        var users = context.Users.Count();
-        var tags = context.Tags.Count();
-        var tagCategories = context.TagCategories.Count();
-        var transactions = context.Transactions.Count();
-        var withdrawals = context.WithdrawalRequests.Count();
-        var reports = context.ChapterReports.Count() + context.ComicReports.Count() + context.ProfileReports.Count() +
+        int comics = context.Comics.Count();
+        int chapters = context.Chapters.Count();
+        int users = context.Users.Count();
+        int tags = context.Tags.Count();
+        int tagCategories = context.TagCategories.Count();
+        int transactions = context.Transactions.Count();
+        int withdrawals = context.WithdrawalRequests.Count();
+        int reports = context.ChapterReports.Count() + context.ComicReports.Count() + context.ProfileReports.Count() +
                       context.Set<CommentReport>().Count();
-        var comments = context.ChapterComments.Count() + context.ComicComments.Count();
-        var roleRequests = context.RoleRequests.Count();
+        int comments = context.ChapterComments.Count() + context.ComicComments.Count();
+        int roleRequests = context.RoleRequests.Count();
 
-        var income = context.Transactions.Where(x => x.Type == TransactionType.PurchaseCoin).Sum(x => x.Amount);
-        var outcome = context.Transactions.Where(x => x.Type == TransactionType.Withdrawal).Sum(x => x.Amount);
+        long income = context.Transactions.Where(x => x.Type == TransactionType.PurchaseCoin).Sum(x => x.Amount);
+        long outcome = context.Transactions.Where(x => x.Type == TransactionType.Withdrawal).Sum(x => x.Amount);
 
         return Ok(new
         {
@@ -71,28 +71,29 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
                 }
 
                 return acc;
-            }),
+            })
         };
         // add date between with count = date before
-        var format = new DateTimeFormat("yyyy-MM-dd");
-        var start = DateTime.Parse(comics[0].x!, format.FormatProvider);
-        var end = DateTime.Parse(comics[^1].x!, format.FormatProvider);
-        var date = start;
-        var index = 0;
-        var labels = new List<string>();
-        var data = new List<int>();
+        DateTimeFormat format = new DateTimeFormat("yyyy-MM-dd");
+        DateTime start = DateTime.Parse(comics[0].x!, format.FormatProvider);
+        DateTime end = DateTime.Parse(comics[^1].x!, format.FormatProvider);
+        DateTime date = start;
+        int index = 0;
+        List<string> labels = new List<string>();
+        List<int> data = new List<int>();
         while (date < end)
         {
             labels.Add(date.ToString("yyyy-MM-dd"));
             data.Add(dataset.Data[index]);
             date = date.AddDays(1);
-            var next = DateTime.Parse(comics[index].x!, format.FormatProvider);
+            DateTime next = DateTime.Parse(comics[index].x!, format.FormatProvider);
             if (date >= next)
             {
                 index++;
             }
-        }   
-        var chart = new { Labels = labels, Datasets = new ArrayList { new { Data = data, } } };
+        }
+
+        var chart = new { Labels = labels, Datasets = new ArrayList { new { Data = data } } };
         return Ok(chart);
     }
 
@@ -113,14 +114,14 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
             .ToList();
         return Ok(new { income, outcome });
     }
-    
+
     [HttpGet("report")]
     public ActionResult GetReports()
     {
-        var chapterReports = context.ChapterReports.Count();
-        var comicReports = context.ComicReports.Count();
-        var profileReports = context.ProfileReports.Count();
-        var commentReports = context.Set<CommentReport>().Count();
+        int chapterReports = context.ChapterReports.Count();
+        int comicReports = context.ComicReports.Count();
+        int profileReports = context.ProfileReports.Count();
+        int commentReports = context.Set<CommentReport>().Count();
         return Ok(new { chapterReports, comicReports, profileReports, commentReports });
     }
 }

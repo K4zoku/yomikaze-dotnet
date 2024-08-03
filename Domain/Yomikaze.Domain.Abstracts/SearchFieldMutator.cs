@@ -4,9 +4,9 @@ public delegate IQueryable<TItem> QueryMutator<TItem, in TSearch>(IQueryable<TIt
 
 public class SearchFieldMutator<TItem, TSearch>(Predicate<TSearch> condition, QueryMutator<TItem, TSearch> mutator)
 {
-    private Predicate<TSearch> Condition { get; set; } = condition;
-    private QueryMutator<TItem, TSearch> Mutator { get; set; } = mutator;
-    
+    private Predicate<TSearch> Condition { get; } = condition;
+    private QueryMutator<TItem, TSearch> Mutator { get; } = mutator;
+
     public string? Name { get; set; }
 
     public IQueryable<TItem> Apply(TSearch search, IQueryable<TItem> query)
@@ -15,6 +15,7 @@ public class SearchFieldMutator<TItem, TSearch>(Predicate<TSearch> condition, Qu
         {
             Console.WriteLine($"Applying {Name}...");
         }
+
         return Condition(search) ? Mutator(query, search) : query;
     }
 }

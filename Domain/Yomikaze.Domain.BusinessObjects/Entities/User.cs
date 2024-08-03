@@ -25,17 +25,17 @@ public sealed class User : IdentityUser<ulong>, IEntity
 
     public long Balance { get; set; }
 
+    public IList<Role> Roles { get; set; } = new List<Role>();
+
+    // Stripe
+
+    public string? StripeCustomerId { get; set; }
+
+    public string? StripeEphemeralKey { get; set; }
+
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Key]
     public override ulong Id { get; set; }
 
     [NotMapped] public int WorkerId => 7;
-    
-    public IList<Role> Roles { get; set; } = new List<Role>();
-    
-    // Stripe
-    
-    public string? StripeCustomerId { get; set; }
-    
-    public string? StripeEphemeralKey { get; set; }
 }

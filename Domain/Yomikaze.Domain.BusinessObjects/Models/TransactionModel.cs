@@ -15,7 +15,7 @@ public class TransactionModel : BaseModel
     public long Amount { get; set; }
 
     public string Description { get; set; } = default!;
-    
+
     public TransactionType Type { get; set; }
 
     #endregion

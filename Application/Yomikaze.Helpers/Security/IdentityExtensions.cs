@@ -10,7 +10,7 @@ public static class IdentityExtensions
 {
     public static IServiceCollection AddYomikazeIdentity(this IServiceCollection services)
     {
-        var builder = services.AddIdentity<User, Role>(options =>
+        IdentityBuilder builder = services.AddIdentity<User, Role>(options =>
         {
             options.User.RequireUniqueEmail = true;
             options.ClaimsIdentity.SecurityStampClaimType = JwtRegisteredClaimNames.Sid;

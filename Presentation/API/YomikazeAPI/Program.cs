@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using StackExchange.Redis;
-using StackExchange.Redis.KeyspaceIsolation;
 using Stripe;
 using Stripe.Checkout;
 using System.Data.Common;
@@ -102,19 +100,11 @@ services.AddJwtBearerAuthentication(jwt)
         options.CallbackPath = "/google";
     });
 
-services.AddTransient<IAuthorizationMiddlewareResultHandler, SidValidationAuthorizationHandler>();
-
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGenWithJwt();
 services.AddSwaggerGenNewtonsoftSupport();
 services.AddPublicCors();
-// string redis = configuration.GetRequiredSection("Redis").GetConnectionString("Yomikaze") ??
-//                throw new InvalidOperationException("Redis configuration not found");
-// services.AddStackExchangeRedisCache(options =>
-// {
-//     options.Configuration = redis;
-//     options.InstanceName = "Yomikaze:";
-// });
+
 services.AddSingleton<IDistributedCache, NoCache>();
 services.AddAuthorizationBuilder()
     .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
@@ -222,7 +212,7 @@ try
         await dbContext.TranslationReportReasons.AddRangeAsync(YomikazeDbContext.Default.TranslationReportReasons);
         await dbContext.SaveChangesAsync();
     }
-    
+
     if (!await dbContext.CommentReportReasons.AnyAsync())
     {
         logger.LogInformation("No comment report reasons found, adding default comment report reasons");

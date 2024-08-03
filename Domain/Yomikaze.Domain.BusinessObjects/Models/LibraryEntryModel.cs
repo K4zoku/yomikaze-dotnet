@@ -4,11 +4,9 @@ public class LibraryEntryModel : BaseModel
 {
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)]
-    public ComicModel? Comic { get; set; }
+    [SwaggerSchema(ReadOnly = true)] public ComicModel? Comic { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)]
-    public LibraryCategoryModel[]? Categories { get; set; }
+    [SwaggerSchema(ReadOnly = true)] public LibraryCategoryModel[]? Categories { get; set; }
 
     #endregion
 
@@ -19,11 +17,9 @@ public class LibraryEntryModel : BaseModel
     [SwaggerSchema(ReadOnly = true)]
     public string? UserId { get; set; }
 
-    [WriteOnly]
-    public string? ComicId { get; set; }
+    [WriteOnly] public string? ComicId { get; set; }
 
-    [WriteOnly]
-    public IList<string>? CategoryIds { get; set; }
+    [WriteOnly] public IList<string>? CategoryIds { get; set; }
 
     #endregion
 }

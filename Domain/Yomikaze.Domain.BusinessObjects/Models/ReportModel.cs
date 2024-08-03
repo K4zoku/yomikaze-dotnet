@@ -4,6 +4,15 @@ namespace Yomikaze.Domain.Models;
 
 public class ReportModel : BaseModel
 {
+    #region WriteOnlyProperties
+
+    [SwaggerIgnore]
+    [SwaggerSchema(ReadOnly = true)]
+    [WriteOnly]
+    public string ReporterId { get; set; } = default!;
+
+    #endregion
+
     #region CommonProperties
 
     public string? Description { get; set; } = default!;
@@ -19,22 +28,12 @@ public class ReportModel : BaseModel
     #endregion
 
     #region ReadOnlyProperties
-    
-    [Required]
-    public string ReasonId { get; set; } = default!;
+
+    [Required] public string ReasonId { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ReportReasonModel Reason { get; set; } = default!;
 
     [SwaggerSchema(ReadOnly = true)] public ProfileModel Reporter { get; set; } = default!;
-
-    #endregion
-
-    #region WriteOnlyProperties
-
-    [SwaggerIgnore]
-    [SwaggerSchema(ReadOnly = true)]
-    [WriteOnly]
-    public string ReporterId { get; set; } = default!;
 
     #endregion
 }

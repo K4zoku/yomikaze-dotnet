@@ -15,6 +15,5 @@ public class WithdrawalRequestConfiguration : BaseEntityConfiguration<Withdrawal
             .HasOne<User>(e => e.User)
             .WithMany()
             .HasForeignKey(e => e.UserId);
-
     }
 }

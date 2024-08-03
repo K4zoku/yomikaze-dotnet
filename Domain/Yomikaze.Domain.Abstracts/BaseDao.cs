@@ -19,7 +19,7 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     {
         DbSet.Add(entity);
     }
-    
+
     public virtual void Add(params TEntity[] entities)
     {
         DbSet.AddRange(entities);
@@ -34,7 +34,7 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     {
         DbSet.Remove(entity);
     }
-    
+
     public virtual void Delete(params TEntity[] entity)
     {
         DbSet.RemoveRange(entity);
@@ -48,12 +48,12 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
             Delete(entity);
         }
     }
-    
+
     public virtual void DeleteByIds(params TId[] ids)
     {
         DbSet.Where(e => ids.Contains(e.Id)).ExecuteDeleteAsync();
     }
-    
+
     public virtual void DeleteAll(Expression<Func<TEntity, bool>> predicate)
     {
         DbSet.Where(predicate).ExecuteDeleteAsync();
@@ -73,46 +73,46 @@ public abstract class BaseDao<TEntity, TId>(DbContext dbContext) : IDao<TEntity,
     {
         return DbSet.AsQueryable();
     }
-    
-    public virtual void Detach(TEntity entity)
-    {
-        DbContext.Entry(entity).State = EntityState.Detached;
-    }
-    
-    public virtual void Detach(params TEntity[] entities)
-    {
-        foreach (var entity in entities)
-        {
-            Detach(entity);
-        }
-    }
-    
-    public virtual void DetachAll()
-    {
-        foreach (var entity in DbSet.Local)
-        {
-            Detach(entity);
-        }
-    }
-    
-    public virtual void Attach(TEntity entity)
-    {
-        DbSet.Attach(entity);
-    }
-    
-    public virtual void Attach(params TEntity[] entities)
-    {
-        DbSet.AttachRange(entities);
-    }
-    
-    public virtual void AttachAll()
-    {
-        DbSet.AttachRange(DbSet.Local);
-    }
 
     public virtual void Save()
     {
         DbContext.SaveChanges();
+    }
+
+    public virtual void Detach(TEntity entity)
+    {
+        DbContext.Entry(entity).State = EntityState.Detached;
+    }
+
+    public virtual void Detach(params TEntity[] entities)
+    {
+        foreach (TEntity entity in entities)
+        {
+            Detach(entity);
+        }
+    }
+
+    public virtual void DetachAll()
+    {
+        foreach (TEntity entity in DbSet.Local)
+        {
+            Detach(entity);
+        }
+    }
+
+    public virtual void Attach(TEntity entity)
+    {
+        DbSet.Attach(entity);
+    }
+
+    public virtual void Attach(params TEntity[] entities)
+    {
+        DbSet.AttachRange(entities);
+    }
+
+    public virtual void AttachAll()
+    {
+        DbSet.AttachRange(DbSet.Local);
     }
 }
 

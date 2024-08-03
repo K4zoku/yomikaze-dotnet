@@ -4,15 +4,6 @@ namespace Yomikaze.Domain.Models;
 
 public class WithdrawalRequestModel : BaseModel
 {
-    #region ReadOnlyProperties
-
-    [SwaggerSchema(ReadOnly = true)] public ProfileModel? Profile { get; set; }
-
-    [SwaggerSchema(ReadOnly = true)]
-    public WithdrawalRequestStatus Status { get; set; } = WithdrawalRequestStatus.Pending;
-    
-    #endregion
-
     #region WriteOnlyProperties
 
     [SwaggerIgnore]
@@ -21,10 +12,19 @@ public class WithdrawalRequestModel : BaseModel
 
     #endregion
 
+    #region ReadOnlyProperties
+
+    [SwaggerSchema(ReadOnly = true)] public ProfileModel? Profile { get; set; }
+
+    [SwaggerSchema(ReadOnly = true)]
+    public WithdrawalRequestStatus Status { get; set; } = WithdrawalRequestStatus.Pending;
+
+    #endregion
+
     #region CommonProperties
 
     [Required] public long Amount { get; set; } = default!;
-    
+
     [Required] public string PaymentInformation { get; set; } = default!;
 
     #endregion

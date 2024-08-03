@@ -9,7 +9,7 @@ public class LibraryConfiguration : BaseEntityConfiguration<LibraryEntry>
     public override void Configure(EntityTypeBuilder<LibraryEntry> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasMany(e => e.Categories)
             .WithMany(e => e.Entries)

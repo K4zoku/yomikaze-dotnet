@@ -17,7 +17,7 @@ public class ComicConfiguration : BaseEntityConfiguration<Comic>
             .HasMany(e => e.Chapters)
             .WithOne(e => e.Comic);
         builder
-            .HasMany(e=> e.Ratings)
+            .HasMany(e => e.Ratings)
             .WithOne(e => e.Comic);
         builder
             .HasMany(e => e.Follows)

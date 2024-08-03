@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
 
@@ -24,7 +19,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<Chapter> Chapters { get; init; } = default!;
     public DbSet<CoinPricing> CoinPricings { get; init; } = default!;
     public DbSet<Comic> Comics { get; init; } = default!;
-    
+
     public DbSet<ComicView> ComicViews { get; init; } = default!;
     public DbSet<ComicRating> ComicRatings { get; init; } = default!;
     public DbSet<ChapterComment> ChapterComments { get; init; } = default!;
@@ -43,7 +38,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<ChapterReportReason> ChapterReportReasons { get; init; } = default!;
     public DbSet<ComicReportReason> ComicReportReasons { get; init; } = default!;
     public DbSet<ProfileReportReason> ProfileReportReasons { get; init; } = default!;
-    
+
     public DbSet<CommentReportReason> CommentReportReasons { get; init; } = default!;
     public DbSet<TranslationReportReason> TranslationReportReasons { get; init; } = default!;
     public DbSet<Tag> Tags { get; init; } = default!;
@@ -52,7 +47,7 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     public DbSet<Translation> Translations { get; init; } = default!;
     public DbSet<UnlockedChapter> UnlockedChapters { get; init; } = default!;
     public DbSet<WithdrawalRequest> WithdrawalRequests { get; init; } = default!;
-    
+
     public DbSet<RoleRequest> RoleRequests { get; init; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -68,10 +63,10 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
-    {               
+    {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-        
+
         builder.Entity<IdentityUserToken<ulong>>().ToTable("user_tokens");
         builder.Entity<IdentityUserLogin<ulong>>().ToTable("user_logins");
         builder.Entity<IdentityUserClaim<ulong>>().ToTable("user_claims");
@@ -87,24 +82,24 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
                 [typeof(ulong), typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
             .HasName("get_comic_views")
             .IsBuiltIn(false);
-        
+
         builder
             .HasDbFunction(GetType().GetMethod(nameof(GetComicsViewsResult),
                 [typeof(DateTimeOffset), typeof(DateTimeOffset)])!)
             .HasName("get_comics_views")
             .IsBuiltIn(false);
     }
-    
+
     public IQueryable<ComicViewsResult> GetComicViewsResult(ulong id, DateTimeOffset startDate, DateTimeOffset endDate)
     {
         return FromExpression(() => GetComicViewsResult(id, startDate.ToUniversalTime(), endDate.ToUniversalTime()));
     }
-    
+
     public IQueryable<ComicsViewResult> GetComicsViewsResult(DateTimeOffset startDate, DateTimeOffset endDate)
     {
         return FromExpression(() => GetComicsViewsResult(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
     }
-    
+
     public IQueryable<Comic> GetRandomComic()
     {
         return Comics.FromSqlRaw("SELECT * FROM get_random_comic");

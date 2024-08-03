@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
@@ -156,6 +155,8 @@ public partial class ComicsController(
     private static List<string> ListCacheKeys { get; } = [];
 
     private static object ListCacheKeyLock { get; } = new();
+
+    private static Random RandomNumber { get; } = new();
 
     private static void AddCacheKey(string key)
     {
@@ -339,8 +340,6 @@ public partial class ComicsController(
         return result;
     }
 
-    private static Random RandomNumber { get; } = new();
-
     [HttpGet("{key}")]
     [AllowAnonymous]
     public override ActionResult<ComicModel> Get(ulong key)
@@ -422,7 +421,7 @@ public partial class ComicsController(
         Logger.LogInformation("Removed cache key {Key}:{UserId}", key, userId);
         lock (ListCacheKeyLock)
         {
-            var toRemove = ListCacheKeys
+            List<string> toRemove = ListCacheKeys
                 .Where(k => k.Contains($":{userId}"))
                 .ToList();
             toRemove.ForEach(k =>
@@ -447,7 +446,7 @@ public partial class ComicsController(
         ModelWriteOnlyProperties.ForEach(x => x.SetValue(model, default));
         return Ok(model);
     }
-    
+
     [HttpPatch("{key}")]
     public override ActionResult<ComicModel> Patch(ulong key, JsonPatchDocument<ComicModel> patch)
     {
@@ -463,11 +462,13 @@ public partial class ComicsController(
         }
 
         ComicModel model = Mapper.Map<ComicModel>(entityToUpdate);
-        model.Chapters = Mapper.Map<IList<ChapterModel>>(ChapterRepository.GetAllByComicId(key).Include(chapter => chapter.Pages).ToList());
-    
-        Logger.LogDebug("Patching model: {Model}", JsonConvert.SerializeObject(model));
+        model.Chapters =
+            Mapper.Map<IList<ChapterModel>>(ChapterRepository.GetAllByComicId(key).Include(chapter => chapter.Pages)
+                .ToList());
+
+        Logger.LogDebug("Patching model: {Model}", SerializeObject(model));
         patch.ApplyTo(model);
-        Logger.LogDebug("Patched model: {Model}", JsonConvert.SerializeObject(model));
+        Logger.LogDebug("Patched model: {Model}", SerializeObject(model));
 
         Mapper.Map(model, entityToUpdate);
         try

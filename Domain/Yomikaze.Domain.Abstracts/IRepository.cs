@@ -7,7 +7,7 @@ public interface IRepository<T, in TKey> where T : class, IEntity<TKey>
     void Add(T entity);
 
     void Add(params T[] entities);
-    
+
     void Update(T entity);
     void Delete(T entity);
 }

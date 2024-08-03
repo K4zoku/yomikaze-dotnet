@@ -16,7 +16,7 @@ public class ComicTag
 
         return ComicId == other.ComicId && TagId == other.TagId;
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(ComicId, TagId);

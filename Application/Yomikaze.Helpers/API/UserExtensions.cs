@@ -31,14 +31,14 @@ public static class UserExtensions
         task.Wait();
         return task.Result ?? throw new HttpResponseException(500, "Cannot get user");
     }
-    
+
     public static bool TryGetId(this ClaimsPrincipal user, out ulong id)
     {
         string idStr = user.FindFirstValue(JwtRegisteredClaimNames.NameId) ??
                        user.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? "";
         return ulong.TryParse(idStr, out id);
     }
-    
+
     public static bool IsAuthenticated(this ClaimsPrincipal user)
     {
         return user.Identity?.IsAuthenticated ?? false;

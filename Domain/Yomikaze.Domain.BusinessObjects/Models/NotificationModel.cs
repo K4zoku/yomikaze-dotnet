@@ -11,6 +11,7 @@ public class NotificationModel : BaseModel
     #endregion
 
     #region CommonProperties
+
     public string? Title { get; set; }
 
     public string? Content { get; set; }

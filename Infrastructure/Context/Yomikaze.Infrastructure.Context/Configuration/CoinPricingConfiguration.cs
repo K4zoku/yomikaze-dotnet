@@ -11,7 +11,7 @@ public class CoinPricingConfiguration : BaseEntityConfiguration<CoinPricing>
         builder
             .Property(e => e.Currency)
             .HasConversion(
-                v=> v.ToString(),
-                v=> Enum.Parse<Currency>(v));
+                v => v.ToString(),
+                v => Enum.Parse<Currency>(v));
     }
 }

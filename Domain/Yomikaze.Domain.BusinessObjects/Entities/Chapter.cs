@@ -34,9 +34,8 @@ public class Chapter : BaseEntity
     public ICollection<ChapterComment> Comments { get; set; } = new List<ChapterComment>();
 
     public int Price { get; set; } = 0;
-    
-    [Projectable]
-    public bool HasLock => Price > 0;
+
+    [Projectable] public bool HasLock => Price > 0;
 
     public ICollection<UnlockedChapter> Unlocked
     {
@@ -44,9 +43,7 @@ public class Chapter : BaseEntity
         set => _unlocked = value;
     }
 
-    [NotMapped]
-    [Projectable]
-    public int TotalComments => Comments.Count;
+    [NotMapped] [Projectable] public int TotalComments => Comments.Count;
 
     #endregion
 

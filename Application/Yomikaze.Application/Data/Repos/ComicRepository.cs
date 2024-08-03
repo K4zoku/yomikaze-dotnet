@@ -6,6 +6,7 @@ namespace Yomikaze.Application.Data.Repos;
 public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic>(new ComicDao(dbContext))
 {
     private YomikazeDbContext DbContext { get; } = dbContext;
+
     public override IQueryable<Comic> Query()
     {
         return base.Query()
@@ -13,7 +14,7 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
             .Include(comic => comic.Publisher)
             .AsSplitQuery();
     }
-    
+
     public IQueryable<Comic> QueryWithExtras()
     {
         return Query()
@@ -35,7 +36,7 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
             .AsSplitQuery()
             .FirstOrDefault();
     }
-    
+
     public Comic? GetWithExtras(ulong id)
     {
         return base.Query()
@@ -47,13 +48,13 @@ public class ComicRepository(YomikazeDbContext dbContext) : BaseRepository<Comic
             .AsSplitQuery()
             .FirstOrDefault();
     }
-    
+
     public Comic? GetRandomComic()
     {
         return DbContext.GetRandomComic()
             .Include(comic => comic.Publisher)
             .Include(comic => comic.Tags)
-            .AsSingleQuery()        
+            .AsSingleQuery()
             .SingleOrDefault();
     }
 }

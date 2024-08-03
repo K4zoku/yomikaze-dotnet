@@ -99,7 +99,7 @@ public class ImagesController(PhysicalFileProvider fileProvider) : ControllerBas
             return BadRequest(ModelState);
         }
 
-        HashSet<string> willDelete = new HashSet<string>(files ?? []);
+        HashSet<string> willDelete = new(files ?? []);
 
         foreach (string file in willDelete)
         {

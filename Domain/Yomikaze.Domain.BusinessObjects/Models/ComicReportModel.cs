@@ -7,7 +7,7 @@ public class ComicReportModel : ReportModel
 {
     #region ReadOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)] 
+    [SwaggerSchema(ReadOnly = true)]
     [ValidateNever]
     public ComicModel Comic { get; set; } = default!;
 

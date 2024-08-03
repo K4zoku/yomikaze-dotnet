@@ -23,7 +23,7 @@ public class LibraryEntry : BaseEntity
 
     [DeleteBehavior(DeleteBehavior.Cascade)]
     public User User { get; set; } = default!;
-    
+
     public IList<LibraryEntryCategory> LibraryCategories { get; set; } = new List<LibraryEntryCategory>();
 
     [DeleteBehavior(DeleteBehavior.Cascade)]

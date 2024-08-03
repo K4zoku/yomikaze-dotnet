@@ -44,15 +44,13 @@ public class Comment : BaseEntity
         get => LazyLoader.Load(this, ref _replies);
         set => _replies = value;
     }
-    
-    [Projectable]
-    public int TotalReplies => Replies.Count;
-    
+
+    [Projectable] public int TotalReplies => Replies.Count;
+
     public ICollection<CommentReaction> Reactions { get; set; } = [];
-    
-    [Projectable]
-    public int TotalLikes => Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like);
-    
+
+    [Projectable] public int TotalLikes => Reactions.Count(reaction => reaction.ReactionType == ReactionType.Like);
+
     [Projectable]
     public int TotalDislikes => Reactions.Count(reaction => reaction.ReactionType == ReactionType.Dislike);
 

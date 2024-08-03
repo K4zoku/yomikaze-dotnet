@@ -9,7 +9,7 @@ public class CoinPricing : BaseEntity
     public Currency Currency { get; set; } = Currency.USD;
 
     public double Discount { get; set; }
-    
+
     public string StripePriceId { get; set; } = default!;
 }
 

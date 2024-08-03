@@ -10,7 +10,6 @@ public abstract class BaseEntityConfiguration<TEntity, TKey> : IEntityTypeConfig
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        
         builder
             .Property(e => e.CreationTime)
             .IsRequired()

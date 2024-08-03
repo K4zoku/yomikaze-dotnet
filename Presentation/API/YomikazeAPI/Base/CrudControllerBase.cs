@@ -132,7 +132,7 @@ public abstract class CrudControllerBase<T, TKey, TModel, TRepository>(
             Logger.LogCritical(e, "Critical error when adding entity");
             return Problem();
         }
-        
+
         RemoveListCache();
         if (Equals(entity.Id, default(TKey)))
         {

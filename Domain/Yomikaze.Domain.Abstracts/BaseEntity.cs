@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Yomikaze.Domain.Abstracts;
 
@@ -9,11 +8,10 @@ namespace Yomikaze.Domain.Abstracts;
 public abstract class BaseEntity<TId> : IEntity<TId>
 {
     public DateTimeOffset? CreationTime { get; set; }
-    
+
     public DateTimeOffset? LastModified { get; set; }
 
-    [Key]
-    public virtual TId Id { get; } = default!;
+    [Key] public virtual TId Id { get; } = default!;
 
     public override bool Equals(object? obj)
     {

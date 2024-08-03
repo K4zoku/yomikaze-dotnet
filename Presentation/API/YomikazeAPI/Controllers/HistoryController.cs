@@ -137,10 +137,7 @@ public class HistoryController(
             return Forbid();
         }
 
-        HistoryRecordModel model = new HistoryRecordModel
-        {
-            Chapter = Mapper.Map<ChapterModel>(chapter), PageNumber = 0
-        };
+        HistoryRecordModel model = new() { Chapter = Mapper.Map<ChapterModel>(chapter), PageNumber = 0 };
         return model;
     }
 }

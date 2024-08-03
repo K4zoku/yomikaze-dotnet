@@ -19,6 +19,7 @@ public class CommentReaction
         {
             return false;
         }
+
         return UserId == other.UserId && CommentId == other.CommentId;
     }
 

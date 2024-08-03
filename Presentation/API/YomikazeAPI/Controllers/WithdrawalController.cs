@@ -14,22 +14,23 @@ public class WithdrawalController(
     : SearchControllerBase<WithdrawalRequest, WithdrawalRequestModel, WithdrawalRequestRepository,
         WithdrawalRequestSearchModel>(repository, mapper, logger)
 {
-    
     private WithdrawalRequestRepository Repository { get; } = repository;
-    
+
     protected override IList<SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>> SearchFieldMutators
-    { get; } =
+    {
+        get;
+    } =
     [
         new SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>(
-            (search) => search.Status.HasValue,
+            search => search.Status.HasValue,
             (query, search) => query.Where(x => x.Status == search.Status)
         ),
         new SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>(
-            (search) => search.OrderBy == WithdrawalRequestOrderBy.CreationTime,
+            search => search.OrderBy == WithdrawalRequestOrderBy.CreationTime,
             (query, search) => query.OrderBy(x => x.CreationTime)
         ),
         new SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>(
-            (search) => search.OrderBy == WithdrawalRequestOrderBy.CreationTimeDesc,
+            search => search.OrderBy == WithdrawalRequestOrderBy.CreationTimeDesc,
             (query, search) => query.OrderByDescending(x => x.CreationTime)
         )
     ];
@@ -42,7 +43,8 @@ public class WithdrawalController(
 
     [Authorize(Roles = "Administrator,Publisher")]
     [HttpPost]
-    public async Task<ActionResult<WithdrawalRequestModel>> Post(WithdrawalRequestModel input, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    public async Task<ActionResult<WithdrawalRequestModel>> Post(WithdrawalRequestModel input,
+        [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         User user = User.GetUser(userManager);
         input.UserId = user.Id.ToString();
@@ -52,9 +54,7 @@ public class WithdrawalController(
             await userManager.UpdateAsync(user);
             Transaction transaction = new()
             {
-                UserId = user.Id,
-                Amount = -input.Amount,
-                Type = TransactionType.Withdrawal
+                UserId = user.Id, Amount = -input.Amount, Type = TransactionType.Withdrawal
             };
             transactionRepository.Add(transaction);
             return base.Post(input);
@@ -63,11 +63,12 @@ public class WithdrawalController(
         ModelState.AddModelError(nameof(input.Amount), "Insufficient balance");
         return BadRequest(ModelState);
     }
-    
+
     [HttpPut]
     [Route("{id}/approve")]
     [Authorize]
-    public async Task<ActionResult<WithdrawalRequestModel>> Approve(ulong id, [FromServices] UserManager<User> userManager)
+    public async Task<ActionResult<WithdrawalRequestModel>> Approve(ulong id,
+        [FromServices] UserManager<User> userManager)
     {
         WithdrawalRequest? request = Repository.Get(id);
         if (request is null)
@@ -80,36 +81,39 @@ public class WithdrawalController(
         {
             return NotFound("User not found");
         }
-        
+
         request.Status = WithdrawalRequestStatus.Approved;
         Repository.Update(request);
         return Mapper.Map<WithdrawalRequestModel>(request);
     }
-    
+
     [HttpPut]
     [Route("{id}/reject")]
     [Authorize]
-    public async Task<ActionResult<WithdrawalRequestModel>> Reject(ulong id, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    public async Task<ActionResult<WithdrawalRequestModel>> Reject(ulong id,
+        [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         WithdrawalRequest? request = Repository.Get(id);
         if (request is null)
         {
             return NotFound("Withdrawal request not found");
         }
+
         User? user = await userManager.FindByIdAsync(request.UserId.ToString());
         if (user is null)
         {
             return NotFound("User not found");
         }
+
         user.Balance += request.Amount;
         await userManager.UpdateAsync(user);
-        var transaction = new Transaction
+        Transaction transaction = new()
         {
             UserId = user.Id,
             Amount = request.Amount,
             Type = TransactionType.WithdrawalRejected,
             Description = "Withdrawal request rejected"
-        };    
+        };
         transactionRepository.Add(transaction);
 
         request.Status = WithdrawalRequestStatus.Rejected;

@@ -9,7 +9,7 @@ public class LibraryRepository(DbContext dbContext) : BaseRepository<LibraryEntr
         return Query()
             .FirstOrDefault(x => x.UserId == userId && x.ComicId == comicId);
     }
-    
+
     public IQueryable<LibraryEntry> GetByCategory(string userId, ulong categoryId)
     {
         return Query().Where(x => x.UserId.ToString() == userId && x.Categories.Any(c => c.Id == categoryId));

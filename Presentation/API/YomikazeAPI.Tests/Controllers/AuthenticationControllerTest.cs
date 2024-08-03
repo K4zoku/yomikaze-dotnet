@@ -29,7 +29,7 @@ public class AuthenticationControllerTest
         await context.Database.MigrateAsync();
         UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        User user = new User
+        User user = new()
         {
             UserName = defaultUsername, Name = defaultUsername, Email = defaultUsername + "@yomikaze.com"
         };
@@ -81,7 +81,7 @@ public class AuthenticationControllerTest
         AuthenticationService authService = service.GetRequiredService<AuthenticationService>();
         SignInManager<User> signInManager = service.GetRequiredService<SignInManager<User>>();
         ILogger<AuthenticationController> logger = service.GetRequiredService<ILogger<AuthenticationController>>();
-        AuthenticationController controller = new AuthenticationController(signInManager, authService, logger);
+        AuthenticationController controller = new(signInManager, authService, logger);
 
         // Act
         ActionResult<TokenModel> result =
@@ -101,7 +101,7 @@ public class AuthenticationControllerTest
         AuthenticationService authService = service.GetRequiredService<AuthenticationService>();
         SignInManager<User> signInManager = service.GetRequiredService<SignInManager<User>>();
         ILogger<AuthenticationController> logger = service.GetRequiredService<ILogger<AuthenticationController>>();
-        AuthenticationController controller = new AuthenticationController(signInManager, authService, logger);
+        AuthenticationController controller = new(signInManager, authService, logger);
 
         // Act
         ActionResult<TokenModel> result =

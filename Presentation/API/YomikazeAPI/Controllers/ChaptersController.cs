@@ -69,6 +69,7 @@ public partial class ComicsController
             pagination.Size = count > 0 ? (int)count : 1;
             pagination.Page = 1;
         }
+
         List<Chapter> chapterList = chapters.ToList();
         List<ChapterModel>? results = Mapper.Map<List<ChapterModel>>(chapterList);
         PagedList<ChapterModel> paged = new()
@@ -76,7 +77,7 @@ public partial class ComicsController
             CurrentPage = pagination.Page,
             PageSize = pagination.Size,
             Totals = count,
-            TotalPages = (int)Math.Ceiling((double)count / pagination.Size),        
+            TotalPages = (int)Math.Ceiling((double)count / pagination.Size),
             Results = results
         };
 
@@ -133,6 +134,7 @@ public partial class ComicsController
         {
             return NotFound();
         }
+
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
         if (chapter == null)
         {
@@ -144,7 +146,8 @@ public partial class ComicsController
         {
             if (User.TryGetId(out ulong userId))
             {
-                model.IsUnlocked = model.HasLock is false || comic.PublisherId == userId || chapter.Unlocked.Any(u => u.UserId == userId);
+                model.IsUnlocked = model.HasLock is false || comic.PublisherId == userId ||
+                                   chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;
@@ -224,8 +227,8 @@ public partial class ComicsController
             Description = $"/comics/{key}/chapters/{number}"
         };
         transactionRepository.Add(transaction);
-        var comic = Repository.Get(key);
-        var publisher = comic!.Publisher;
+        Comic? comic = Repository.Get(key);
+        User publisher = comic!.Publisher;
         publisher.Balance += chapter.Price;
         userManager.UpdateAsync(publisher).Wait();
         transaction = new Transaction
@@ -236,7 +239,7 @@ public partial class ComicsController
             Description = $"Unlock chapter {number} for comic {key}"
         };
         transactionRepository.Add(transaction);
-        
+
         chapter.Unlocked.Add(new UnlockedChapter { UserId = userId, ChapterId = chapter.Id });
         ChapterRepository.Update(chapter);
         return Ok();
@@ -284,8 +287,8 @@ public partial class ComicsController
                 JsonConvert.SerializeObject(chapters.Select(c => $"/comics/{key}/chapters/{c.Number}").ToArray())
         };
         transactionRepository.Add(transaction);
-        var comic = Repository.Get(key);
-        var publisher = comic!.Publisher;
+        Comic? comic = Repository.Get(key);
+        User publisher = comic!.Publisher;
         publisher.Balance += price;
         userManager.UpdateAsync(publisher).Wait();
         transaction = new Transaction
@@ -296,7 +299,7 @@ public partial class ComicsController
             Description = $"Unlock chapters for comic {key}"
         };
         transactionRepository.Add(transaction);
-        
+
         List<int> unlockedChapters = [];
         foreach (Chapter chapter in chapters)
         {

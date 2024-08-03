@@ -21,7 +21,7 @@ public class ProfileController(UserManager<User> userManager, IMapper mapper) : 
         List<User> users = await UserManager.Users.ToListAsync();
         return Mapper.Map<List<ProfileModel>>(users);
     }
-    
+
     [HttpGet]
     [Authorize]
     [SwaggerOperation(Summary = "Get the current user's profile.")]

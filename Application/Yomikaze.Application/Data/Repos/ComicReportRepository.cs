@@ -4,5 +4,4 @@ namespace Yomikaze.Application.Data.Repos;
 
 public class ComicReportRepository(DbContext dbContext) : BaseRepository<ComicReport>(new ComicReportDao(dbContext))
 {
-    
 }

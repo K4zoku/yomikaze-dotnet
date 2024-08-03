@@ -5,10 +5,10 @@ namespace Yomikaze.Infrastructure.Context.Generator;
 
 public class CreationTimeGenerator : ValueGenerator<DateTimeOffset>
 {
+    public override bool GeneratesTemporaryValues { get; } = false;
+
     public override DateTimeOffset Next(EntityEntry entry)
     {
         return DateTimeOffset.UtcNow;
     }
-
-    public override bool GeneratesTemporaryValues { get; } = false;
 }

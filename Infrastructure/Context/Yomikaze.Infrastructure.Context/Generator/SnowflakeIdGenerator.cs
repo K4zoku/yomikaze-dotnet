@@ -6,7 +6,7 @@ using Yomikaze.Domain.Entities;
 
 namespace Yomikaze.Infrastructure.Context.Generator;
 
-public class SnowflakeIdGenerator() : ValueGenerator<ulong>
+public class SnowflakeIdGenerator : ValueGenerator<ulong>
 {
     private static readonly DateTime Epoch = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -14,6 +14,8 @@ public class SnowflakeIdGenerator() : ValueGenerator<ulong>
     private static readonly Dictionary<int, SnowflakeIDGenerator> Generators = new();
 
     private static readonly object Lock = new();
+
+    public override bool GeneratesTemporaryValues => false;
 
     public static ulong Generate(int workerId = 0)
     {
@@ -32,7 +34,7 @@ public class SnowflakeIdGenerator() : ValueGenerator<ulong>
         }
     }
 
-    
+
     public override ulong Next(EntityEntry entry)
     {
         return entry.Entity switch
@@ -43,6 +45,4 @@ public class SnowflakeIdGenerator() : ValueGenerator<ulong>
             _ => Generate()
         };
     }
-
-    public override bool GeneratesTemporaryValues => false;
 }

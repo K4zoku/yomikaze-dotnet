@@ -1,5 +1,4 @@
-﻿using System.Linq.Dynamic.Core;
-using Yomikaze.Application.Data.Access;
+﻿using Yomikaze.Application.Data.Access;
 
 namespace Yomikaze.Application.Data.Repos;
 
@@ -9,7 +8,7 @@ public class ChapterRepository(DbContext dbContext) : BaseRepository<Chapter>(ne
     {
         return Query().FirstOrDefault(chapter => chapter.Id.ToString() == id);
     }
-    
+
     public IQueryable<Chapter> GetAllByComicId(ulong comicId)
     {
         return Query()

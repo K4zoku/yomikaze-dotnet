@@ -8,10 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EntityFrameworkCore.Projectables" Version="3.0.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6" />
+        <PackageReference Include="EntityFrameworkCore.Projectables" Version="3.0.4"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1"/>
     </ItemGroup>
@@ -64,31 +64,31 @@
             <DependentUpon>ReportModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\ComicReportReason.cs">
-          <DependentUpon>ReportReason.cs</DependentUpon>
+            <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\ChapterReportReason.cs">
-          <DependentUpon>ReportReason.cs</DependentUpon>
+            <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\ProfileReportReason.cs">
-          <DependentUpon>ReportReason.cs</DependentUpon>
+            <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\TranslationReportReason.cs">
-          <DependentUpon>ReportReason.cs</DependentUpon>
+            <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\ComicCommentReport.cs">
-          <DependentUpon>CommentReport.cs</DependentUpon>
+            <DependentUpon>CommentReport.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\CommentReportReason.cs">
-          <DependentUpon>ReportReason.cs</DependentUpon>
+            <DependentUpon>ReportReason.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\CommentReport.cs">
-          <DependentUpon>Report.cs</DependentUpon>
+            <DependentUpon>Report.cs</DependentUpon>
         </Compile>
         <Compile Update="Entities\ChapterCommentReport.cs">
-          <DependentUpon>CommentReport.cs</DependentUpon>
+            <DependentUpon>CommentReport.cs</DependentUpon>
         </Compile>
         <Compile Update="Models\CommentReportModel.cs">
-          <DependentUpon>ReportModel.cs</DependentUpon>
+            <DependentUpon>ReportModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

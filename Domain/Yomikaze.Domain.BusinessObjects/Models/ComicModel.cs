@@ -43,34 +43,35 @@ public class ComicModel : BaseModel
     public ICollection<string>? TagIds { get; set; }
 
     [WriteOnly]
-    [SwaggerSchema(WriteOnly = true)] public string? PublisherId { get; set; }
-    
-    public IList<ChapterModel>? Chapters { get; set; } = null;                          
+    [SwaggerSchema(WriteOnly = true)]
+    public string? PublisherId { get; set; }
+
+    public IList<ChapterModel>? Chapters { get; set; } = null;
 
     #endregion
 
     #region ReadOnlyExtraProperties
 
     [SwaggerSchema(ReadOnly = true)] public int? TotalChapters { get; set; }
-                    
+
     [SwaggerSchema(ReadOnly = true)] public int? TotalViews { get; set; }
 
     [SwaggerSchema(ReadOnly = true)] public double AverageRating { get; set; }
 
     [SwaggerSchema(ReadOnly = true)] public int? TotalRatings { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public int? TotalFollows { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public int? TotalComments { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public bool? IsFollowing { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public bool? IsRated { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public int? MyRating { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public bool? IsRead { get; set; }
-    
+
     [SwaggerSchema(ReadOnly = true)] public ChapterModel? LatestChapter { get; set; }
 
     #endregion

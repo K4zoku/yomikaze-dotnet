@@ -2,7 +2,8 @@ using Yomikaze.Application.Data.Access;
 
 namespace Yomikaze.Application.Data.Repos;
 
-public class ChapterCommentRepository(DbContext dbContext) : BaseRepository<ChapterComment>(new ChapterCommentDao(dbContext)) 
+public class ChapterCommentRepository(DbContext dbContext)
+    : BaseRepository<ChapterComment>(new ChapterCommentDao(dbContext))
 {
     public override IQueryable<ChapterComment> Query()
     {
@@ -16,7 +17,7 @@ public class ChapterCommentRepository(DbContext dbContext) : BaseRepository<Chap
             .ThenInclude(x => x.Comic)
             .Where(x => x.Chapter.ComicId == comicId && x.Chapter.Number == chapterNumber);
     }
-    
+
     public IQueryable<ChapterComment> GetRepliesByCommentId(ulong commentId)
     {
         return Query().Where(x => x.ReplyToId == commentId);

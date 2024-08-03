@@ -17,6 +17,7 @@ public class ChapterReport : Report
         get => LazyLoader.Load(this, ref _chapter);
         set => _chapter = value;
     }
+
     public override ChapterReportReason Reason { get; } = default!;
 
     #endregion

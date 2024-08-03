@@ -1,4 +1,4 @@
-﻿using AutoMapper.Extensions.EnumMapping;
+﻿using AutoMapper;
 using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Models;
 using MapperProfile = AutoMapper.Profile;
@@ -9,10 +9,11 @@ public class YomikazeMapper : MapperProfile
 {
     public YomikazeMapper()
     {
-        CreateMap<string, ulong>().ConvertUsing((src) => IdParse(src));
-        CreateMap<ulong, string>().ConvertUsing((src) => src.ToString());
-        CreateMap<DateTimeOffset, DateTimeOffset>().ConvertUsing((src) => src.ToUniversalTime());
-        CreateMap<DateTimeOffset?, DateTimeOffset?>().ConvertUsing((src) => src == null ? null : src.Value.ToUniversalTime());
+        CreateMap<string, ulong>().ConvertUsing(src => IdParse(src));
+        CreateMap<ulong, string>().ConvertUsing(src => src.ToString());
+        CreateMap<DateTimeOffset, DateTimeOffset>().ConvertUsing(src => src.ToUniversalTime());
+        CreateMap<DateTimeOffset?, DateTimeOffset?>()
+            .ConvertUsing(src => src == null ? null : src.Value.ToUniversalTime());
         CreateMap<BaseModel, BaseEntity>()
             .ForMember(dest => dest.Id, options => options.Ignore())
             .ForMember(dest => dest.CreationTime, options => options.Ignore())
@@ -143,7 +144,7 @@ public class YomikazeMapper : MapperProfile
                 options.Condition(src => src.CategoryIds != null && src.CategoryIds.Count != 0);
                 options.MapFrom(src =>
                     src.CategoryIds!.Select(IdParse)
-                        .Select(categoryId => new LibraryEntryCategory() { CategoryId = categoryId }).ToHashSet());
+                        .Select(categoryId => new LibraryEntryCategory { CategoryId = categoryId }).ToHashSet());
             });
         CreateMap<LibraryEntry, LibraryEntryModel>()
             .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.UserId.ToString()))
@@ -216,7 +217,7 @@ public class YomikazeMapper : MapperProfile
         CreateMap<UserInputModel, User>();
         CreateMap<User, UserOutputModel>();
         CreateMap<Notification, NotificationModel>().ReverseMap();
-        var profileUpdate = CreateMap<ProfileUpdateModel, User>();
+        IMappingExpression<ProfileUpdateModel, User>? profileUpdate = CreateMap<ProfileUpdateModel, User>();
         profileUpdate.ForMember(dest => dest.Birthday, options =>
         {
             options.Condition(src => src.Birthday != null);

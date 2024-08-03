@@ -20,7 +20,7 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     [HttpPost("[action]")]
     public ActionResult Subscribe([FromForm] [Required] string fcmToken)
     {
-        ulong userId = User.GetId();                                    
+        ulong userId = User.GetId();
         // insert fcmToken into database
         FirebaseMessaging
             .SubscribeToTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());
@@ -28,9 +28,11 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     }
 
     [HttpPost("[action]")]
-    public async Task<ActionResult> Test([Required] string title, [Required] string body, [Required] string path, string? fcmToken)
+    [AllowAnonymous]
+    public async Task<ActionResult> Test([Required] string title, [Required] string body, [Required] string path,
+        string? fcmToken)
     {
-        Message message = new Message
+        Message message = new()
         {
             Webpush = new WebpushConfig
             {
@@ -56,8 +58,9 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             message.Topic = User.TryGetId(out ulong userId) ? userId.ToString() : "all";
         }
 
-        var result = await FirebaseMessaging.SendAsync(message);
-        return Ok(result);
+        string? result = await FirebaseMessaging.SendAsync(message);
+        Logger.LogInformation("Notification sent: {Result}", result);
+        return result == null ? Problem("Failed to send notification") : NoContent();
     }
 
     [HttpPost("[action]")]

@@ -2,20 +2,17 @@
 
 public class ChapterModel : BaseModel
 {
-    #region ReadOnlyProperties
+    #region WriteOnlyProperties
 
-    [SwaggerSchema(ReadOnly = true)]
-    public int? Views { get; set; }
-    
-    [SwaggerSchema(ReadOnly = true)]
-    public bool? HasLock { get; set; }
+    [WriteOnly] public string? ComicId { get; set; }
 
     #endregion
 
-    #region WriteOnlyProperties
+    #region ReadOnlyProperties
 
-    [WriteOnly]
-    public string? ComicId { get; set; }
+    [SwaggerSchema(ReadOnly = true)] public int? Views { get; set; }
+
+    [SwaggerSchema(ReadOnly = true)] public bool? HasLock { get; set; }
 
     #endregion
 
@@ -29,18 +26,16 @@ public class ChapterModel : BaseModel
 
     [MinLength(1, ErrorMessage = "Chapter must have at least 1 page")]
     public IList<string>? Pages { get; set; }
-    
+
     public int? Price { get; set; }
 
     #endregion
 
     #region Extras
-    
-    [SwaggerSchema(ReadOnly = true)]
-    public bool? IsUnlocked { get; set; }
-    
-    [SwaggerSchema(ReadOnly = true)]
-    public int? TotalComments { get; set; }
+
+    [SwaggerSchema(ReadOnly = true)] public bool? IsUnlocked { get; set; }
+
+    [SwaggerSchema(ReadOnly = true)] public int? TotalComments { get; set; }
 
     public bool? IsRead { get; set; }
 

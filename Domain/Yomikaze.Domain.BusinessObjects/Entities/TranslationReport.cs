@@ -17,7 +17,7 @@ public class TranslationReport : Report
         get => LazyLoader.Load(this, ref _translation);
         set => _translation = value;
     }
-    
+
     public override TranslationReportReason Reason { get; } = default!;
 
     #endregion

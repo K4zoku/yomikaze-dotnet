@@ -15,9 +15,9 @@ public class ProfileModel : BaseModel
     public DateTimeOffset? Birthday { get; set; }
 
     public long? Balance { get; set; }
-    
+
     public string[] Roles { get; set; } = [];
-    
+
     // cast from User
     public static explicit operator ProfileModel(User user)
     {
@@ -29,7 +29,7 @@ public class ProfileModel : BaseModel
             Bio = user.Bio,
             Name = user.Name,
             Birthday = user.Birthday,
-            Balance = user.Balance,
+            Balance = user.Balance
         };
     }
 }

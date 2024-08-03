@@ -86,6 +86,7 @@ public class ComicCommentController(
                 {
                     continue;
                 }
+
                 CommentReaction? reaction = Repository.GetReactionsByCommentId(item.Id)
                     .FirstOrDefault(x => x.UserId == userId);
                 item.IsReacted = reaction != null;

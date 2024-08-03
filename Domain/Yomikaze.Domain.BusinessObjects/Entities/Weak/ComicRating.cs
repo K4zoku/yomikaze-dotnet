@@ -12,7 +12,7 @@ public class ComicRating
     public User User { get; init; } = default!;
 
     [Range(1, 5)] public int Rating { get; set; }
-    
+
     public override bool Equals(object? obj)
     {
         if (obj is not ComicRating other)
@@ -22,7 +22,7 @@ public class ComicRating
 
         return ComicId == other.ComicId && UserId == other.UserId;
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(ComicId, UserId);

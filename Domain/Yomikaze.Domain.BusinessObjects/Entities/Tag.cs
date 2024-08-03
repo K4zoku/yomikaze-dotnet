@@ -11,7 +11,7 @@ public class Tag : BaseEntity
     #endregion
 
     #region Properties
-    
+
     public override ulong Id { get; }
 
     private Action<object, string>? LazyLoader { get; }
@@ -40,7 +40,7 @@ public class Tag : BaseEntity
     #region Constructors
 
     public Tag() { }
-    
+
     public Tag(ulong id, string name, ulong categoryId, string description = "")
     {
         Id = id;
@@ -48,7 +48,7 @@ public class Tag : BaseEntity
         CategoryId = categoryId;
         Description = description;
     }
-    
+
     public Tag(ulong id, string name, TagCategory category, string description = "")
     {
         Id = id;

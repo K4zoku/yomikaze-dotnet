@@ -43,7 +43,7 @@ public class CoinPricingController(
     [Authorize(Roles = "Super,Administrator")]
     public override ActionResult<CoinPricingModel> Post(CoinPricingModel input)
     {
-        PriceCreateOptions options = new PriceCreateOptions
+        PriceCreateOptions options = new()
         {
             Currency = input.Currency.ToString().ToLower(),
             UnitAmount = Convert.ToInt64(input.Price) * 100,
@@ -73,7 +73,7 @@ public class CoinPricingController(
         Logger.LogDebug("Patching model: {Model}", JsonConvert.SerializeObject(model));
         patch.ApplyTo(model);
         Logger.LogDebug("Patched model: {Model}", JsonConvert.SerializeObject(model));
-        PriceCreateOptions options = new PriceCreateOptions
+        PriceCreateOptions options = new()
         {
             Currency = model.Currency.ToString().ToLower(),
             UnitAmount = Convert.ToInt64(model.Price) * 100,
@@ -134,7 +134,7 @@ public class CoinPricingController(
         }
 
         string uid = User.GetIdString();
-        SessionCreateOptions opts = new SessionCreateOptions
+        SessionCreateOptions opts = new()
         {
             UiMode = "embedded",
             LineItems =
@@ -197,22 +197,22 @@ public class CoinPricingController(
         User user = User.GetUser(userManager);
         if (user.StripeCustomerId == null)
         {
-            CustomerCreateOptions customerOptions = new CustomerCreateOptions { Email = user.Email, Name = user.Name };
-            CustomerService customerService = new CustomerService();
+            CustomerCreateOptions customerOptions = new() { Email = user.Email, Name = user.Name };
+            CustomerService customerService = new();
             Customer? customer = customerService.Create(customerOptions);
             user.StripeCustomerId = customer.Id;
             userManager.UpdateAsync(user).Wait();
         }
 
-        EphemeralKeyCreateOptions ephemeralKeyOptions = new EphemeralKeyCreateOptions
+        EphemeralKeyCreateOptions ephemeralKeyOptions = new()
         {
             Customer = user.StripeCustomerId, StripeVersion = "2024-06-20"
         };
-        EphemeralKeyService ephemeralKeyService = new EphemeralKeyService();
+        EphemeralKeyService ephemeralKeyService = new();
         EphemeralKey? ephemeralKey = ephemeralKeyService.Create(ephemeralKeyOptions);
         user.StripeEphemeralKey = ephemeralKey.Secret;
 
-        PaymentIntentCreateOptions paymentIntentOptions = new PaymentIntentCreateOptions
+        PaymentIntentCreateOptions paymentIntentOptions = new()
         {
             Amount = Convert.ToInt64(pricing.Price) * 100,
             Currency = pricing.Currency.ToString(),
@@ -224,7 +224,7 @@ public class CoinPricingController(
         };
         PaymentIntent paymentIntent = paymentIntentService.Create(paymentIntentOptions);
 
-        PaymentSheetResultModel result = new PaymentSheetResultModel
+        PaymentSheetResultModel result = new()
         {
             ClientSecret = paymentIntent.ClientSecret,
             EphemeralKey = user.StripeEphemeralKey,

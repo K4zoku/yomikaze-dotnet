@@ -7,7 +7,7 @@ public class PaginationModel
         Page = 1;
         Size = 25;
     }
-    
+
     public PaginationModel(int page, int pageSize)
     {
         Page = page < 1 ? 1 : page;

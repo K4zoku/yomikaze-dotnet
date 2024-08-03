@@ -1,5 +1,3 @@
-using Yomikaze.Domain.Entities.Weak;
-
 namespace Yomikaze.Domain.Entities;
 
 [Index(nameof(UserId), nameof(Name), IsUnique = true)]
@@ -25,7 +23,7 @@ public class LibraryCategory : BaseEntity
     }
 
     [StringLength(32)] public string Name { get; set; } = default!;
-    
+
     public ICollection<LibraryEntry> Entries { get; set; } = new List<LibraryEntry>();
 
     #endregion

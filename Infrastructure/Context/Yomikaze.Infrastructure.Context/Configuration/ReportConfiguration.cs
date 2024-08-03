@@ -8,7 +8,7 @@ public class ReportConfiguration : BaseEntityConfiguration<Report>
     public override void Configure(EntityTypeBuilder<Report> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasDiscriminator<string>("type")
             .IsComplete(false)
@@ -19,7 +19,7 @@ public class ReportConfiguration : BaseEntityConfiguration<Report>
             .HasValue<CommentReport>("comment_report")
             .HasValue<ComicCommentReport>("comic_comment_report")
             .HasValue<ChapterCommentReport>("chapter_comment_report");
-        
+
         builder
             .HasOne(r => r.Reason)
             .WithMany()
@@ -28,7 +28,6 @@ public class ReportConfiguration : BaseEntityConfiguration<Report>
         builder
             .Navigation(r => r.Reason)
             .AutoInclude();
-
     }
 }
 
@@ -37,7 +36,7 @@ public class ChapterReportConfiguration : BaseEntityConfiguration<ChapterReport>
     public override void Configure(EntityTypeBuilder<ChapterReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Chapter)
             .WithMany()
@@ -58,7 +57,7 @@ public class ComicReportConfiguration : BaseEntityConfiguration<ComicReport>
     public override void Configure(EntityTypeBuilder<ComicReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Comic)
             .WithMany()
@@ -75,7 +74,7 @@ public class ProfileReportConfiguration : BaseEntityConfiguration<ProfileReport>
     public override void Configure(EntityTypeBuilder<ProfileReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Profile)
             .WithMany()
@@ -109,7 +108,7 @@ public class CommentReportConfiguration : BaseEntityConfiguration<CommentReport>
     public override void Configure(EntityTypeBuilder<CommentReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Comment)
             .WithMany()
@@ -126,7 +125,7 @@ public class ComicCommentReportConfiguration : BaseEntityConfiguration<ComicComm
     public override void Configure(EntityTypeBuilder<ComicCommentReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Comment)
             .WithMany()
@@ -143,7 +142,7 @@ public class ChapterCommentReportConfiguration : BaseEntityConfiguration<Chapter
     public override void Configure(EntityTypeBuilder<ChapterCommentReport> builder)
     {
         base.Configure(builder);
-        
+
         builder
             .HasOne(r => r.Comment)
             .WithMany()

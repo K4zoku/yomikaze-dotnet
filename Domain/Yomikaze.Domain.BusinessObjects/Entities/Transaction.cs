@@ -23,11 +23,10 @@ public class Transaction : BaseEntity
 
     public long Amount { get; set; } = default!;
 
-    [StringLength(256)]
-    public string Description { get; set; } = default!;
-    
+    [StringLength(256)] public string Description { get; set; } = default!;
+
     public TransactionType Type { get; set; }
-    
+
     #endregion
 
     #region Constructors
@@ -49,5 +48,5 @@ public enum TransactionType
     UnlockChapters,
     PurchaseCoin,
     ReceiveCoin,
-    WithdrawalRejected,
+    WithdrawalRejected
 }

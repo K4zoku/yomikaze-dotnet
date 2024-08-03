@@ -2,10 +2,7 @@ namespace Yomikaze.Domain.Models.Search;
 
 public class ChapterCommentSearchModel : ComicCommentSearchModel
 {
-    [SwaggerIgnore]
-    public ulong? ChapterId { get; set; }
-    
-    [SwaggerIgnore]
-    public int? ChapterNumber { get; set; }
-    
+    [SwaggerIgnore] public ulong? ChapterId { get; set; }
+
+    [SwaggerIgnore] public int? ChapterNumber { get; set; }
 }
