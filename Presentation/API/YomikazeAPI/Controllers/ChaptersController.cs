@@ -137,7 +137,7 @@ public partial class ComicsController
                     {
                         UserId = userId,
                         Title = "Comic you follow has new chapter",
-                        Content = $"Comic {comic.Name} has new chapter {chapter.Name} released",
+                        Content = $"Comic {comic.Name} has released new chapter {chapter.Number}",
                     };
                     NotificationRepository.Add(notification);
                     Message message = new()
