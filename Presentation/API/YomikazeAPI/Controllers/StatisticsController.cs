@@ -87,7 +87,6 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
             data.Add(dataset.Data[index]);
             date = date.AddDays(1);
             var next = DateTime.Parse(comics[index].x!, format.FormatProvider);
-            Console.Out.WriteLine("date: {0}, next {1}", date, next);           
             if (date >= next)
             {
                 index++;

@@ -128,19 +128,23 @@ public partial class ComicsController
     [AllowAnonymous]
     public ActionResult<ChapterModel> GetChapter(ulong key, int number)
     {
+        Comic? comic = Repository.Get(key);
+        if (comic == null)
+        {
+            return NotFound();
+        }
         Chapter? chapter = ChapterRepository.GetByComicIdAndIndex(key.ToString(), number);
         if (chapter == null)
         {
             return NotFound();
         }
 
-        ChapterModel? model = Mapper.Map<ChapterModel>(chapter);
-
+        ChapterModel model = Mapper.Map<ChapterModel>(chapter);
         try
         {
             if (User.TryGetId(out ulong userId))
             {
-                model.IsUnlocked = model.HasLock is false || chapter.Comic.PublisherId == userId || chapter.Unlocked.Any(u => u.UserId == userId);
+                model.IsUnlocked = model.HasLock is false || comic.PublisherId == userId || chapter.Unlocked.Any(u => u.UserId == userId);
                 if (model.IsUnlocked is true)
                 {
                     model.IsRead = true;

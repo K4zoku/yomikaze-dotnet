@@ -49,4 +49,5 @@ public enum TransactionType
     UnlockChapters,
     PurchaseCoin,
     ReceiveCoin,
+    WithdrawalRejected,
 }

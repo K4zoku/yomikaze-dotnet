@@ -42,12 +42,21 @@ public class WithdrawalController(
 
     [Authorize(Roles = "Administrator,Publisher")]
     [HttpPost]
-    public ActionResult<WithdrawalRequestModel> Post(WithdrawalRequestModel input, [FromServices] UserManager<User> userManager)
+    public async Task<ActionResult<WithdrawalRequestModel>> Post(WithdrawalRequestModel input, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         User user = User.GetUser(userManager);
         input.UserId = user.Id.ToString();
         if (user.Balance >= input.Amount)
         {
+            user.Balance -= input.Amount;
+            await userManager.UpdateAsync(user);
+            Transaction transaction = new()
+            {
+                UserId = user.Id,
+                Amount = -input.Amount,
+                Type = TransactionType.Withdrawal
+            };
+            transactionRepository.Add(transaction);
             return base.Post(input);
         }
 
@@ -58,7 +67,7 @@ public class WithdrawalController(
     [HttpPut]
     [Route("{id}/approve")]
     [Authorize]
-    public async Task<ActionResult<WithdrawalRequestModel>> Approve(ulong id, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
+    public async Task<ActionResult<WithdrawalRequestModel>> Approve(ulong id, [FromServices] UserManager<User> userManager)
     {
         WithdrawalRequest? request = Repository.Get(id);
         if (request is null)
@@ -71,16 +80,7 @@ public class WithdrawalController(
         {
             return NotFound("User not found");
         }
-
-        user.Balance -= request.Amount;
-        await userManager.UpdateAsync(user);
-        Transaction transaction = new()
-        {
-            UserId = user.Id,
-            Amount = -request.Amount,
-            Type = TransactionType.Withdrawal
-        };
-        transactionRepository.Add(transaction);
+        
         request.Status = WithdrawalRequestStatus.Approved;
         Repository.Update(request);
         return Mapper.Map<WithdrawalRequestModel>(request);
@@ -89,13 +89,28 @@ public class WithdrawalController(
     [HttpPut]
     [Route("{id}/reject")]
     [Authorize]
-    public ActionResult<WithdrawalRequestModel> Reject(ulong id)
+    public async Task<ActionResult<WithdrawalRequestModel>> Reject(ulong id, [FromServices] UserManager<User> userManager, [FromServices] TransactionRepository transactionRepository)
     {
         WithdrawalRequest? request = Repository.Get(id);
         if (request is null)
         {
             return NotFound("Withdrawal request not found");
         }
+        User? user = await userManager.FindByIdAsync(request.UserId.ToString());
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+        user.Balance += request.Amount;
+        await userManager.UpdateAsync(user);
+        var transaction = new Transaction
+        {
+            UserId = user.Id,
+            Amount = request.Amount,
+            Type = TransactionType.WithdrawalRejected,
+            Description = "Withdrawal request rejected"
+        };    
+        transactionRepository.Add(transaction);
 
         request.Status = WithdrawalRequestStatus.Rejected;
         Repository.Update(request);
