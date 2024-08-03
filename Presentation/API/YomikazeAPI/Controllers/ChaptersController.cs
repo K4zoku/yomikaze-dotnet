@@ -1,3 +1,4 @@
+using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
@@ -5,6 +6,7 @@ using System.Net;
 using Yomikaze.Application.Helpers.API;
 using Yomikaze.Domain.Entities.Weak;
 using Yomikaze.Domain.Models.Search;
+using Notification = Yomikaze.Domain.Entities.Notification;
 
 namespace Yomikaze.API.Main.Controllers;
 
@@ -120,6 +122,49 @@ public partial class ComicsController
         comic.Chapters.Add(chapter);
         comic.LastModified = DateTimeOffset.UtcNow;
         Repository.Update(comic);
+        // notice all user that have follow this comic in background
+        Task.Run(() =>
+        {
+            Logger.LogInformation("Comic {Key} has new chapter {Chapter}", key, chapter.Id);
+            LibraryRepository.Query()
+                .Where(x => x.ComicId == key)
+                .Select(x => x.UserId)
+                .ToList()
+                .ForEach(userId =>
+                {
+                    Logger.LogDebug("User {Id} follow comic {Comic}", userId, key);
+                    Notification notification = new()
+                    {
+                        UserId = userId,
+                        Title = "Comic you follow has new chapter",
+                        Content = $"Comic {comic.Name} has new chapter {chapter.Name} released",
+                    };
+                    NotificationRepository.Add(notification);
+                    Message message = new()
+                    {
+                        Webpush = new WebpushConfig()
+                        {
+                            Data = new Dictionary<string, string>()
+                            {
+                                ["path"] = $"/comics/{key}/chapters/{chapter.Number}",
+                                ["title"] = notification.Title,
+                                ["body"] = notification.Content
+                            }
+                        },
+                        Android = new AndroidConfig()
+                        {
+                            Data = new Dictionary<string, string>()
+                            {
+                                ["path"] = $"https://yomikaze.org/comics/{key}/chapters/{chapter.Number}",
+                                ["title"] = notification.Title,
+                                ["body"] = notification.Content
+                            }
+                        },
+                        Topic = userId.ToString()
+                    };
+                    FirebaseMessaging.SendAsync(message);
+                });
+        });
 
         return CreatedAtAction(nameof(GetChapter), new { key, number = chapter.Number },
             Mapper.Map<ChapterModel>(chapter));

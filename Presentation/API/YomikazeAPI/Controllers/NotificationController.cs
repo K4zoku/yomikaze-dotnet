@@ -21,9 +21,9 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     public ActionResult Subscribe([FromForm] [Required] string fcmToken)
     {
         ulong userId = User.GetId();
-        // insert fcmToken into database
-        FirebaseMessaging
-            .SubscribeToTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());
+        Logger.LogDebug("Subscribing {FcmToken} to {UserId}", fcmToken, userId);
+        var tokens = new ReadOnlyCollection<string>([fcmToken]);
+        FirebaseMessaging.SubscribeToTopicAsync(tokens, userId.ToString());
         return NoContent();
     }
 
@@ -67,9 +67,9 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     public ActionResult Unsubscribe([FromForm] [Required] string fcmToken)
     {
         ulong userId = User.GetId();
-        // remove fcmToken from database
-        FirebaseMessaging
-            .UnsubscribeFromTopicAsync(new ReadOnlyCollection<string>([fcmToken]), userId.ToString());
+        Logger.LogDebug("Unsubscribing {FcmToken} from {UserId}", fcmToken, userId);
+        var tokens = new ReadOnlyCollection<string>([fcmToken]);
+        FirebaseMessaging.UnsubscribeFromTopicAsync(tokens, userId.ToString());
         return NoContent();
     }
 

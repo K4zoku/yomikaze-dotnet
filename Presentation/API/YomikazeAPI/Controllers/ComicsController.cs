@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Microsoft.AspNetCore.JsonPatch;
 using System.Diagnostics.CodeAnalysis;
 using Yomikaze.API.Main.Helpers;
 using Yomikaze.Application.Helpers.API;
@@ -18,6 +20,8 @@ public partial class ComicsController(
     ChapterRepository chapterRepository,
     HistoryRepository historyRepository,
     LibraryRepository libraryRepository,
+    NotificationRepository notificationRepository,
+    FirebaseApp firebase,
     LibraryCategoryRepository libraryCategoryRepository,
     IMapper mapper,
     IDistributedCache cache,
@@ -32,6 +36,12 @@ public partial class ComicsController(
     private LibraryRepository LibraryRepository { get; } = libraryRepository;
 
     private LibraryCategoryRepository LibraryCategoryRepository { get; } = libraryCategoryRepository;
+    
+    private NotificationRepository NotificationRepository { get; } = notificationRepository;
+    
+    private FirebaseApp Firebase { get; } = firebase;
+    
+    private FirebaseMessaging FirebaseMessaging { get; } = FirebaseMessaging.GetMessaging(firebase);
 
     private List<SearchFieldMutator<Comic, ComicSearchModel>> SearchFieldMutators { get; } =
         new()
