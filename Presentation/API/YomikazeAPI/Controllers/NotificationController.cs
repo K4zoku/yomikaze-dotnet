@@ -28,7 +28,7 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
     }
 
     [HttpPost("[action]")]
-    public ActionResult Test([Required] string title, [Required] string body, [Required] string path, string? fcmToken)
+    public async Task<ActionResult> Test([Required] string title, [Required] string body, [Required] string path, string? fcmToken)
     {
         Message message = new Message
         {
@@ -56,8 +56,8 @@ public class NotificationController(FirebaseApp firebase, ILogger<NotificationCo
             message.Topic = User.TryGetId(out ulong userId) ? userId.ToString() : "all";
         }
 
-        FirebaseMessaging.SendAsync(message);
-        return NoContent();
+        var result = await FirebaseMessaging.SendAsync(message);
+        return Ok(result);
     }
 
     [HttpPost("[action]")]
