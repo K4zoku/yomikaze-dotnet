@@ -56,6 +56,8 @@ public class ComicSearchModel
     public LogicalOperator ExclusionMode { get; set; } = LogicalOperator.And;
 
     public ComicOrderBy[]? OrderBy { get; set; }
+    
+    public bool Management { get; set; } = false;
 }
 
 public enum ComicOrderBy
