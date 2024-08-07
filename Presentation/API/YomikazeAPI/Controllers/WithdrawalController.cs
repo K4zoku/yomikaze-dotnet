@@ -54,7 +54,8 @@ public class WithdrawalController(
             await userManager.UpdateAsync(user);
             Transaction transaction = new()
             {
-                UserId = user.Id, Amount = -input.Amount, Type = TransactionType.Withdrawal
+                UserId = user.Id, Amount = -input.Amount, Type = TransactionType.Withdrawal,
+                Description = "Withdrawal request"
             };
             transactionRepository.Add(transaction);
             return base.Post(input);
