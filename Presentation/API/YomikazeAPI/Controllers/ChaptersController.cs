@@ -120,7 +120,7 @@ public partial class ComicsController
         chapter.Number = comic.Chapters.Count;
 
         comic.Chapters.Add(chapter);
-        comic.LastModified = DateTimeOffset.UtcNow;
+        comic.UpdateStamp = Guid.NewGuid();
         Repository.Update(comic);
         // notice all user that have follow this comic in background
         Task.Run(() =>

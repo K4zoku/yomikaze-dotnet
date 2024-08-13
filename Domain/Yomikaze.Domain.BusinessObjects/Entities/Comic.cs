@@ -53,6 +53,8 @@ public class Comic : BaseEntity
     public User Publisher { get; set; } = default!;
 
     public ComicStatus Status { get; set; }
+    
+    public Guid? UpdateStamp { get; set; }
 
     #endregion
 }
