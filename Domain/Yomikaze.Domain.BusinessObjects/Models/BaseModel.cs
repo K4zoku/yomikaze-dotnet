@@ -10,5 +10,5 @@ public class BaseModel
     [JsonInclude]
     public DateTimeOffset? CreationTime { get; set; }
 
-    [SwaggerSchema(ReadOnly = true)] public DateTimeOffset? LastModification { get; set; }
+    [SwaggerSchema(ReadOnly = true)] public DateTimeOffset? LastModified { get; set; }
 }

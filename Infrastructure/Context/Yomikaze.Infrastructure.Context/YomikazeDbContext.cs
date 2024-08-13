@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Yomikaze.Domain.Abstracts;
 using Yomikaze.Domain.Entities;
 using Yomikaze.Domain.Entities.Weak;
+using Yomikaze.Domain.Models;
 
 namespace Yomikaze.Infrastructure.Context;
 
@@ -60,6 +62,25 @@ public partial class YomikazeDbContext : IdentityDbContext<User, Role, ulong>
         }
 
         throw new InvalidOperationException("No database connection string provided.");
+    }
+    
+    public override int SaveChanges()
+    {
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry is not { State: EntityState.Modified })
+            {
+                continue;
+            }
+            if (entry is not { Entity: BaseEntity baseEntity })
+            {
+                continue;
+            }
+            
+            baseEntity.LastModified = DateTimeOffset.UtcNow;
+            entry.Property("LastModified").IsModified = true;
+        }
+        return base.SaveChanges();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

@@ -15,10 +15,6 @@ public abstract class BaseEntityConfiguration<TEntity, TKey> : IEntityTypeConfig
             .IsRequired()
             .ValueGeneratedOnAdd()
             .HasValueGenerator<CreationTimeGenerator>();
-        builder
-            .Property(e => e.LastModified)
-            .ValueGeneratedOnUpdate()
-            .HasValueGenerator<LastModifiedGenerator>();
     }
 }
 
