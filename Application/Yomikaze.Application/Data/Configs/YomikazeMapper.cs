@@ -152,7 +152,8 @@ public class YomikazeMapper : MapperProfile
             .ForMember(dest => dest.CategoryIds,
                 options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
 
-        CreateMap<TagModel, Tag>();
+        CreateMap<TagModel, Tag>()
+            .ForMember(dest => dest.Category, options => options.Ignore());
 
         CreateMap<Tag, TagModel>()
             .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category))
