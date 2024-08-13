@@ -153,7 +153,12 @@ public class YomikazeMapper : MapperProfile
                 options => options.MapFrom(src => src.Categories.Select(category => category.Id.ToString()).ToArray()));
 
         CreateMap<TagModel, Tag>()
-            .ForMember(dest => dest.Category, options => options.Ignore());
+            .ForMember(dest => dest.Category, options => options.Ignore())
+            .ForMember(dest => dest.CategoryId, options =>
+            {
+                options.Condition(src => src.CategoryId != null);
+                options.MapFrom(src => IdParse(src.CategoryId));
+            });
 
         CreateMap<Tag, TagModel>()
             .ForMember(dest => dest.Category, options => options.MapFrom(src => src.Category))
