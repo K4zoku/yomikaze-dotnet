@@ -32,7 +32,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
             double revenue = context.WithdrawalRequests
                 .Where(x => x.Status == WithdrawalRequestStatus.Approved)
                 .Sum(x => x.Amount * 0.002);
-            
+            int publicationRequests = context.Comics.Count(x => x.Status == ComicStatus.Pending);
             return Ok(new
             {
                 comics,
@@ -46,6 +46,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
                 comments,
                 roleRequests,
                 revenue,
+                publicationRequests
                 // outcome
             });
         } 
