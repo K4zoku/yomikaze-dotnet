@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using System.Collections;
 using System.Runtime.Serialization;
+using Yomikaze.Application.Helpers.API;
 using Yomikaze.Infrastructure.Context;
 
 namespace Yomikaze.API.Main.Controllers;
@@ -10,38 +12,65 @@ namespace Yomikaze.API.Main.Controllers;
 public class StatisticsController(ILogger<StatisticsController> logger, YomikazeDbContext context) : ControllerBase
 {
     [HttpGet]
-    public ActionResult GetStatistics()
+    public ActionResult GetStatistics([FromServices] UserManager<User> userManager)
     {
-        int comics = context.Comics.Count();
-        int chapters = context.Chapters.Count();
-        int users = context.Users.Count();
-        int tags = context.Tags.Count();
-        int tagCategories = context.TagCategories.Count();
-        int transactions = context.Transactions.Count();
-        int withdrawals = context.WithdrawalRequests.Count();
-        int reports = context.ChapterReports.Count() + context.ComicReports.Count() + context.ProfileReports.Count() +
-                      context.Set<CommentReport>().Count();
-        int comments = context.ChapterComments.Count() + context.ComicComments.Count();
-        int roleRequests = context.RoleRequests.Count();
-
-        long income = context.Transactions.Where(x => x.Type == TransactionType.PurchaseCoin).Sum(x => x.Amount);
-        long outcome = context.Transactions.Where(x => x.Type == TransactionType.Withdrawal).Sum(x => x.Amount);
-
-        return Ok(new
+        var user = User.GetUser(userManager);
+        if (user.Roles.Any(x => x.Name == "Administrator"))
         {
-            comics,
-            chapters,
-            users,
-            tags,
-            tagCategories,
-            transactions,
-            withdrawals,
-            reports,
-            comments,
-            roleRequests,
-            income,
-            outcome
-        });
+            int comics = context.Comics.Count();
+            int chapters = context.Chapters.Count();
+            int users = context.Users.Count();
+            int tags = context.Tags.Count();
+            int tagCategories = context.TagCategories.Count();
+            int transactions = context.Transactions.Count();
+            int withdrawals = context.WithdrawalRequests.Count();
+            int reports = context.ChapterReports.Count() + context.ComicReports.Count() + context.ProfileReports.Count() +
+                          context.Set<CommentReport>().Count();
+            int comments = context.ChapterComments.Count() + context.ComicComments.Count();
+            int roleRequests = context.RoleRequests.Count();
+
+            double revenue = context.WithdrawalRequests
+                .Where(x => x.Status == WithdrawalRequestStatus.Approved)
+                .Sum(x => x.Amount * 0.001);
+            
+            return Ok(new
+            {
+                comics,
+                chapters,
+                users,
+                tags,
+                tagCategories,
+                transactions,
+                withdrawals,
+                reports,
+                comments,
+                roleRequests,
+                revenue,
+                // outcome
+            });
+        } 
+        else
+        {
+            int comics = context.Comics.Count(x => x.PublisherId == user.Id);
+            var chaptersQuery = context.Chapters.Include(x => x.Comic)
+                .Where(x => x.Comic.PublisherId == user.Id);
+            int chapters = chaptersQuery.AsSplitQuery().Count();
+            int comments = context.ChapterComments
+                               .Include(x => x.Chapter)
+                               .ThenInclude(x => x.Comic)
+                               .Count(x => x.Chapter.Comic.PublisherId == user.Id)
+                           + context.ComicComments
+                               .Include(x => x.Comic).Count(x => x.Comic.PublisherId == user.Id);
+            long revenue = chaptersQuery.Sum(x => x.Price * x.Unlocked.Count);
+            return Ok(new
+            {
+                comics,
+                chapters,
+                comments,
+                revenue
+            });
+        }
+        
     }
 
     [HttpGet("comic/chart")]
