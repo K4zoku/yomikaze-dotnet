@@ -31,7 +31,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
 
             double revenue = context.WithdrawalRequests
                 .Where(x => x.Status == WithdrawalRequestStatus.Approved)
-                .Sum(x => x.Amount * 0.001);
+                .Sum(x => x.Amount * 0.002);
             
             return Ok(new
             {
@@ -61,7 +61,7 @@ public class StatisticsController(ILogger<StatisticsController> logger, Yomikaze
                                .Count(x => x.Chapter.Comic.PublisherId == user.Id)
                            + context.ComicComments
                                .Include(x => x.Comic).Count(x => x.Comic.PublisherId == user.Id);
-            long revenue = chaptersQuery.Sum(x => x.Price * x.Unlocked.Count);
+            double revenue = chaptersQuery.Sum(x => x.Price * x.Unlocked.Count * 0.009);
             return Ok(new
             {
                 comics,
