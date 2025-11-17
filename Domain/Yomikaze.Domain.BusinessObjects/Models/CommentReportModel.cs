@@ -13,7 +13,5 @@ public class CommentReportModel : ReportModel
 
     [SwaggerIgnore] public string CommentId { get; set; } = default!;
 
-    [Required] public string ReasonId { get; set; } = default!;
-
     #endregion
 }
