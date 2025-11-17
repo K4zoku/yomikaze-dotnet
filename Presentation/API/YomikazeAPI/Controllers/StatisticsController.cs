@@ -9,7 +9,7 @@ namespace Yomikaze.API.Main.Controllers;
 [ApiController]
 [Route("/statistics")]
 [Authorize(Roles = "Super,Administrator,Publisher")]
-public class StatisticsController(ILogger<StatisticsController> logger, YomikazeDbContext context) : ControllerBase
+public class StatisticsController(YomikazeDbContext context) : ControllerBase
 {
     [HttpGet]
     public ActionResult GetStatistics([FromServices] UserManager<User> userManager)

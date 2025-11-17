@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="EntityFrameworkCore.Projectables" Version="3.0.4"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.6"/>
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6"/>

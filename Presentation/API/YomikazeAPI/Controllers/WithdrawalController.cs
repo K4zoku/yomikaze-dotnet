@@ -14,7 +14,6 @@ public class WithdrawalController(
     : SearchControllerBase<WithdrawalRequest, WithdrawalRequestModel, WithdrawalRequestRepository,
         WithdrawalRequestSearchModel>(repository, mapper, logger)
 {
-    private WithdrawalRequestRepository Repository { get; } = repository;
 
     protected override IList<SearchFieldMutator<WithdrawalRequest, WithdrawalRequestSearchModel>> SearchFieldMutators
     {

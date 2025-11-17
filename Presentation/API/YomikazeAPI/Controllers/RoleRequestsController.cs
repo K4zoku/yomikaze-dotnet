@@ -36,7 +36,7 @@ public class RoleRequestsController(
     public override ActionResult<RoleRequestModel> Post(RoleRequestModel input)
     {
         string userId = User.GetIdString();
-        Role? role = roleManager.FindByNameAsync("Publisher").Result;
+        Role? role = RoleManager.FindByNameAsync("Publisher").Result;
         if (role == null)
         {
             return NotFound("Role not found");
@@ -52,17 +52,17 @@ public class RoleRequestsController(
     [Authorize(Roles = "Super,Administrator")]
     public async Task<ActionResult<RoleRequestModel>> Approve(ulong id, UserManager<User> userManager)
     {
-        RoleRequest? roleRequest = repository.Get(id);
+        RoleRequest? roleRequest = Repository.Get(id);
         if (roleRequest == null)
         {
             return NotFound("Role request not found");
         }
 
         roleRequest.Status = RoleRequestStatus.Approved;
-        repository.Update(roleRequest);
+        Repository.Update(roleRequest);
         User? user = await userManager.FindByIdAsync(roleRequest.UserId.ToString());
         await userManager.AddToRoleAsync(user!, roleRequest.Role.Name!);
-        return mapper.Map<RoleRequestModel>(roleRequest);
+        return Mapper.Map<RoleRequestModel>(roleRequest);
     }
 
     [HttpPut]
@@ -70,14 +70,14 @@ public class RoleRequestsController(
     [Authorize(Roles = "Super,Administrator")]
     public ActionResult<RoleRequestModel> Reject(ulong id)
     {
-        RoleRequest? roleRequest = repository.Get(id);
+        RoleRequest? roleRequest = Repository.Get(id);
         if (roleRequest == null)
         {
             return NotFound("Role request not found");
         }
 
         roleRequest.Status = RoleRequestStatus.Rejected;
-        repository.Update(roleRequest);
-        return mapper.Map<RoleRequestModel>(roleRequest);
+        Repository.Update(roleRequest);
+        return Mapper.Map<RoleRequestModel>(roleRequest);
     }
 }

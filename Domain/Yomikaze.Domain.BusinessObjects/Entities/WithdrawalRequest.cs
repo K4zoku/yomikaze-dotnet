@@ -1,10 +1,11 @@
 namespace Yomikaze.Domain.Entities;
 
+[PublicAPI]
 public class WithdrawalRequest : BaseEntity
 {
     #region Navigation Properties
 
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 
     #endregion
 
